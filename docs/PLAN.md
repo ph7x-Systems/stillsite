@@ -118,16 +118,17 @@ the theme conformance suite.
 1. ~~Close Milestone 2 — PoC parity~~ **done** (categories/tags/pagination,
    404, JSON-LD, media pipeline, theme overrides ADR-0007, `cms init`
    ADR-0008).
-2. **Close Milestone 1 — server backends**: PostgreSQL behind the ADR-0004
-   interface, conformance-tested against a fresh project-prefixed Docker
-   container (`ph7x-cms-postgres`); SQL Server and MySQL/MariaDB follow the
-   same mold.
-3. **Milestone 3 — admin panel** (FastAPI): auth/roles, translation-status
-   dashboard, side-by-side per-language editor, media library, editorial
-   workflow.
-4. **Milestone 4 — reference theme + launch**: extract the real design system
-   into `cms-theme-ph7x-reference`, polish the example, installation docs —
+2. ~~Close Milestone 1 — PostgreSQL~~ **done** (ADR-0009; SQL Server and
+   MySQL/MariaDB remain, same mold).
+3. ~~Reference theme~~ **done** (production stylesheets vendored; demo on
+   stillsite.ph7x.com).
+4. **Demo ready gate (next)**: axe/WCAG job in CI, README quickstart against
+   the live demo, social preview upload (owner), M4 documentation pass —
    then the public announcement.
+5. **Milestone 3 — admin panel** (FastAPI + hTWOo candidate): auth/roles,
+   translation dashboard, side-by-side editor, media library, workflow.
+6. **First PyPI release** (naming ADR, semver, trusted publishing) and the
+   remaining server backends.
 
 Small pending items: GitHub social preview upload (owner, web UI only);
 reserve the PyPI names (`stillsite`; decide `stillsite-*` vs `cms-*`
@@ -152,11 +153,10 @@ visitor can judge the product from it. Phases, in execution order:
    (ADR-0010) filters listings from the per-language `search-index.json`;
    localized labels via the new UI-label system (`[site.labels]` override);
    pages stay complete without JavaScript; theme JS budget enforced by test.
-5. **Reference theme (Milestone 4)** — `cms-theme-ph7x-reference` implements
-   the PoC design system (tokens, Inter/Newsreader local fonts, 820px
-   breakpoint, dark editorial look, effects); the demo switches to it via
-   `theme = "ph7x-reference"`. Acceptance: theme conformance tests green
-   (hidden rule, no inline styles, local fonts only, reduced-motion).
+5. **Reference theme (Milestone 4)** — ✅ done: the reference theme ships the
+   production ph7x stylesheets and fonts verbatim with templates on the
+   exact site classes; anchor menu, cover thumbnails, localized dates and
+   editorial blog labels close the visual drifts; conformance suite green.
 6. **Ready gate** — WCAG 2.2 AA automated checks green on the built demo,
    all five languages complete, README quickstart links the demo, social
    preview uploaded. Then the Milestone 4 announcement.
