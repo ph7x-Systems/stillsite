@@ -16,10 +16,15 @@ Short plan by milestones, per the brief ([BRIEF.md](BRIEF.md)). Small increments
 
 ## Milestone 1 — Content core
 
-- [ ] `cms-core`: versioned schemas (pages, sections, articles, media, languages)
-- [ ] Translation model: EN as source; `missing / outdated / complete` states
-- [ ] Persistence: SQLite (dev) / PostgreSQL (prod) + JSON/Markdown export as the portable source
-- [ ] Versioned migrations
+- [x] PoC — `cms-core` article schema with languages and per-language translations
+      (pydantic; pages, sections and media schemas still pending)
+- [x] Translation model: EN as source; `missing / outdated / complete` states
+      derived from source checksums (outdated detection is automatic)
+- [x] PoC persistence: SQLite via stdlib `sqlite3`, no ORM yet ([ADR-0003](adr/0003-sqlite-poc-persistence.md))
+- [x] Versioned migrations (ordered scripts tracked via `user_version`)
+- [x] Deterministic JSON/Markdown export as the portable source of truth
+- [ ] Remaining schemas: pages, sections, media
+- [ ] PostgreSQL backend (prod) — ORM/query-layer decision gets its own ADR
 
 ## Milestone 2 — Validation and build
 

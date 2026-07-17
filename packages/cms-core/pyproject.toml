@@ -5,7 +5,7 @@ description = "Content model, versioned schemas and translation states for Ph7x.
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"
-dependencies = []
+dependencies = ["pydantic>=2.9"]
 
 [build-system]
 requires = ["hatchling"]
