@@ -1,8 +1,8 @@
 """Starter content data for `cms seed` — fictional in every language.
 
-"Aurora Cartography" is an invented studio that draws maps of places that do
-not exist. All names, texts and images are fictional (repository rule: no
-real business or client content). Slugs are ASCII-only by design.
+"Sardine Aerospace" is an invented space programme led by a sardine — playful
+demo content made for presentations. All names, texts and images are fictional
+(repository rule: no real business or client content). Slugs are ASCII-only.
 """
 
 from datetime import UTC, datetime
@@ -17,166 +17,220 @@ ES = Language.ES
 FR = Language.FR
 DE = Language.DE
 
-COMPASS_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675"
+ROCKET_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675"
     width="1200" height="675" role="img">
-  <rect width="1200" height="675" fill="#101623"/>
-  <g transform="translate(600 337)" stroke="#e8e4da" fill="none" stroke-width="4">
-    <circle r="220"/>
-    <circle r="180" stroke-dasharray="6 10"/>
-    <path d="M0-260 20-20 0 260 -20-20Z" fill="#e8e4da" stroke="none"/>
-    <path d="M-260 0 -20 20 260 0 -20-20Z" fill="#7a8db0" stroke="none"/>
+  <rect width="1200" height="675" fill="#080809"/>
+  <g transform="translate(600 340) rotate(-45)">
+    <ellipse rx="210" ry="72" fill="none" stroke="#d8cfc0" stroke-width="5"/>
+    <ellipse rx="150" ry="48" fill="none" stroke="#d8cfc0" stroke-width="2" stroke-dasharray="5 8"/>
+    <path fill="#d8cfc0"
+      d="M-210 0 Q-252 -36 -284 -55 Q-264 -19 -264 0 Q-264 19 -284 55 Q-252 36 -210 0Z"/>
+    <circle cx="158" cy="-17" r="9" fill="#080809" stroke="#d8cfc0" stroke-width="4"/>
+    <path d="M208 8 Q274 30 338 18 Q276 48 220 38Z" fill="#7ec8a2" opacity="0.85"/>
   </g>
-  <text x="600" y="640" text-anchor="middle" font-family="serif" font-size="34"
-    fill="#e8e4da">Aurora Cartography</text>
+  <text x="600" y="620" text-anchor="middle" font-family="serif" font-size="34"
+    fill="#d8cfc0">Sardine Aerospace</text>
 </svg>
 """
 
 HOME: dict[Language, PageContent] = {
     EN: PageContent(
-        title="Aurora Cartography",
-        description="Maps and atlases for imaginary places.",
+        title="Sardine Aerospace",
+        description="The first space programme led by a sardine.",
         slug="home",
     ),
     PT: PageContent(
-        title="Aurora Cartografia",
-        description="Mapas e atlas para lugares imaginários.",
+        title="Sardine Aerospace",
+        description="O primeiro programa espacial liderado por uma sardinha.",
         slug="inicio",
     ),
     ES: PageContent(
-        title="Aurora Cartografía",
-        description="Mapas y atlas para lugares imaginarios.",
+        title="Sardine Aerospace",
+        description="El primer programa espacial dirigido por una sardina.",
         slug="inicio",
     ),
     FR: PageContent(
-        title="Aurora Cartographie",
-        description="Cartes et atlas pour des lieux imaginaires.",
+        title="Sardine Aerospace",
+        description="Le premier programme spatial dirige par une sardine.",
         slug="accueil",
     ),
     DE: PageContent(
-        title="Aurora Kartographie",
-        description="Karten und Atlanten für erdachte Orte.",
+        title="Sardine Aerospace",
+        description="Das erste Raumfahrtprogramm unter Leitung einer Sardine.",
         slug="start",
     ),
 }
 
 HOME_HERO: dict[Language, SectionContent] = {
-    EN: SectionContent(fields={"heading": "Charting places that never were"}, media=["compass"]),
+    EN: SectionContent(
+        fields={
+            "kicker": "Space programme · Tinned · In orbit",
+            "heading": "A sardine on its way to",
+            "accent": "Mars.",
+            "lead": "Small fish. Enormous ambitions. Questionable smell.",
+        },
+        media=["rocket"],
+    ),
     PT: SectionContent(
-        fields={"heading": "Cartografar lugares que nunca existiram"}, media=["compass"]
+        fields={
+            "kicker": "Programa espacial · De conserva · Em orbita",
+            "heading": "Uma sardinha a caminho de",
+            "accent": "Marte.",
+            "lead": "Peixe pequeno. Ambicoes enormes. Cheiro discutivel.",
+        },
+        media=["rocket"],
     ),
     ES: SectionContent(
-        fields={"heading": "Cartografiar lugares que nunca existieron"}, media=["compass"]
+        fields={
+            "kicker": "Programa espacial · En conserva · En orbita",
+            "heading": "Una sardina camino de",
+            "accent": "Marte.",
+            "lead": "Pez pequeno. Ambiciones enormes. Olor discutible.",
+        },
+        media=["rocket"],
     ),
     FR: SectionContent(
-        fields={"heading": "Cartographier des lieux qui n'ont jamais existé"}, media=["compass"]
+        fields={
+            "kicker": "Programme spatial · En conserve · En orbite",
+            "heading": "Une sardine en route vers",
+            "accent": "Mars.",
+            "lead": "Petit poisson. Ambitions enormes. Odeur discutable.",
+        },
+        media=["rocket"],
     ),
-    DE: SectionContent(fields={"heading": "Orte kartieren, die es nie gab"}, media=["compass"]),
+    DE: SectionContent(
+        fields={
+            "kicker": "Raumfahrtprogramm · In Dosen · Im Orbit",
+            "heading": "Eine Sardine auf dem Weg zum",
+            "accent": "Mars.",
+            "lead": "Kleiner Fisch. Riesige Ambitionen. Fragwuerdiger Geruch.",
+        },
+        media=["rocket"],
+    ),
 }
 
 HOME_LATEST: dict[Language, SectionContent] = {
-    EN: SectionContent(fields={"heading": "Latest from the drafting table"}),
-    PT: SectionContent(fields={"heading": "O mais recente da mesa de desenho"}),
-    ES: SectionContent(fields={"heading": "Lo ultimo de la mesa de dibujo"}),
-    FR: SectionContent(fields={"heading": "Les dernieres nouvelles de la table a dessin"}),
-    DE: SectionContent(fields={"heading": "Das Neueste vom Zeichentisch"}),
+    EN: SectionContent(fields={"kicker": "Mission log", "heading": "Latest from the launch pad"}),
+    PT: SectionContent(
+        fields={"kicker": "Diario de missao", "heading": "O mais recente da plataforma"}
+    ),
+    ES: SectionContent(
+        fields={"kicker": "Diario de mision", "heading": "Lo ultimo de la plataforma"}
+    ),
+    FR: SectionContent(
+        fields={"kicker": "Journal de mission", "heading": "Les dernieres du pas de tir"}
+    ),
+    DE: SectionContent(
+        fields={"kicker": "Missionslog", "heading": "Das Neueste von der Startrampe"}
+    ),
 }
 
 ABOUT: dict[Language, PageContent] = {
     EN: PageContent(
-        title="About the studio",
-        description="Who draws the maps, and why.",
-        slug="about",
+        title="The crew",
+        description="One sardine, three engineers, unlimited olive oil.",
+        slug="crew",
     ),
     PT: PageContent(
-        title="Sobre o estudio",
-        description="Quem desenha os mapas, e porque.",
-        slug="sobre",
+        title="A tripulacao",
+        description="Uma sardinha, tres engenheiros, azeite ilimitado.",
+        slug="tripulacao",
     ),
     ES: PageContent(
-        title="Sobre el estudio",
-        description="Quien dibuja los mapas, y por que.",
-        slug="sobre",
+        title="La tripulacion",
+        description="Una sardina, tres ingenieros, aceite de oliva ilimitado.",
+        slug="tripulacion",
     ),
     FR: PageContent(
-        title="A propos de l'atelier",
-        description="Qui dessine les cartes, et pourquoi.",
-        slug="a-propos",
+        title="L'equipage",
+        description="Une sardine, trois ingenieurs, huile d'olive illimitee.",
+        slug="equipage",
     ),
     DE: PageContent(
-        title="Uber das Studio",
-        description="Wer die Karten zeichnet, und warum.",
-        slug="ueber-uns",
+        title="Die Crew",
+        description="Eine Sardine, drei Ingenieure, unbegrenztes Olivenoel.",
+        slug="crew-de",
     ),
 }
 
 ABOUT_STORY: dict[Language, SectionContent] = {
     EN: SectionContent(
         fields={
-            "heading": "A workshop for invented geography",
-            "body": "Three cartographers, one drafting table, and a rule: every map must be "
-            "believable enough to get lost in.",
+            "kicker": "01 · Who we are",
+            "heading": "Built in a cannery, aimed at the stars",
+            "body": "Commander Sardinha graduated top of her shoal. The engineering team "
+            "joined for the challenge and stayed for the snacks. Mission control fits "
+            "in a fish crate, and the countdown is sung.",
         }
     ),
     PT: SectionContent(
         fields={
-            "heading": "Uma oficina de geografia inventada",
-            "body": "Tres cartografos, uma mesa de desenho e uma regra: todos os mapas devem "
-            "ser criveis ao ponto de nos perdermos neles.",
+            "kicker": "01 · Quem somos",
+            "heading": "Nascidos numa conserveira, apontados as estrelas",
+            "body": "A Comandante Sardinha formou-se no topo do cardume. A equipa de "
+            "engenharia veio pelo desafio e ficou pelos petiscos. O controlo de missao "
+            "cabe numa caixa de peixe, e a contagem decrescente e cantada.",
         }
     ),
     ES: SectionContent(
         fields={
-            "heading": "Un taller de geografia inventada",
-            "body": "Tres cartografos, una mesa de dibujo y una regla: todo mapa debe ser tan "
-            "creible que uno pueda perderse en el.",
+            "kicker": "01 · Quienes somos",
+            "heading": "Nacidos en una conservera, apuntando a las estrellas",
+            "body": "La Comandante Sardina se graduo la primera de su banco. El equipo de "
+            "ingenieria vino por el reto y se quedo por las tapas. El control de mision "
+            "cabe en una caja de pescado, y la cuenta atras se canta.",
         }
     ),
     FR: SectionContent(
         fields={
-            "heading": "Un atelier de geographie inventee",
-            "body": "Trois cartographes, une table a dessin et une regle : chaque carte doit "
-            "etre assez credible pour qu'on s'y perde.",
+            "kicker": "01 · Qui nous sommes",
+            "heading": "Nes dans une conserverie, vises vers les etoiles",
+            "body": "La Commandante Sardine a fini premiere de son banc. L'equipe "
+            "d'ingenierie est venue pour le defi et restee pour les encas. Le controle de "
+            "mission tient dans une caisse a poisson, et le compte a rebours est chante.",
         }
     ),
     DE: SectionContent(
         fields={
-            "heading": "Eine Werkstatt fur erfundene Geographie",
-            "body": "Drei Kartographen, ein Zeichentisch und eine Regel: Jede Karte muss so "
-            "glaubwurdig sein, dass man sich darin verlieren kann.",
+            "kicker": "01 · Wer wir sind",
+            "heading": "In einer Konservenfabrik geboren, auf die Sterne gerichtet",
+            "body": "Kommandantin Sardine schloss als Beste ihres Schwarms ab. Das "
+            "Ingenieursteam kam wegen der Herausforderung und blieb wegen der Snacks. Die "
+            "Missionskontrolle passt in eine Fischkiste, der Countdown wird gesungen.",
         }
     ),
 }
 
 CATEGORIES: dict[str, dict[Language, str]] = {
-    "field-notes": {
-        EN: "Field notes",
-        PT: "Notas de campo",
-        ES: "Notas de campo",
-        FR: "Notes de terrain",
-        DE: "Feldnotizen",
+    "missions": {
+        EN: "Missions",
+        PT: "Missoes",
+        ES: "Misiones",
+        FR: "Missions",
+        DE: "Missionen",
     },
-    "atlas-craft": {
-        EN: "Atlas craft",
-        PT: "Oficio do atlas",
-        ES: "Oficio del atlas",
-        FR: "Metier de l'atlas",
-        DE: "Atlas-Handwerk",
+    "engineering": {
+        EN: "Engineering",
+        PT: "Engenharia",
+        ES: "Ingenieria",
+        FR: "Ingenierie",
+        DE: "Technik",
     },
-    "studio": {
-        EN: "Studio",
-        PT: "Estudio",
-        ES: "Estudio",
-        FR: "Atelier",
-        DE: "Studio",
+    "canteen": {
+        EN: "Canteen",
+        PT: "Cantina",
+        ES: "Cantina",
+        FR: "Cantine",
+        DE: "Kantine",
     },
 }
 
 MEDIA_ALT: dict[Language, str] = {
-    EN: "A compass rose over a night-blue chart",
-    PT: "Uma rosa dos ventos sobre uma carta azul-noite",
-    ES: "Una rosa de los vientos sobre una carta azul noche",
-    FR: "Une rose des vents sur une carte bleu nuit",
-    DE: "Eine Windrose auf einer nachtblauen Karte",
+    EN: "A tin-can rocket with a sardine at the controls",
+    PT: "Um foguetao-lata com uma sardinha aos comandos",
+    ES: "Un cohete-lata con una sardina a los mandos",
+    FR: "Une fusee-boite avec une sardine aux commandes",
+    DE: "Eine Dosenrakete mit einer Sardine am Steuer",
 }
 
 
@@ -199,246 +253,244 @@ def _article(
 
 # id -> (category, tags, days offset, contents)
 ARTICLES: dict[str, tuple[str, tuple[str, ...], int, dict[Language, ArticleContent]]] = {
-    "why-every-atlas-starts-blank": (
-        "field-notes",
-        ("craft", "maps"),
+    "we-choose-the-tin": (
+        "missions",
+        ("launch", "mars"),
         0,
         _article(
             (
-                "Why every atlas starts with a blank page",
-                "On the discipline of drawing nothing before drawing anything.",
-                "A map is a promise.\n\nBefore the first line, decide what to leave out.",
+                "We choose to go in the tin",
+                "Not because it is easy, but because it is watertight.",
+                "Every great voyage starts with the right vessel.\n\n"
+                "Ours is a tin. Aerodynamic, shiny, and it never complains.",
             ),
             (
-                "Porque todo o atlas comeca numa pagina em branco",
-                "Sobre a disciplina de desenhar nada antes de desenhar algo.",
-                "Um mapa e uma promessa.\n\nAntes da primeira linha, decide o que fica de fora.",
-                "porque-todo-atlas-comeca-em-branco",
+                "Escolhemos ir na lata",
+                "Nao porque e facil, mas porque e estanque.",
+                "Toda a grande viagem comeca com o veiculo certo.\n\n"
+                "O nosso e uma lata. Aerodinamica, brilhante, e nunca se queixa.",
+                "escolhemos-ir-na-lata",
             ),
             (
-                "Por que todo atlas empieza con una pagina en blanco",
-                "Sobre la disciplina de dibujar nada antes de dibujar algo.",
-                "Un mapa es una promesa.\n\nAntes de la primera linea, decide que dejar fuera.",
-                "por-que-todo-atlas-empieza-en-blanco",
+                "Elegimos ir en la lata",
+                "No porque sea facil, sino porque es estanca.",
+                "Todo gran viaje empieza con el vehiculo correcto.\n\n"
+                "El nuestro es una lata. Aerodinamica, brillante, y nunca se queja.",
+                "elegimos-ir-en-la-lata",
             ),
             (
-                "Pourquoi chaque atlas commence par une page blanche",
-                "Sur la discipline de ne rien dessiner avant de dessiner quoi que ce soit.",
-                "Une carte est une promesse.\n\n"
-                "Avant le premier trait, decidez de ce qui restera dehors.",
-                "pourquoi-chaque-atlas-commence-blanc",
+                "Nous choisissons la boite",
+                "Non parce que c'est facile, mais parce que c'est etanche.",
+                "Tout grand voyage commence par le bon vaisseau.\n\n"
+                "Le notre est une boite. Aerodynamique, brillante, sans jamais se plaindre.",
+                "nous-choisissons-la-boite",
             ),
             (
-                "Warum jeder Atlas mit einer leeren Seite beginnt",
-                "Uber die Disziplin, nichts zu zeichnen, bevor man etwas zeichnet.",
-                "Eine Karte ist ein Versprechen.\n\n"
-                "Vor der ersten Linie entscheide, was draussen bleibt.",
-                "warum-jeder-atlas-leer-beginnt",
+                "Wir fliegen in der Dose",
+                "Nicht weil es leicht ist, sondern weil sie dicht haelt.",
+                "Jede grosse Reise beginnt mit dem richtigen Gefaehrt.\n\n"
+                "Unseres ist eine Dose. Aerodynamisch, glaenzend, beschwert sich nie.",
+                "wir-fliegen-in-der-dose",
             ),
         ),
     ),
-    "the-legend-is-the-map": (
-        "atlas-craft",
-        ("craft", "design"),
+    "olive-oil-as-rocket-fuel": (
+        "engineering",
+        ("fuel", "testing"),
         1,
         _article(
             (
-                "The legend is the map",
-                "Symbols carry more territory than lines do.",
-                "Readers trust the legend before they trust the coastline.\n\n"
-                "Design the symbols first and the terrain will follow.",
+                "Olive oil as rocket fuel: preliminary findings",
+                "Extra virgin performs 12% better and smells like Sunday lunch.",
+                "The test bench caught fire twice, deliciously.\n\n"
+                "Conclusion: viable, fragrant, and the neighbours now attend every ignition.",
             ),
             (
-                "A legenda e o mapa",
-                "Os simbolos carregam mais territorio do que as linhas.",
-                "O leitor confia na legenda antes de confiar na costa.\n\n"
-                "Desenha primeiro os simbolos e o terreno segue.",
-                "a-legenda-e-o-mapa",
+                "Azeite como combustivel: resultados preliminares",
+                "O extra virgem rende 12% mais e cheira a almoco de domingo.",
+                "A bancada de testes ardeu duas vezes, deliciosamente.\n\n"
+                "Conclusao: viavel, perfumado, e os vizinhos ja nao perdem uma ignicao.",
+                "azeite-como-combustivel",
             ),
             (
-                "La leyenda es el mapa",
-                "Los simbolos cargan mas territorio que las lineas.",
-                "El lector confia en la leyenda antes que en la costa.\n\n"
-                "Disena primero los simbolos y el terreno seguira.",
-                "la-leyenda-es-el-mapa",
+                "Aceite de oliva como combustible: resultados preliminares",
+                "El virgen extra rinde un 12% mas y huele a comida de domingo.",
+                "El banco de pruebas ardio dos veces, deliciosamente.\n\n"
+                "Conclusion: viable, fragante, y los vecinos ya no se pierden una ignicion.",
+                "aceite-como-combustible",
             ),
             (
-                "La legende est la carte",
-                "Les symboles portent plus de territoire que les traits.",
-                "Le lecteur croit la legende avant de croire la cote.\n\n"
-                "Dessinez d'abord les symboles, le terrain suivra.",
-                "la-legende-est-la-carte",
+                "L'huile d'olive comme carburant : premiers resultats",
+                "L'extra vierge rend 12% de plus et sent le dejeuner du dimanche.",
+                "Le banc d'essai a pris feu deux fois, delicieusement.\n\n"
+                "Conclusion : viable, parfume, et les voisins assistent a chaque allumage.",
+                "huile-olive-comme-carburant",
             ),
             (
-                "Die Legende ist die Karte",
-                "Symbole tragen mehr Gelande als Linien.",
-                "Leser vertrauen der Legende, bevor sie der Kuste vertrauen.\n\n"
-                "Entwirf zuerst die Symbole, das Gelande folgt.",
-                "die-legende-ist-die-karte",
+                "Olivenoel als Raketentreibstoff: erste Ergebnisse",
+                "Extra vergine leistet 12% mehr und riecht nach Sonntagsessen.",
+                "Der Pruefstand brannte zweimal, koestlich.\n\n"
+                "Fazit: machbar, duftend, und die Nachbarn verpassen keine Zuendung mehr.",
+                "olivenoel-als-treibstoff",
             ),
         ),
     ),
-    "drawing-coastlines-that-never-were": (
-        "field-notes",
-        ("maps", "imagination"),
+    "zero-g-canning-tests": (
+        "engineering",
+        ("testing", "cans"),
         2,
         _article(
             (
-                "Drawing coastlines that never were",
-                "Believable shores obey rules the sea never wrote down.",
-                "Real coasts are fractal, patient, indifferent.\n\n"
-                "Invented ones must fake all three at once.",
+                "Zero-G canning tests",
+                "In space, no one can hear the tin open.",
+                "We dropped four hundred cans from the cannery roof.\n\n"
+                "Three hundred and ninety-nine survived. The other one was lunch.",
             ),
             (
-                "Desenhar costas que nunca existiram",
-                "Uma costa crivel obedece a regras que o mar nunca escreveu.",
-                "As costas reais sao fractais, pacientes, indiferentes.\n\n"
-                "As inventadas tem de fingir as tres coisas ao mesmo tempo.",
-                "desenhar-costas-que-nunca-existiram",
+                "Testes de enlatamento em gravidade zero",
+                "No espaco, ninguem ouve a lata abrir.",
+                "Deixamos cair quatrocentas latas do telhado da conserveira.\n\n"
+                "Trezentas e noventa e nove sobreviveram. A outra foi o almoco.",
+                "testes-enlatamento-gravidade-zero",
             ),
             (
-                "Dibujar costas que nunca existieron",
-                "Una costa creible obedece reglas que el mar nunca escribio.",
-                "Las costas reales son fractales, pacientes, indiferentes.\n\n"
-                "Las inventadas deben fingir las tres cosas a la vez.",
-                "dibujar-costas-que-nunca-existieron",
+                "Pruebas de enlatado en gravedad cero",
+                "En el espacio, nadie oye abrirse la lata.",
+                "Dejamos caer cuatrocientas latas del tejado de la conservera.\n\n"
+                "Trescientas noventa y nueve sobrevivieron. La otra fue el almuerzo.",
+                "pruebas-enlatado-gravedad-cero",
             ),
             (
-                "Dessiner des cotes qui n'ont jamais existe",
-                "Une cote credible obeit a des regles que la mer n'a jamais ecrites.",
-                "Les cotes reelles sont fractales, patientes, indifferentes.\n\n"
-                "Les cotes inventees doivent feindre les trois a la fois.",
-                "dessiner-des-cotes-jamais-existees",
+                "Essais de mise en boite en apesanteur",
+                "Dans l'espace, personne n'entend la boite s'ouvrir.",
+                "Nous avons lache quatre cents boites du toit de la conserverie.\n\n"
+                "Trois cent quatre-vingt-dix-neuf ont survecu. L'autre fut le dejeuner.",
+                "essais-boite-apesanteur",
             ),
             (
-                "Kustenlinien zeichnen, die es nie gab",
-                "Eine glaubwurdige Kuste folgt Regeln, die das Meer nie aufschrieb.",
-                "Echte Kusten sind fraktal, geduldig, gleichgultig.\n\n"
-                "Erfundene mussen alle drei Dinge zugleich vortauschen.",
-                "kuestenlinien-die-es-nie-gab",
+                "Dosen-Tests in Schwerelosigkeit",
+                "Im All hoert niemand die Dose aufgehen.",
+                "Wir warfen vierhundert Dosen vom Dach der Konservenfabrik.\n\n"
+                "Dreihundertneunundneunzig ueberlebten. Die andere war das Mittagessen.",
+                "dosen-tests-schwerelosigkeit",
             ),
         ),
     ),
-    "inks-that-age-like-places": (
-        "atlas-craft",
-        ("craft", "materials"),
+    "commander-sardinha-interview": (
+        "missions",
+        ("crew", "mars"),
         3,
         _article(
             (
-                "Inks that age like places",
-                "Choosing pigments for maps that should feel found, not printed.",
-                "A new map of an old place should not look new.\n\n"
-                "We mix inks that will yellow on schedule.",
+                "An interview with Commander Sardinha",
+                "Mars has no sea. We are bringing one.",
+                "Q: Why Mars?\n\nA: Because the mackerel said it could not be done.",
             ),
             (
-                "Tintas que envelhecem como lugares",
-                "Escolher pigmentos para mapas que parecem achados, nao impressos.",
-                "Um mapa novo de um lugar antigo nao deve parecer novo.\n\n"
-                "Misturamos tintas que amarelecem com hora marcada.",
-                "tintas-que-envelhecem-como-lugares",
+                "Entrevista com a Comandante Sardinha",
+                "Marte nao tem mar. Nos levamos um.",
+                "P: Porque Marte?\n\nR: Porque a cavala disse que era impossivel.",
+                "entrevista-comandante-sardinha",
             ),
             (
-                "Tintas que envejecen como lugares",
-                "Elegir pigmentos para mapas que parezcan hallados, no impresos.",
-                "Un mapa nuevo de un lugar antiguo no debe parecer nuevo.\n\n"
-                "Mezclamos tintas que amarillean puntualmente.",
-                "tintas-que-envejecen-como-lugares",
+                "Entrevista con la Comandante Sardina",
+                "Marte no tiene mar. Nosotros llevamos uno.",
+                "P: Por que Marte?\n\nR: Porque la caballa dijo que era imposible.",
+                "entrevista-comandante-sardina",
             ),
             (
-                "Des encres qui vieillissent comme des lieux",
-                "Choisir des pigments pour des cartes trouvees, pas imprimees.",
-                "Une carte neuve d'un lieu ancien ne doit pas sembler neuve.\n\n"
-                "Nous melangeons des encres qui jaunissent a l'heure dite.",
-                "encres-qui-vieillissent-comme-des-lieux",
+                "Entretien avec la Commandante Sardine",
+                "Mars n'a pas de mer. Nous en apportons une.",
+                "Q : Pourquoi Mars ?\n\nR : Parce que le maquereau a dit que c'etait impossible.",
+                "entretien-commandante-sardine",
             ),
             (
-                "Tinten, die wie Orte altern",
-                "Pigmente fur Karten, die gefunden wirken sollen, nicht gedruckt.",
-                "Eine neue Karte eines alten Ortes darf nicht neu aussehen.\n\n"
-                "Wir mischen Tinten, die punktlich vergilben.",
-                "tinten-die-wie-orte-altern",
+                "Interview mit Kommandantin Sardine",
+                "Der Mars hat kein Meer. Wir bringen eines mit.",
+                "F: Warum der Mars?\n\nA: Weil die Makrele sagte, es sei unmoeglich.",
+                "interview-kommandantin-sardine",
             ),
         ),
     ),
-    "a-studio-between-two-rivers": (
-        "studio",
-        ("studio",),
+    "the-canteen-menu-problem": (
+        "canteen",
+        ("food", "crew"),
         4,
         _article(
             (
-                "A studio between two rivers",
-                "Where Aurora Cartography draws, and why the light matters.",
-                "The drafting room faces north, over water that is real.\n\n"
-                "Everything drawn inside it is not.",
+                "The canteen menu problem",
+                "Everything on the menu is a colleague.",
+                "Ethics committee meeting number forty-two.\n\n"
+                "Resolution: the canteen now serves algae, bravely.",
             ),
             (
-                "Um estudio entre dois rios",
-                "Onde a Aurora Cartografia desenha, e porque a luz importa.",
-                "A sala de desenho vira a norte, sobre agua verdadeira.\n\n"
-                "Tudo o que la se desenha nao e.",
-                "um-estudio-entre-dois-rios",
+                "O problema da ementa da cantina",
+                "Tudo o que esta na ementa e um colega.",
+                "Reuniao numero quarenta e dois do comite de etica.\n\n"
+                "Resolucao: a cantina passa a servir algas, corajosamente.",
+                "problema-ementa-cantina",
             ),
             (
-                "Un estudio entre dos rios",
-                "Donde dibuja Aurora Cartografia, y por que importa la luz.",
-                "La sala de dibujo mira al norte, sobre agua verdadera.\n\n"
-                "Todo lo que alli se dibuja no lo es.",
-                "un-estudio-entre-dos-rios",
+                "El problema del menu de la cantina",
+                "Todo lo que hay en el menu es un colega.",
+                "Reunion numero cuarenta y dos del comite de etica.\n\n"
+                "Resolucion: la cantina ahora sirve algas, valientemente.",
+                "problema-menu-cantina",
             ),
             (
-                "Un atelier entre deux rivieres",
-                "Ou dessine Aurora Cartographie, et pourquoi la lumiere compte.",
-                "La salle de dessin regarde le nord, au-dessus d'une eau reelle.\n\n"
-                "Tout ce qui s'y dessine ne l'est pas.",
-                "un-atelier-entre-deux-rivieres",
+                "Le probleme du menu de la cantine",
+                "Tout ce qui est au menu est un collegue.",
+                "Reunion numero quarante-deux du comite d'ethique.\n\n"
+                "Resolution : la cantine sert desormais des algues, courageusement.",
+                "probleme-menu-cantine",
             ),
             (
-                "Ein Studio zwischen zwei Flussen",
-                "Wo Aurora Kartographie zeichnet, und warum das Licht zahlt.",
-                "Der Zeichensaal blickt nach Norden, uber echtes Wasser.\n\n"
-                "Alles, was darin gezeichnet wird, ist es nicht.",
-                "ein-studio-zwischen-zwei-fluessen",
+                "Das Kantinen-Menue-Problem",
+                "Alles auf der Karte ist ein Kollege.",
+                "Ethikkommission, Sitzung Nummer zweiundvierzig.\n\n"
+                "Beschluss: Die Kantine serviert jetzt Algen, tapfer.",
+                "kantinen-menue-problem",
             ),
         ),
     ),
-    "naming-places-with-care": (
-        "studio",
-        ("language", "naming"),
+    "train-for-space-underwater": (
+        "missions",
+        ("training", "crew"),
         5,
         _article(
             (
-                "Naming places with care",
-                "A place name is a one-word story; invent it responsibly.",
-                "Names outlive coastlines and empires.\n\n"
-                "We test every invented name in five languages before it enters an atlas.",
+                "How to train for space when you already live underwater",
+                "Neutral buoyancy comes naturally to some of us.",
+                "NASA trains astronauts in swimming pools.\n\n"
+                "We were born in the pool. Advantage: Sardine Aerospace.",
             ),
             (
-                "Nomear lugares com cuidado",
-                "Um toponimo e uma historia numa palavra; inventa-o com responsabilidade.",
-                "Os nomes sobrevivem a costas e a imperios.\n\n"
-                "Testamos cada nome inventado em cinco linguas antes de entrar num atlas.",
-                "nomear-lugares-com-cuidado",
+                "Treinar para o espaco quando ja se vive debaixo de agua",
+                "A flutuabilidade neutra e natural para alguns de nos.",
+                "Ha agencias que treinam astronautas em piscinas.\n\n"
+                "Nos nascemos na piscina. Vantagem: Sardine Aerospace.",
+                "treinar-espaco-debaixo-de-agua",
             ),
             (
-                "Nombrar lugares con cuidado",
-                "Un toponimo es una historia en una palabra; inventalo con responsabilidad.",
-                "Los nombres sobreviven a costas e imperios.\n\n"
-                "Probamos cada nombre inventado en cinco lenguas antes de entrar en un atlas.",
-                "nombrar-lugares-con-cuidado",
+                "Entrenar para el espacio cuando ya vives bajo el agua",
+                "La flotabilidad neutra es natural para algunos de nosotros.",
+                "Hay agencias que entrenan astronautas en piscinas.\n\n"
+                "Nosotros nacimos en la piscina. Ventaja: Sardine Aerospace.",
+                "entrenar-espacio-bajo-el-agua",
             ),
             (
-                "Nommer les lieux avec soin",
-                "Un toponyme est une histoire en un mot ; inventez-le avec soin.",
-                "Les noms survivent aux cotes et aux empires.\n\n"
-                "Nous testons chaque nom invente en cinq langues avant l'atlas.",
-                "nommer-les-lieux-avec-soin",
+                "S'entrainer pour l'espace quand on vit deja sous l'eau",
+                "La flottabilite neutre est naturelle pour certains d'entre nous.",
+                "Certaines agences entrainent leurs astronautes en piscine.\n\n"
+                "Nous sommes nes dans la piscine. Avantage : Sardine Aerospace.",
+                "entrainement-espace-sous-eau",
             ),
             (
-                "Orte mit Sorgfalt benennen",
-                "Ein Ortsname ist eine Geschichte in einem Wort; erfinde ihn mit Sorgfalt.",
-                "Namen uberdauern Kusten und Reiche.\n\n"
-                "Wir prufen jeden erfundenen Namen in funf Sprachen, bevor er in den Atlas kommt.",
-                "orte-mit-sorgfalt-benennen",
+                "Fuers All trainieren, wenn man schon unter Wasser lebt",
+                "Neutraler Auftrieb liegt manchen von uns im Blut.",
+                "Manche Agenturen trainieren Astronauten im Schwimmbecken.\n\n"
+                "Wir sind im Becken geboren. Vorteil: Sardine Aerospace.",
+                "training-fuers-all-unter-wasser",
             ),
         ),
     ),

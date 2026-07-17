@@ -41,24 +41,22 @@ URI and scroll-driven animations behind `@supports`, all disabled under
 
 | Kind | Markup |
 | --- | --- |
-| `hero` | Aurora backdrop, serif display `h1` from the `heading` field, lead from the page description, hero image |
-| `latest-articles` | Kicker heading + the language's three newest articles (builder-provided `latest` context) |
-| `story` | `h2` + prose paragraphs + images |
+| `hero` | ph7x hero: `kicker` kick line, `lead` right-aligned lead-line, serif display `heading` + italic `accent`, base row with description + menu CTAs, optional hero image |
+| `latest-articles` | Kick + serif `h2` + the language's three newest articles as `b-card`s |
+| `story` | Two-column `.two` grid: sticky kick label + `h2`/`body` prose |
 | _any other_ | Generic field/image rendering (graceful fallback) |
 
-## hTWOo components in the reference theme (in force)
+## hTWOo component set (vendored, reserved for the admin)
 
-hTWOo Core 2.7.1 is vendored (MIT, `HTWOO-LICENSE.txt`; Segoe web-font
-fetches stripped, reduced-motion kill-switch appended) and themed onto the
-editorial palette through a Fluent token bridge (`--themePrimary`,
-`--neutral*`, … mapped to our oklch tokens):
+hTWOo Core 2.7.1 lives in `packages/cms-theme-ph7x-reference/vendor/` (MIT,
+license alongside; Segoe web-font fetches stripped, reduced-motion
+kill-switch appended). The public reference theme uses the ph7x design
+system instead; hTWOo is the component set planned for the Milestone 3
+admin UI:
 
-| Chrome | hTWOo component |
+| Admin surface (planned) | hTWOo component |
 | --- | --- |
-| Menu links (header/footer) | `hoo-button` |
-| Entry lists (listing + latest) | `hoo-cardgrid` / `hoo-card` with `hoo-cardtitle`/`hoo-cardfooter` |
-| Pagination controls | `hoo-button` |
-| Search input | `hoo-input-text` |
+| Command bars, dialogs, tables, inputs | per the Admin panel table below |
 
 ## Admin panel (Milestone 3 — planned)
 

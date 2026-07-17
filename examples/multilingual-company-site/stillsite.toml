@@ -1,34 +1,34 @@
 [site]
-name = "Aurora Cartography"
+name = "Sardine Aerospace"
 base_url = "https://example.com"
 languages = ["pt-pt", "es", "fr", "de"]
 blog_path = "blog"
 theme = "ph7x-reference"
 
-[site.categories.field-notes]
-en = "Field notes"
-pt-pt = "Notas de campo"
-es = "Notas de campo"
-fr = "Notes de terrain"
-de = "Feldnotizen"
+[site.categories.missions]
+en = "Missions"
+pt-pt = "Missões"
+es = "Misiones"
+fr = "Missions"
+de = "Missionen"
 
-[site.categories.atlas-craft]
-en = "Atlas craft"
-pt-pt = "Ofício do atlas"
-es = "Oficio del atlas"
-fr = "Métier de l'atlas"
-de = "Atlas-Handwerk"
+[site.categories.engineering]
+en = "Engineering"
+pt-pt = "Engenharia"
+es = "Ingeniería"
+fr = "Ingénierie"
+de = "Technik"
 
-[site.categories.studio]
-en = "Studio"
-pt-pt = "Estúdio"
-es = "Estudio"
-fr = "Atelier"
-de = "Studio"
+[site.categories.canteen]
+en = "Canteen"
+pt-pt = "Cantina"
+es = "Cantina"
+fr = "Cantine"
+de = "Kantine"
 
 [site.organization]
 "@type" = "Organization"
-name = "Aurora Cartography"
+name = "Sardine Aerospace"
 url = "https://example.com/"
 
 [storage]

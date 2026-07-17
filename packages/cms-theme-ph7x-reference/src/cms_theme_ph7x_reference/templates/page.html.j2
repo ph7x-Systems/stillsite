@@ -1,61 +1,79 @@
 {% extends "base.html.j2" %}
 {% block main %}
 {% set hero_sections = sections | selectattr("kind", "equalto", "hero") | list %}
-<article class="page">
-  {% if not hero_sections %}
-  <h1>{{ page.title }}</h1>
+{% if not hero_sections %}
+<div class="wrap page">
+  <h1 class="page-title">{{ page.title }}</h1>
   {% if page.description %}<p class="lead">{{ page.description }}</p>{% endif %}
-  {% endif %}
-  {% for section in sections %}
-  {% if section.kind == "hero" %}
-  <section class="section hero" id="{{ section.key }}">
-    <div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span></div>
-    <div class="hero-copy">
-      {% for name, value in section.fields %}
-      {% if name == "heading" %}<h1 class="display">{{ value }}</h1>{% else %}<p class="lead">{{ value }}</p>{% endif %}
-      {% endfor %}
-      {% if page.description %}<p class="lead sub">{{ page.description }}</p>{% endif %}
+</div>
+{% endif %}
+{% for section in sections %}
+{% if section.kind == "hero" %}
+<section class="hero" id="{{ section.key }}">
+  <div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span></div>
+  <div class="wrap">
+    <div class="hero-top">
+      {% if section.data.kicker %}<span class="kick">{{ section.data.kicker }}</span>{% endif %}
+      {% if section.data.lead %}<p class="lead-line">{{ section.data.lead }}</p>{% endif %}
+    </div>
+    <h1>{{ section.data.heading }}{% if section.data.accent %} <span class="it">{{ section.data.accent }}</span>{% endif %}</h1>
+    <div class="base">
+      <p>{{ page.description }}</p>
+      <div class="cta">
+        {% for entry in nav.menu %}
+        <a href="{{ entry.url }}" class="btn{% if loop.first %} btn-p{% endif %}">{{ entry.label }}</a>
+        {% endfor %}
+      </div>
     </div>
     {% for image in section.images %}
     <img class="hero-art" src="{{ image.url }}" alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}">
     {% endfor %}
-  </section>
-  {% elif section.kind == "latest-articles" %}
-  <section class="section latest" id="{{ section.key }}">
-    {% for name, value in section.fields %}
-    {% if name == "heading" %}<h2 class="kicker">{{ value }}</h2>{% else %}<p class="lead">{{ value }}</p>{% endif %}
-    {% endfor %}
-    <div class="hoo-cardgrid">
+  </div>
+</section>
+{% elif section.kind == "latest-articles" %}
+<section class="sec latest" id="{{ section.key }}">
+  <div class="wrap">
+    {% if section.data.kicker %}<span class="kick">{{ section.data.kicker }}</span>{% endif %}
+    <h2>{{ section.data.heading }}</h2>
+    <div class="b-grid">
     {% for entry in latest %}
-      <article class="hoo-card">
-        <a class="hoo-cardtitle" href="{{ entry.url }}">{{ entry.title }}</a>
-        {% if entry.summary %}<p class="hoo-card-summary">{{ entry.summary }}</p>{% endif %}
-        <div class="hoo-cardfooter">
-          <time class="hoo-cardfooter-data" datetime="{{ entry.date_iso }}">{{ entry.date_iso }}</time>
+      <article class="b-card">
+        <div class="b-cbody">
+          <a class="b-title" href="{{ entry.url }}">{{ entry.title }}</a>
+          {% if entry.summary %}<p>{{ entry.summary }}</p>{% endif %}
+          <div class="b-cmeta"><time datetime="{{ entry.date_iso }}">{{ entry.date_iso }}</time></div>
         </div>
       </article>
     {% endfor %}
     </div>
-  </section>
-  {% elif section.kind == "story" %}
-  <section class="section story" id="{{ section.key }}">
-    {% for name, value in section.fields %}
-    {% if name == "heading" %}<h2>{{ value }}</h2>{% else %}<p class="prose">{{ value }}</p>{% endif %}
-    {% endfor %}
-    {% for image in section.images %}
-    <img src="{{ image.url }}" alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}">
-    {% endfor %}
-  </section>
-  {% else %}
-  <section class="section section-{{ section.kind }}" id="{{ section.key }}">
+  </div>
+</section>
+{% elif section.kind == "story" %}
+<section class="sec story" id="{{ section.key }}">
+  <div class="wrap two">
+    <div class="lbl">
+      {% if section.data.kicker %}<span class="kick">{{ section.data.kicker }}</span>{% endif %}
+    </div>
+    <div>
+      <h2>{{ section.data.heading }}</h2>
+      <p>{{ section.data.body }}</p>
+      {% for image in section.images %}
+      <img src="{{ image.url }}" alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}">
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% else %}
+<section class="sec section-{{ section.kind }}" id="{{ section.key }}">
+  <div class="wrap">
     {% for name, value in section.fields %}
     <div class="field field-{{ name }}">{{ value }}</div>
     {% endfor %}
     {% for image in section.images %}
     <img src="{{ image.url }}" alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}">
     {% endfor %}
-  </section>
-  {% endif %}
-  {% endfor %}
-</article>
+  </div>
+</section>
+{% endif %}
+{% endfor %}
 {% endblock %}

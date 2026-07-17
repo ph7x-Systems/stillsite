@@ -1,28 +1,37 @@
 {% extends "base.html.j2" %}
 {% block main %}
 <section class="listing">
-  <h1>{{ listing.title }}</h1>
-  {% if listing.search_index_url %}
-  <site-search index-url="{{ listing.search_index_url }}" label="{{ listing.search_label }}"></site-search>
-  <script type="module" src="{{ asset_urls['assets/search.js'] }}"></script>
-  {% endif %}
-  <div class="hoo-cardgrid">
-  {% for entry in listing.entries %}
-    <article class="hoo-card">
-      <a class="hoo-cardtitle" href="{{ entry.url }}">{{ entry.title }}</a>
-      {% if entry.summary %}<p class="hoo-card-summary">{{ entry.summary }}</p>{% endif %}
-      <div class="hoo-cardfooter">
-        <time class="hoo-cardfooter-data" datetime="{{ entry.date_iso }}">{{ entry.date_iso }}</time>
-      </div>
-    </article>
-  {% endfor %}
+  <div class="wrap">
+    <h1>{{ listing.title }}</h1>
+    {% if listing.filters %}
+    <nav class="b-filters" aria-label="Categories">
+      {% for entry in listing.filters %}
+      <a href="{{ entry.url }}">{{ entry.label }}</a>
+      {% endfor %}
+    </nav>
+    {% endif %}
+    {% if listing.search_index_url %}
+    <site-search index-url="{{ listing.search_index_url }}" label="{{ listing.search_label }}"></site-search>
+    <script type="module" src="{{ asset_urls['assets/search.js'] }}"></script>
+    {% endif %}
+    <div class="b-grid">
+    {% for entry in listing.entries %}
+      <article class="b-card">
+        <div class="b-cbody">
+          <a class="b-title" href="{{ entry.url }}">{{ entry.title }}</a>
+          {% if entry.summary %}<p>{{ entry.summary }}</p>{% endif %}
+          <div class="b-cmeta"><time datetime="{{ entry.date_iso }}">{{ entry.date_iso }}</time></div>
+        </div>
+      </article>
+    {% endfor %}
+    </div>
+    {% if listing.pages > 1 %}
+    <nav class="pagination" aria-label="Pagination">
+      {% if listing.previous_url %}<a rel="prev" href="{{ listing.previous_url }}">&larr;</a>{% endif %}
+      <span>{{ listing.page }} / {{ listing.pages }}</span>
+      {% if listing.next_url %}<a rel="next" href="{{ listing.next_url }}">&rarr;</a>{% endif %}
+    </nav>
+    {% endif %}
   </div>
-  {% if listing.pages > 1 %}
-  <nav class="pagination" aria-label="Pagination">
-    {% if listing.previous_url %}<a class="hoo-button" rel="prev" href="{{ listing.previous_url }}"><span class="hoo-button-label">&larr;</span></a>{% endif %}
-    <span>{{ listing.page }} / {{ listing.pages }}</span>
-    {% if listing.next_url %}<a class="hoo-button" rel="next" href="{{ listing.next_url }}"><span class="hoo-button-label">&rarr;</span></a>{% endif %}
-  </nav>
-  {% endif %}
 </section>
 {% endblock %}
