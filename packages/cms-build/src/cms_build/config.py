@@ -6,15 +6,24 @@ in tests.
 """
 
 from cms_core import SOURCE_LANGUAGE, TARGET_LANGUAGES, Language
-from pydantic import BaseModel, Field, HttpUrl, field_validator
+from pydantic import BaseModel, Field, HttpUrl, JsonValue, field_validator
+
+SLUG = r"^[a-z0-9]+(?:-[a-z0-9]+)*$"
 
 
 class SiteConfig(BaseModel):
     name: str = Field(min_length=1)
     base_url: HttpUrl
     languages: tuple[Language, ...] = TARGET_LANGUAGES
-    blog_path: str = Field(default="blog", pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+    blog_path: str = Field(default="blog", pattern=SLUG)
     theme: str = "default"
+    page_size: int = Field(default=10, ge=1)
+    categories: dict[str, dict[Language, str]] = Field(default_factory=dict)
+    organization: dict[str, JsonValue] | None = None
+
+    def category_label(self, slug: str, language: Language) -> str:
+        labels = self.categories.get(slug, {})
+        return labels.get(language) or labels.get(SOURCE_LANGUAGE) or slug
 
     @field_validator("languages")
     @classmethod

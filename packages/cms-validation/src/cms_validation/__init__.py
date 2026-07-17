@@ -10,6 +10,7 @@ from cms_validation.engine import (
     ValidationContext,
 )
 from cms_validation.rules import (
+    KnownCategoriesRule,
     MediaAltCoverageRule,
     MediaReferencesRule,
     RequiredTranslationsRule,
@@ -21,6 +22,7 @@ __version__ = "0.1.0"
 
 __all__ = [
     "Issue",
+    "KnownCategoriesRule",
     "MediaAltCoverageRule",
     "MediaReferencesRule",
     "Report",

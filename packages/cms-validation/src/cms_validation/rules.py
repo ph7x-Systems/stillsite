@@ -133,10 +133,30 @@ def _page_slug(page: Page, language: Language) -> str:
     return translation.content.slug if translation else page.source.slug
 
 
+class KnownCategoriesRule:
+    """When the project declares categories, articles may only use those."""
+
+    name = "known-categories"
+
+    def check(self, content: SiteContent, context: ValidationContext) -> Iterator[Issue]:
+        if context.known_categories is None:
+            return
+        known = set(context.known_categories)
+        for article in content.articles:
+            if article.category is not None and article.category not in known:
+                yield Issue(
+                    code=self.name,
+                    severity=Severity.ERROR,
+                    message=f"unknown category {article.category!r}",
+                    subject=f"article:{article.id}",
+                )
+
+
 def default_ruleset() -> list[Rule]:
     return [
         RequiredTranslationsRule(),
         UniqueSlugsRule(),
         MediaReferencesRule(),
         MediaAltCoverageRule(),
+        KnownCategoriesRule(),
     ]

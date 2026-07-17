@@ -44,6 +44,20 @@ def blog_index_path(config: SiteConfig, language: Language) -> str:
     return f"{language_prefix(language)}/{config.blog_path}/"
 
 
+def blog_page_path(config: SiteConfig, language: Language, number: int) -> str:
+    if number <= 1:
+        return blog_index_path(config, language)
+    return f"{language_prefix(language)}/{config.blog_path}/page/{number}/"
+
+
+def category_path(config: SiteConfig, slug: str, language: Language) -> str:
+    return f"{language_prefix(language)}/{config.blog_path}/category/{slug}/"
+
+
+def tag_path(config: SiteConfig, slug: str, language: Language) -> str:
+    return f"{language_prefix(language)}/{config.blog_path}/tag/{slug}/"
+
+
 def absolute(config: SiteConfig, path: str) -> str:
     return f"{config.root}{path}"
 

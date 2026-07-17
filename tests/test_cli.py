@@ -51,6 +51,25 @@ def test_seed_validate_build_export_flow(tmp_path: Path) -> None:
     assert (project / "_site" / "staticwebapp.config.json").is_file()
 
 
+def test_init_scaffolds_a_building_project(tmp_path: Path) -> None:
+    target = tmp_path / "new-site"
+    created = runner.invoke(
+        app,
+        ["init", str(target), "--name", "Test Site", "--base-url", "https://test.example"],
+    )
+    assert created.exit_code == 0, created.output
+    assert (target / "stillsite.toml").is_file()
+    assert (target / ".copier-answers.yml").is_file()
+
+    runner.invoke(app, ["seed", "-p", str(target)])
+    built = runner.invoke(app, ["build", "-p", str(target)])
+    assert built.exit_code == 0, built.output
+    assert (target / "_site" / "index.html").is_file()
+
+    again = runner.invoke(app, ["init", str(target)])
+    assert again.exit_code == 2
+
+
 def test_build_is_reproducible_via_cli(tmp_path: Path) -> None:
     project = make_project(tmp_path)
     runner.invoke(app, ["seed", "-p", str(project)])

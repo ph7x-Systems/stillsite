@@ -5,6 +5,18 @@ languages = ["pt-pt", "es", "fr", "de"]
 blog_path = "blog"
 theme = "default"
 
+[site.categories.field-notes]
+en = "Field notes"
+pt-pt = "Notas de campo"
+es = "Notas de campo"
+fr = "Notes de terrain"
+de = "Feldnotizen"
+
+[site.organization]
+"@type" = "Organization"
+name = "Aurora Cartography"
+url = "https://example.com/"
+
 [storage]
 url = "sqlite:///content.sqlite3"
 

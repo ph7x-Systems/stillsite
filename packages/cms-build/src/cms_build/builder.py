@@ -7,7 +7,7 @@ content hashes computed from the asset bytes.
 
 import hashlib
 import json
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from email.utils import format_datetime
 from xml.sax.saxutils import escape
@@ -18,7 +18,6 @@ from cms_core import (
     ArticleContent,
     ContentStatus,
     Language,
-    MediaAsset,
     Page,
     TranslationState,
 )
@@ -29,6 +28,8 @@ from cms_build.config import SiteConfig
 from cms_build.head import Head, build_head, hreflang_code
 from cms_build.markdown import render_markdown
 from cms_build.themes import Theme, create_theme
+
+MEDIA_PREFIX = "media"
 
 
 @dataclass(slots=True)
@@ -49,6 +50,13 @@ class Artifact:
             overall.update(path.encode("utf-8"))
             overall.update(self.files[path])
         return overall.hexdigest()
+
+
+class _SafeHtml(str):
+    """Marks builder-produced HTML as safe for Jinja autoescape."""
+
+    def __html__(self) -> str:
+        return str(self)
 
 
 def _published_articles(content: SiteContent) -> list[Article]:
@@ -79,99 +87,359 @@ def _asset_urls(theme_assets: Mapping[str, bytes]) -> dict[str, str]:
     return hashed
 
 
-def build_site(config: SiteConfig, content: SiteContent, *, theme: Theme | None = None) -> Artifact:
-    active_theme = theme or create_theme(config.theme)
-    artifact = Artifact()
-    theme_assets = dict(active_theme.assets())
-    asset_urls = _asset_urls(theme_assets)
-    for path, data in sorted(theme_assets.items()):
-        artifact.add(path, data)
+def _json_ld(payload: Mapping[str, object]) -> str:
+    rendered = json.dumps(payload, ensure_ascii=False, sort_keys=True)
+    return rendered.replace("</", "<\\/")
 
-    articles = _published_articles(content)
-    pages = _published_pages(content)
-    media_by_id = {asset.id: asset for asset in content.media}
-    sitemap_urls: list[str] = []
 
-    for language in config.all_languages:
-        lang_articles = [a for a in articles if _available(a, language)]
-        lang_pages = [p for p in pages if _available(p, language)]
-        nav = _navigation(config, language)
-        footer = {"text": config.name}
+def _chunk[T](items: list[T], size: int) -> list[list[T]]:
+    return [items[start : start + size] for start in range(0, len(items), size)] or [[]]
 
-        for page in lang_pages:
+
+class _SiteBuilder:
+    def __init__(
+        self,
+        config: SiteConfig,
+        content: SiteContent,
+        theme: Theme,
+        media_files: Mapping[str, bytes],
+    ) -> None:
+        self.config = config
+        self.theme = theme
+        self.artifact = Artifact()
+        self.sitemap_urls: list[str] = []
+        self.articles = _published_articles(content)
+        self.pages = _published_pages(content)
+        self.media_by_id = {asset.id: asset for asset in content.media}
+        self.theme_assets = dict(theme.assets())
+        self.asset_urls = _asset_urls(self.theme_assets)
+        self.media_files = media_files
+        self.articles_by_language: dict[Language, list[Article]] = {
+            language: [a for a in self.articles if _available(a, language)]
+            for language in config.all_languages
+        }
+
+    # Orchestration
+
+    def build(self) -> Artifact:
+        for path, data in sorted(self.theme_assets.items()):
+            self.artifact.add(path, data)
+        for path, data in sorted(self.media_files.items()):
+            self.artifact.add(f"{MEDIA_PREFIX}/{path}", data)
+
+        for language in self.config.all_languages:
+            self._build_pages(language)
+            self._build_articles(language)
+            self._build_listings(language)
+            self._build_category_and_tag_pages(language)
+            self._build_feeds(language)
+
+        self._build_not_found()
+        self.artifact.add("sitemap.xml", _sitemap(sorted(self.sitemap_urls)))
+        self.artifact.add("robots.txt", _robots(self.config))
+        return self.artifact
+
+    # Rendering helpers
+
+    def _render(self, kind: str, path: str, context: dict[str, object]) -> None:
+        html = self.theme.render(kind, context)
+        self.artifact.add(urls.output_file(path), html)
+        self.sitemap_urls.append(urls.absolute(self.config, path))
+
+    def _base_context(self, language: Language, head: Head) -> dict[str, object]:
+        return {
+            "head": head,
+            "nav": _navigation(self.config, language),
+            "footer": {"text": self.config.name},
+            "asset_urls": self.asset_urls,
+        }
+
+    # Pages
+
+    def _build_pages(self, language: Language) -> None:
+        for page in self.pages:
+            if not _available(page, language):
+                continue
             path = urls.page_path(page, language)
-            head = _page_head(config, page, language)
-            html = active_theme.render(
-                "page",
-                {
-                    "head": head,
-                    "nav": nav,
-                    "footer": footer,
-                    "asset_urls": asset_urls,
-                    "page": _page_context(page, language),
-                    "sections": _section_contexts(page, language, media_by_id),
-                },
-            )
-            artifact.add(urls.output_file(path), html)
-            sitemap_urls.append(urls.absolute(config, path))
+            head = self._page_head(page, language)
+            context = self._base_context(language, head)
+            context["page"] = _page_context(page, language)
+            context["sections"] = self._section_contexts(page, language)
+            self._render("page", path, context)
 
-        for article in lang_articles:
-            path = urls.article_path(config, article, language)
-            head = _article_head(config, article, language)
+    def _page_head(self, page: Page, language: Language) -> Head:
+        paths = {
+            lang: urls.page_path(page, lang)
+            for lang in self.config.all_languages
+            if _available(page, lang)
+        }
+        body = page.source if language is SOURCE_LANGUAGE else page.translations[language].content
+        json_ld = None
+        if page.id == "home" and self.config.organization is not None:
+            json_ld = _json_ld({"@context": "https://schema.org", **self.config.organization})
+        return build_head(
+            self.config,
+            title=body.title,
+            description=body.description,
+            language=language,
+            paths_by_language=paths,
+            json_ld=json_ld,
+        )
+
+    def _section_contexts(self, page: Page, language: Language) -> list[dict[str, object]]:
+        contexts: list[dict[str, object]] = []
+        for section in page.sections:
+            if language is SOURCE_LANGUAGE:
+                body = section.source
+            else:
+                translation = section.translations.get(language)
+                body = translation.content if translation else section.source
+            images = []
+            for media_id in body.media:
+                asset = self.media_by_id.get(media_id)
+                if asset is None or not asset.is_image:
+                    continue
+                alt = asset.alt.get(language) or asset.alt[SOURCE_LANGUAGE]
+                images.append(
+                    {
+                        "url": f"/{MEDIA_PREFIX}/{asset.path}",
+                        "alt": alt,
+                        "width": asset.width,
+                        "height": asset.height,
+                    }
+                )
+            contexts.append(
+                {
+                    "key": section.key,
+                    "kind": section.kind,
+                    "fields": sorted(body.fields.items()),
+                    "images": images,
+                }
+            )
+        return contexts
+
+    # Articles
+
+    def _build_articles(self, language: Language) -> None:
+        for article in self.articles_by_language[language]:
+            path = urls.article_path(self.config, article, language)
             body = _article_content(article, language)
-            html = active_theme.render(
-                "article",
-                {
-                    "head": head,
-                    "nav": nav,
-                    "footer": footer,
-                    "asset_urls": asset_urls,
-                    "article": {
-                        "title": body.title,
-                        "summary": body.summary,
-                        "date_iso": article.created_at.date().isoformat(),
-                        "body_html": _safe_html(render_markdown(body.body_markdown)),
-                    },
-                },
-            )
-            artifact.add(urls.output_file(path), html)
-            sitemap_urls.append(urls.absolute(config, path))
+            head = self._article_head(article, language)
+            context = self._base_context(language, head)
+            context["article"] = {
+                "title": body.title,
+                "summary": body.summary,
+                "date_iso": article.created_at.date().isoformat(),
+                "category": self._category_context(article, language),
+                "tags": [
+                    {"slug": tag, "url": urls.tag_path(self.config, tag, language)}
+                    for tag in article.tags
+                ],
+                "body_html": _SafeHtml(render_markdown(body.body_markdown)),
+            }
+            self._render("article", path, context)
 
-        listing_path = urls.blog_index_path(config, language)
-        entries = [
+    def _category_context(self, article: Article, language: Language) -> dict[str, str] | None:
+        if article.category is None:
+            return None
+        return {
+            "slug": article.category,
+            "label": self.config.category_label(article.category, language),
+            "url": urls.category_path(self.config, article.category, language),
+        }
+
+    def _article_head(self, article: Article, language: Language) -> Head:
+        paths = {
+            lang: urls.article_path(self.config, article, lang)
+            for lang in self.config.all_languages
+            if _available(article, lang)
+        }
+        body = _article_content(article, language)
+        json_ld = _json_ld(
+            {
+                "@context": "https://schema.org",
+                "@type": "Article",
+                "headline": body.title,
+                "description": body.summary,
+                "datePublished": article.created_at.date().isoformat(),
+                "inLanguage": hreflang_code(language),
+                "mainEntityOfPage": urls.absolute(
+                    self.config, urls.article_path(self.config, article, language)
+                ),
+            }
+        )
+        return build_head(
+            self.config,
+            title=body.title,
+            description=body.summary,
+            language=language,
+            paths_by_language=paths,
+            og_type="article",
+            json_ld=json_ld,
+        )
+
+    # Listings, categories, tags
+
+    def _listing_entries(
+        self, articles: list[Article], language: Language
+    ) -> list[dict[str, object]]:
+        return [
             {
                 "title": _article_content(a, language).title,
                 "summary": _article_content(a, language).summary,
-                "url": urls.article_path(config, a, language),
+                "url": urls.article_path(self.config, a, language),
                 "date_iso": a.created_at.date().isoformat(),
             }
-            for a in lang_articles
+            for a in articles
         ]
-        listing_html = active_theme.render(
-            "listing",
+
+    def _build_listings(self, language: Language) -> None:
+        chunks = _chunk(self.articles_by_language[language], self.config.page_size)
+        page_counts = {
+            lang: len(_chunk(self.articles_by_language[lang], self.config.page_size))
+            for lang in self.config.all_languages
+        }
+        for index, chunk in enumerate(chunks, start=1):
+            path = urls.blog_page_path(self.config, language, index)
+            paths = {
+                lang: urls.blog_page_path(self.config, lang, index)
+                for lang in self.config.all_languages
+                if page_counts[lang] >= index
+            }
+            head = build_head(
+                self.config,
+                title="Blog" if index == 1 else f"Blog — page {index}",
+                description=self.config.name,
+                language=language,
+                paths_by_language=paths,
+            )
+            context = self._base_context(language, head)
+            context["listing"] = {
+                "title": "Blog",
+                "entries": self._listing_entries(chunk, language),
+                "page": index,
+                "pages": len(chunks),
+                "previous_url": (
+                    urls.blog_page_path(self.config, language, index - 1) if index > 1 else None
+                ),
+                "next_url": (
+                    urls.blog_page_path(self.config, language, index + 1)
+                    if index < len(chunks)
+                    else None
+                ),
+            }
+            self._render("listing", path, context)
+
+    def _build_category_and_tag_pages(self, language: Language) -> None:
+        articles = self.articles_by_language[language]
+        categories = sorted({a.category for a in articles if a.category is not None})
+        for slug in categories:
+            members = [a for a in articles if a.category == slug]
+            path = urls.category_path(self.config, slug, language)
+            self._build_taxonomy_page(
+                language,
+                path,
+                title=self.config.category_label(slug, language),
+                articles=members,
+                paths_for=lambda lang, s=slug: urls.category_path(self.config, s, lang),
+            )
+        tags = sorted({tag for a in articles for tag in a.tags})
+        for slug in tags:
+            members = [a for a in articles if slug in a.tags]
+            path = urls.tag_path(self.config, slug, language)
+            self._build_taxonomy_page(
+                language,
+                path,
+                title=slug,
+                articles=members,
+                paths_for=lambda lang, s=slug: urls.tag_path(self.config, s, lang),
+            )
+
+    def _build_taxonomy_page(
+        self,
+        language: Language,
+        path: str,
+        *,
+        title: str,
+        articles: list[Article],
+        paths_for: Callable[[Language], str],
+    ) -> None:
+        paths = {
+            lang: paths_for(lang)
+            for lang in self.config.all_languages
+            if any(a in self.articles_by_language[lang] for a in articles)
+        }
+        head = build_head(
+            self.config,
+            title=title,
+            description=self.config.name,
+            language=language,
+            paths_by_language=paths,
+        )
+        context = self._base_context(language, head)
+        context["listing"] = {
+            "title": title,
+            "entries": self._listing_entries(articles, language),
+            "page": 1,
+            "pages": 1,
+            "previous_url": None,
+            "next_url": None,
+        }
+        self._render("listing", path, context)
+
+    # Feeds and utility pages
+
+    def _build_feeds(self, language: Language) -> None:
+        articles = self.articles_by_language[language]
+        listing_file = urls.output_file(urls.blog_index_path(self.config, language))
+        self.artifact.add(
+            listing_file.replace("index.html", "search-index.json"),
+            self._search_index(language, articles),
+        )
+        self.artifact.add(
+            listing_file.replace("index.html", "rss.xml"), _rss(self.config, language, articles)
+        )
+
+    def _search_index(self, language: Language, articles: list[Article]) -> str:
+        entries = [
             {
-                "head": _listing_head(config, language, lang_articles),
-                "nav": nav,
-                "footer": footer,
-                "asset_urls": asset_urls,
-                "listing": {"title": "Blog", "entries": entries},
-            },
-        )
-        artifact.add(urls.output_file(listing_path), listing_html)
-        sitemap_urls.append(urls.absolute(config, listing_path))
+                "t": _article_content(a, language).title,
+                "e": _article_content(a, language).summary,
+                "u": urls.article_path(self.config, a, language),
+                "d": a.created_at.date().isoformat(),
+                "c": (
+                    self.config.category_label(a.category, language)
+                    if a.category is not None
+                    else ""
+                ),
+            }
+            for a in articles
+        ]
+        return json.dumps(entries, ensure_ascii=False, sort_keys=True) + "\n"
 
-        artifact.add(
-            urls.output_file(listing_path).replace("index.html", "search-index.json"),
-            _search_index(config, language, lang_articles),
+    def _build_not_found(self) -> None:
+        head = build_head(
+            self.config,
+            title="Page not found",
+            description=self.config.name,
+            language=SOURCE_LANGUAGE,
+            paths_by_language={SOURCE_LANGUAGE: "/404.html"},
         )
-        artifact.add(
-            urls.output_file(listing_path).replace("index.html", "rss.xml"),
-            _rss(config, language, lang_articles),
-        )
+        context = self._base_context(SOURCE_LANGUAGE, head)
+        context["not_found"] = {"home_url": "/"}
+        html = self.theme.render("not_found", context)
+        self.artifact.add("404.html", html)
 
-    artifact.add("sitemap.xml", _sitemap(sorted(sitemap_urls)))
-    artifact.add("robots.txt", _robots(config))
-    return artifact
+
+def build_site(
+    config: SiteConfig,
+    content: SiteContent,
+    *,
+    theme: Theme | None = None,
+    media_files: Mapping[str, bytes] | None = None,
+) -> Artifact:
+    active_theme = theme or create_theme(config.theme)
+    return _SiteBuilder(config, content, active_theme, media_files or {}).build()
 
 
 def _navigation(config: SiteConfig, language: Language) -> dict[str, object]:
@@ -188,110 +456,9 @@ def _navigation(config: SiteConfig, language: Language) -> dict[str, object]:
     }
 
 
-class _SafeHtml(str):
-    """Marks builder-produced HTML as safe for Jinja autoescape."""
-
-    def __html__(self) -> str:
-        return str(self)
-
-
-def _safe_html(html: str) -> _SafeHtml:
-    return _SafeHtml(html)
-
-
-def _page_head(config: SiteConfig, page: Page, language: Language) -> Head:
-    paths = {
-        lang: urls.page_path(page, lang) for lang in config.all_languages if _available(page, lang)
-    }
-    body = page.source if language is SOURCE_LANGUAGE else page.translations[language].content
-    return build_head(
-        config,
-        title=body.title,
-        description=body.description,
-        language=language,
-        paths_by_language=paths,
-    )
-
-
-def _article_head(config: SiteConfig, article: Article, language: Language) -> Head:
-    paths = {
-        lang: urls.article_path(config, article, lang)
-        for lang in config.all_languages
-        if _available(article, lang)
-    }
-    body = _article_content(article, language)
-    return build_head(
-        config,
-        title=body.title,
-        description=body.summary,
-        language=language,
-        paths_by_language=paths,
-        og_type="article",
-    )
-
-
-def _listing_head(config: SiteConfig, language: Language, articles: list[Article]) -> Head:
-    paths = {lang: urls.blog_index_path(config, lang) for lang in config.all_languages}
-    return build_head(
-        config,
-        title="Blog",
-        description=config.name,
-        language=language,
-        paths_by_language=paths,
-    )
-
-
 def _page_context(page: Page, language: Language) -> dict[str, str]:
     body = page.source if language is SOURCE_LANGUAGE else page.translations[language].content
     return {"title": body.title, "description": body.description}
-
-
-def _section_contexts(
-    page: Page, language: Language, media_by_id: Mapping[str, MediaAsset]
-) -> list[dict[str, object]]:
-    contexts: list[dict[str, object]] = []
-    for section in page.sections:
-        if language is SOURCE_LANGUAGE:
-            body = section.source
-        else:
-            translation = section.translations.get(language)
-            body = translation.content if translation else section.source
-        images = []
-        for media_id in body.media:
-            asset = media_by_id.get(media_id)
-            if asset is None or not asset.is_image:
-                continue
-            alt = asset.alt.get(language) or asset.alt[SOURCE_LANGUAGE]
-            images.append(
-                {
-                    "url": f"/{asset.path}",
-                    "alt": alt,
-                    "width": asset.width,
-                    "height": asset.height,
-                }
-            )
-        contexts.append(
-            {
-                "key": section.key,
-                "kind": section.kind,
-                "fields": sorted(body.fields.items()),
-                "images": images,
-            }
-        )
-    return contexts
-
-
-def _search_index(config: SiteConfig, language: Language, articles: list[Article]) -> str:
-    entries = [
-        {
-            "t": _article_content(a, language).title,
-            "e": _article_content(a, language).summary,
-            "u": urls.article_path(config, a, language),
-            "d": a.created_at.date().isoformat(),
-        }
-        for a in articles
-    ]
-    return json.dumps(entries, ensure_ascii=False, sort_keys=True) + "\n"
 
 
 def _rss(config: SiteConfig, language: Language, articles: list[Article]) -> str:

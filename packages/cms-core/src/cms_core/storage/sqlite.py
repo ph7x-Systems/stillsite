@@ -95,6 +95,10 @@ MIGRATIONS: tuple[str, ...] = (
     ALTER TABLE articles ADD COLUMN slug TEXT;
     ALTER TABLE translations ADD COLUMN slug TEXT;
     """,
+    """
+    ALTER TABLE articles ADD COLUMN category TEXT;
+    ALTER TABLE articles ADD COLUMN tags_json TEXT NOT NULL DEFAULT '[]';
+    """,
 )
 
 
@@ -140,12 +144,14 @@ class SQLiteBackend(StorageBackend):
         with self._connection as connection:
             connection.execute(
                 "INSERT INTO articles"
-                " (id, status, created_at, updated_at, title, summary, body_markdown, slug)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+                " (id, status, created_at, updated_at, title, summary, body_markdown, slug,"
+                "  category, tags_json)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                 " ON CONFLICT(id) DO UPDATE SET"
                 " status = excluded.status, updated_at = excluded.updated_at,"
                 " title = excluded.title, summary = excluded.summary,"
-                " body_markdown = excluded.body_markdown, slug = excluded.slug",
+                " body_markdown = excluded.body_markdown, slug = excluded.slug,"
+                " category = excluded.category, tags_json = excluded.tags_json",
                 (
                     article.id,
                     article.status.value,
@@ -155,6 +161,8 @@ class SQLiteBackend(StorageBackend):
                     article.source.summary,
                     article.source.body_markdown,
                     article.source.slug,
+                    article.category,
+                    json.dumps(list(article.tags)),
                 ),
             )
             connection.execute("DELETE FROM translations WHERE article_id = ?", (article.id,))
@@ -180,7 +188,8 @@ class SQLiteBackend(StorageBackend):
 
     def load_article(self, article_id: str) -> Article | None:
         row = self._connection.execute(
-            "SELECT id, status, created_at, updated_at, title, summary, body_markdown, slug"
+            "SELECT id, status, created_at, updated_at, title, summary, body_markdown, slug,"
+            " category, tags_json"
             " FROM articles WHERE id = ?",
             (article_id,),
         ).fetchone()
@@ -205,6 +214,8 @@ class SQLiteBackend(StorageBackend):
             updated_at=datetime.fromisoformat(row[3]),
             source=ArticleContent(title=row[4], summary=row[5], body_markdown=row[6], slug=row[7]),
             translations=translations,
+            category=row[8],
+            tags=tuple(json.loads(row[9])),
         )
 
     def delete_article(self, article_id: str) -> bool:

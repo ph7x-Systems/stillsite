@@ -5,9 +5,10 @@ every translation records the checksum of the source (EN) content it was
 translated from, so a source edit automatically marks translations outdated.
 """
 
+import re
 from datetime import UTC, datetime
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from cms_core.states import ContentStatus
 from cms_core.translatable import ChecksummedContent, TranslatableModel
@@ -32,6 +33,16 @@ class Article(TranslatableModel[ArticleContent]):
     status: ContentStatus = ContentStatus.DRAFT
     created_at: datetime
     updated_at: datetime
+    category: str | None = Field(default=None, pattern=SLUG_PATTERN)
+    tags: tuple[str, ...] = ()
+
+    @field_validator("tags")
+    @classmethod
+    def _tags_are_slugs(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        for tag in value:
+            if not re.fullmatch(SLUG_PATTERN, tag):
+                raise ValueError(f"tag {tag!r} is not a valid slug")
+        return tuple(sorted(set(value)))
 
 
 def new_article(article_id: str, source: ArticleContent, *, now: datetime | None = None) -> Article:

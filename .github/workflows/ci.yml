@@ -82,6 +82,14 @@ jobs:
           test -f examples/multilingual-company-site/_site/pt-pt/index.html
           test -f examples/multilingual-company-site/_site/sitemap.xml
           test -f examples/multilingual-company-site/_site/staticwebapp.config.json
+          test -f examples/multilingual-company-site/_site/404.html
+          test -f examples/multilingual-company-site/_site/blog/category/field-notes/index.html
+      - name: Scaffold a fresh project with cms init and build it
+        run: |
+          cms init /tmp/init-smoke --name "Init Smoke" --base-url "https://smoke.example"
+          cms seed  -p /tmp/init-smoke
+          cms build -p /tmp/init-smoke
+          test -f /tmp/init-smoke/_site/index.html
 
   docs-links:
     name: Docs internal links
