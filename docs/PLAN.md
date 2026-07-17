@@ -161,6 +161,28 @@ visitor can judge the product from it. Phases, in execution order:
    all five languages complete, README quickstart links the demo, social
    preview uploaded. Then the Milestone 4 announcement.
 
+## Design overhaul plan (component system, not a monolith)
+
+Written before execution, per the working rule. Goal: the demo chrome is
+built from a real component library — **hTWOo** (n8design/htwoo, MIT, Fluent
+Design in pure HTML/CSS) as requested — composed with our editorial identity,
+and the theme CSS becomes per-component files, not one monolithic sheet.
+
+1. **Vendor hTWOo Core** as local assets (npm tarball → dist CSS, no Node in
+   the build, no CDN): new base layer available to official themes.
+2. **Componentized theme assets**: `assets/components/*.css` per component
+   (tokens, header, hero, entries, search, footer); the theme concatenates
+   them deterministically into the single hash-versioned stylesheet —
+   authoring is componentized, delivery stays one request.
+3. **Map chrome onto hTWOo components**: navigation/command-bar, buttons,
+   cards for entry lists, search box; editorial voice (Newsreader display,
+   aurora) stays ours via tokens on top.
+4. **Visual QA gate**: every design PR ships with before/after screenshots
+   generated from the built example (headless browser job — planned CI
+   addition with the axe job), so "looks wrong" is caught before deploy.
+5. **Demo switch + conformance**: the suite runs over the new composition
+   unchanged (local assets only, hidden-first, budgets).
+
 ## Extensibility contracts (cross-milestone)
 
 Everything user-facing must be extensible without forking the framework:

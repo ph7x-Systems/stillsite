@@ -42,6 +42,38 @@
   --serif: "Newsreader", Georgia, serif;
 }
 
+/* hTWOo / Fluent token bridge: map the component library onto our dark
+   editorial palette so every hoo-* component ships on-brand. */
+:root {
+  --themePrimary: oklch(0.78 0.11 255);
+  --themeDark: oklch(0.68 0.12 255);
+  --themeDarker: oklch(0.6 0.12 255);
+  --themeDarkAlt: oklch(0.72 0.11 255);
+  --themeSecondary: oklch(0.74 0.1 255);
+  --themeTertiary: oklch(0.55 0.08 255);
+  --themeLight: oklch(0.34 0.06 260);
+  --themeLighter: oklch(0.28 0.05 260);
+  --themeLighterAlt: oklch(0.24 0.04 260);
+  --white: oklch(0.22 0.035 260);
+  --neutralPrimary: oklch(0.92 0.01 90);
+  --neutralPrimaryAlt: oklch(0.85 0.015 90);
+  --neutralSecondary: oklch(0.72 0.02 250);
+  --neutralSecondaryAlt: oklch(0.66 0.02 250);
+  --neutralTertiary: oklch(0.55 0.03 250);
+  --neutralTertiaryAlt: oklch(0.4 0.04 255);
+  --neutralQuaternary: oklch(0.34 0.04 258);
+  --neutralQuaternaryAlt: oklch(0.3 0.04 258);
+  --neutralLight: oklch(0.3 0.04 260);
+  --neutralLighter: oklch(0.26 0.035 260);
+  --neutralLighterAlt: oklch(0.23 0.03 260);
+  --neutralDark: oklch(0.95 0.01 90);
+  --black: oklch(0.97 0.01 90);
+  --inputBorder: oklch(0.36 0.05 260);
+  --inputIcon: oklch(0.72 0.02 250);
+  --bodyBackground: oklch(0.18 0.03 260);
+  --bodyText: oklch(0.92 0.01 90);
+}
+
 /* Cross-document view transitions (evergreen browsers; no-op elsewhere). */
 @view-transition { navigation: auto; }
 
@@ -275,4 +307,48 @@ site-search { display: block; margin-block: 1.2rem; }
 @media (prefers-reduced-motion: reduce) {
   .aurora span { animation: none; }
   .section { animation: none; }
+}
+
+
+/* hTWOo component harmonization on the editorial layer. */
+.hoo-cardgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 1rem;
+  margin-block: 1.2rem;
+}
+.hoo-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+.hoo-card:hover { border-color: var(--line-2); transform: translateY(-2px); }
+.hoo-cardtitle {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  color: var(--head);
+  text-decoration: none;
+}
+.hoo-cardtitle:hover { color: var(--accent); }
+.hoo-card-summary { margin: 0; color: var(--muted); font-size: 0.95rem; }
+.hoo-cardfooter { margin-top: auto; }
+.hoo-cardfooter-data { color: var(--muted); font-size: 0.8rem; }
+
+.menu .hoo-button { border-color: transparent; background: transparent; }
+.menu .hoo-button:hover {
+  background: color-mix(in oklch, var(--panel) 80%, transparent);
+  border-color: var(--line);
+}
+.menu .hoo-button .hoo-button-label { color: var(--ink); }
+
+.entries a, .site-search-results a { text-decoration: none; }
+.entries a:hover, .site-search-results a:hover { color: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .hoo-card { transition: none; }
 }
