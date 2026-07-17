@@ -79,8 +79,8 @@ jobs:
           fetch-depth: 0
       - name: Install trufflehog
         run: curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
-      - name: Scan repository
-        run: trufflehog filesystem . --fail --no-update
+      - name: Scan repository history
+        run: trufflehog git file://. --fail --no-update
 
   # Content validation and example-site build jobs are added in Milestone 2,
   # once cms-validation and cms-build produce runnable CLIs.
