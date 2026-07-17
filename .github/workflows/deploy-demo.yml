@@ -1,0 +1,48 @@
+name: Deploy demo
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/**"
+      - "examples/multilingual-company-site/**"
+      - ".github/workflows/deploy-demo.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-demo
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build and deploy to Azure Static Web Apps
+    runs-on: ubuntu-latest
+    environment:
+      name: demo
+      url: https://kind-flower-05a928f03.7.azurestaticapps.net
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      - run: |
+          for pkg in packages/cms-core packages/cms-validation packages/cms-build packages/cms-cli; do
+            python -m pip install -e "$pkg"
+          done
+      - name: Build the demo site (seeded SQLite content)
+        run: |
+          cms seed     -p examples/multilingual-company-site
+          cms validate -p examples/multilingual-company-site
+          cms export   -p examples/multilingual-company-site --target swa
+      - name: Deploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: upload
+          app_location: examples/multilingual-company-site/_site
+          skip_app_build: true
+          skip_api_build: true
