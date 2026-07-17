@@ -1,4 +1,4 @@
-# Brief — pH7x CMS Framework
+# Brief — Stillsite (originally drafted as the pH7x Systems CMS framework)
 
 Create a new product and its GitHub repository (private for now; may become public later):
 

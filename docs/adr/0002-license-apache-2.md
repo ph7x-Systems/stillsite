@@ -30,7 +30,7 @@ Use the **Apache License 2.0** with a `NOTICE` file crediting pH7x Systems.
   maximizes adoption once public.
 - Contributors automatically license their contributions under the same terms
   (no separate CLA needed).
-- The pH7x name and branding remain protected (trademark carve-out); the
+- The pH7x Systems name and branding remain protected (trademark carve-out); the
   reference theme ships design tokens only, so publishing it does not license
   the brand identity.
 - `LICENSE` and `NOTICE` live at the repository root; the README license
