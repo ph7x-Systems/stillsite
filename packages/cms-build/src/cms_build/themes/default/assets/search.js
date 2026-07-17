@@ -14,9 +14,14 @@ class SiteSearch extends HTMLElement {
     const label = this.getAttribute("label") || "Search";
     this.innerHTML = `
       <form role="search" class="site-search-form">
-        <label>
-          <span class="site-search-label">${label}</span>
-          <input class="hoo-input-text" type="search" name="q" autocomplete="off">
+        <label class="b-search-wrap">
+          <span class="site-search-label" hidden>${label}</span>
+          <svg class="b-search-i" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.7" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>
+          </svg>
+          <input class="b-search" type="search" name="q" placeholder="${label}"
+            aria-label="${label}" autocomplete="off" spellcheck="false">
         </label>
       </form>
       <p class="site-search-count" aria-live="polite" hidden></p>

@@ -24,6 +24,13 @@ DEFAULT_LABELS: dict[str, dict[Language, str]] = {
         Language.FR: "Rechercher",
         Language.DE: "Suchen",
     },
+    "back": {
+        Language.EN: "Back to the blog",
+        Language.PT_PT: "Voltar ao blog",
+        Language.ES: "Volver al blog",
+        Language.FR: "Retour au blog",
+        Language.DE: "Zurueck zum Blog",
+    },
     "not-found": {
         Language.EN: "Page not found",
         Language.PT_PT: "Página não encontrada",

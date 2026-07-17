@@ -1,0 +1,409 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   [hidden] TEM DE ESCONDER. Ponto.
+
+   O [hidden]{display:none} do browser tem especificidade ZERO. QUALQUER regra
+   nossa com 'display' (grid, flex, block, inline-flex...) derrota-o em silencio,
+   e o elemento que devia estar escondido APARECE.
+
+   Ja mordeu duas vezes neste projeto:
+     - o aviso de privacidade nao desaparecia;
+     - o formulario de contacto aparecia ANTES de o visitante aceitar o reCAPTCHA.
+
+   Esta linha mata a classe de bug inteira. NAO A APAGUES.
+   ═══════════════════════════════════════════════════════════════════════════ */
+[hidden]{display:none!important}
+
+/* Blog. Herda o chrome do legal.css (header, footer, fontes, cores).
+   Aqui só o que é próprio do blog: grelha de cartões e tipografia de artigo.
+
+   ATENÇÃO à largura: o legal.css define --maxw:900px, porque as páginas legais
+   são texto corrido e 900px é a largura certa para as ler. O SITE usa 1220px.
+   Herdar o --maxw das legais encolhia a grelha do blog para 900 e desalinhava-a
+   de tudo o resto. Por isso o blog tem a SUA largura, explícita. */
+.b-hero,.b-filters,.b-grid,.b-pager,.b-more,.b-more h2,.b-post{--bw:1220px}
+
+/* ── lista ────────────────────────────────────────────────────────────────── */
+.b-hero{max-width:var(--bw);margin:0 auto;padding:140px 28px 40px}
+.b-hero h1{font-family:var(--serif);font-size:clamp(2.4rem,5.2vw,4rem);font-weight:300;line-height:1.06;letter-spacing:-.02em;color:var(--head);margin:14px 0 18px}
+.b-hero .sub{color:var(--muted);font-size:1.06rem;max-width:60ch;line-height:1.75}
+
+.b-filters{max-width:var(--bw);margin:0 auto;padding:0 28px 34px;display:flex;flex-wrap:wrap;gap:10px}
+.b-filters a{border:1px solid var(--line-2);border-radius:100px;padding:.44rem .95rem;font-size:.78rem;color:var(--muted);text-decoration:none;transition:color .3s,border-color .3s}
+.b-filters a:hover{color:var(--head);border-color:var(--faint)}
+
+.b-grid{max-width:var(--bw);margin:0 auto;padding:0 28px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+
+.b-card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel);text-decoration:none;transition:border-color .5s,transform .5s cubic-bezier(.16,1,.3,1)}
+.b-card:hover{border-color:var(--line-2);transform:translateY(-4px)}
+.b-thumb{background:#121212;overflow:hidden;aspect-ratio:1200/440}
+.b-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .8s cubic-bezier(.16,1,.3,1)}
+.b-card:hover .b-thumb img{transform:scale(1.03)}
+.b-cbody{padding:26px 26px 28px;display:flex;flex-direction:column;flex:1;min-width:0}
+.b-ctag{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.b-card h2{font-family:var(--serif);font-size:1.42rem;font-weight:400;line-height:1.28;color:var(--head);margin:12px 0 10px;overflow-wrap:break-word}
+.b-card p{color:var(--muted);font-size:.94rem;line-height:1.7;flex:1;overflow-wrap:break-word}
+.b-cmeta{display:flex;align-items:center;gap:8px;margin-top:20px;font-size:.76rem;color:var(--faint)}
+.b-dot{opacity:.5}
+.b-empty{color:var(--muted);padding:20px 0}
+
+.b-pager{max-width:var(--bw);margin:0 auto;padding:48px 28px 0;display:flex;align-items:center;justify-content:center;gap:18px;font-size:.85rem}
+.b-pager a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line-2);padding-bottom:2px}
+.b-pager a:hover{color:var(--accent);border-color:var(--accent)}
+.b-pager span{color:var(--faint)}
+
+/* ── artigo ───────────────────────────────────────────────────────────────── */
+.b-post{max-width:var(--bw);margin:0 auto;padding:140px 28px 0}
+
+/* O legal.css estiliza o ELEMENTO <header> (sticky, navy, z-index, borda),
+   porque assume que só existe um na página. O <header> semântico do artigo
+   (correto: um <header> dentro de um <article>) apanhava tudo isso e ficava
+   com um painel azul sticky por trás do título. */
+.b-head{position:relative;background:transparent;border-bottom:0;z-index:auto;padding:10px 0 40px}
+
+/* Os efeitos são os MESMOS da home: a aurora em CSS e a rede em <canvas>.
+   Copiados, não imitados: se a home mudar, isto tem de mudar com ela. */
+.aurora span{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:drift 20s ease-in-out infinite}
+.aurora .a1{width:900px;height:900px;background:radial-gradient(circle,#12213c,transparent 65%);top:-160px;right:-60px}
+.aurora .a2{width:760px;height:760px;background:radial-gradient(circle,rgba(216,207,192,.06),transparent 60%);bottom:-180px;left:-80px;animation-delay:-8s}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-36px)}}
+@media(max-width:820px){.two{grid-template-columns:1fr;gap:30px}.two .lbl{position:static}}
+@media(max-width:820px){.exp .row{grid-template-columns:1fr;gap:12px}}
+@media(max-width:820px){.case{grid-template-columns:1fr}.case-visual{min-height:0}.case-visual img{height:auto}.case-alt .case-visual{order:0}.case-alt .case-body{order:1}}
+@media(max-width:760px){
+  .clients-sec .wrap{padding:0}
+  /* esbatimento largo: os logos entram e saem, nunca aparecem decepados */
+  .clients-mask{-webkit-mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent);mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent)}
+  .clients-row{justify-content:flex-start;width:max-content;animation:marq 26s linear infinite}
+  .clients-row:hover,.clients-row:active{animation-play-state:paused}
+  /* escala mais leve: a faixa flui, em vez de espremer 3,5 logos grandes */
+  .cset{flex-wrap:nowrap;gap:46px;padding-right:46px}
+  .cset.dup{display:flex}
+  .tile{height:42px}
+  .tile img{max-height:42px;max-width:140px;opacity:.8}
+}
+/* Aurora e rede de partículas no cabeçalho do artigo. As propriedades base
+   vivem inline na homepage (não estão no legal.css), por isso vêm para aqui,
+   scoped ao .b-head para não afetarem mais nada. */
+.b-head{overflow:hidden;border-radius:6px}
+.b-head .aurora{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.b-head .aurora span{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:drift 20s ease-in-out infinite}
+.b-head .a1{width:560px;height:560px;background:radial-gradient(circle,#12213c,transparent 65%);top:-200px;right:-80px}
+.b-head .a2{width:460px;height:460px;background:radial-gradient(circle,rgba(216,207,192,.06),transparent 60%);bottom:-200px;left:-100px;animation-delay:-8s}
+.b-head .net{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.9}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(26px,-22px)}}
+@media(prefers-reduced-motion:reduce){.b-head .aurora span{animation:none}}
+
+.b-head>*{position:relative;z-index:1}
+.b-back{font-size:.8rem;color:var(--muted);text-decoration:none}
+.b-back:hover{color:var(--accent)}
+.b-cat{display:inline-block;margin-left:14px;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);text-decoration:none}
+.b-cat:hover{color:var(--accent)}
+.b-post h1{max-width:22ch;font-family:var(--serif);font-size:clamp(2.4rem,5vw,4.2rem);font-weight:300;line-height:1.1;letter-spacing:-.02em;color:var(--head);margin:22px 0 18px}
+.b-lede{max-width:70ch;color:var(--ink);font-size:1.2rem;line-height:1.75;margin-bottom:26px}
+.b-by{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:.8rem;color:var(--faint);padding-bottom:34px;border-bottom:1px solid var(--line)}
+
+.b-cover{margin:34px 0 40px;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#121212}
+.b-cover img{width:100%;height:auto;display:block}
+
+/* width/height nos <img> são presentational hints: onde o CSS só define max-width,
+   o atributo height passa a valer como altura literal e ESTICA a imagem.
+   width/height:auto devolve o comando ao CSS e deixa os atributos só a dar o rácio. */
+.b-body img{width:auto;height:auto;max-width:100%;display:block;margin:32px auto;border:1px solid var(--line);border-radius:6px}
+
+.b-body{color:var(--ink);font-size:1.08rem;line-height:1.85}
+/* Só margin-BOTTOM. Escrever 'margin:0' aqui punha margin-top:0 com mais
+   especificidade do que a regra de baixo, e matava o espaçamento todo: os
+   parágrafos ficavam colados uns aos outros. O legal.css dá margin-bottom
+   ao 'article p'; é só essa que se anula. */
+.b-body p,.b-body ul,.b-body ol{margin-bottom:0}
+.b-body>*+*{margin-top:26px}
+/* :first-of-type porque o legal.css tem 'article h2:first-of-type{margin-top:0}',
+   que faz sentido numa página legal (o título encosta ao topo) e tem mais
+   especificidade do que a nossa. Sem isto o primeiro h2 cola-se ao parágrafo. */
+.b-body h2,.b-body h2:first-of-type{font-family:var(--serif);font-size:1.75rem;font-weight:400;color:var(--head);margin-top:54px;line-height:1.3}
+.b-body h3{font-size:1.12rem;font-weight:600;color:var(--head);margin-top:38px;letter-spacing:.01em}
+.b-body strong{color:var(--head);font-weight:500}
+.b-body a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(216,207,192,.32)}
+.b-body a:hover{border-color:var(--accent)}
+.b-body ul,.b-body ol{padding-left:22px}
+.b-body li+li{margin-top:10px}
+.b-body blockquote{border-left:2px solid var(--accent);padding:4px 0 4px 22px;color:var(--head);font-family:var(--serif);font-size:1.25rem;font-style:italic}
+.b-body code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:.12em .4em}
+.b-body pre{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;overflow-x:auto}
+.b-body pre code{background:none;border:0;padding:0}
+
+.b-tags{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:48px;font-size:.78rem;color:var(--faint)}
+.b-tags a{color:var(--muted);text-decoration:none;border:1px solid var(--line-2);border-radius:100px;padding:.34rem .8rem}
+.b-tags a:hover{color:var(--head);border-color:var(--faint)}
+
+.b-author{margin:60px 0 0;padding:34px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.b-author h2{font-family:var(--serif);font-size:1.35rem;font-weight:400;color:var(--head);margin-bottom:12px}
+.b-author p{color:var(--muted);font-size:.96rem;line-height:1.75}
+.b-cta{display:inline-block;margin-top:20px;font-size:.85rem;color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(216,207,192,.32);padding-bottom:2px}
+.b-cta:hover{border-color:var(--accent)}
+
+.b-more{max-width:var(--bw);margin:0 auto;padding:110px 0 0}
+.b-more h2{max-width:var(--bw);margin:0 auto 30px;padding:0 28px;font-family:var(--serif);font-size:1.6rem;font-weight:300;color:var(--head)}
+
+main{padding-bottom:110px}
+
+/* ── mobile ───────────────────────────────────────────────────────────────── */
+@media(max-width:900px){
+  .b-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+}
+@media(max-width:640px){
+  .b-hero{padding:120px 22px 30px}
+  .b-grid{grid-template-columns:minmax(0,1fr);padding:0 22px;gap:20px}
+  .b-filters{padding:0 22px 26px}
+  .b-post{padding:120px 22px 0}
+  .b-more h2{padding:0 22px}
+  .b-author{padding:26px 22px}
+}
+/* ── contacto ─────────────────────────────────────────────────────────────── */
+.ct{max-width:var(--bw);--bw:1220px;margin:0 auto;padding:150px 28px 0}
+.ct h1{max-width:16ch;font-family:var(--serif);font-size:clamp(2.4rem,5vw,4.2rem);font-weight:300;line-height:1.06;letter-spacing:-.02em;color:var(--head);margin:14px 0 20px}
+.ct-sub{max-width:70ch;color:var(--muted);font-size:1.1rem;line-height:1.75;margin-bottom:52px}
+
+/* o portão: o script da Google só entra depois de aceitarem */
+.ct-gate{border:1px solid var(--line-2);border-radius:8px;background:var(--panel);padding:36px 40px}
+.ct-gate h2{font-family:var(--serif);font-size:1.4rem;font-weight:400;color:var(--head);margin-bottom:12px}
+.ct-gate p{max-width:78ch;color:var(--muted);font-size:.96rem;line-height:1.75}
+.ct-gate-a{display:flex;flex-wrap:wrap;align-items:center;gap:22px;margin-top:26px}
+
+.ct-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 28px}
+.ct-row{margin-bottom:26px}
+.ct-row.wide{grid-column:1 / -1}
+.ct-consent{grid-column:1 / -1}
+.ct-actions{grid-column:1 / -1}
+.ct-rc{grid-column:1 / -1}
+.ct-row label{display:block;font-size:.82rem;letter-spacing:.04em;color:var(--muted);margin-bottom:9px}
+.ct-opt{color:var(--faint);font-size:.76rem}
+.ct-row input,.ct-row textarea{width:100%;background:var(--panel);border:1px solid var(--line-2);border-radius:4px;padding:13px 15px;color:var(--head);font-family:var(--sans);font-size:1rem;line-height:1.6;transition:border-color .3s}
+.ct-row input:focus,.ct-row textarea:focus{outline:0;border-color:var(--accent)}
+.ct-row textarea{resize:vertical;min-height:180px}
+
+.ct-consent{display:flex;gap:12px;align-items:flex-start;margin:30px 0;font-size:.9rem;color:var(--muted);line-height:1.7;cursor:pointer}
+.ct-consent input{margin-top:5px;accent-color:var(--accent);width:16px;height:16px;flex:none}
+.ct-consent a{color:var(--accent);border-bottom:1px solid rgba(216,207,192,.32)}
+/* consentimentos seguidos ficam JUNTOS: são o mesmo bloco, não dois assuntos */
+.ct-consent + .ct-consent{margin-top:-18px}
+
+.ct-actions{display:flex;flex-wrap:wrap;align-items:center;gap:20px}
+.ct-err{color:#e0796f;font-size:.88rem}
+.ct-rc{margin-top:26px;color:var(--faint);font-size:.76rem;line-height:1.6}
+
+.ct-done{border:1px solid var(--line-2);border-radius:8px;background:var(--panel);padding:38px 40px}
+.ct-done h2{font-family:var(--serif);font-size:1.6rem;font-weight:400;color:var(--head);margin-bottom:12px}
+.ct-done p{max-width:78ch;color:var(--muted);font-size:1rem;line-height:1.8}
+
+@media(max-width:900px){
+  .ct-form{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:640px){
+  .ct{padding:120px 22px 0}
+  .ct-gate,.ct-done{padding:24px 20px}
+}
+
+/* O .btn e o .eyebrow vivem no home.css, que estas páginas não carregam.
+   Definidos aqui SÓ para o contacto, em vez de duplicar o chrome todo. */
+.ct .eyebrow{display:block;font-size:.72rem;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.ct .btn{display:inline-flex;align-items:center;gap:.6em;font-family:var(--sans);font-size:.9rem;font-weight:500;padding:.85em 1.9em;border-radius:2px;border:1px solid var(--line-2);color:var(--head);background:transparent;cursor:pointer;transition:.3s}
+.ct .btn:hover{background:var(--head);color:#0e1626;border-color:var(--head)}
+.ct .btn:disabled{opacity:.5;cursor:default}
+.ct .btn:disabled:hover{background:transparent;color:var(--head);border-color:var(--line-2)}
+.ct .btn-t{font-size:.88rem;color:var(--muted);border-bottom:1px solid var(--line-2);padding-bottom:2px;text-decoration:none;transition:.3s}
+.ct .btn-t:hover{color:var(--accent);border-color:var(--accent)}
+
+/* O emblema flutuante da Google. Escondê-lo só é permitido se a atribuição
+   aparecer em texto, e aparece: é o .ct-rc, logo abaixo do botão. */
+.grecaptcha-badge{visibility:hidden}
+
+
+/* ── código nos artigos ───────────────────────────────────────────────────────
+   Realce feito NO BUILD, com Pygments. Nada de Prism nem highlight.js: seriam
+   30 a 100 KB de JavaScript carregados por todos os leitores para colorir texto
+   que nunca muda. A página de artigo mantém-se com ZERO JavaScript. */
+.hl-box{position:relative;margin:32px 0}
+.hl-lang{position:absolute;top:0;right:0;padding:6px 12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);border-left:1px solid var(--line);border-bottom:1px solid var(--line)}
+.b-body .hl{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:22px;overflow-x:auto;font-size:.88rem;line-height:1.7}
+.b-body .hl pre{background:none;border:0;padding:0;margin:0}
+.b-body .hl code{background:none;border:0;padding:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.hl .c { color: #7F848E } /* Comment */
+.hl .err { color: #ABB2BF } /* Error */
+.hl .esc { color: #ABB2BF } /* Escape */
+.hl .g { color: #ABB2BF } /* Generic */
+.hl .k { color: #C678DD } /* Keyword */
+.hl .l { color: #ABB2BF } /* Literal */
+.hl .n { color: #E06C75 } /* Name */
+.hl .o { color: #56B6C2 } /* Operator */
+.hl .x { color: #ABB2BF } /* Other */
+.hl .p { color: #ABB2BF } /* Punctuation */
+.hl .ch { color: #7F848E } /* Comment.Hashbang */
+.hl .cm { color: #7F848E } /* Comment.Multiline */
+.hl .cp { color: #7F848E } /* Comment.Preproc */
+.hl .cpf { color: #7F848E } /* Comment.PreprocFile */
+.hl .c1 { color: #7F848E } /* Comment.Single */
+.hl .cs { color: #7F848E } /* Comment.Special */
+.hl .gd { color: #E06C75 } /* Generic.Deleted */
+.hl .ge { color: #ABB2BF; font-style: italic } /* Generic.Emph */
+.hl .ges { color: #ABB2BF } /* Generic.EmphStrong */
+.hl .gr { color: #E06C75 } /* Generic.Error */
+.hl .gh { color: #ABB2BF; font-weight: bold } /* Generic.Heading */
+.hl .gi { color: #98C379 } /* Generic.Inserted */
+.hl .go { color: #E06C75 } /* Generic.Output */
+.hl .gp { color: #ABB2BF } /* Generic.Prompt */
+.hl .gs { color: #ABB2BF; font-weight: bold } /* Generic.Strong */
+.hl .gu { color: #ABB2BF; font-weight: bold } /* Generic.Subheading */
+.hl .gt { color: #E06C75 } /* Generic.Traceback */
+.hl .kc { color: #E5C07B } /* Keyword.Constant */
+.hl .kd { color: #C678DD } /* Keyword.Declaration */
+.hl .kn { color: #C678DD } /* Keyword.Namespace */
+.hl .kp { color: #C678DD } /* Keyword.Pseudo */
+.hl .kr { color: #C678DD } /* Keyword.Reserved */
+.hl .kt { color: #E5C07B } /* Keyword.Type */
+.hl .ld { color: #ABB2BF } /* Literal.Date */
+.hl .m { color: #D19A66 } /* Literal.Number */
+.hl .s { color: #98C379 } /* Literal.String */
+.hl .na { color: #E06C75 } /* Name.Attribute */
+.hl .nb { color: #E5C07B } /* Name.Builtin */
+.hl .nc { color: #E5C07B } /* Name.Class */
+.hl .no { color: #E06C75 } /* Name.Constant */
+.hl .nd { color: #61AFEF } /* Name.Decorator */
+.hl .ni { color: #E06C75 } /* Name.Entity */
+.hl .ne { color: #E06C75 } /* Name.Exception */
+.hl .nf { color: #61AFEF; font-weight: bold } /* Name.Function */
+.hl .nl { color: #E06C75 } /* Name.Label */
+.hl .nn { color: #E06C75 } /* Name.Namespace */
+.hl .nx { color: #E06C75 } /* Name.Other */
+.hl .py { color: #E06C75 } /* Name.Property */
+.hl .nt { color: #E06C75 } /* Name.Tag */
+.hl .nv { color: #E06C75 } /* Name.Variable */
+.hl .ow { color: #56B6C2 } /* Operator.Word */
+.hl .pm { color: #ABB2BF } /* Punctuation.Marker */
+.hl .w { color: #ABB2BF } /* Text.Whitespace */
+.hl .mb { color: #D19A66 } /* Literal.Number.Bin */
+.hl .mf { color: #D19A66 } /* Literal.Number.Float */
+.hl .mh { color: #D19A66 } /* Literal.Number.Hex */
+.hl .mi { color: #D19A66 } /* Literal.Number.Integer */
+.hl .mo { color: #D19A66 } /* Literal.Number.Oct */
+.hl .sa { color: #98C379 } /* Literal.String.Affix */
+.hl .sb { color: #98C379 } /* Literal.String.Backtick */
+.hl .sc { color: #98C379 } /* Literal.String.Char */
+.hl .dl { color: #98C379 } /* Literal.String.Delimiter */
+.hl .sd { color: #98C379 } /* Literal.String.Doc */
+.hl .s2 { color: #98C379 } /* Literal.String.Double */
+.hl .se { color: #98C379 } /* Literal.String.Escape */
+.hl .sh { color: #98C379 } /* Literal.String.Heredoc */
+.hl .si { color: #98C379 } /* Literal.String.Interpol */
+.hl .sx { color: #98C379 } /* Literal.String.Other */
+.hl .sr { color: #98C379 } /* Literal.String.Regex */
+.hl .s1 { color: #98C379 } /* Literal.String.Single */
+.hl .ss { color: #98C379 } /* Literal.String.Symbol */
+.hl .bp { color: #E5C07B } /* Name.Builtin.Pseudo */
+.hl .fm { color: #56B6C2; font-weight: bold } /* Name.Function.Magic */
+.hl .vc { color: #E06C75 } /* Name.Variable.Class */
+.hl .vg { color: #E06C75 } /* Name.Variable.Global */
+.hl .vi { color: #E06C75 } /* Name.Variable.Instance */
+.hl .vm { color: #E06C75 } /* Name.Variable.Magic */
+.hl .il { color: #D19A66 } /* Literal.Number.Integer.Long */
+
+/* ARMADILHA DO STICKY FOOTER, e ja custou caro.
+   O body e um flex container (para o rodape ficar sempre em baixo). Num flex
+   container, um filho com margin:0 auto ENCOLHE AO CONTEUDO e centra-se: o
+   max-width deixa de esticar. O .hero e o .meta sao filhos diretos do body e
+   ficaram a 685px em vez de 1220px, com o titulo a flutuar ao centro enquanto
+   o texto do artigo continuava a esquerda.
+   O width:100% devolve-lhes a largura, e o max-width volta a mandar.
+   NAO APAGUES ISTO. */
+body > .hero, body > .meta{width:100%}
+
+/* O FUNDO, EM TELEMÓVEL.
+   O efeito foi desenhado para um ecrã largo, onde ocupa uma fatia. Num
+   telemóvel ocupa o ecrã INTEIRO, e o que era ambiente passa a ser ruído por
+   cima do texto. Não se apaga: suaviza-se, e a rede de nós deixa de animar
+   (também poupa bateria, que num telemóvel não é detalhe). */
+@media(max-width:760px){
+  /* A aurora fica difusa e parada: num ecrã pequeno, uma mancha a mexer atrás
+     do texto é ruído, e animá-la gasta bateria. A rede corre, mas mais discreta:
+     agora vive só no cabeçalho, acaba antes do primeiro parágrafo, e por isso
+     já não compete com a leitura. */
+  .aurora span{opacity:.22;filter:blur(70px);animation:none}
+  .net{opacity:.55}
+}
+
+/* O FUNDO VIVE NO CABEÇALHO, não na página toda.
+   Era position:fixed;inset:0 e acompanhava o scroll: a meio de um artigo
+   continuavam a passar linhas por trás do texto. Passa a ser uma faixa
+   ancorada ao topo, à largura toda do ecrã, com a altura do cabeçalho REAL
+   desta página (o fx.js mede-o e escreve o --fxh). O mask esbate o fim, para
+   não haver um corte a direito onde a faixa acaba.
+   O fallback de 520px serve só enquanto o JS não corre. */
+/* A AURORA fica: é ambiente, é difusa, e não compete com o texto.
+   A REDE não. Era ela que passava linhas por trás do texto durante a leitura
+   inteira, e em tablet e telemóvel tornava-se ruído. Fica presa ao cabeçalho.
+
+   A altura NÃO é um número escrito à mão: um valor fixo acerta num breakpoint
+   e falha nos outros (o mesmo cabeçalho tem 951px no desktop e 699px no
+   telemóvel). O fx.js mede o cabeçalho real e escreve o --fxh. */
+.aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
+/* z-index:-1 e pointer-events:none NAO SAO DECORACAO.
+   Quando prendi a rede ao cabeçalho reescrevi esta regra e deixei cair as duas.
+   O canvas ficou POR CIMA do hero: comeu todos os cliques (o botão "Ver os
+   projetos" deixou de funcionar) e o botão direito passou a oferecer "Guardar
+   imagem", porque quem estava por baixo do rato era o canvas, não o site.
+   Um fundo que intercepta cliques não é um fundo. NAO AS TIRES. */
+.net{position:absolute;top:0;left:0;width:100%;height:var(--fxh,520px);
+  z-index:-1;pointer-events:none;
+  -webkit-mask-image:linear-gradient(to bottom,#000 66%,transparent);
+  mask-image:linear-gradient(to bottom,#000 66%,transparent)}
+
+/* O aviso de proteção do formulário. A atribuição ao reCAPTCHA é OBRIGATÓRIA
+   quando o distintivo está escondido (e está: o .grecaptcha-badge sai). */
+.ct-prot{margin-top:34px;padding-top:26px;border-top:1px solid var(--line-2)}
+.ct-prot h2{font-family:var(--sans);font-size:.9rem;font-weight:600;color:var(--head);margin:0 0 8px}
+.ct-prot p{color:var(--muted);font-size:.84rem;line-height:1.7;margin:0}
+.ct-rc{margin-top:10px!important;font-size:.78rem!important;color:var(--faint)!important}
+.grecaptcha-badge{visibility:hidden}
+
+/* OS CANAIS DIRETOS, na página de contacto. Não dependem do formulário nem da
+   API. Se o formulário falhar, e um dia falha, quem cá chega tem de conseguir
+   alcançar-nos na mesma. Um formulário partido numa página sem alternativa é um
+   cliente perdido que nunca nos vai dizer que tentou. */
+.ct-alt{margin-top:56px;padding-top:34px;border-top:1px solid var(--line-2)}
+.ct-alt h2{font-family:var(--serif);font-size:1.45rem;font-weight:400;color:var(--head);margin:0 0 22px}
+.ct-ways{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+.ct-ways li{display:flex;flex-direction:column;gap:5px}
+.ct-ways span{font-family:var(--sans);font-size:.72rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.ct-ways a{color:var(--head);font-size:1.02rem;border-bottom:1px solid var(--line-2);padding-bottom:3px;align-self:start;transition:color .3s,border-color .3s}
+.ct-ways a:hover{color:var(--accent);border-color:var(--accent)}
+/* O honeypot fica fora do ecrã, NÃO com display:none (um bot headless lê isso e
+   ignora o campo). Assim continua no DOM, preenchível por um bot, invisível
+   para o humano. Ver contact.template.html. */
+.ct-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+/* ── ferramentas da lista: pesquisa + vistas ──────────────────────────────── */
+.b-tools{--bw:1220px;max-width:var(--bw);margin:6px auto 20px;padding:0 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.b-search-wrap{position:relative;flex:1;min-width:220px;max-width:420px}
+.b-search-i{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--faint);pointer-events:none}
+.b-search{width:100%;box-sizing:border-box;background:var(--panel);border:1px solid var(--line-2);border-radius:100px;color:var(--head);font-family:var(--sans);font-size:.9rem;padding:.72em 1.1em .72em 2.7em;transition:border-color .3s}
+.b-search::placeholder{color:var(--faint)}
+.b-search:focus{outline:none;border-color:var(--faint)}
+.b-search::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+.b-views{display:inline-flex;gap:6px;margin-left:auto}
+.b-views button{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;background:transparent;border:1px solid var(--line-2);border-radius:8px;color:var(--muted);cursor:pointer;transition:color .3s,border-color .3s,background .3s}
+.b-views button svg{width:17px;height:17px}
+.b-views button:hover{color:var(--head);border-color:var(--faint)}
+.b-views button.on{color:var(--head);border-color:var(--faint);background:var(--panel)}
+
+/* vista em lista: a mesma grelha, uma coluna, cada cartao em linha */
+.b-grid.as-list{grid-template-columns:minmax(0,1fr);gap:14px}
+.b-grid.as-list .b-card{flex-direction:row;align-items:stretch}
+.b-grid.as-list .b-thumb{flex:0 0 32%;max-width:250px;aspect-ratio:auto}
+.b-grid.as-list .b-cbody{padding:20px 26px}
+.b-grid.as-list .b-card h2{margin-top:6px;font-size:1.26rem}
+@media(max-width:640px){
+  .b-tools{padding:0 22px}
+  .b-views{margin-left:0}
+  .b-grid.as-list .b-card{flex-direction:column}
+  .b-grid.as-list .b-thumb{flex:none;max-width:none;aspect-ratio:1200/440}
+}

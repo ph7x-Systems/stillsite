@@ -1,0 +1,12 @@
+/* stillsite.css — framework additions on top of the ph7x sheets.
+   Only what the original site does not have: the search island's result list
+   and small chrome glue. Tokens come from the design system. */
+site-search{display:block}
+.site-search-count{color:var(--faint);font-size:.8rem;margin-top:10px}
+.site-search-results{list-style:none;padding:0;margin:14px 0 0}
+.site-search-results li{padding:14px 0;border-bottom:1px solid var(--line)}
+.site-search-results a{font-family:var(--serif);font-size:1.15rem;color:var(--head)}
+.site-search-results a:hover{color:var(--accent)}
+.site-search-results p{color:var(--muted);font-size:.9rem;margin:6px 0 0}
+.fl a{transition:color .3s}
+.story img{width:100%;height:auto;margin-top:40px;border:1px solid var(--line);border-radius:6px}

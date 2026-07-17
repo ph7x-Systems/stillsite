@@ -69,7 +69,6 @@ HOME_HERO: dict[Language, SectionContent] = {
             "accent": "Mars.",
             "lead": "Small fish. Enormous ambitions. Questionable smell.",
         },
-        media=["rocket"],
     ),
     PT: SectionContent(
         fields={
@@ -78,7 +77,6 @@ HOME_HERO: dict[Language, SectionContent] = {
             "accent": "Marte.",
             "lead": "Peixe pequeno. Ambicoes enormes. Cheiro discutivel.",
         },
-        media=["rocket"],
     ),
     ES: SectionContent(
         fields={
@@ -87,7 +85,6 @@ HOME_HERO: dict[Language, SectionContent] = {
             "accent": "Marte.",
             "lead": "Pez pequeno. Ambiciones enormes. Olor discutible.",
         },
-        media=["rocket"],
     ),
     FR: SectionContent(
         fields={
@@ -96,7 +93,6 @@ HOME_HERO: dict[Language, SectionContent] = {
             "accent": "Mars.",
             "lead": "Petit poisson. Ambitions enormes. Odeur discutable.",
         },
-        media=["rocket"],
     ),
     DE: SectionContent(
         fields={
@@ -105,7 +101,6 @@ HOME_HERO: dict[Language, SectionContent] = {
             "accent": "Mars.",
             "lead": "Kleiner Fisch. Riesige Ambitionen. Fragwuerdiger Geruch.",
         },
-        media=["rocket"],
     ),
 }
 
@@ -513,7 +508,8 @@ HOME_ABOUT: dict[Language, SectionContent] = {
             "meta3v": "on extra virgin",
             "meta4k": "0 crew eaten",
             "meta4v": "this month",
-        }
+        },
+        media=["rocket"],
     ),
     PT: SectionContent(
         fields={
@@ -530,7 +526,8 @@ HOME_ABOUT: dict[Language, SectionContent] = {
             "meta3v": "com extra virgem",
             "meta4k": "0 tripulantes comidos",
             "meta4v": "este mes",
-        }
+        },
+        media=["rocket"],
     ),
     ES: SectionContent(
         fields={
@@ -547,7 +544,8 @@ HOME_ABOUT: dict[Language, SectionContent] = {
             "meta3v": "con virgen extra",
             "meta4k": "0 tripulantes comidos",
             "meta4v": "este mes",
-        }
+        },
+        media=["rocket"],
     ),
     FR: SectionContent(
         fields={
@@ -564,7 +562,8 @@ HOME_ABOUT: dict[Language, SectionContent] = {
             "meta3v": "a l'extra vierge",
             "meta4k": "0 membre d'equipage mange",
             "meta4v": "ce mois-ci",
-        }
+        },
+        media=["rocket"],
     ),
     DE: SectionContent(
         fields={
@@ -582,7 +581,8 @@ HOME_ABOUT: dict[Language, SectionContent] = {
             "meta3v": "mit extra vergine",
             "meta4k": "0 Crewmitglieder gegessen",
             "meta4v": "diesen Monat",
-        }
+        },
+        media=["rocket"],
     ),
 }
 

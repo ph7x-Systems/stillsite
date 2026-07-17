@@ -253,6 +253,8 @@ class _SiteBuilder:
                 "title": body.title,
                 "summary": body.summary,
                 "date_iso": article.created_at.date().isoformat(),
+                "back_url": urls.blog_index_path(self.config, language),
+                "back_label": ui_label(self.config, "back", language),
                 "category": self._category_context(article, language),
                 "tags": [
                     {"slug": tag, "url": urls.tag_path(self.config, tag, language)}
@@ -312,6 +314,9 @@ class _SiteBuilder:
                 "summary": _article_content(a, language).summary,
                 "url": urls.article_path(self.config, a, language),
                 "date_iso": a.created_at.date().isoformat(),
+                "category": (
+                    self.config.category_label(a.category, language) if a.category else None
+                ),
             }
             for a in articles
         ]
@@ -353,6 +358,7 @@ class _SiteBuilder:
                 ),
                 "search_index_url": self._search_index_url(language),
                 "search_label": ui_label(self.config, "search", language),
+                "eyebrow": ui_label(self.config, "blog", language),
                 "filters": self._category_filters(language),
             }
             self._render("listing", path, context)
@@ -413,6 +419,7 @@ class _SiteBuilder:
             "next_url": None,
             "search_index_url": self._search_index_url(language),
             "search_label": ui_label(self.config, "search", language),
+            "eyebrow": ui_label(self.config, "blog", language),
             "filters": self._category_filters(language),
         }
         self._render("listing", path, context)

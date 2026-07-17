@@ -95,7 +95,7 @@
 {% elif section.kind == "contact" %}
 <section class="sec contact" id="{{ section.key }}">
   <div class="wrap">
-    {% if section.data.kicker %}<span class="kick">{{ section.data.kicker }}</span>{% endif %}
+    {% if section.data.kicker %}<span class="kick kick-center">{{ section.data.kicker }}</span>{% endif %}
     <p class="big">{{ section.data.heading }}{% if section.data.accent %} <em>{{ section.data.accent }}</em>{% endif %}</p>
     {% if section.data.button and nav.menu %}
     <p class="cta-row"><a class="btn btn-lg" href="{{ nav.menu[-1].url }}">{{ section.data.button }} <span class="ar">&rarr;</span></a></p>

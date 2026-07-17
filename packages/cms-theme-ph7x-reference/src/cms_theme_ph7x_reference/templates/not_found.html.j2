@@ -1,10 +1,12 @@
 {% extends "base.html.j2" %}
+{% block styles %}
+<link rel="stylesheet" href="{{ asset_urls['assets/legal.css'] }}">
+<link rel="stylesheet" href="{{ asset_urls['assets/blog.css'] }}">
+{% endblock %}
 {% block main %}
-<section class="listing">
-  <div class="wrap">
-    <span class="kick">404</span>
-    <h1>{{ head.title }}</h1>
-    <p><a class="btn" href="{{ not_found.home_url }}">{{ head.site_name }}</a></p>
-  </div>
+<section class="b-hero">
+  <span class="eyebrow">404</span>
+  <h1>{{ head.title }}</h1>
+  <p class="sub"><a class="b-back" href="{{ not_found.home_url }}">&larr; {{ head.site_name }}</a></p>
 </section>
 {% endblock %}

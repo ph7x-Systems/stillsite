@@ -1,37 +1,41 @@
 {% extends "base.html.j2" %}
+{% block styles %}
+<link rel="stylesheet" href="{{ asset_urls['assets/legal.css'] }}">
+<link rel="stylesheet" href="{{ asset_urls['assets/blog.css'] }}">
+{% endblock %}
 {% block main %}
-<section class="listing">
-  <div class="wrap">
-    <h1>{{ listing.title }}</h1>
-    {% if listing.filters %}
-    <nav class="b-filters" aria-label="Categories">
-      {% for entry in listing.filters %}
-      <a href="{{ entry.url }}">{{ entry.label }}</a>
-      {% endfor %}
-    </nav>
-    {% endif %}
-    {% if listing.search_index_url %}
-    <site-search index-url="{{ listing.search_index_url }}" label="{{ listing.search_label }}"></site-search>
-    <script type="module" src="{{ asset_urls['assets/search.js'] }}"></script>
-    {% endif %}
-    <div class="b-grid">
-    {% for entry in listing.entries %}
-      <article class="b-card">
-        <div class="b-cbody">
-          <a class="b-title" href="{{ entry.url }}">{{ entry.title }}</a>
-          {% if entry.summary %}<p>{{ entry.summary }}</p>{% endif %}
-          <div class="b-cmeta"><time datetime="{{ entry.date_iso }}">{{ entry.date_iso }}</time></div>
-        </div>
-      </article>
-    {% endfor %}
-    </div>
-    {% if listing.pages > 1 %}
-    <nav class="pagination" aria-label="Pagination">
-      {% if listing.previous_url %}<a rel="prev" href="{{ listing.previous_url }}">&larr;</a>{% endif %}
-      <span>{{ listing.page }} / {{ listing.pages }}</span>
-      {% if listing.next_url %}<a rel="next" href="{{ listing.next_url }}">&rarr;</a>{% endif %}
-    </nav>
-    {% endif %}
-  </div>
+<section class="b-hero">
+  {% if listing.eyebrow and listing.eyebrow != listing.title %}<span class="eyebrow">{{ listing.eyebrow }}</span>{% endif %}
+  <h1>{{ listing.title }}</h1>
 </section>
+{% if listing.search_index_url %}
+<div class="b-tools">
+  <site-search index-url="{{ listing.search_index_url }}" label="{{ listing.search_label }}"></site-search>
+</div>
+<script type="module" src="{{ asset_urls['assets/search.js'] }}"></script>
+{% endif %}
+{% if listing.filters %}
+<nav class="b-filters" aria-label="Categories">
+  {% for entry in listing.filters %}<a href="{{ entry.url }}">{{ entry.label }}</a>{% endfor %}
+</nav>
+{% endif %}
+<div class="b-grid">
+{% for entry in listing.entries %}
+  <a class="b-card" href="{{ entry.url }}">
+    <div class="b-cbody">
+      {% if entry.category %}<span class="b-ctag">{{ entry.category }}</span>{% endif %}
+      <h2>{{ entry.title }}</h2>
+      {% if entry.summary %}<p>{{ entry.summary }}</p>{% endif %}
+      <div class="b-cmeta"><time datetime="{{ entry.date_iso }}">{{ entry.date_iso }}</time></div>
+    </div>
+  </a>
+{% endfor %}
+</div>
+{% if listing.pages > 1 %}
+<nav class="b-pager" aria-label="Pagination">
+  {% if listing.previous_url %}<a rel="prev" href="{{ listing.previous_url }}">&larr;</a>{% endif %}
+  <span>{{ listing.page }} / {{ listing.pages }}</span>
+  {% if listing.next_url %}<a rel="next" href="{{ listing.next_url }}">&rarr;</a>{% endif %}
+</nav>
+{% endif %}
 {% endblock %}

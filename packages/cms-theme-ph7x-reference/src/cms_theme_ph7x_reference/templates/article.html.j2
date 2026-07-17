@@ -1,23 +1,28 @@
 {% extends "base.html.j2" %}
+{% block styles %}
+<link rel="stylesheet" href="{{ asset_urls['assets/legal.css'] }}">
+<link rel="stylesheet" href="{{ asset_urls['assets/blog.css'] }}">
+{% endblock %}
 {% block main %}
-<div class="wrap">
-  <article class="article">
-    <h1>{{ article.title }}</h1>
-    {% if article.summary %}<p class="lead">{{ article.summary }}</p>{% endif %}
-    <p class="meta">
-      <time datetime="{{ article.date_iso }}">{{ article.date_iso }}</time>
-      {% if article.category %}
-      · <a class="category" href="{{ article.category.url }}">{{ article.category.label }}</a>
-      {% endif %}
-    </p>
-    <div class="body">{{ article.body_html }}</div>
-    {% if article.tags %}
-    <ul class="tags">
-      {% for tag in article.tags %}
-      <li><a href="{{ tag.url }}">#{{ tag.slug }}</a></li>
-      {% endfor %}
-    </ul>
+<article class="b-post">
+  <header class="b-head">
+    <a class="b-back" href="{{ article.back_url }}">&larr; {{ article.back_label }}</a>
+    {% if article.category %}
+    <a class="b-cat" href="{{ article.category.url }}">{{ article.category.label }}</a>
     {% endif %}
-  </article>
-</div>
+    <h1>{{ article.title }}</h1>
+    {% if article.summary %}<p class="b-lede">{{ article.summary }}</p>{% endif %}
+    <div class="b-by">
+      <span>{{ head.site_name }}</span>
+      <span class="b-dot">·</span>
+      <time datetime="{{ article.date_iso }}">{{ article.date_iso }}</time>
+    </div>
+  </header>
+  <div class="b-body">{{ article.body_html }}</div>
+  {% if article.tags %}
+  <nav class="b-filters" aria-label="Tags">
+    {% for tag in article.tags %}<a href="{{ tag.url }}">#{{ tag.slug }}</a>{% endfor %}
+  </nav>
+  {% endif %}
+</article>
 {% endblock %}
