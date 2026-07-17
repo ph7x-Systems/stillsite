@@ -495,3 +495,230 @@ ARTICLES: dict[str, tuple[str, tuple[str, ...], int, dict[Language, ArticleConte
         ),
     ),
 }
+
+
+HOME_ABOUT: dict[Language, SectionContent] = {
+    EN: SectionContent(
+        fields={
+            "kicker": "01 · Who we are",
+            "heading": "A space programme born in a cannery",
+            "body": "Commander Sardinha graduated top of her shoal and now leads the only "
+            "space agency with a fish at the helm. Mission control fits in a fish crate, "
+            "the countdown is sung, and every launch smells faintly of the Atlantic.",
+            "meta1k": "1 sardine",
+            "meta1v": "at the controls",
+            "meta2k": "400 tins",
+            "meta2v": "drop-tested",
+            "meta3k": "12% more thrust",
+            "meta3v": "on extra virgin",
+            "meta4k": "0 crew eaten",
+            "meta4v": "this month",
+        }
+    ),
+    PT: SectionContent(
+        fields={
+            "kicker": "01 · Quem somos",
+            "heading": "Um programa espacial nascido numa conserveira",
+            "body": "A Comandante Sardinha formou-se no topo do cardume e lidera a unica "
+            "agencia espacial com um peixe ao leme. O controlo de missao cabe numa caixa "
+            "de peixe, a contagem e cantada, e cada lancamento cheira ao Atlantico.",
+            "meta1k": "1 sardinha",
+            "meta1v": "aos comandos",
+            "meta2k": "400 latas",
+            "meta2v": "testadas em queda",
+            "meta3k": "12% mais impulso",
+            "meta3v": "com extra virgem",
+            "meta4k": "0 tripulantes comidos",
+            "meta4v": "este mes",
+        }
+    ),
+    ES: SectionContent(
+        fields={
+            "kicker": "01 · Quienes somos",
+            "heading": "Un programa espacial nacido en una conservera",
+            "body": "La Comandante Sardina se graduo la primera de su banco y dirige la "
+            "unica agencia espacial con un pez al timon. El control de mision cabe en una "
+            "caja de pescado, la cuenta atras se canta y cada lanzamiento huele al Atlantico.",
+            "meta1k": "1 sardina",
+            "meta1v": "a los mandos",
+            "meta2k": "400 latas",
+            "meta2v": "probadas en caida",
+            "meta3k": "12% mas empuje",
+            "meta3v": "con virgen extra",
+            "meta4k": "0 tripulantes comidos",
+            "meta4v": "este mes",
+        }
+    ),
+    FR: SectionContent(
+        fields={
+            "kicker": "01 · Qui nous sommes",
+            "heading": "Un programme spatial ne dans une conserverie",
+            "body": "La Commandante Sardine a fini premiere de son banc et dirige la seule "
+            "agence spatiale avec un poisson a la barre. Le controle de mission tient dans "
+            "une caisse, le compte a rebours est chante, chaque lancement sent l'Atlantique.",
+            "meta1k": "1 sardine",
+            "meta1v": "aux commandes",
+            "meta2k": "400 boites",
+            "meta2v": "testees en chute",
+            "meta3k": "12% de poussee en plus",
+            "meta3v": "a l'extra vierge",
+            "meta4k": "0 membre d'equipage mange",
+            "meta4v": "ce mois-ci",
+        }
+    ),
+    DE: SectionContent(
+        fields={
+            "kicker": "01 · Wer wir sind",
+            "heading": "Ein Raumfahrtprogramm aus der Konservenfabrik",
+            "body": "Kommandantin Sardine schloss als Beste ihres Schwarms ab und fuehrt "
+            "die einzige Raumfahrtagentur mit einem Fisch am Ruder. Die Missionskontrolle "
+            "passt in eine Fischkiste, der Countdown wird gesungen, jeder Start riecht "
+            "nach Atlantik.",
+            "meta1k": "1 Sardine",
+            "meta1v": "am Steuer",
+            "meta2k": "400 Dosen",
+            "meta2v": "im Falltest",
+            "meta3k": "12% mehr Schub",
+            "meta3v": "mit extra vergine",
+            "meta4k": "0 Crewmitglieder gegessen",
+            "meta4v": "diesen Monat",
+        }
+    ),
+}
+
+HOME_EXPERTISE: dict[Language, SectionContent] = {
+    EN: SectionContent(
+        fields={
+            "kicker": "02 · What we do",
+            "heading": "Capabilities",
+            "row1no": "01",
+            "row1t": "Tinned launches",
+            "row1d": "Vessels sealed to survive vacuum, rain and curious seagulls.",
+            "row2no": "02",
+            "row2t": "Olive-oil propulsion",
+            "row2d": "Renewable, fragrant, and the neighbours applaud every ignition.",
+            "row3no": "03",
+            "row3t": "Echo communications",
+            "row3d": "If you shout into a tin, Mars hears you eventually.",
+            "row4no": "04",
+            "row4t": "Stylish re-entry",
+            "row4d": "Any fish can fall. Ours falls with intention.",
+        }
+    ),
+    PT: SectionContent(
+        fields={
+            "kicker": "02 · O que fazemos",
+            "heading": "Capacidades",
+            "row1no": "01",
+            "row1t": "Lancamentos em lata",
+            "row1d": "Veiculos selados para sobreviver ao vacuo, a chuva e a gaivotas curiosas.",
+            "row2no": "02",
+            "row2t": "Propulsao a azeite",
+            "row2d": "Renovavel, perfumada, e os vizinhos aplaudem cada ignicao.",
+            "row3no": "03",
+            "row3t": "Comunicacoes por eco",
+            "row3d": "Se gritares para uma lata, Marte acaba por ouvir.",
+            "row4no": "04",
+            "row4t": "Reentrada com estilo",
+            "row4d": "Qualquer peixe cai. O nosso cai com intencao.",
+        }
+    ),
+    ES: SectionContent(
+        fields={
+            "kicker": "02 · Que hacemos",
+            "heading": "Capacidades",
+            "row1no": "01",
+            "row1t": "Lanzamientos en lata",
+            "row1d": "Vehiculos sellados para sobrevivir al vacio, la lluvia y gaviotas curiosas.",
+            "row2no": "02",
+            "row2t": "Propulsion de aceite de oliva",
+            "row2d": "Renovable, fragante, y los vecinos aplauden cada ignicion.",
+            "row3no": "03",
+            "row3t": "Comunicaciones por eco",
+            "row3d": "Si gritas a una lata, Marte acaba oyendote.",
+            "row4no": "04",
+            "row4t": "Reentrada con estilo",
+            "row4d": "Cualquier pez cae. El nuestro cae con intencion.",
+        }
+    ),
+    FR: SectionContent(
+        fields={
+            "kicker": "02 · Ce que nous faisons",
+            "heading": "Capacites",
+            "row1no": "01",
+            "row1t": "Lancements en boite",
+            "row1d": "Des vaisseaux scelles pour survivre au vide, a la pluie et aux mouettes "
+            "curieuses.",
+            "row2no": "02",
+            "row2t": "Propulsion a l'huile d'olive",
+            "row2d": "Renouvelable, parfumee, et les voisins applaudissent chaque allumage.",
+            "row3no": "03",
+            "row3t": "Communications par echo",
+            "row3d": "Criez dans une boite : Mars finit par entendre.",
+            "row4no": "04",
+            "row4t": "Rentree avec style",
+            "row4d": "N'importe quel poisson tombe. Le notre tombe avec intention.",
+        }
+    ),
+    DE: SectionContent(
+        fields={
+            "kicker": "02 · Was wir tun",
+            "heading": "Faehigkeiten",
+            "row1no": "01",
+            "row1t": "Dosenstarts",
+            "row1d": "Versiegelte Gefaehrte fuer Vakuum, Regen und neugierige Moewen.",
+            "row2no": "02",
+            "row2t": "Olivenoel-Antrieb",
+            "row2d": "Erneuerbar, duftend, und die Nachbarn applaudieren jeder Zuendung.",
+            "row3no": "03",
+            "row3t": "Echo-Kommunikation",
+            "row3d": "Ruf in eine Dose, und der Mars hoert dich irgendwann.",
+            "row4no": "04",
+            "row4t": "Wiedereintritt mit Stil",
+            "row4d": "Jeder Fisch faellt. Unserer faellt mit Absicht.",
+        }
+    ),
+}
+
+HOME_CTA: dict[Language, SectionContent] = {
+    EN: SectionContent(
+        fields={
+            "kicker": "03 · Join the shoal",
+            "heading": "Ready to leave the",
+            "accent": "ocean?",
+            "button": "Meet the crew",
+        }
+    ),
+    PT: SectionContent(
+        fields={
+            "kicker": "03 · Junta-te ao cardume",
+            "heading": "Pronto para sair do",
+            "accent": "oceano?",
+            "button": "Conhecer a tripulacao",
+        }
+    ),
+    ES: SectionContent(
+        fields={
+            "kicker": "03 · Unete al banco",
+            "heading": "Listo para dejar el",
+            "accent": "oceano?",
+            "button": "Conocer a la tripulacion",
+        }
+    ),
+    FR: SectionContent(
+        fields={
+            "kicker": "03 · Rejoignez le banc",
+            "heading": "Pret a quitter l'",
+            "accent": "ocean ?",
+            "button": "Rencontrer l'equipage",
+        }
+    ),
+    DE: SectionContent(
+        fields={
+            "kicker": "03 · Schliess dich dem Schwarm an",
+            "heading": "Bereit, den Ozean zu",
+            "accent": "verlassen?",
+            "button": "Die Crew treffen",
+        }
+    ),
+}

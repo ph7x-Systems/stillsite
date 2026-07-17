@@ -4,7 +4,8 @@
   <g transform="translate(600 340) rotate(-45)">
     <ellipse rx="210" ry="72" fill="none" stroke="#d8cfc0" stroke-width="5"/>
     <ellipse rx="150" ry="48" fill="none" stroke="#d8cfc0" stroke-width="2" stroke-dasharray="5 8"/>
-    <path d="M-210 0 Q-252 -36 -284 -55 Q-264 -19 -264 0 Q-264 19 -284 55 Q-252 36 -210 0Z" fill="#d8cfc0"/>
+    <path fill="#d8cfc0"
+      d="M-210 0 Q-252 -36 -284 -55 Q-264 -19 -264 0 Q-264 19 -284 55 Q-252 36 -210 0Z"/>
     <circle cx="158" cy="-17" r="9" fill="#080809" stroke="#d8cfc0" stroke-width="4"/>
     <path d="M208 8 Q274 30 338 18 Q276 48 220 38Z" fill="#7ec8a2" opacity="0.85"/>
   </g>
