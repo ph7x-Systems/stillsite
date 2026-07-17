@@ -86,10 +86,22 @@ def init(
 
 
 @app.command(name="seed")
-def seed_command(project_dir: ProjectDir = Path()) -> None:
+def seed_command(
+    project_dir: ProjectDir = Path(),
+    force: Annotated[
+        bool, typer.Option("--force", help="Overwrite content that already exists")
+    ] = False,
+) -> None:
     """Create fictional starter content in the project storage."""
     project = _project(project_dir)
     with project.open_storage() as storage:
+        if storage.has_content() and not force:
+            typer.echo(
+                "error: the project storage already has content; "
+                "seeding would overwrite it (use --force to do so anyway)",
+                err=True,
+            )
+            raise typer.Exit(code=3)
         pages, articles = seed(storage)
     typer.echo(f"seeded {pages} page(s) and {articles} article(s)")
 

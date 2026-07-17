@@ -70,6 +70,31 @@ def test_init_scaffolds_a_building_project(tmp_path: Path) -> None:
     assert again.exit_code == 2
 
 
+def test_seed_refuses_to_overwrite_existing_content(tmp_path: Path) -> None:
+    project = make_project(tmp_path)
+    first = runner.invoke(app, ["seed", "-p", str(project)])
+    assert first.exit_code == 0, first.output
+
+    second = runner.invoke(app, ["seed", "-p", str(project)])
+    assert second.exit_code == 3
+    assert "--force" in second.output
+
+    forced = runner.invoke(app, ["seed", "-p", str(project), "--force"])
+    assert forced.exit_code == 0, forced.output
+
+
+def test_sqlite_backend_runs_in_wal_mode(tmp_path: Path) -> None:
+    import sqlite3
+
+    from cms_core.storage import create_storage
+
+    backend = create_storage(f"sqlite:///{tmp_path / 'cms.sqlite3'}")
+    backend.close()
+    connection = sqlite3.connect(tmp_path / "cms.sqlite3")
+    assert connection.execute("PRAGMA journal_mode").fetchone()[0] == "wal"
+    connection.close()
+
+
 def test_build_is_reproducible_via_cli(tmp_path: Path) -> None:
     project = make_project(tmp_path)
     runner.invoke(app, ["seed", "-p", str(project)])

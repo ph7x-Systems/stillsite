@@ -121,6 +121,12 @@ class SQLiteBackend(StorageBackend):
     def __init__(self, path: Path | str) -> None:
         self._connection = sqlite3.connect(path)
         self._connection.execute("PRAGMA foreign_keys = ON")
+        self._connection.execute("PRAGMA busy_timeout = 5000")
+        # WAL survives crashes without blocking readers; NORMAL sync is the
+        # recommended pairing (durable at the application level, fast).
+        # In-memory databases report "memory" and are unaffected.
+        self._connection.execute("PRAGMA journal_mode = WAL")
+        self._connection.execute("PRAGMA synchronous = NORMAL")
         self.migrate()
 
     def schema_version(self) -> int:

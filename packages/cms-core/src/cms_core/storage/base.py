@@ -78,6 +78,10 @@ class StorageBackend(ABC):
         assets = (self.load_media_asset(asset_id) for asset_id in self.list_media_ids())
         return [asset for asset in assets if asset is not None]
 
+    def has_content(self) -> bool:
+        """True when any article, page or media asset exists."""
+        return bool(self.list_article_ids() or self.list_page_ids() or self.list_media_ids())
+
     # Context manager
 
     def __enter__(self) -> "StorageBackend":
