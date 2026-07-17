@@ -111,6 +111,28 @@ Security is part of each milestone's definition of done — threat model,
 controls in force and per-milestone gates are documented in
 [SECURITY_STRATEGY.md](SECURITY_STRATEGY.md).
 
+## Going public — when and how
+
+The repository flips to public when it demonstrates a working product, not
+promises — and only with zero documentation drift. Criteria (all objective):
+
+1. **Milestone 2 complete**: `cms validate|build|export` work end-to-end and
+   CI builds the example site on every push (the proof is executable).
+2. **All CI gates green** on the flip commit, including the docs anti-drift
+   suite and the head-contract/parity checks — this is what "no drift" means
+   here: it is enforced by tests, not by a final proofread.
+3. **Go-public checklist executed** (SECURITY_STRATEGY.md §4: history clean of
+   personal emails, secret scan green over full history, no policy-ignored
+   files tracked, dependencies reviewed, monitored security contact).
+4. README reflects reality for a first-time visitor (install, quickstart,
+   what works today vs. roadmap) — guarded by the anti-drift tests.
+
+Recommended timing: **flip at the end of Milestone 2** (framework usable,
+example site building in CI), and treat the end of Milestone 4 (reference
+theme + polished example) as the **announcement/launch** moment. Between the
+two, the repo is public but low-key. The flip itself happens via a PR that
+records the executed checklist.
+
 ## Constraints
 
 - No changes to the current corporate site (`Ph7x.Site.Corporate` / ph7x.com)
