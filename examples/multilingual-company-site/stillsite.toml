@@ -12,6 +12,20 @@ es = "Notas de campo"
 fr = "Notes de terrain"
 de = "Feldnotizen"
 
+[site.categories.atlas-craft]
+en = "Atlas craft"
+pt-pt = "Ofício do atlas"
+es = "Oficio del atlas"
+fr = "Métier de l'atlas"
+de = "Atlas-Handwerk"
+
+[site.categories.studio]
+en = "Studio"
+pt-pt = "Estúdio"
+es = "Estudio"
+fr = "Atelier"
+de = "Studio"
+
 [site.organization]
 "@type" = "Organization"
 name = "Aurora Cartography"

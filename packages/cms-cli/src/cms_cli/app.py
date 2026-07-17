@@ -102,8 +102,8 @@ def seed_command(
                 err=True,
             )
             raise typer.Exit(code=3)
-        pages, articles = seed(storage)
-    typer.echo(f"seeded {pages} page(s) and {articles} article(s)")
+        pages, articles, media = seed(storage, project.directory)
+    typer.echo(f"seeded {pages} page(s), {articles} article(s) and {media} media asset(s)")
 
 
 @app.command()

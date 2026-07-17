@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img">
+  <rect width="1200" height="675" fill="#101623"/>
+  <g transform="translate(600 337)" stroke="#e8e4da" fill="none" stroke-width="4">
+    <circle r="220"/>
+    <circle r="180" stroke-dasharray="6 10"/>
+    <path d="M0-260 20-20 0 260 -20-20Z" fill="#e8e4da" stroke="none"/>
+    <path d="M-260 0 -20 20 260 0 -20-20Z" fill="#7a8db0" stroke="none"/>
+  </g>
+  <text x="600" y="640" text-anchor="middle" font-family="serif" font-size="34" fill="#e8e4da">Aurora Cartography</text>
+</svg>

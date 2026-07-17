@@ -118,10 +118,10 @@ visitor can judge the product from it. Phases, in execution order:
    suite runs against PostgreSQL in CI (service container) and locally
    (project-prefixed Docker container). Acceptance: same tests, two engines,
    zero test changes.
-3. **Demo content** — seed grows to a realistic fictional site: ~6 articles
-   across 2–3 categories with tags (exercises pagination, category and tag
-   pages), an about page, and at least one image via the media pipeline.
-   Acceptance: every generated surface is reachable from the demo home page.
+3. **Demo content** — ✅ done: 6 articles across 3 categories with tags, an
+   about page, and a compass illustration through the media pipeline (the
+   seed also writes referenced media files, so scaffolded projects build
+   with no broken references); ~100 pages across the 5 languages.
 4. **Client-side search** — small theme script consuming the per-language
    `search-index.json` (the index already ships). Acceptance: typing in the
    blog page filters articles, no external requests.
