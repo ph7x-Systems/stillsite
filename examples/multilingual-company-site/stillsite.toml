@@ -31,6 +31,28 @@ de = "Kantine"
 name = "Sardine Aerospace"
 url = "https://example.com/"
 
+
+[site.labels.blog-title]
+en = "Mission log."
+pt-pt = "Diário de bordo."
+es = "Diario de a bordo."
+fr = "Journal de bord."
+de = "Logbuch."
+
+[site.labels.blog-eyebrow]
+en = "Writing"
+pt-pt = "Escrita"
+es = "Escritura"
+fr = "Écrits"
+de = "Notizen"
+
+[site.labels.blog-sub]
+en = "What we learn firing fish into the sky. Method, not opinion."
+pt-pt = "O que aprendemos a disparar peixe para o céu. Método, não opinião."
+es = "Lo que aprendemos lanzando peces al cielo. Método, no opinión."
+fr = "Ce que nous apprenons en lançant des poissons vers le ciel. De la méthode, pas des opinions."
+de = "Was wir lernen, wenn wir Fische in den Himmel schießen. Methode, keine Meinung."
+
 [storage]
 url = "sqlite:///content.sqlite3"
 

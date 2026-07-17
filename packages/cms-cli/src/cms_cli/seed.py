@@ -27,6 +27,8 @@ from cms_cli.seed_data import (
     ABOUT,
     ABOUT_STORY,
     ARTICLES,
+    COVER_ALT,
+    COVER_SVGS,
     HOME,
     HOME_ABOUT,
     HOME_CTA,
@@ -93,7 +95,9 @@ def seed(storage: StorageBackend, project_dir: Path | None = None) -> tuple[int,
     storage.save_page(_page("about", ABOUT, [("story", "story", ABOUT_STORY)]))
 
     for article_id, (category, tags, days, contents) in ARTICLES.items():
-        storage.save_article(_article(article_id, category, tags, days, contents))
+        entry = _article(article_id, category, tags, days, contents)
+        entry.cover = f"cover-{category}"
+        storage.save_article(entry)
 
     rocket = MediaAsset(
         id="rocket",
@@ -104,10 +108,26 @@ def seed(storage: StorageBackend, project_dir: Path | None = None) -> tuple[int,
         alt=dict(MEDIA_ALT),
     )
     storage.save_media_asset(rocket)
+    for cover_id, svg in COVER_SVGS.items():
+        storage.save_media_asset(
+            MediaAsset(
+                id=cover_id,
+                path=f"images/{cover_id}.svg",
+                mime_type="image/svg+xml",
+                width=1200,
+                height=630,
+                alt=dict(COVER_ALT[cover_id]),
+            )
+        )
+        if project_dir is not None:
+            cover_target = project_dir / "media" / "images" / f"{cover_id}.svg"
+            cover_target.parent.mkdir(parents=True, exist_ok=True)
+            if not cover_target.exists():
+                cover_target.write_text(svg, encoding="utf-8")
     if project_dir is not None:
         target = project_dir / "media" / "images" / "rocket.svg"
         target.parent.mkdir(parents=True, exist_ok=True)
         if not target.exists():
             target.write_text(ROCKET_SVG, encoding="utf-8")
 
-    return 2, len(ARTICLES), 1
+    return 2, len(ARTICLES), 1 + len(COVER_SVGS)

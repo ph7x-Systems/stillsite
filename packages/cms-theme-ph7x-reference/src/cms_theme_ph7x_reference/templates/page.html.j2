@@ -39,9 +39,10 @@
     {% for entry in latest %}
       <article class="b-card">
         <div class="b-cbody">
+          {% if entry.category %}<span class="b-ctag">{{ entry.category }}</span>{% endif %}
           <a class="b-title" href="{{ entry.url }}">{{ entry.title }}</a>
           {% if entry.summary %}<p>{{ entry.summary }}</p>{% endif %}
-          <div class="b-cmeta"><time datetime="{{ entry.date_iso }}">{{ entry.date_iso }}</time></div>
+          <div class="b-cmeta"><time datetime="{{ entry.date_iso }}">{{ entry.date_human }}</time><span class="b-dot">·</span><span>{{ entry.minutes }} {{ entry.min_read_label }}</span></div>
         </div>
       </article>
     {% endfor %}

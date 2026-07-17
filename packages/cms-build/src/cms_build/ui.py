@@ -31,6 +31,28 @@ DEFAULT_LABELS: dict[str, dict[Language, str]] = {
         Language.FR: "Retour au blog",
         Language.DE: "Zurueck zum Blog",
     },
+    "blog-title": {
+        Language.EN: "Blog",
+        Language.PT_PT: "Blog",
+        Language.ES: "Blog",
+        Language.FR: "Blog",
+        Language.DE: "Blog",
+    },
+    "blog-eyebrow": {
+        Language.EN: "Writing",
+        Language.PT_PT: "Escrita",
+        Language.ES: "Escritura",
+        Language.FR: "Écrits",
+        Language.DE: "Notizen",
+    },
+    "blog-sub": {},
+    "min-read": {
+        Language.EN: "min read",
+        Language.PT_PT: "min de leitura",
+        Language.ES: "min de lectura",
+        Language.FR: "min de lecture",
+        Language.DE: "Min. Lesezeit",
+    },
     "not-found": {
         Language.EN: "Page not found",
         Language.PT_PT: "Página não encontrada",
@@ -39,6 +61,89 @@ DEFAULT_LABELS: dict[str, dict[Language, str]] = {
         Language.DE: "Seite nicht gefunden",
     },
 }
+
+
+MONTHS: dict[Language, tuple[str, ...]] = {
+    Language.EN: (
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ),
+    Language.PT_PT: (
+        "janeiro",
+        "fevereiro",
+        "março",
+        "abril",
+        "maio",
+        "junho",
+        "julho",
+        "agosto",
+        "setembro",
+        "outubro",
+        "novembro",
+        "dezembro",
+    ),
+    Language.ES: (
+        "enero",
+        "febrero",
+        "marzo",
+        "abril",
+        "mayo",
+        "junio",
+        "julio",
+        "agosto",
+        "septiembre",
+        "octubre",
+        "noviembre",
+        "diciembre",
+    ),
+    Language.FR: (
+        "janvier",
+        "février",
+        "mars",
+        "avril",
+        "mai",
+        "juin",
+        "juillet",
+        "août",
+        "septembre",
+        "octobre",
+        "novembre",
+        "décembre",
+    ),
+    Language.DE: (
+        "Januar",
+        "Februar",
+        "März",
+        "April",
+        "Mai",
+        "Juni",
+        "Juli",
+        "August",
+        "September",
+        "Oktober",
+        "November",
+        "Dezember",
+    ),
+}
+
+
+def format_date(day: int, month: int, year: int, language: Language) -> str:
+    name = MONTHS.get(language, MONTHS[SOURCE_LANGUAGE])[month - 1]
+    if language is Language.EN:
+        return f"{day} {name} {year}"
+    if language is Language.DE:
+        return f"{day}. {name} {year}"
+    return f"{day} de {name} de {year}" if language is Language.PT_PT else f"{day} {name} {year}"
 
 
 def ui_label(config: SiteConfig, key: str, language: Language) -> str:
