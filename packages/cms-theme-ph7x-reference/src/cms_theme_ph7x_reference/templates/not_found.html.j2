@@ -1,0 +1,10 @@
+{% extends "base.html.j2" %}
+{% block main %}
+<section class="listing">
+  <div class="wrap">
+    <span class="kick">404</span>
+    <h1>{{ head.title }}</h1>
+    <p><a class="btn" href="{{ not_found.home_url }}">{{ head.site_name }}</a></p>
+  </div>
+</section>
+{% endblock %}

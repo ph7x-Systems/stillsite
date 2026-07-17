@@ -235,6 +235,7 @@ class _SiteBuilder:
                     "key": section.key,
                     "kind": section.kind,
                     "fields": sorted(body.fields.items()),
+                    "data": dict(body.fields),
                     "images": images,
                 }
             )
@@ -352,6 +353,7 @@ class _SiteBuilder:
                 ),
                 "search_index_url": self._search_index_url(language),
                 "search_label": ui_label(self.config, "search", language),
+                "filters": self._category_filters(language),
             }
             self._render("listing", path, context)
 
@@ -411,10 +413,23 @@ class _SiteBuilder:
             "next_url": None,
             "search_index_url": self._search_index_url(language),
             "search_label": ui_label(self.config, "search", language),
+            "filters": self._category_filters(language),
         }
         self._render("listing", path, context)
 
     # Feeds and utility pages
+
+    def _category_filters(self, language: Language) -> list[dict[str, str]]:
+        slugs = sorted(
+            {a.category for a in self.articles_by_language[language] if a.category is not None}
+        )
+        return [
+            {
+                "label": self.config.category_label(slug, language),
+                "url": urls.category_path(self.config, slug, language),
+            }
+            for slug in slugs
+        ]
 
     def _search_index_url(self, language: Language) -> str:
         return urls.blog_index_path(self.config, language) + "search-index.json"

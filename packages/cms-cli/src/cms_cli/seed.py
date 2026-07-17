@@ -27,11 +27,11 @@ from cms_cli.seed_data import (
     ABOUT,
     ABOUT_STORY,
     ARTICLES,
-    COMPASS_SVG,
     HOME,
     HOME_HERO,
     HOME_LATEST,
     MEDIA_ALT,
+    ROCKET_SVG,
     SEED_TIME,
 )
 
@@ -86,19 +86,19 @@ def seed(storage: StorageBackend, project_dir: Path | None = None) -> tuple[int,
     for article_id, (category, tags, days, contents) in ARTICLES.items():
         storage.save_article(_article(article_id, category, tags, days, contents))
 
-    compass = MediaAsset(
-        id="compass",
-        path="images/compass.svg",
+    rocket = MediaAsset(
+        id="rocket",
+        path="images/rocket.svg",
         mime_type="image/svg+xml",
         width=1200,
         height=675,
         alt=dict(MEDIA_ALT),
     )
-    storage.save_media_asset(compass)
+    storage.save_media_asset(rocket)
     if project_dir is not None:
-        target = project_dir / "media" / "images" / "compass.svg"
+        target = project_dir / "media" / "images" / "rocket.svg"
         target.parent.mkdir(parents=True, exist_ok=True)
         if not target.exists():
-            target.write_text(COMPASS_SVG, encoding="utf-8")
+            target.write_text(ROCKET_SVG, encoding="utf-8")
 
     return 2, len(ARTICLES), 1

@@ -4,7 +4,6 @@
 {% include "_head.html.j2" %}
 <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ asset_urls['assets/fonts/inter-latin.woff2'] }}">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ asset_urls['assets/fonts/newsreader-latin.woff2'] }}">
-<link rel="stylesheet" href="{{ asset_urls['assets/htwoo.min.css'] }}">
 <link rel="stylesheet" href="{{ asset_urls['assets/site.css'] }}">
 <script type="speculationrules">
 {"prerender": [{"where": {"href_matches": "/*"}, "eagerness": "moderate"}]}
@@ -17,7 +16,7 @@
     <a class="brand" href="{{ nav.home_url }}">{{ head.site_name }}</a>
     <ul class="menu">
     {% for entry in nav.menu %}
-      <li><a class="hoo-button" href="{{ entry.url }}"><span class="hoo-button-label">{{ entry.label }}</span></a></li>
+      <li><a href="{{ entry.url }}">{{ entry.label }}</a></li>
     {% endfor %}
     </ul>
     <ul class="languages">
@@ -31,12 +30,14 @@
 {% block main %}{% endblock %}
 </main>
 <footer class="site-footer">
-  <ul class="menu">
-  {% for entry in footer.menu %}
-    <li><a href="{{ entry.url }}">{{ entry.label }}</a></li>
-  {% endfor %}
-  </ul>
-  <p>{{ footer.text }}</p>
+  <div class="fg">
+    <ul class="menu">
+    {% for entry in footer.menu %}
+      <li><a href="{{ entry.url }}">{{ entry.label }}</a></li>
+    {% endfor %}
+    </ul>
+    <p>{{ footer.text }}</p>
+  </div>
 </footer>
 </body>
 </html>

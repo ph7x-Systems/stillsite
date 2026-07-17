@@ -30,7 +30,7 @@ def _css_assets(theme: Theme) -> dict[str, str]:
 def test_hidden_rule_is_first(theme: Theme) -> None:
     css = _css_assets(theme)["assets/site.css"]
     stripped = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL).lstrip()
-    assert stripped.startswith("[hidden] { display: none !important; }"), theme.name
+    assert re.match(r"\[hidden\]\s*\{\s*display:\s*none\s*!important;?\s*\}", stripped), theme.name
 
 
 def test_no_external_requests_in_assets(theme: Theme) -> None:
