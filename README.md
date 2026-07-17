@@ -1,8 +1,5 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/logo-on-dark.png">
-    <img src="assets/brand/logo-on-light.png" alt="Stillsite — multilingual, static-first CMS framework" width="220" height="220">
-  </picture>
+  <img src="assets/brand/banner.png" alt="Stillsite — multilingual, static-first CMS framework" width="2316" height="1565">
 </p>
 
 # Stillsite
