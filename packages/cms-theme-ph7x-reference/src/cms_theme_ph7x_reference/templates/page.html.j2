@@ -25,15 +25,17 @@
     {% for name, value in section.fields %}
     {% if name == "heading" %}<h2 class="kicker">{{ value }}</h2>{% else %}<p class="lead">{{ value }}</p>{% endif %}
     {% endfor %}
-    <ul class="entries">
+    <div class="hoo-cardgrid">
     {% for entry in latest %}
-      <li>
-        <a href="{{ entry.url }}">{{ entry.title }}</a>
-        {% if entry.summary %}<p>{{ entry.summary }}</p>{% endif %}
-        <time datetime="{{ entry.date_iso }}">{{ entry.date_iso }}</time>
-      </li>
+      <article class="hoo-card">
+        <a class="hoo-cardtitle" href="{{ entry.url }}">{{ entry.title }}</a>
+        {% if entry.summary %}<p class="hoo-card-summary">{{ entry.summary }}</p>{% endif %}
+        <div class="hoo-cardfooter">
+          <time class="hoo-cardfooter-data" datetime="{{ entry.date_iso }}">{{ entry.date_iso }}</time>
+        </div>
+      </article>
     {% endfor %}
-    </ul>
+    </div>
   </section>
   {% elif section.kind == "story" %}
   <section class="section story" id="{{ section.key }}">

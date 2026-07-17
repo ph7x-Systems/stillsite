@@ -46,6 +46,20 @@ URI and scroll-driven animations behind `@supports`, all disabled under
 | `story` | `h2` + prose paragraphs + images |
 | _any other_ | Generic field/image rendering (graceful fallback) |
 
+## hTWOo components in the reference theme (in force)
+
+hTWOo Core 2.7.1 is vendored (MIT, `HTWOO-LICENSE.txt`; Segoe web-font
+fetches stripped, reduced-motion kill-switch appended) and themed onto the
+editorial palette through a Fluent token bridge (`--themePrimary`,
+`--neutral*`, … mapped to our oklch tokens):
+
+| Chrome | hTWOo component |
+| --- | --- |
+| Menu links (header/footer) | `hoo-button` |
+| Entry lists (listing + latest) | `hoo-cardgrid` / `hoo-card` with `hoo-cardtitle`/`hoo-cardfooter` |
+| Pagination controls | `hoo-button` |
+| Search input | `hoo-input-text` |
+
 ## Admin panel (Milestone 3 — planned)
 
 Leading candidate for the component set: **hTWOo** (`n8design/htwoo`, MIT —

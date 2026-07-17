@@ -16,7 +16,7 @@ class SiteSearch extends HTMLElement {
       <form role="search" class="site-search-form">
         <label>
           <span class="site-search-label">${label}</span>
-          <input type="search" name="q" autocomplete="off">
+          <input class="hoo-input-text" type="search" name="q" autocomplete="off">
         </label>
       </form>
       <p class="site-search-count" aria-live="polite" hidden></p>
