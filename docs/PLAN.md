@@ -98,6 +98,13 @@ Everything user-facing must be extensible without forking the framework:
 - License: Apache-2.0 ([ADR-0002](adr/0002-license-apache-2.md))
 - Remote repository: `ph7x-Systems/Ph7x.CMS.Framework` on GitHub (private; public later)
 
+## Testing
+
+Every documented guarantee has a test that fails when it stops being true —
+layers, CI mapping and policies in [TEST_PLAN.md](TEST_PLAN.md). The storage
+and theme conformance suites are public contracts for third-party backends
+and themes.
+
 ## Security
 
 Security is part of each milestone's definition of done — threat model,
