@@ -11,7 +11,8 @@ Short plan by milestones, per the brief ([BRIEF.md](BRIEF.md)). Small increments
 - [x] GitHub Actions CI: lint, types, tests, docs link check, secret scan
       (content validation and example build jobs arrive with Milestone 2)
 - [x] ADR-0001: base architecture (Python core + FastAPI admin)
-- [ ] Branch protection on `main` requiring CI checks (enable once CI is green)
+- [x] Branch protection on `main`: force-pushes and deletions blocked; all six
+      CI checks required (strict, up-to-date branches) for pull requests
 
 ## Milestone 1 — Content core
 
