@@ -15,3 +15,9 @@ Report vulnerabilities privately to the `ph7x-Systems` organization maintainers.
 ## Scope
 
 This repository contains no real credentials or infrastructure. Any credential found in the history must be treated as compromised and reported.
+
+## Engineering strategy
+
+The full security plan — threat model per component, controls in force,
+planned controls per milestone and the go-public checklist — lives in
+[docs/SECURITY_STRATEGY.md](docs/SECURITY_STRATEGY.md).

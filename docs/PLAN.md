@@ -88,6 +88,12 @@ Everything user-facing must be extensible without forking the framework:
 - License: Apache-2.0 ([ADR-0002](adr/0002-license-apache-2.md))
 - Remote repository: `ph7x-Systems/Ph7x.CMS.Framework` on GitHub (private; public later)
 
+## Security
+
+Security is part of each milestone's definition of done — threat model,
+controls in force and per-milestone gates are documented in
+[SECURITY_STRATEGY.md](SECURITY_STRATEGY.md).
+
 ## Constraints
 
 - No changes to the current corporate site (`Ph7x.Site.Corporate` / ph7x.com)
