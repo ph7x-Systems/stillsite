@@ -156,7 +156,8 @@ theme is documented in [THEME_GUIDE.md](THEME_GUIDE.md); the frontend
 technology strategy (native platform, Web Component islands, no framework) is
 [ADR-0010](adr/0010-frontend-technology-strategy.md). The outward roadmap is
 [ROADMAP.md](ROADMAP.md). Community sharing — licenses, naming, registry — is
-[ECOSYSTEM.md](ECOSYSTEM.md) / [ADR-0011](adr/0011-community-ecosystem-policy.md).
+[ECOSYSTEM.md](ECOSYSTEM.md) / [ADR-0011](adr/0011-community-ecosystem-policy.md). The component inventory
+(theme chrome, islands, admin candidates) is [COMPONENTS.md](COMPONENTS.md).
 
 ## Open decisions
 

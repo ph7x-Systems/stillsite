@@ -3,7 +3,8 @@
 How to build a Stillsite theme — from override to installable package. The
 contracts referenced here are code (`cms_build.themes.Theme`), guarded by
 tests; this guide shows the path. Read [DESIGN_RULES.md](DESIGN_RULES.md)
-first: conformance is what makes a theme a theme.
+first: conformance is what makes a theme a theme. The shipped components and
+islands are inventoried in [COMPONENTS.md](COMPONENTS.md).
 
 ## Level 0 — override the current theme (no code)
 

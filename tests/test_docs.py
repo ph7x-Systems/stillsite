@@ -70,3 +70,27 @@ def test_ci_workflow_covers_the_checks_the_readme_promises() -> None:
     for tool in ("ruff", "mypy", "pytest"):
         assert tool in workflow, f"CI workflow no longer runs {tool}"
         assert tool in README, f"README no longer documents {tool}"
+
+
+def test_readme_images_exist() -> None:
+    references = re.findall(r'<img src="([^"#]+)"', README) + re.findall(
+        r'srcset="([^"#]+)"', README
+    )
+    assert references, "README references no images"
+    for reference in references:
+        assert (REPO_ROOT / reference).is_file(), f"README references missing image {reference}"
+
+
+def test_every_shipped_custom_element_is_documented() -> None:
+    components = (REPO_ROOT / "docs" / "COMPONENTS.md").read_text(encoding="utf-8")
+    assets_dir = (
+        REPO_ROOT / "packages" / "cms-build" / "src" / "cms_build" / "themes" / "default" / "assets"
+    )
+    defined: set[str] = set()
+    for script in sorted(assets_dir.glob("*.js")):
+        defined.update(
+            re.findall(r'customElements\.define\(\s*["\']([a-z0-9-]+)["\']', script.read_text())
+        )
+    assert defined, "no custom elements found in theme assets"
+    for element in sorted(defined):
+        assert f"`<{element}>`" in components, f"custom element <{element}> not in COMPONENTS.md"
