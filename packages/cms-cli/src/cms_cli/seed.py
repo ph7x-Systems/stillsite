@@ -28,6 +28,9 @@ from cms_cli.seed_data import (
     ABOUT_STORY,
     ARTICLES,
     HOME,
+    HOME_ABOUT,
+    HOME_CTA,
+    HOME_EXPERTISE,
     HOME_HERO,
     HOME_LATEST,
     MEDIA_ALT,
@@ -78,7 +81,13 @@ def seed(storage: StorageBackend, project_dir: Path | None = None) -> tuple[int,
         _page(
             "home",
             HOME,
-            [("hero", "hero", HOME_HERO), ("latest", "latest-articles", HOME_LATEST)],
+            [
+                ("hero", "hero", HOME_HERO),
+                ("about", "story", HOME_ABOUT),
+                ("expertise", "expertise", HOME_EXPERTISE),
+                ("latest", "latest-articles", HOME_LATEST),
+                ("join", "contact", HOME_CTA),
+            ],
         )
     )
     storage.save_page(_page("about", ABOUT, [("story", "story", ABOUT_STORY)]))

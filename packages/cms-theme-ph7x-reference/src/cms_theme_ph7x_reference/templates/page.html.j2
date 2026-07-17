@@ -60,7 +60,46 @@
       {% for image in section.images %}
       <img src="{{ image.url }}" alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}">
       {% endfor %}
+      {% if section.data.meta1k %}
+      <div class="meta">
+        {% for i in range(1, 7) %}
+        {% set k = section.data.get("meta" ~ i ~ "k") %}
+        {% if k %}
+        <div><div class="k">{{ k }}</div><div class="v">{{ section.data.get("meta" ~ i ~ "v") }}</div></div>
+        {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
     </div>
+  </div>
+</section>
+{% elif section.kind == "expertise" %}
+<section class="sec" id="{{ section.key }}">
+  <div class="wrap">
+    {% if section.data.kicker %}<span class="kick">{{ section.data.kicker }}</span>{% endif %}
+    <h2>{{ section.data.heading }}</h2>
+    <div class="exp">
+      {% for i in range(1, 9) %}
+      {% set title = section.data.get("row" ~ i ~ "t") %}
+      {% if title %}
+      <div class="row">
+        <span class="no">{{ section.data.get("row" ~ i ~ "no") }}</span>
+        <h3>{{ title }}</h3>
+        <p>{{ section.data.get("row" ~ i ~ "d") }}</p>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% elif section.kind == "contact" %}
+<section class="sec contact" id="{{ section.key }}">
+  <div class="wrap">
+    {% if section.data.kicker %}<span class="kick">{{ section.data.kicker }}</span>{% endif %}
+    <p class="big">{{ section.data.heading }}{% if section.data.accent %} <em>{{ section.data.accent }}</em>{% endif %}</p>
+    {% if section.data.button and nav.menu %}
+    <p class="cta-row"><a class="btn btn-lg" href="{{ nav.menu[-1].url }}">{{ section.data.button }} <span class="ar">&rarr;</span></a></p>
+    {% endif %}
   </div>
 </section>
 {% else %}
