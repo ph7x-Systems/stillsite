@@ -21,13 +21,19 @@ Short plan by milestones, per the brief ([BRIEF.md](BRIEF.md)). Small increments
 - [x] Translation model: EN as source; `missing / outdated / complete` states
       derived from source checksums (outdated detection is automatic)
 - [x] PoC persistence: SQLite via stdlib `sqlite3`, no ORM yet ([ADR-0003](adr/0003-sqlite-poc-persistence.md))
+- [x] Storage backend factory ([ADR-0004](adr/0004-storage-backend-factory.md)):
+      one `StorageBackend` interface + URL-scheme factory (`create_storage`);
+      SQLite implemented; PostgreSQL, SQL Server and MySQL/MariaDB registered
+      as planned engines; custom backends pluggable via `register_backend`
 - [x] Versioned migrations (ordered scripts tracked via `user_version`)
 - [x] Deterministic JSON/Markdown export as the portable source of truth
 - [x] Pages composed of typed sections (`kind` maps to a theme template per the
       extensibility contracts); page state aggregates its sections (worst wins)
 - [x] Media assets: mandatory EN alt text, translatable alt, image dimensions
       required, safe relative paths
-- [ ] PostgreSQL backend (prod) — ORM/query-layer decision gets its own ADR
+- [ ] Server backends: PostgreSQL (prod target), SQL Server, MySQL/MariaDB —
+      implement behind the ADR-0004 interface; shared-layer decision (e.g.
+      SQLAlchemy) gets its own ADR; test via project-prefixed Docker containers
 
 ## Milestone 2 — Validation and build
 

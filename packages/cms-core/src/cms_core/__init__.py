@@ -10,6 +10,7 @@ from cms_core.models import (
 )
 from cms_core.pages import Page, PageContent, Section, SectionContent, new_page
 from cms_core.states import ContentStatus, TranslationState
+from cms_core.storage import StorageBackend, create_storage
 from cms_core.translatable import (
     ChecksummedContent,
     TranslatableModel,
@@ -33,9 +34,11 @@ __all__ = [
     "PageContent",
     "Section",
     "SectionContent",
+    "StorageBackend",
     "TranslatableModel",
     "Translation",
     "TranslationState",
+    "create_storage",
     "new_article",
     "new_page",
     "worst_state",
