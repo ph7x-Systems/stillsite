@@ -159,7 +159,10 @@ technology strategy (native platform, Web Component islands, no framework) is
 
 ## Open decisions
 
-- Admin UI: server-rendered vs. lightweight TypeScript (decide in Milestone 3, with an ADR)
+- Admin UI: server-rendered vs. lightweight TypeScript (decide in Milestone 3,
+  with an ADR). Leading candidate for the look: hTWOo (n8design/htwoo, MIT) —
+  Fluent Design in pure HTML/CSS/JS, pairs naturally with a server-rendered
+  FastAPI UI and adds no frontend framework; would be vendored as local assets
 
 ## Decided
 
