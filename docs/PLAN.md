@@ -47,6 +47,11 @@ Short plan by milestones, per the brief ([BRIEF.md](BRIEF.md)). Small increments
       (kept in-stack instead of a Node-based generator; templates derive from
       `examples/multilingual-company-site`; record Copier decision as an ADR)
 - [ ] Static export independent of the admin panel, ready for Azure Static Web Apps
+- [ ] Deployment target adapters ([ADR-0005](adr/0005-deployment-target-adapters.md)):
+      one deterministic artifact + per-target config via `cms export --target`
+      — `swa` (Azure SWA Free and Standard, same artifact), `nginx` (on-prem/
+      container), `generic`; `iis` when first needed; custom targets pluggable
+      via `register_target`
 
 ## Milestone 3 — Admin panel
 
