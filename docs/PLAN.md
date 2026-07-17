@@ -149,10 +149,17 @@ Everything user-facing must be extensible without forking the framework:
   steps and CLI subcommands. Mechanism (entry points vs. explicit registry)
   decided in an ADR when the first extension lands.
 
+## Design and themes
+
+Normative design rules live in [DESIGN_RULES.md](DESIGN_RULES.md); building a
+theme is documented in [THEME_GUIDE.md](THEME_GUIDE.md); the frontend
+technology strategy (native platform, Web Component islands, no framework) is
+[ADR-0010](adr/0010-frontend-technology-strategy.md). The outward roadmap is
+[ROADMAP.md](ROADMAP.md).
+
 ## Open decisions
 
 - Admin UI: server-rendered vs. lightweight TypeScript (decide in Milestone 3, with an ADR)
-- Static search strategy (pre-generated index vs. lunr-like)
 
 ## Decided
 
