@@ -84,6 +84,28 @@ Layering and development rules for this milestone are fixed in
 - [ ] `examples/multilingual-company-site` with fictional content in 5 languages
 - [ ] Documentation: installation, architecture, content model, theme extension, deployment
 
+## Next steps (priority order)
+
+1. **Close Milestone 2 — PoC parity**: blog categories, tags and pagination
+   (`/blog/category/<slug>/`, `/blog/page/2/`); 404 page; JSON-LD
+   (organization + article); media file pipeline (copy assets into the
+   artifact); per-project theme overrides (+ ADR); `cms init` via Copier.
+2. **Close Milestone 1 — server backends**: PostgreSQL behind the ADR-0004
+   interface, conformance-tested against a fresh project-prefixed Docker
+   container (`ph7x-cms-postgres`); SQL Server and MySQL/MariaDB follow the
+   same mold.
+3. **Milestone 3 — admin panel** (FastAPI): auth/roles, translation-status
+   dashboard, side-by-side per-language editor, media library, editorial
+   workflow.
+4. **Milestone 4 — reference theme + launch**: extract the real design system
+   into `cms-theme-ph7x-reference`, polish the example, installation docs —
+   then the public announcement.
+
+Small pending items: GitHub social preview upload (owner, web UI only);
+reserve the PyPI names (`stillsite`; decide `stillsite-*` vs `cms-*`
+distribution naming at first release, with an ADR); rename the local working
+folder to match the project name.
+
 ## Extensibility contracts (cross-milestone)
 
 Everything user-facing must be extensible without forking the framework:
