@@ -128,5 +128,7 @@ def seed(storage: StorageBackend) -> tuple[int, int]:
 
     article = _seed_article("why-every-atlas-starts-blank", _FIRST_POST)
     article.status = ContentStatus.PUBLISHED
+    article.category = "field-notes"
+    article.tags = ("craft", "maps")
     storage.save_article(article)
     return 1, 1

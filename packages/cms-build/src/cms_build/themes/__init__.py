@@ -7,6 +7,7 @@ minimal (the polished reference theme is Milestone 4).
 """
 
 from collections.abc import Callable, Mapping
+from pathlib import Path
 from typing import Protocol, runtime_checkable
 
 
@@ -19,7 +20,8 @@ class Theme(Protocol):
     def assets(self) -> Mapping[str, bytes]: ...
 
 
-ThemeFactory = Callable[[], Theme]
+ThemeFactory = Callable[[Path | None], Theme]
+"""A factory receives the project's overrides directory (or None)."""
 
 _REGISTRY: dict[str, ThemeFactory] = {}
 
@@ -32,12 +34,12 @@ def available_themes() -> tuple[str, ...]:
     return tuple(sorted(_REGISTRY))
 
 
-def create_theme(name: str) -> Theme:
+def create_theme(name: str, overrides: Path | None = None) -> Theme:
     factory = _REGISTRY.get(name)
     if factory is None:
         known = ", ".join(available_themes())
         raise ValueError(f"unknown theme {name!r} (known themes: {known})")
-    return factory()
+    return factory(overrides)
 
 
 def _register_builtin() -> None:

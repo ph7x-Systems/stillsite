@@ -19,6 +19,9 @@
 <link rel="alternate" hreflang="{{ alternate.hreflang }}" href="{{ alternate.href }}">
 {% endfor %}
 <link rel="canonical" href="{{ head.canonical }}">
+{% if head.json_ld %}
+<script type="application/ld+json">{{ head.json_ld | safe }}</script>
+{% endif %}
 <link rel="stylesheet" href="{{ asset_urls['assets/site.css'] }}">
 </head>
 <body>

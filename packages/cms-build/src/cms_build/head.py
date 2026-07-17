@@ -39,6 +39,7 @@ class Head:
     alternates: tuple[Alternate, ...]
     og_locale: str
     og_locale_alternates: tuple[str, ...]
+    json_ld: str | None = None
 
 
 def hreflang_code(language: Language) -> str:
@@ -53,6 +54,7 @@ def build_head(
     language: Language,
     paths_by_language: dict[Language, str],
     og_type: str = "website",
+    json_ld: str | None = None,
 ) -> Head:
     ordered = [lang for lang in config.all_languages if lang in paths_by_language]
     alternates = [
@@ -76,4 +78,5 @@ def build_head(
         alternates=tuple(alternates),
         og_locale=_OG_LOCALES[language],
         og_locale_alternates=tuple(_OG_LOCALES[lang] for lang in ordered if lang is not language),
+        json_ld=json_ld,
     )

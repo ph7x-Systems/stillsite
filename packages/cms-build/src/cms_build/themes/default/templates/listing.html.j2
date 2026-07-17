@@ -11,5 +11,12 @@
     </li>
   {% endfor %}
   </ul>
+  {% if listing.pages > 1 %}
+  <nav class="pagination" aria-label="Pagination">
+    {% if listing.previous_url %}<a rel="prev" href="{{ listing.previous_url }}">&larr;</a>{% endif %}
+    <span>{{ listing.page }} / {{ listing.pages }}</span>
+    {% if listing.next_url %}<a rel="next" href="{{ listing.next_url }}">&rarr;</a>{% endif %}
+  </nav>
+  {% endif %}
 </section>
 {% endblock %}

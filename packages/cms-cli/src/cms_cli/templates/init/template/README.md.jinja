@@ -1,0 +1,15 @@
+# {{ project_name }}
+
+A Stillsite project. Common commands:
+
+```bash
+cms seed       # starter content (fictional, all languages)
+cms validate   # rules; non-zero exit on errors
+cms build      # deterministic build into _site/
+cms export --target swa   # or nginx | generic
+cms preview
+```
+
+- Put media files under `media/` and reference them by relative path.
+- Override any theme template or asset under `theme/templates` and
+  `theme/assets` without forking the theme.

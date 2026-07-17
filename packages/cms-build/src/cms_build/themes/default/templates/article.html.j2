@@ -5,7 +5,19 @@
   {% if article.summary %}
   <p class="lead">{{ article.summary }}</p>
   {% endif %}
-  <p class="meta"><time datetime="{{ article.date_iso }}">{{ article.date_iso }}</time></p>
+  <p class="meta">
+    <time datetime="{{ article.date_iso }}">{{ article.date_iso }}</time>
+    {% if article.category %}
+    · <a class="category" href="{{ article.category.url }}">{{ article.category.label }}</a>
+    {% endif %}
+  </p>
   <div class="body">{{ article.body_html }}</div>
+  {% if article.tags %}
+  <ul class="tags">
+    {% for tag in article.tags %}
+    <li><a href="{{ tag.url }}">#{{ tag.slug }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
 </article>
 {% endblock %}

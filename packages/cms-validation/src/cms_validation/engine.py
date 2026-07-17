@@ -45,6 +45,8 @@ class ValidationContext:
     """Configuration a rule may consult; never read from globals."""
 
     required_languages: tuple[Language, ...]
+    known_categories: tuple[str, ...] | None = None
+    """None disables the check; a tuple restricts article categories to it."""
 
 
 @runtime_checkable

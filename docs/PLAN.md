@@ -52,17 +52,18 @@ Layering and development rules for this milestone are fixed in
       articles with safe Markdown (raw HTML disabled), per-language listings,
       RSS, search index, sitemap, robots, canonical + full hreflang cluster,
       hash-versioned assets
-- [ ] `cms-build` follow-ups: categories, tags, pagination, 404 page,
-      JSON-LD blocks, media file pipeline
+- [x] `cms-build` follow-ups: categories (localized labels from config), tags,
+      listing pagination, 404 page, JSON-LD (organization on home, Article on
+      posts), media file pipeline (`media/` copied into the artifact)
 - [x] Theme interface: rendering goes through a registered theme package
       (`register_theme`); built-in minimal `default` theme (templates +
       assets, autoescape everywhere)
-- [ ] Theme overrides: per-project template/token overrides without forking
-      (design to be recorded in an ADR)
+- [x] Theme overrides ([ADR-0007](adr/0007-theme-overrides.md)): file shadowing
+      under the project's `theme/` — any template or asset, no fork
 - [x] CLI (`cms`, Typer): `seed`, `validate`, `build`, `export`, `preview`
-- [ ] `cms init`: interactive scaffolding of new projects from Copier templates
-      (kept in-stack instead of a Node-based generator; templates derive from
-      `examples/multilingual-company-site`; record Copier decision as an ADR)
+- [x] `cms init` ([ADR-0008](adr/0008-cms-init-copier.md)): Copier-based
+      scaffolding shipped inside `cms-cli`; `.copier-answers.yml` enables
+      `copier update` on generated projects
 - [x] Static export independent of the admin panel, ready for Azure Static Web Apps
 - [x] Deployment target adapters ([ADR-0005](adr/0005-deployment-target-adapters.md)):
       `swa` (Free and Standard, same artifact), `nginx` (conf + Dockerfile),
@@ -86,10 +87,9 @@ Layering and development rules for this milestone are fixed in
 
 ## Next steps (priority order)
 
-1. **Close Milestone 2 — PoC parity**: blog categories, tags and pagination
-   (`/blog/category/<slug>/`, `/blog/page/2/`); 404 page; JSON-LD
-   (organization + article); media file pipeline (copy assets into the
-   artifact); per-project theme overrides (+ ADR); `cms init` via Copier.
+1. ~~Close Milestone 2 — PoC parity~~ **done** (categories/tags/pagination,
+   404, JSON-LD, media pipeline, theme overrides ADR-0007, `cms init`
+   ADR-0008).
 2. **Close Milestone 1 — server backends**: PostgreSQL behind the ADR-0004
    interface, conformance-tested against a fresh project-prefixed Docker
    container (`ph7x-cms-postgres`); SQL Server and MySQL/MariaDB follow the

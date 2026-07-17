@@ -30,6 +30,21 @@ class Project:
                 media=storage.load_all_media_assets(),
             )
 
+    @property
+    def theme_overrides(self) -> Path | None:
+        overrides = self.directory / "theme"
+        return overrides if overrides.is_dir() else None
+
+    def collect_media_files(self) -> dict[str, bytes]:
+        media_dir = self.directory / "media"
+        if not media_dir.is_dir():
+            return {}
+        return {
+            path.relative_to(media_dir).as_posix(): path.read_bytes()
+            for path in sorted(media_dir.rglob("*"))
+            if path.is_file() and not path.name.startswith(".")
+        }
+
 
 def load_project(directory: Path) -> Project:
     config_path = directory / PROJECT_FILE
@@ -44,6 +59,9 @@ def load_project(directory: Path) -> Project:
         languages=tuple(Language(code) for code in site_data.get("languages", [])),
         blog_path=site_data.get("blog_path", "blog"),
         theme=site_data.get("theme", "default"),
+        page_size=site_data.get("page_size", 10),
+        categories=site_data.get("categories", {}),
+        organization=site_data.get("organization"),
     )
 
     storage_url = data.get("storage", {}).get("url", "sqlite:///content.sqlite3")

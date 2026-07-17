@@ -6,11 +6,11 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
-from cms_build import build_site, create_target
+from cms_build import build_site, create_target, create_theme
 from cms_build.builder import Artifact
 from cms_validation import Report, RuleSet, ValidationContext, default_ruleset
 
-from cms_cli.project import Project, load_project
+from cms_cli.project import PROJECT_FILE, Project, load_project
 from cms_cli.seed import seed
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
@@ -32,7 +32,12 @@ def _project(directory: Path) -> Project:
 def _validate(project: Project) -> Report:
     content = project.load_content()
     ruleset = RuleSet(rules=default_ruleset())
-    context = ValidationContext(required_languages=project.site.languages)
+    context = ValidationContext(
+        required_languages=project.site.languages,
+        known_categories=(
+            tuple(sorted(project.site.categories)) if project.site.categories else None
+        ),
+    )
     return ruleset.run(content, context)
 
 
@@ -54,6 +59,32 @@ def _write_artifact(artifact: Artifact, output: Path) -> int:
     return len(artifact.paths())
 
 
+@app.command()
+def init(
+    directory: Annotated[Path, typer.Argument(help="Directory for the new project")],
+    name: Annotated[str, typer.Option(help="Site name")] = "My Stillsite",
+    base_url: Annotated[str, typer.Option(help="Canonical base URL")] = "https://example.com",
+    languages: Annotated[
+        str, typer.Option(help="Required target languages, comma-separated")
+    ] = "pt-pt, es, fr, de",
+) -> None:
+    """Scaffold a new project from the built-in Copier template."""
+    from copier import run_copy
+
+    if (directory / PROJECT_FILE).exists():
+        typer.echo(f"error: {directory} already contains {PROJECT_FILE}", err=True)
+        raise typer.Exit(code=2)
+    template = Path(__file__).parent / "templates" / "init"
+    run_copy(
+        str(template),
+        str(directory),
+        data={"project_name": name, "base_url": base_url, "languages": languages},
+        defaults=True,
+        quiet=True,
+    )
+    typer.echo(f"created {directory / PROJECT_FILE} — next: cms seed -p {directory}")
+
+
 @app.command(name="seed")
 def seed_command(project_dir: ProjectDir = Path()) -> None:
     """Create fictional starter content in the project storage."""
@@ -73,6 +104,16 @@ def validate(project_dir: ProjectDir = Path()) -> None:
         raise typer.Exit(code=1)
 
 
+def _build_artifact(project: Project) -> Artifact:
+    theme = create_theme(project.site.theme, overrides=project.theme_overrides)
+    return build_site(
+        project.site,
+        project.load_content(),
+        theme=theme,
+        media_files=project.collect_media_files(),
+    )
+
+
 @app.command()
 def build(project_dir: ProjectDir = Path()) -> None:
     """Validate, then produce the deterministic static build."""
@@ -81,7 +122,7 @@ def build(project_dir: ProjectDir = Path()) -> None:
     if not report.ok:
         _report(report)
         raise typer.Exit(code=1)
-    artifact = build_site(project.site, project.load_content())
+    artifact = _build_artifact(project)
     written = _write_artifact(artifact, project.output)
     typer.echo(f"built {written} file(s) into {project.output} (digest {artifact.digest()[:12]})")
 
@@ -97,7 +138,7 @@ def export(
     if not report.ok:
         _report(report)
         raise typer.Exit(code=1)
-    artifact = build_site(project.site, project.load_content())
+    artifact = _build_artifact(project)
     adapter = create_target(target)
     for path, data in sorted(adapter.extra_files(project.site, artifact).items()):
         artifact.add(path, data)

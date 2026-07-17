@@ -1,0 +1,16 @@
+_subdirectory: template
+
+project_name:
+  type: str
+  help: Site name shown in titles and feeds
+  default: My Stillsite
+
+base_url:
+  type: str
+  help: Canonical base URL of the published site
+  default: https://example.com
+
+languages:
+  type: str
+  help: Required target languages (comma-separated; EN is always the source)
+  default: pt-pt, es, fr, de
