@@ -5,7 +5,7 @@ description = "Deterministic static site generator for Stillsite"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"
-dependencies = ["cms-core", "cms-validation"]
+dependencies = ["cms-core", "cms-validation", "jinja2>=3.1", "markdown-it-py>=3.0"]
 
 [build-system]
 requires = ["hatchling"]

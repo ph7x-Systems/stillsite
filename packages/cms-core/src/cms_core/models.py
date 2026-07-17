@@ -21,9 +21,10 @@ class ArticleContent(ChecksummedContent):
     title: str = Field(min_length=1)
     summary: str = ""
     body_markdown: str = ""
+    slug: str | None = Field(default=None, pattern=SLUG_PATTERN)
 
     def checksum_payload(self) -> tuple[str, ...]:
-        return (self.title, self.summary, self.body_markdown)
+        return (self.title, self.summary, self.body_markdown, self.slug or "")
 
 
 class Article(TranslatableModel[ArticleContent]):

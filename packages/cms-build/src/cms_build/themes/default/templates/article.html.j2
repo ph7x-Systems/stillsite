@@ -1,0 +1,11 @@
+{% extends "base.html.j2" %}
+{% block main %}
+<article class="article">
+  <h1>{{ article.title }}</h1>
+  {% if article.summary %}
+  <p class="lead">{{ article.summary }}</p>
+  {% endif %}
+  <p class="meta"><time datetime="{{ article.date_iso }}">{{ article.date_iso }}</time></p>
+  <div class="body">{{ article.body_html }}</div>
+</article>
+{% endblock %}

@@ -91,6 +91,10 @@ MIGRATIONS: tuple[str, ...] = (
         PRIMARY KEY (media_id, language)
     );
     """,
+    """
+    ALTER TABLE articles ADD COLUMN slug TEXT;
+    ALTER TABLE translations ADD COLUMN slug TEXT;
+    """,
 )
 
 
@@ -136,12 +140,12 @@ class SQLiteBackend(StorageBackend):
         with self._connection as connection:
             connection.execute(
                 "INSERT INTO articles"
-                " (id, status, created_at, updated_at, title, summary, body_markdown)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?)"
+                " (id, status, created_at, updated_at, title, summary, body_markdown, slug)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
                 " ON CONFLICT(id) DO UPDATE SET"
                 " status = excluded.status, updated_at = excluded.updated_at,"
                 " title = excluded.title, summary = excluded.summary,"
-                " body_markdown = excluded.body_markdown",
+                " body_markdown = excluded.body_markdown, slug = excluded.slug",
                 (
                     article.id,
                     article.status.value,
@@ -150,13 +154,14 @@ class SQLiteBackend(StorageBackend):
                     article.source.title,
                     article.source.summary,
                     article.source.body_markdown,
+                    article.source.slug,
                 ),
             )
             connection.execute("DELETE FROM translations WHERE article_id = ?", (article.id,))
             connection.executemany(
                 "INSERT INTO translations"
-                " (article_id, language, title, summary, body_markdown, source_checksum)"
-                " VALUES (?, ?, ?, ?, ?, ?)",
+                " (article_id, language, title, summary, body_markdown, slug, source_checksum)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?)",
                 [
                     (
                         article.id,
@@ -164,6 +169,7 @@ class SQLiteBackend(StorageBackend):
                         translation.content.title,
                         translation.content.summary,
                         translation.content.body_markdown,
+                        translation.content.slug,
                         translation.source_checksum,
                     )
                     for language, translation in sorted(
@@ -174,7 +180,7 @@ class SQLiteBackend(StorageBackend):
 
     def load_article(self, article_id: str) -> Article | None:
         row = self._connection.execute(
-            "SELECT id, status, created_at, updated_at, title, summary, body_markdown"
+            "SELECT id, status, created_at, updated_at, title, summary, body_markdown, slug"
             " FROM articles WHERE id = ?",
             (article_id,),
         ).fetchone()
@@ -182,20 +188,22 @@ class SQLiteBackend(StorageBackend):
             return None
         translations: dict[Language, Translation[ArticleContent]] = {}
         for t_row in self._connection.execute(
-            "SELECT language, title, summary, body_markdown, source_checksum"
+            "SELECT language, title, summary, body_markdown, slug, source_checksum"
             " FROM translations WHERE article_id = ? ORDER BY language",
             (article_id,),
         ):
             translations[Language(t_row[0])] = Translation[ArticleContent](
-                content=ArticleContent(title=t_row[1], summary=t_row[2], body_markdown=t_row[3]),
-                source_checksum=t_row[4],
+                content=ArticleContent(
+                    title=t_row[1], summary=t_row[2], body_markdown=t_row[3], slug=t_row[4]
+                ),
+                source_checksum=t_row[5],
             )
         return Article(
             id=row[0],
             status=ContentStatus(row[1]),
             created_at=datetime.fromisoformat(row[2]),
             updated_at=datetime.fromisoformat(row[3]),
-            source=ArticleContent(title=row[4], summary=row[5], body_markdown=row[6]),
+            source=ArticleContent(title=row[4], summary=row[5], body_markdown=row[6], slug=row[7]),
             translations=translations,
         )
 

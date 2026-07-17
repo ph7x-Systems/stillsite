@@ -13,6 +13,7 @@ env:
     packages/cms-core
     packages/cms-validation
     packages/cms-build
+    packages/cms-cli
 
 jobs:
   lint:
@@ -59,6 +60,28 @@ jobs:
           python -m pip install --group dev
           for pkg in $PACKAGES; do python -m pip install -e "$pkg"; done
       - run: pytest
+
+  example-build:
+    name: Example build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      - run: |
+          for pkg in $PACKAGES; do python -m pip install -e "$pkg"; done
+      - name: Seed, validate, build and export the example site
+        run: |
+          cms seed     -p examples/multilingual-company-site
+          cms validate -p examples/multilingual-company-site
+          cms build    -p examples/multilingual-company-site
+          cms export   -p examples/multilingual-company-site --target swa
+          test -f examples/multilingual-company-site/_site/index.html
+          test -f examples/multilingual-company-site/_site/pt-pt/index.html
+          test -f examples/multilingual-company-site/_site/sitemap.xml
+          test -f examples/multilingual-company-site/_site/staticwebapp.config.json
 
   docs-links:
     name: Docs internal links

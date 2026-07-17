@@ -1,0 +1,12 @@
+[site]
+name = "Aurora Cartography"
+base_url = "https://example.com"
+languages = ["pt-pt", "es", "fr", "de"]
+blog_path = "blog"
+theme = "default"
+
+[storage]
+url = "sqlite:///content.sqlite3"
+
+[build]
+output = "_site"

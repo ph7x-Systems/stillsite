@@ -42,21 +42,32 @@ Short plan by milestones, per the brief ([BRIEF.md](BRIEF.md)). Small increments
 
 ## Milestone 2 — Validation and build
 
-- [ ] `cms-validation`: language parity, structure, editorial rules, configurable per project
-- [ ] `cms-build`: deterministic generator — pages, listings, categories, tags, static search, RSS, sitemap, canonical, hreflang
-- [ ] Theme interface: HTML rendering goes through a theme package (templates +
-      design tokens + static assets); any template/partial/token overridable per
-      project without forking the theme (design to be recorded in an ADR)
-- [ ] CLI (`cms`): `validate`, `build`, `preview`, `export`, `seed` — Typer-based
+Layering and development rules for this milestone are fixed in
+[ARCHITECTURE.md](ARCHITECTURE.md) / [ADR-0006](adr/0006-layered-architecture.md).
+
+- [x] `cms-validation`: composable rule engine (enable/disable per project) with
+      core rules — required translations, unique slugs per language, media
+      references, alt-text coverage; publishing gated on zero errors
+- [x] `cms-build` MVP: deterministic generator — pages with typed sections,
+      articles with safe Markdown (raw HTML disabled), per-language listings,
+      RSS, search index, sitemap, robots, canonical + full hreflang cluster,
+      hash-versioned assets
+- [ ] `cms-build` follow-ups: categories, tags, pagination, 404 page,
+      JSON-LD blocks, media file pipeline
+- [x] Theme interface: rendering goes through a registered theme package
+      (`register_theme`); built-in minimal `default` theme (templates +
+      assets, autoescape everywhere)
+- [ ] Theme overrides: per-project template/token overrides without forking
+      (design to be recorded in an ADR)
+- [x] CLI (`cms`, Typer): `seed`, `validate`, `build`, `export`, `preview`
 - [ ] `cms init`: interactive scaffolding of new projects from Copier templates
       (kept in-stack instead of a Node-based generator; templates derive from
       `examples/multilingual-company-site`; record Copier decision as an ADR)
-- [ ] Static export independent of the admin panel, ready for Azure Static Web Apps
-- [ ] Deployment target adapters ([ADR-0005](adr/0005-deployment-target-adapters.md)):
-      one deterministic artifact + per-target config via `cms export --target`
-      — `swa` (Azure SWA Free and Standard, same artifact), `nginx` (on-prem/
-      container), `generic`; `iis` when first needed; custom targets pluggable
-      via `register_target`
+- [x] Static export independent of the admin panel, ready for Azure Static Web Apps
+- [x] Deployment target adapters ([ADR-0005](adr/0005-deployment-target-adapters.md)):
+      `swa` (Free and Standard, same artifact), `nginx` (conf + Dockerfile),
+      `generic`; custom targets pluggable via `register_target`; `iis` when
+      first needed
 
 ## Milestone 3 — Admin panel
 

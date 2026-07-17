@@ -1,0 +1,15 @@
+{% extends "base.html.j2" %}
+{% block main %}
+<section class="listing">
+  <h1>{{ listing.title }}</h1>
+  <ul class="entries">
+  {% for entry in listing.entries %}
+    <li>
+      <a href="{{ entry.url }}">{{ entry.title }}</a>
+      {% if entry.summary %}<p>{{ entry.summary }}</p>{% endif %}
+      <time datetime="{{ entry.date_iso }}">{{ entry.date_iso }}</time>
+    </li>
+  {% endfor %}
+  </ul>
+</section>
+{% endblock %}

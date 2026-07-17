@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="{{ head.language.value }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ head.title }} | {{ head.site_name }}</title>
+<meta name="description" content="{{ head.description }}">
+<meta property="og:type" content="{{ head.og_type }}">
+<meta property="og:site_name" content="{{ head.site_name }}">
+<meta property="og:title" content="{{ head.title }}">
+<meta property="og:description" content="{{ head.description }}">
+<meta property="og:url" content="{{ head.canonical }}">
+<meta property="og:locale" content="{{ head.og_locale }}">
+{% for locale in head.og_locale_alternates %}
+<meta property="og:locale:alternate" content="{{ locale }}">
+{% endfor %}
+<meta name="robots" content="index, follow">
+{% for alternate in head.alternates %}
+<link rel="alternate" hreflang="{{ alternate.hreflang }}" href="{{ alternate.href }}">
+{% endfor %}
+<link rel="canonical" href="{{ head.canonical }}">
+<link rel="stylesheet" href="{{ asset_urls['assets/site.css'] }}">
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main">
+    <a class="brand" href="{{ nav.home_url }}">{{ head.site_name }}</a>
+    <ul class="languages">
+    {% for entry in nav.languages %}
+      <li><a href="{{ entry.url }}"{% if entry.current %} aria-current="true"{% endif %}>{{ entry.code }}</a></li>
+    {% endfor %}
+    </ul>
+  </nav>
+</header>
+<main>
+{% block main %}{% endblock %}
+</main>
+<footer class="site-footer">
+  <p>{{ footer.text }}</p>
+</footer>
+</body>
+</html>

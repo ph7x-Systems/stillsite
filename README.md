@@ -31,8 +31,9 @@ apps/
   admin/                        # admin panel (API + UI)
 packages/
   cms-core/                     # content model, schemas, translation states
-  cms-build/                    # deterministic static generator
+  cms-build/                    # deterministic static generator, themes, targets
   cms-validation/               # configurable validation rules
+  cms-cli/                      # the cms command line
   cms-theme-ph7x-reference/     # reference theme (tokens, components, local fonts)
 examples/
   multilingual-company-site/    # example site with fictional content in 5 languages
@@ -52,22 +53,25 @@ Requires Python 3.12+.
 python3 -m venv .venv && source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install --group dev            # ruff, mypy, pytest
-python -m pip install -e packages/cms-core -e packages/cms-validation -e packages/cms-build
+python -m pip install -e packages/cms-core -e packages/cms-validation \
+                      -e packages/cms-build -e packages/cms-cli
 
 ruff check . && ruff format --check .        # lint
 mypy                                         # type checking (strict)
 pytest                                       # tests
 ```
 
-CI (GitHub Actions) runs the same checks plus a docs link check and a secret
-scan on every push and pull request. Target CLI (Milestone 2):
+CI (GitHub Actions) runs the same checks plus a docs link check, a secret
+scan and an end-to-end example build on every push and pull request.
+
+## Quickstart
 
 ```bash
-cms validate   # validate content and language parity
-cms build      # deterministic static build
-cms preview    # local preview
-cms export     # export static artifacts
-cms seed       # seed example content
+cms seed     -p examples/multilingual-company-site   # fictional content, 5 languages
+cms validate -p examples/multilingual-company-site   # rules; non-zero exit on errors
+cms build    -p examples/multilingual-company-site   # deterministic _site/
+cms export   -p examples/multilingual-company-site --target swa   # or nginx | generic
+cms preview  -p examples/multilingual-company-site   # serve locally
 ```
 
 ## Principles

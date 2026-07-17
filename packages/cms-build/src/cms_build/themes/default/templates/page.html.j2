@@ -1,0 +1,19 @@
+{% extends "base.html.j2" %}
+{% block main %}
+<article class="page">
+  <h1>{{ page.title }}</h1>
+  {% if page.description %}
+  <p class="lead">{{ page.description }}</p>
+  {% endif %}
+  {% for section in sections %}
+  <section class="section section-{{ section.kind }}" id="{{ section.key }}">
+    {% for name, value in section.fields %}
+    <div class="field field-{{ name }}">{{ value }}</div>
+    {% endfor %}
+    {% for image in section.images %}
+    <img src="{{ image.url }}" alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}">
+    {% endfor %}
+  </section>
+  {% endfor %}
+</article>
+{% endblock %}
