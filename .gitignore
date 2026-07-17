@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# Node (admin panel UI, if applicable)
+node_modules/
+*.tsbuildinfo
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Local databases
+*.sqlite3
+*.db
+
+# Static build output
+_site/
+out/
+export/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+!.vscode/settings.json
+
+# Local assistant context (never committed)
+CLAUDE.md
+AGENTS.md
+.claude/
