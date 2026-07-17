@@ -496,6 +496,7 @@ HOME_ABOUT: dict[Language, SectionContent] = {
     EN: SectionContent(
         fields={
             "kicker": "01 · Who we are",
+            "menu": "About",
             "heading": "A space programme born in a cannery",
             "body": "Commander Sardinha graduated top of her shoal and now leads the only "
             "space agency with a fish at the helm. Mission control fits in a fish crate, "
@@ -514,6 +515,7 @@ HOME_ABOUT: dict[Language, SectionContent] = {
     PT: SectionContent(
         fields={
             "kicker": "01 · Quem somos",
+            "menu": "Quem somos",
             "heading": "Um programa espacial nascido numa conserveira",
             "body": "A Comandante Sardinha formou-se no topo do cardume e lidera a unica "
             "agencia espacial com um peixe ao leme. O controlo de missao cabe numa caixa "
@@ -532,6 +534,7 @@ HOME_ABOUT: dict[Language, SectionContent] = {
     ES: SectionContent(
         fields={
             "kicker": "01 · Quienes somos",
+            "menu": "Quienes somos",
             "heading": "Un programa espacial nacido en una conservera",
             "body": "La Comandante Sardina se graduo la primera de su banco y dirige la "
             "unica agencia espacial con un pez al timon. El control de mision cabe en una "
@@ -550,6 +553,7 @@ HOME_ABOUT: dict[Language, SectionContent] = {
     FR: SectionContent(
         fields={
             "kicker": "01 · Qui nous sommes",
+            "menu": "Qui sommes-nous",
             "heading": "Un programme spatial ne dans une conserverie",
             "body": "La Commandante Sardine a fini premiere de son banc et dirige la seule "
             "agence spatiale avec un poisson a la barre. Le controle de mission tient dans "
@@ -568,6 +572,7 @@ HOME_ABOUT: dict[Language, SectionContent] = {
     DE: SectionContent(
         fields={
             "kicker": "01 · Wer wir sind",
+            "menu": "Wer wir sind",
             "heading": "Ein Raumfahrtprogramm aus der Konservenfabrik",
             "body": "Kommandantin Sardine schloss als Beste ihres Schwarms ab und fuehrt "
             "die einzige Raumfahrtagentur mit einem Fisch am Ruder. Die Missionskontrolle "
@@ -589,6 +594,7 @@ HOME_ABOUT: dict[Language, SectionContent] = {
 HOME_EXPERTISE: dict[Language, SectionContent] = {
     EN: SectionContent(
         fields={
+            "menu": "Capabilities",
             "kicker": "02 · What we do",
             "heading": "Capabilities",
             "row1no": "01",
@@ -607,6 +613,7 @@ HOME_EXPERTISE: dict[Language, SectionContent] = {
     ),
     PT: SectionContent(
         fields={
+            "menu": "Capacidades",
             "kicker": "02 · O que fazemos",
             "heading": "Capacidades",
             "row1no": "01",
@@ -625,6 +632,7 @@ HOME_EXPERTISE: dict[Language, SectionContent] = {
     ),
     ES: SectionContent(
         fields={
+            "menu": "Capacidades",
             "kicker": "02 · Que hacemos",
             "heading": "Capacidades",
             "row1no": "01",
@@ -643,6 +651,7 @@ HOME_EXPERTISE: dict[Language, SectionContent] = {
     ),
     FR: SectionContent(
         fields={
+            "menu": "Capacites",
             "kicker": "02 · Ce que nous faisons",
             "heading": "Capacites",
             "row1no": "01",
@@ -662,6 +671,7 @@ HOME_EXPERTISE: dict[Language, SectionContent] = {
     ),
     DE: SectionContent(
         fields={
+            "menu": "Faehigkeiten",
             "kicker": "02 · Was wir tun",
             "heading": "Faehigkeiten",
             "row1no": "01",
@@ -683,6 +693,7 @@ HOME_EXPERTISE: dict[Language, SectionContent] = {
 HOME_CTA: dict[Language, SectionContent] = {
     EN: SectionContent(
         fields={
+            "menu": "Contact",
             "kicker": "03 · Join the shoal",
             "heading": "Ready to leave the",
             "accent": "ocean?",
@@ -691,6 +702,7 @@ HOME_CTA: dict[Language, SectionContent] = {
     ),
     PT: SectionContent(
         fields={
+            "menu": "Contacto",
             "kicker": "03 · Junta-te ao cardume",
             "heading": "Pronto para sair do",
             "accent": "oceano?",
@@ -699,6 +711,7 @@ HOME_CTA: dict[Language, SectionContent] = {
     ),
     ES: SectionContent(
         fields={
+            "menu": "Contacto",
             "kicker": "03 · Unete al banco",
             "heading": "Listo para dejar el",
             "accent": "oceano?",
@@ -707,6 +720,7 @@ HOME_CTA: dict[Language, SectionContent] = {
     ),
     FR: SectionContent(
         fields={
+            "menu": "Contact",
             "kicker": "03 · Rejoignez le banc",
             "heading": "Pret a quitter l'",
             "accent": "ocean ?",
@@ -715,10 +729,64 @@ HOME_CTA: dict[Language, SectionContent] = {
     ),
     DE: SectionContent(
         fields={
+            "menu": "Kontakt",
             "kicker": "03 · Schliess dich dem Schwarm an",
             "heading": "Bereit, den Ozean zu",
             "accent": "verlassen?",
             "button": "Die Crew treffen",
         }
     ),
+}
+
+
+def _cover(seed_color: str, label: str) -> str:
+    return f"""<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'
+    width='1200' height='630' role='img'>
+  <rect width='1200' height='630' fill='#0a0c12'/>
+  <g stroke='{seed_color}' stroke-width='1' opacity='0.55'>
+    <path d='M80 520 L340 300 L620 420 L900 180 L1140 320' fill='none'/>
+    <circle cx='340' cy='300' r='4' fill='{seed_color}'/>
+    <circle cx='620' cy='420' r='4' fill='{seed_color}'/>
+    <circle cx='900' cy='180' r='4' fill='{seed_color}'/>
+  </g>
+  <g transform='translate(600 300) rotate(-38)'>
+    <ellipse rx='120' ry='42' fill='none' stroke='#d8cfc0' stroke-width='4'/>
+    <path fill='#d8cfc0'
+      d='M-120 0 Q-146 -21 -165 -32 Q-153 -11 -153 0 Q-153 11 -165 32 Q-146 21 -120 0Z'/>
+    <circle cx='90' cy='-10' r='6' fill='#0a0c12' stroke='#d8cfc0' stroke-width='3'/>
+  </g>
+  <text x='600' y='580' text-anchor='middle' font-family='serif' font-size='26'
+    fill='#7b7e88'>{label}</text>
+</svg>
+"""
+
+
+COVER_SVGS: dict[str, str] = {
+    "cover-missions": _cover("#7fb4ff", "Mission log"),
+    "cover-engineering": _cover("#7ec8a2", "Engineering"),
+    "cover-canteen": _cover("#d8cfc0", "Canteen"),
+}
+
+COVER_ALT: dict[str, dict[Language, str]] = {
+    "cover-missions": {
+        EN: "A tin rocket crossing a constellation chart",
+        PT: "Um foguetao-lata a cruzar uma carta de constelacoes",
+        ES: "Un cohete-lata cruzando una carta de constelaciones",
+        FR: "Une fusee-boite traversant une carte de constellations",
+        DE: "Eine Dosenrakete auf einer Sternkarte",
+    },
+    "cover-engineering": {
+        EN: "Engineering plots behind a tin rocket",
+        PT: "Tracados de engenharia atras de um foguetao-lata",
+        ES: "Trazados de ingenieria tras un cohete-lata",
+        FR: "Traces d'ingenierie derriere une fusee-boite",
+        DE: "Ingenieurkurven hinter einer Dosenrakete",
+    },
+    "cover-canteen": {
+        EN: "The canteen chart nobody follows",
+        PT: "A carta da cantina que ninguem segue",
+        ES: "La carta de la cantina que nadie sigue",
+        FR: "La carte de la cantine que personne ne suit",
+        DE: "Die Kantinenkarte, der niemand folgt",
+    },
 }

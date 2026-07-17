@@ -70,13 +70,14 @@ class SQLiteBackend(StorageBackend):
             connection.execute(
                 "INSERT INTO articles"
                 " (id, status, created_at, updated_at, title, summary, body_markdown, slug,"
-                "  category, tags_json)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                "  category, tags_json, cover)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                 " ON CONFLICT(id) DO UPDATE SET"
                 " status = excluded.status, updated_at = excluded.updated_at,"
                 " title = excluded.title, summary = excluded.summary,"
                 " body_markdown = excluded.body_markdown, slug = excluded.slug,"
-                " category = excluded.category, tags_json = excluded.tags_json",
+                " category = excluded.category, tags_json = excluded.tags_json,"
+                " cover = excluded.cover",
                 (
                     article.id,
                     article.status.value,
@@ -88,6 +89,7 @@ class SQLiteBackend(StorageBackend):
                     article.source.slug,
                     article.category,
                     json.dumps(list(article.tags)),
+                    article.cover,
                 ),
             )
             connection.execute("DELETE FROM translations WHERE article_id = ?", (article.id,))
@@ -114,7 +116,7 @@ class SQLiteBackend(StorageBackend):
     def load_article(self, article_id: str) -> Article | None:
         row = self._connection.execute(
             "SELECT id, status, created_at, updated_at, title, summary, body_markdown, slug,"
-            " category, tags_json"
+            " category, tags_json, cover"
             " FROM articles WHERE id = ?",
             (article_id,),
         ).fetchone()
@@ -141,6 +143,7 @@ class SQLiteBackend(StorageBackend):
             translations=translations,
             category=row[8],
             tags=tuple(json.loads(row[9])),
+            cover=row[10],
         )
 
     def delete_article(self, article_id: str) -> bool:

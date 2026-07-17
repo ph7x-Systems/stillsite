@@ -3,6 +3,9 @@
 <link rel="stylesheet" href="{{ asset_urls['assets/legal.css'] }}">
 <link rel="stylesheet" href="{{ asset_urls['assets/blog.css'] }}">
 {% endblock %}
+{% block backdrop %}
+<div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span></div>
+{% endblock %}
 {% block main %}
 <article class="b-post">
   <header class="b-head">
@@ -15,7 +18,9 @@
     <div class="b-by">
       <span>{{ head.site_name }}</span>
       <span class="b-dot">·</span>
-      <time datetime="{{ article.date_iso }}">{{ article.date_iso }}</time>
+      <time datetime="{{ article.date_iso }}">{{ article.date_human }}</time>
+      <span class="b-dot">·</span>
+      <span>{{ article.minutes }} {{ article.min_read_label }}</span>
     </div>
   </header>
   <div class="b-body">{{ article.body_html }}</div>

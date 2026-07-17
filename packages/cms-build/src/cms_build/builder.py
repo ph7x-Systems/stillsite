@@ -28,7 +28,7 @@ from cms_build.config import SiteConfig
 from cms_build.head import Head, build_head, hreflang_code
 from cms_build.markdown import render_markdown
 from cms_build.themes import Theme, create_theme
-from cms_build.ui import ui_label
+from cms_build.ui import format_date, ui_label
 
 MEDIA_PREFIX = "media"
 
@@ -157,13 +157,27 @@ class _SiteBuilder:
         }
 
     def _menu(self, language: Language) -> list[dict[str, str]]:
-        """Site menu: the blog plus every published page except home."""
-        entries = [
+        """Site menu: home-section anchors (sections with a `menu` field),
+        then the blog, then every other published page."""
+        entries: list[dict[str, str]] = []
+        home = next((p for p in self.pages if p.id == "home"), None)
+        if home is not None and _available(home, language):
+            home_path = urls.page_path(home, language)
+            for section in home.sections:
+                if language is SOURCE_LANGUAGE:
+                    fields = section.source.fields
+                else:
+                    translation = section.translations.get(language)
+                    fields = translation.content.fields if translation else section.source.fields
+                label = fields.get("menu")
+                if label:
+                    entries.append({"label": label, "url": f"{home_path}#{section.key}"})
+        entries.append(
             {
                 "label": ui_label(self.config, "blog", language),
                 "url": urls.blog_index_path(self.config, language),
             }
-        ]
+        )
         for page in self.pages:
             if page.id == "home" or not _available(page, language):
                 continue
@@ -255,6 +269,14 @@ class _SiteBuilder:
                 "date_iso": article.created_at.date().isoformat(),
                 "back_url": urls.blog_index_path(self.config, language),
                 "back_label": ui_label(self.config, "back", language),
+                "date_human": format_date(
+                    article.created_at.day,
+                    article.created_at.month,
+                    article.created_at.year,
+                    language,
+                ),
+                "minutes": _reading_minutes(body.body_markdown),
+                "min_read_label": ui_label(self.config, "min-read", language),
                 "category": self._category_context(article, language),
                 "tags": [
                     {"slug": tag, "url": urls.tag_path(self.config, tag, language)}
@@ -314,9 +336,15 @@ class _SiteBuilder:
                 "summary": _article_content(a, language).summary,
                 "url": urls.article_path(self.config, a, language),
                 "date_iso": a.created_at.date().isoformat(),
+                "date_human": format_date(
+                    a.created_at.day, a.created_at.month, a.created_at.year, language
+                ),
+                "minutes": _reading_minutes(_article_content(a, language).body_markdown),
+                "min_read_label": ui_label(self.config, "min-read", language),
                 "category": (
                     self.config.category_label(a.category, language) if a.category else None
                 ),
+                "thumb": self._media_image(a.cover, language),
             }
             for a in articles
         ]
@@ -327,7 +355,8 @@ class _SiteBuilder:
             lang: len(_chunk(self.articles_by_language[lang], self.config.page_size))
             for lang in self.config.all_languages
         }
-        blog_label = ui_label(self.config, "blog", language)
+        blog_label = ui_label(self.config, "blog-title", language)
+        blog_sub = ui_label(self.config, "blog-sub", language)
         for index, chunk in enumerate(chunks, start=1):
             path = urls.blog_page_path(self.config, language, index)
             paths = {
@@ -358,7 +387,8 @@ class _SiteBuilder:
                 ),
                 "search_index_url": self._search_index_url(language),
                 "search_label": ui_label(self.config, "search", language),
-                "eyebrow": ui_label(self.config, "blog", language),
+                "eyebrow": ui_label(self.config, "blog-eyebrow", language),
+                "sub": blog_sub,
                 "filters": self._category_filters(language),
             }
             self._render("listing", path, context)
@@ -419,12 +449,26 @@ class _SiteBuilder:
             "next_url": None,
             "search_index_url": self._search_index_url(language),
             "search_label": ui_label(self.config, "search", language),
-            "eyebrow": ui_label(self.config, "blog", language),
+            "eyebrow": ui_label(self.config, "blog-eyebrow", language),
+            "sub": None,
             "filters": self._category_filters(language),
         }
         self._render("listing", path, context)
 
     # Feeds and utility pages
+
+    def _media_image(self, media_id: str | None, language: Language) -> dict[str, object] | None:
+        if media_id is None:
+            return None
+        asset = self.media_by_id.get(media_id)
+        if asset is None or not asset.is_image:
+            return None
+        return {
+            "url": f"/{MEDIA_PREFIX}/{asset.path}",
+            "alt": asset.alt.get(language) or asset.alt[SOURCE_LANGUAGE],
+            "width": asset.width,
+            "height": asset.height,
+        }
 
     def _category_filters(self, language: Language) -> list[dict[str, str]]:
         slugs = sorted(
@@ -492,6 +536,11 @@ def build_site(
 ) -> Artifact:
     active_theme = theme or create_theme(config.theme)
     return _SiteBuilder(config, content, active_theme, media_files or {}).build()
+
+
+def _reading_minutes(markdown: str) -> int:
+    words = len(markdown.split())
+    return max(1, round(words / 200))
 
 
 def _navigation(config: SiteConfig, language: Language) -> dict[str, object]:

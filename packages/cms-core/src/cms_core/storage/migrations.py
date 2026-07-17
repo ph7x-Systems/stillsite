@@ -88,4 +88,7 @@ MIGRATIONS: tuple[str, ...] = (
     ALTER TABLE articles ADD COLUMN category TEXT;
     ALTER TABLE articles ADD COLUMN tags_json TEXT NOT NULL DEFAULT '[]';
     """,
+    """
+    ALTER TABLE articles ADD COLUMN cover TEXT;
+    """,
 )

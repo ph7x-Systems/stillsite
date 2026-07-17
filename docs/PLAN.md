@@ -200,6 +200,14 @@ Everything user-facing must be extensible without forking the framework:
 
 ## Design and themes
 
+**Positioning (definitive).** Stillsite is a framework, not a site: like
+WordPress, the design belongs to whoever uses it. Themes are installable
+packages (ADR-0012) or per-project overrides (ADR-0007); anyone can take an
+existing site's stylesheets and wrap them as a theme. The **ph7x design
+system is only the reference theme** (`cms-theme-ph7x-reference`, vendoring
+the production stylesheets), and **Sardine Aerospace is only dummy example
+content** for demos — neither constrains what users build.
+
 Normative design rules live in [DESIGN_RULES.md](DESIGN_RULES.md); building a
 theme is documented in [THEME_GUIDE.md](THEME_GUIDE.md); the frontend
 technology strategy (native platform, Web Component islands, no framework) is

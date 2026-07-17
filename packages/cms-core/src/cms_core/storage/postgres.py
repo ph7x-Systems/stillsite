@@ -68,13 +68,14 @@ class PostgresBackend(StorageBackend):
             self._connection.execute(
                 "INSERT INTO articles"
                 " (id, status, created_at, updated_at, title, summary, body_markdown, slug,"
-                "  category, tags_json)"
-                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                "  category, tags_json, cover)"
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 " ON CONFLICT (id) DO UPDATE SET"
                 " status = excluded.status, updated_at = excluded.updated_at,"
                 " title = excluded.title, summary = excluded.summary,"
                 " body_markdown = excluded.body_markdown, slug = excluded.slug,"
-                " category = excluded.category, tags_json = excluded.tags_json",
+                " category = excluded.category, tags_json = excluded.tags_json,"
+                " cover = excluded.cover",
                 (
                     article.id,
                     article.status.value,
@@ -86,6 +87,7 @@ class PostgresBackend(StorageBackend):
                     article.source.slug,
                     article.category,
                     json.dumps(list(article.tags)),
+                    article.cover,
                 ),
             )
             self._connection.execute(
@@ -113,7 +115,7 @@ class PostgresBackend(StorageBackend):
     def load_article(self, article_id: str) -> Article | None:
         row = self._connection.execute(
             "SELECT id, status, created_at, updated_at, title, summary, body_markdown, slug,"
-            " category, tags_json"
+            " category, tags_json, cover"
             " FROM articles WHERE id = %s",
             (article_id,),
         ).fetchone()
@@ -140,6 +142,7 @@ class PostgresBackend(StorageBackend):
             translations=translations,
             category=row[8],
             tags=tuple(json.loads(row[9])),
+            cover=row[10],
         )
 
     def delete_article(self, article_id: str) -> bool:

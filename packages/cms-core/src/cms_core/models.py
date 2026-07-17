@@ -34,6 +34,7 @@ class Article(TranslatableModel[ArticleContent]):
     created_at: datetime
     updated_at: datetime
     category: str | None = Field(default=None, pattern=SLUG_PATTERN)
+    cover: str | None = Field(default=None, pattern=SLUG_PATTERN)
     tags: tuple[str, ...] = ()
 
     @field_validator("tags")

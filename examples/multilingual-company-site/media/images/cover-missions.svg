@@ -1,0 +1,18 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'
+    width='1200' height='630' role='img'>
+  <rect width='1200' height='630' fill='#0a0c12'/>
+  <g stroke='#7fb4ff' stroke-width='1' opacity='0.55'>
+    <path d='M80 520 L340 300 L620 420 L900 180 L1140 320' fill='none'/>
+    <circle cx='340' cy='300' r='4' fill='#7fb4ff'/>
+    <circle cx='620' cy='420' r='4' fill='#7fb4ff'/>
+    <circle cx='900' cy='180' r='4' fill='#7fb4ff'/>
+  </g>
+  <g transform='translate(600 300) rotate(-38)'>
+    <ellipse rx='120' ry='42' fill='none' stroke='#d8cfc0' stroke-width='4'/>
+    <path fill='#d8cfc0'
+      d='M-120 0 Q-146 -21 -165 -32 Q-153 -11 -153 0 Q-153 11 -165 32 Q-146 21 -120 0Z'/>
+    <circle cx='90' cy='-10' r='6' fill='#0a0c12' stroke='#d8cfc0' stroke-width='3'/>
+  </g>
+  <text x='600' y='580' text-anchor='middle' font-family='serif' font-size='26'
+    fill='#7b7e88'>Mission log</text>
+</svg>
