@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/logo-on-dark.png">
+    <img src="assets/brand/logo-on-light.png" alt="Stillsite — multilingual, static-first CMS framework" width="220" height="220">
+  </picture>
+</p>
+
 # Stillsite
 
 [![CI](https://github.com/ph7x-Systems/stillsite/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ph7x-Systems/stillsite/actions/workflows/ci.yml)
