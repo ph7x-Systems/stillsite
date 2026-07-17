@@ -65,6 +65,15 @@ def test_plan_mentions_every_builtin_storage_engine() -> None:
         assert re.search(pattern, PLAN, re.IGNORECASE), f"PLAN does not mention the {scheme} engine"
 
 
+def test_readme_images_exist() -> None:
+    references = re.findall(r'<img src="([^"#]+)"', README) + re.findall(
+        r'srcset="([^"#]+)"', README
+    )
+    assert references, "README references no images"
+    for reference in references:
+        assert (REPO_ROOT / reference).is_file(), f"README references missing image {reference}"
+
+
 def test_ci_workflow_covers_the_checks_the_readme_promises() -> None:
     workflow = (REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     for tool in ("ruff", "mypy", "pytest"):
