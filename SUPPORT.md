@@ -1,7 +1,8 @@
 # Support
 
-- **Questions and ideas** — open a [GitHub issue](../../issues) with the
-  question template. Please search existing issues first.
+- **Questions and ideas** — open a
+  [GitHub issue](https://github.com/ph7x-Systems/Ph7x.CMS.Framework/issues)
+  with the question template. Please search existing issues first.
 - **Bugs** — open an issue with the bug template: steps to reproduce, expected
   vs. actual behavior, versions.
 - **Security vulnerabilities** — never open a public issue; follow
