@@ -1,0 +1,3 @@
+# Default owners for everything in the repository.
+# Later, package-specific teams can take over their paths.
+* @ph7x-Systems/maintainers
