@@ -148,12 +148,30 @@ class _SiteBuilder:
         self.sitemap_urls.append(urls.absolute(self.config, path))
 
     def _base_context(self, language: Language, head: Head) -> dict[str, object]:
+        menu = self._menu(language)
         return {
             "head": head,
-            "nav": _navigation(self.config, language),
-            "footer": {"text": self.config.name},
+            "nav": {**_navigation(self.config, language), "menu": menu},
+            "footer": {"text": self.config.name, "menu": menu},
             "asset_urls": self.asset_urls,
         }
+
+    def _menu(self, language: Language) -> list[dict[str, str]]:
+        """Site menu: the blog plus every published page except home."""
+        entries = [
+            {
+                "label": ui_label(self.config, "blog", language),
+                "url": urls.blog_index_path(self.config, language),
+            }
+        ]
+        for page in self.pages:
+            if page.id == "home" or not _available(page, language):
+                continue
+            body = (
+                page.source if language is SOURCE_LANGUAGE else page.translations[language].content
+            )
+            entries.append({"label": body.title, "url": urls.page_path(page, language)})
+        return entries
 
     # Pages
 
@@ -166,6 +184,9 @@ class _SiteBuilder:
             context = self._base_context(language, head)
             context["page"] = _page_context(page, language)
             context["sections"] = self._section_contexts(page, language)
+            context["latest"] = self._listing_entries(
+                self.articles_by_language[language][:3], language
+            )
             self._render("page", path, context)
 
     def _page_head(self, page: Page, language: Language) -> Head:

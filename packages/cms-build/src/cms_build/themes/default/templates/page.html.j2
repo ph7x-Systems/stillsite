@@ -6,6 +6,22 @@
   <p class="lead">{{ page.description }}</p>
   {% endif %}
   {% for section in sections %}
+  {% if section.kind == "latest-articles" %}
+  <section class="section latest" id="{{ section.key }}">
+    {% for name, value in section.fields %}
+    {% if name == "heading" %}<h2>{{ value }}</h2>{% else %}<p>{{ value }}</p>{% endif %}
+    {% endfor %}
+    <ul class="entries">
+    {% for entry in latest %}
+      <li>
+        <a href="{{ entry.url }}">{{ entry.title }}</a>
+        {% if entry.summary %}<p>{{ entry.summary }}</p>{% endif %}
+        <time datetime="{{ entry.date_iso }}">{{ entry.date_iso }}</time>
+      </li>
+    {% endfor %}
+    </ul>
+  </section>
+  {% else %}
   <section class="section section-{{ section.kind }}" id="{{ section.key }}">
     {% for name, value in section.fields %}
     <div class="field field-{{ name }}">{{ value }}</div>
@@ -14,6 +30,7 @@
     <img src="{{ image.url }}" alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}">
     {% endfor %}
   </section>
+  {% endif %}
   {% endfor %}
 </article>
 {% endblock %}

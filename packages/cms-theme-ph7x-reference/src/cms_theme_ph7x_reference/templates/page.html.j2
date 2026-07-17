@@ -10,13 +10,30 @@
   {% if section.kind == "hero" %}
   <section class="section hero" id="{{ section.key }}">
     <div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span></div>
-    {% for name, value in section.fields %}
-    {% if name == "heading" %}<h1 class="display">{{ value }}</h1>{% else %}<p class="lead">{{ value }}</p>{% endif %}
-    {% endfor %}
-    {% if page.description %}<p class="lead sub">{{ page.description }}</p>{% endif %}
+    <div class="hero-copy">
+      {% for name, value in section.fields %}
+      {% if name == "heading" %}<h1 class="display">{{ value }}</h1>{% else %}<p class="lead">{{ value }}</p>{% endif %}
+      {% endfor %}
+      {% if page.description %}<p class="lead sub">{{ page.description }}</p>{% endif %}
+    </div>
     {% for image in section.images %}
     <img class="hero-art" src="{{ image.url }}" alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}">
     {% endfor %}
+  </section>
+  {% elif section.kind == "latest-articles" %}
+  <section class="section latest" id="{{ section.key }}">
+    {% for name, value in section.fields %}
+    {% if name == "heading" %}<h2 class="kicker">{{ value }}</h2>{% else %}<p class="lead">{{ value }}</p>{% endif %}
+    {% endfor %}
+    <ul class="entries">
+    {% for entry in latest %}
+      <li>
+        <a href="{{ entry.url }}">{{ entry.title }}</a>
+        {% if entry.summary %}<p>{{ entry.summary }}</p>{% endif %}
+        <time datetime="{{ entry.date_iso }}">{{ entry.date_iso }}</time>
+      </li>
+    {% endfor %}
+    </ul>
   </section>
   {% elif section.kind == "story" %}
   <section class="section story" id="{{ section.key }}">

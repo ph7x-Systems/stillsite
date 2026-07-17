@@ -30,6 +30,7 @@ from cms_cli.seed_data import (
     COMPASS_SVG,
     HOME,
     HOME_HERO,
+    HOME_LATEST,
     MEDIA_ALT,
     SEED_TIME,
 )
@@ -73,7 +74,13 @@ def _article(
 
 def seed(storage: StorageBackend, project_dir: Path | None = None) -> tuple[int, int, int]:
     """Write the starter content; returns (pages, articles, media) counts."""
-    storage.save_page(_page("home", HOME, [("hero", "hero", HOME_HERO)]))
+    storage.save_page(
+        _page(
+            "home",
+            HOME,
+            [("hero", "hero", HOME_HERO), ("latest", "latest-articles", HOME_LATEST)],
+        )
+    )
     storage.save_page(_page("about", ABOUT, [("story", "story", ABOUT_STORY)]))
 
     for article_id, (category, tags, days, contents) in ARTICLES.items():

@@ -11,14 +11,14 @@ Rendered by theme templates from builder-provided context
 
 | Component | Template | Context it consumes |
 | --- | --- | --- |
-| Site header + navigation | `base.html.j2` | `nav.home_url`, `head.site_name` |
+| Site header + navigation | `base.html.j2` | `nav.home_url`, `nav.menu` (blog + published pages, localized), `head.site_name` |
 | Language switcher | `base.html.j2` | `nav.languages` (code, url, current) |
 | Head contract block | `base.html.j2` | `head` (canonical, hreflang, OG, JSON-LD) |
 | Page sections | `page.html.j2` | `sections` (key, kind, fields, images) |
 | Article body + meta | `article.html.j2` | `article` (title, date, category, tags, body_html) |
 | Listing + pagination | `listing.html.j2` | `listing` (entries, page/pages, prev/next) |
 | Not-found | `not_found.html.j2` | `not_found.home_url`, localized `head.title` |
-| Footer | `base.html.j2` | `footer.text` |
+| Footer | `base.html.j2` | `footer.text`, `footer.menu` |
 
 UI strings come from the localized label system (`cms_build.ui`,
 overridable via `[site.labels]`) — components never hardcode text.
@@ -35,13 +35,14 @@ every page is complete without them. Total JS budget ≤ 20 KB (tested).
 The reference theme adds **no JavaScript**: its effects (aurora, grain,
 reveal-on-scroll) are modern CSS only — gradients, an inline-SVG noise data
 URI and scroll-driven animations behind `@supports`, all disabled under
-`prefers-reduced-motion` (ADR-0010's CSS-over-JS rule).
+`prefers-reduced-motion` (ADR-0010's CSS-over-JS rule). It also adopts the modern platform end to end: oklch color tokens with `color-mix()` states, cross-document View Transitions, a sticky glass header (`backdrop-filter`), `text-wrap: balance/pretty`, and declarative Speculation Rules prerendering (inline JSON, not JavaScript).
 
 ### Reference theme section kinds (`cms-theme-ph7x-reference`)
 
 | Kind | Markup |
 | --- | --- |
 | `hero` | Aurora backdrop, serif display `h1` from the `heading` field, lead from the page description, hero image |
+| `latest-articles` | Kicker heading + the language's three newest articles (builder-provided `latest` context) |
 | `story` | `h2` + prose paragraphs + images |
 | _any other_ | Generic field/image rendering (graceful fallback) |
 

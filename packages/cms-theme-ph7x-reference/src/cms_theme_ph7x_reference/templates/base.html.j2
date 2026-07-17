@@ -5,12 +5,20 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ asset_urls['assets/fonts/inter-latin.woff2'] }}">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ asset_urls['assets/fonts/newsreader-latin.woff2'] }}">
 <link rel="stylesheet" href="{{ asset_urls['assets/site.css'] }}">
+<script type="speculationrules">
+{"prerender": [{"where": {"href_matches": "/*"}, "eagerness": "moderate"}]}
+</script>
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
 <header class="site-header">
   <nav class="site-nav" aria-label="Main">
     <a class="brand" href="{{ nav.home_url }}">{{ head.site_name }}</a>
+    <ul class="menu">
+    {% for entry in nav.menu %}
+      <li><a href="{{ entry.url }}">{{ entry.label }}</a></li>
+    {% endfor %}
+    </ul>
     <ul class="languages">
     {% for entry in nav.languages %}
       <li><a href="{{ entry.url }}"{% if entry.current %} aria-current="true"{% endif %}>{{ entry.code }}</a></li>
@@ -22,6 +30,11 @@
 {% block main %}{% endblock %}
 </main>
 <footer class="site-footer">
+  <ul class="menu">
+  {% for entry in footer.menu %}
+    <li><a href="{{ entry.url }}">{{ entry.label }}</a></li>
+  {% endfor %}
+  </ul>
   <p>{{ footer.text }}</p>
 </footer>
 </body>

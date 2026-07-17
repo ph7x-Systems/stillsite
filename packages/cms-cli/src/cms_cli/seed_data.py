@@ -73,6 +73,14 @@ HOME_HERO: dict[Language, SectionContent] = {
     DE: SectionContent(fields={"heading": "Orte kartieren, die es nie gab"}, media=["compass"]),
 }
 
+HOME_LATEST: dict[Language, SectionContent] = {
+    EN: SectionContent(fields={"heading": "Latest from the drafting table"}),
+    PT: SectionContent(fields={"heading": "O mais recente da mesa de desenho"}),
+    ES: SectionContent(fields={"heading": "Lo ultimo de la mesa de dibujo"}),
+    FR: SectionContent(fields={"heading": "Les dernieres nouvelles de la table a dessin"}),
+    DE: SectionContent(fields={"heading": "Das Neueste vom Zeichentisch"}),
+}
+
 ABOUT: dict[Language, PageContent] = {
     EN: PageContent(
         title="About the studio",

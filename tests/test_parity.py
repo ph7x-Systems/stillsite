@@ -170,3 +170,39 @@ def test_search_index_carries_category_label() -> None:
     index = json.loads(artifact.files["pt-pt/blog/search-index.json"])
     labels = {entry["c"] for entry in index}
     assert "Notas de campo" in labels
+
+
+def test_navigation_menu_links_blog_and_pages() -> None:
+    content = make_content()
+    about = new_page("about", PageContent(title="About", description="A", slug="about"), now=NOW)
+    about.set_translation(Language.PT_PT, PageContent(title="Sobre", description="A", slug="sobre"))
+    about.status = ContentStatus.PUBLISHED
+    artifact = build_site(
+        CONFIG, SiteContent(pages=[*content.pages, about], articles=content.articles)
+    )
+    home = artifact.files["index.html"].decode("utf-8")
+    assert '<a href="/blog/">' in home
+    assert '<a href="/about/">About</a>' in home
+    pt_home = artifact.files["pt-pt/index.html"].decode("utf-8")
+    assert '<a href="/pt-pt/sobre/">Sobre</a>' in pt_home
+    # The footer carries the same menu.
+    assert home.count('<a href="/about/">About</a>') >= 2
+
+
+def test_latest_articles_section_renders_entries() -> None:
+    content = make_content()
+    home = content.pages[0]
+    home.sections.append(
+        Section(
+            key="latest",
+            kind="latest-articles",
+            source=SectionContent(fields={"heading": "Latest"}),
+        )
+    )
+    home.sections[-1].set_translation(
+        Language.PT_PT, SectionContent(fields={"heading": "Recentes"})
+    )
+    artifact = build_site(CONFIG, content)
+    home_html = artifact.files["index.html"].decode("utf-8")
+    assert "Latest" in home_html
+    assert '<a href="/blog/alpha/">Alpha</a>' in home_html
