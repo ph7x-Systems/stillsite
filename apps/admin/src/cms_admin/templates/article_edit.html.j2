@@ -1,0 +1,53 @@
+{% extends "shell.html.j2" %}
+{% from "_fields.html.j2" import content_fields, metadata_fields, errors_block, state_badge %}
+{% block title %}{{ article.id }} — Stillsite admin{% endblock %}
+{% block content %}
+<nav aria-label="Breadcrumb"><a href="/articles">&larr; Articles</a></nav>
+<h1>{{ article.id }}
+  <span class="hoo-mtag"><span class="hoo-mtag-lbl">{{ article.status.value }}</span></span></h1>
+{{ errors_block(errors) }}
+<div class="admin-sbs">
+  <form method="post" action="/articles/{{ article.id }}" class="admin-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <fieldset class="hoo-fieldset">
+      <legend class="hoo-legend">Source (EN)</legend>
+      {{ content_fields(form) }}
+    </fieldset>
+    <fieldset class="hoo-fieldset">
+      <legend class="hoo-legend">Metadata</legend>
+      {{ metadata_fields(form) }}
+    </fieldset>
+    <div>
+      <button type="submit" class="hoo-button-primary"><span class="hoo-button-label">Save</span></button>
+    </div>
+  </form>
+  <section aria-labelledby="preview-heading">
+    <h2 id="preview-heading">Preview</h2>
+    <p class="admin-empty">Rendered with the builder's Markdown renderer (raw HTML disabled);
+      shows the last saved body.</p>
+    <div class="admin-preview">{{ preview_html | safe }}</div>
+  </section>
+</div>
+
+<section class="admin-section" aria-labelledby="translations-heading">
+  <h2 id="translations-heading">Translations</h2>
+  <div class="admin-table-wrap">
+    <table class="hoo-table">
+      <thead>
+        <tr><th scope="col">Language</th><th scope="col">State</th><th scope="col">Title</th><th scope="col"></th></tr>
+      </thead>
+      <tbody>
+        {% for language in target_languages %}
+        {% set translation = article.translations.get(language) %}
+        <tr>
+          <th scope="row">{{ language.value | upper }}</th>
+          <td>{{ state_badge(states[language]) }}</td>
+          <td>{{ translation.content.title if translation else "" }}</td>
+          <td><a href="/articles/{{ article.id }}/translations/{{ language.value }}">Edit translation</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

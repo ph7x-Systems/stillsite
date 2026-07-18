@@ -3,6 +3,7 @@
 from cms_build.builder import Artifact, build_site
 from cms_build.config import SiteConfig
 from cms_build.head import Head, build_head
+from cms_build.markdown import render_markdown
 from cms_build.targets import Target, available_targets, create_target, register_target
 from cms_build.themes import Theme, available_themes, create_theme, register_theme
 
@@ -22,4 +23,5 @@ __all__ = [
     "create_theme",
     "register_target",
     "register_theme",
+    "render_markdown",
 ]

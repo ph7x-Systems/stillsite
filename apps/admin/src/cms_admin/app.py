@@ -13,7 +13,9 @@ from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from cms_admin.articles import router as articles_router
 from cms_admin.auth import get_db
 from cms_admin.auth import router as auth_router
 from cms_admin.dashboard import router as dashboard_router
@@ -36,10 +38,18 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
 
     app = FastAPI(title="Stillsite admin", lifespan=_lifespan, docs_url=None, redoc_url=None)
     app.state.settings = settings if settings is not None else AdminSettings.from_env()
-    app.state.templates = Jinja2Templates(directory=Path(__file__).parent / "templates")
+    # autoescape must be forced on: the stock select_autoescape does not
+    # recognize the .html.j2 extension and would render templates unescaped.
+    app.state.templates = Jinja2Templates(
+        env=Environment(
+            loader=FileSystemLoader(Path(__file__).parent / "templates"),
+            autoescape=select_autoescape(default=True, default_for_string=True),
+        )
+    )
     app.state.login_limiter = LoginRateLimiter()
     app.include_router(auth_router)
     app.include_router(dashboard_router)
+    app.include_router(articles_router)
     app.mount("/static", StaticFiles(directory=Path(__file__).parent / "static"), name="static")
 
     @app.get("/healthz")

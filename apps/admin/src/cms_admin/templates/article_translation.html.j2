@@ -1,0 +1,37 @@
+{% extends "shell.html.j2" %}
+{% from "_fields.html.j2" import content_fields, errors_block, state_badge %}
+{% block title %}{{ article.id }} · {{ language.value | upper }} — Stillsite admin{% endblock %}
+{% block content %}
+<nav aria-label="Breadcrumb"><a href="/articles/{{ article.id }}">&larr; {{ article.id }}</a></nav>
+<h1>{{ article.id }} — {{ language.value | upper }} {{ state_badge(state) }}</h1>
+{{ errors_block(errors) }}
+<div class="admin-sbs">
+  <section aria-labelledby="source-heading">
+    <h2 id="source-heading">Source (EN)</h2>
+    <dl class="admin-source">
+      <dt>Title</dt><dd>{{ article.source.title }}</dd>
+      <dt>Summary</dt><dd>{{ article.source.summary }}</dd>
+      <dt>Slug</dt><dd>{{ article.source.slug or article.id }}</dd>
+    </dl>
+    <div class="admin-preview">{{ source_preview_html | safe }}</div>
+  </section>
+  <form method="post" action="/articles/{{ article.id }}/translations/{{ language.value }}"
+        class="admin-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <fieldset class="hoo-fieldset">
+      <legend class="hoo-legend">Translation ({{ language.value | upper }})</legend>
+      {{ content_fields(form) }}
+    </fieldset>
+    <div>
+      <button type="submit" class="hoo-button-primary">
+        <span class="hoo-button-label">Save translation</span></button>
+    </div>
+  </form>
+</div>
+{% if preview_html %}
+<section class="admin-section" aria-labelledby="translation-preview-heading">
+  <h2 id="translation-preview-heading">Translation preview</h2>
+  <div class="admin-preview">{{ preview_html | safe }}</div>
+</section>
+{% endif %}
+{% endblock %}

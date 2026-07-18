@@ -1,0 +1,44 @@
+{# Shared form building blocks for the editorial pages. #}
+
+{% macro text_field(name, label, value, required=false, hint=None) %}
+<div class="hoo-input">
+  <label class="hoo-label" for="{{ name }}">{{ label }}</label>
+  <input class="hoo-input-text" id="{{ name }}" name="{{ name }}" type="text"
+         value="{{ value }}"{% if required %} required{% endif %}>
+  {% if hint %}<span class="hoo-input-description">{{ hint }}</span>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro textarea_field(name, label, value, rows=12) %}
+<div class="hoo-input">
+  <label class="hoo-label" for="{{ name }}">{{ label }}</label>
+  <textarea class="hoo-input-text admin-textarea" id="{{ name }}" name="{{ name }}"
+            rows="{{ rows }}">{{ value }}</textarea>
+</div>
+{% endmacro %}
+
+{% macro content_fields(form) %}
+{{ text_field("title", "Title", form.title, required=true) }}
+{{ textarea_field("summary", "Summary", form.summary, rows=3) }}
+{{ textarea_field("body_markdown", "Body (Markdown)", form.body_markdown, rows=16) }}
+{{ text_field("slug", "Slug", form.slug, hint="lowercase-with-dashes; empty falls back to the article id") }}
+{% endmacro %}
+
+{% macro metadata_fields(form) %}
+{{ text_field("category", "Category", form.category, hint="a category slug, or empty") }}
+{{ text_field("tags", "Tags", form.tags, hint="comma-separated slugs") }}
+{{ text_field("cover", "Cover", form.cover, hint="a media asset id, or empty") }}
+{% endmacro %}
+
+{% macro errors_block(errors) %}
+{% if errors %}
+<div class="admin-alert" role="alert">
+  <p>The form was not saved:</p>
+  <ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro state_badge(state) %}
+<span class="admin-state admin-state-{{ state.value }}">{{ state.value }}</span>
+{% endmacro %}
