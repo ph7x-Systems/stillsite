@@ -22,21 +22,19 @@ checkboxes) — this page never duplicates it, it points at it. Live demo:
 
 ## Near term — "demo = ready" (PLAN: Demo readiness plan)
 
-1. ✅ Infrastructure · 2. ✅ PostgreSQL · 3. ✅ Demo content
-4. **Client-side search** — `<site-search>` Web Component island over the
-   per-language `search-index.json` (ADR-0010).
-5. **Reference theme** (`cms-theme-ph7x-reference`, Milestone 4) — the PoC
-   design system: tokens, Inter/Newsreader local fonts, 820px breakpoint,
-   dark editorial look, effects as islands; demo switches to it.
-6. **Ready gate** — automated WCAG 2.2 AA checks in CI, five complete
-   languages, README quickstart against the live demo, social preview. Then
-   the public announcement.
+1. ✅ Infrastructure · 2. ✅ PostgreSQL · 3. ✅ Demo content ·
+4. ✅ Client-side search · 5. ✅ Reference theme · 6. ✅ Ready gate
+   (WCAG 2.2 AA + W3C markup checks required in CI, five complete
+   languages, README against the live demo). Remaining: social preview
+   upload and the public announcement (owner).
 
 ## Mid term
 
-- **Admin panel (Milestone 3)** — FastAPI, explicit auth/roles, translation
-  dashboard, side-by-side editor, media library, editorial workflow. UI
-  approach decided by ADR at kickoff (server-rendered vs. light TypeScript).
+- **Admin panel (Milestone 3) — next**: what makes Stillsite a full CMS —
+  the entire editorial cycle in the browser. FastAPI, explicit auth/roles,
+  translation dashboard, side-by-side editor, media library, editorial
+  workflow; UI approach decided by ADR at kickoff (detailed phased plan in
+  [PLAN.md](PLAN.md)).
 - **First release on PyPI** — distribution naming decided by ADR
   (`stillsite-*` vs `cms-*`), semantic versioning from `0.1.0`, changelog,
   release workflow with trusted publishing.

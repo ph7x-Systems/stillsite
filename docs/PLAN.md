@@ -71,14 +71,76 @@ Layering and development rules for this milestone are fixed in
       `generic`; custom targets pluggable via `register_target`; `iis` when
       first needed
 
-## Milestone 3 — Admin panel
+## Milestone 3 — Admin panel (detailed plan)
 
-- [ ] Authenticated FastAPI API (explicit auth/authz, least privilege)
-- [ ] Dashboard: content status, missing translations, validations, last build
-- [ ] Page/section management and Markdown articles (per-language slug, SEO, cover image, tags)
-- [ ] Side-by-side editor per language with translation indicators
-- [ ] Media library (mandatory alt text, dimensions, type/size validation)
-- [ ] Preview and `draft → review → published → archived` workflow
+**This is what makes Stillsite a CMS** — not a static site generator with
+extras: an editor runs the whole editorial cycle (create → translate →
+review → publish → deployed artifact) from the browser, with no JSON files,
+no CLI and no code. The admin is an Interface-layer application
+([ADR-0006](adr/0006-layered-architecture.md)): it drives `cms-core`,
+`cms-validation` and `cms-build` through their public APIs and never
+bypasses them. Security gates per [SECURITY_STRATEGY.md](SECURITY_STRATEGY.md)
+(admin panel section). Phases in execution order; each lands as its own PR
+with tests:
+
+1. [ ] **ADR-0013 — admin UI architecture** (kickoff decision): FastAPI +
+       server-rendered Jinja + vendored **hTWOo** (Fluent, MIT — already in
+       `vendor/`, see [COMPONENTS.md](COMPONENTS.md)), with Web-Component
+       islands where interactivity demands it (ADR-0010 applies to the admin
+       too); TypeScript only if a concrete need appears, with its own ADR.
+2. [ ] **Application skeleton**: `apps/admin` as an installable package
+       (src layout like the rest), app factory, settings from environment,
+       health endpoint, storage through `create_storage(url)` so any
+       supported engine works unchanged; test scaffold and CI wiring.
+3. [ ] **Accounts and access control**: users with argon2 password hashes;
+       roles `editor / reviewer / publisher / admin` enforced server-side on
+       every endpoint; session cookies (HttpOnly, Secure, SameSite=Strict)
+       with expiry; anti-CSRF tokens on all state-changing requests; login
+       rate limiting; **no default credentials** — the first account is
+       created with `cms admin create-user`. Accounts live in the storage
+       database via new shared migrations but are **never exported**: the
+       portable source of truth stays content-only.
+4. [ ] **Admin shell + dashboard**: hTWOo chrome (command bar, navigation,
+       tables per the COMPONENTS.md mapping); dashboard shows content by
+       status, the translation coverage matrix (missing/outdated/complete
+       per language), current validation results and the last build/export.
+5. [ ] **Articles**: list/create/edit with the side-by-side editor (EN
+       source next to each translation), translation-state indicators from
+       the checksum model, safe Markdown preview (same renderer as the
+       builder), per-language slugs, SEO fields, category, tags, cover.
+6. [ ] **Pages and sections**: page metadata plus ordered typed sections
+       with kind-aware field forms; same side-by-side translation UX.
+7. [ ] **Media library**: uploads validated server-side (MIME sniffing,
+       size limits, image dimensions), mandatory EN alt text, translatable
+       alt, usage references checked before delete.
+8. [ ] **Workflow and publishing**: `draft → review → published → archived`
+       transitions gated by role; the publish gate runs `cms-validation`
+       and blocks on errors (configurable); preview builds through
+       `cms-build` into a temporary directory; build/export can be
+       triggered from the panel with visible results.
+9. [ ] **Hardening + accessibility gate**: security headers (CSP with no
+       inline script, frame denial), the SECURITY_STRATEGY M3 test suites
+       (authn/authz, CSRF, upload validation, failed-login rate limiting),
+       axe over the admin pages (WCAG 2.2 AA, same gate as the public
+       site), admin guide in `docs/` covered by the anti-drift suite.
+
+**Definition of done**: the full editorial cycle works from the browser
+against any supported storage engine, with every security and accessibility
+gate green in CI.
+
+## Release plan — first PyPI release (after Milestone 3 kickoff)
+
+- [ ] **ADR-0014 — distribution naming**: decide `stillsite-*` vs `cms-*`
+      for the five packages (import names may stay `cms_*`; the ADR weighs
+      collision risk, brand and the ECOSYSTEM.md naming policy), then
+      reserve the names on PyPI.
+- [ ] **Trusted publishing**: release workflow on version tags using PyPI
+      OIDC (no long-lived tokens), semantic versioning from `0.1.0`,
+      hand-written `CHANGELOG.md`, one single-sourced version per package.
+- [ ] **Remaining backends**: SQL Server and MySQL/MariaDB, same mold as
+      [ADR-0009](adr/0009-postgres-backend.md) — own ADR each, optional
+      extra, shared ANSI migrations with engine-specific version tracking,
+      the storage conformance suite green in CI (service containers).
 
 ## Milestone 4 — Reference theme and example (detailed plan)
 
@@ -122,13 +184,13 @@ the theme conformance suite.
    MySQL/MariaDB remain, same mold).
 3. ~~Reference theme~~ **done** (production stylesheets vendored; demo on
    stillsite.ph7x.com).
-4. **Demo ready gate (next)**: axe/WCAG job in CI, README quickstart against
-   the live demo, social preview upload (owner), M4 documentation pass —
-   then the public announcement.
-5. **Milestone 3 — admin panel** (FastAPI + hTWOo candidate): auth/roles,
-   translation dashboard, side-by-side editor, media library, workflow.
+4. ~~Demo ready gate~~ **done** (axe/WCAG + W3C Nu job required in CI, README
+   links the live demo; owner still owes the social preview upload and the
+   announcement moment).
+5. **Milestone 3 — admin panel (next)**: the detailed plan above — this is
+   the milestone that makes Stillsite a full CMS, not a generator.
 6. **First PyPI release** (naming ADR, semver, trusted publishing) and the
-   remaining server backends.
+   remaining server backends — see the release plan above.
 
 Small pending items: GitHub social preview upload (owner, web UI only);
 reserve the PyPI names (`stillsite`; decide `stillsite-*` vs `cms-*`
