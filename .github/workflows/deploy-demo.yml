@@ -28,7 +28,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python -m pip install --upgrade pip
+      - run: python -m pip install --upgrade pip httpx2
       - run: |
           for pkg in packages/cms-core packages/cms-validation packages/cms-build packages/cms-theme-ph7x-reference packages/cms-cli apps/admin; do
             python -m pip install -e "$pkg"
