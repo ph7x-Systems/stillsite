@@ -27,7 +27,13 @@
              {% if active_section == "dashboard" %}aria-current="page"{% endif %}>Dashboard</a>
         </div>
       </li>
-      {# Articles, pages and media join this list as their phases land. #}
+      <li class="hoo-navitem">
+        <div class="hoo-navitem-text">
+          <a class="hoo-navitem-link" href="/articles"
+             {% if active_section == "articles" %}aria-current="page"{% endif %}>Articles</a>
+        </div>
+      </li>
+      {# Pages and media join this list as their phases land. #}
     </ul>
   </nav>
   <main id="main" class="admin-main">

@@ -110,7 +110,7 @@ with tests:
        tables per the COMPONENTS.md mapping); dashboard shows content by
        status, the translation coverage matrix (missing/outdated/complete
        per language), current validation results and the last build/export.
-5. [ ] **Articles**: list/create/edit with the side-by-side editor (EN
+5. [x] **Articles**: list/create/edit with the side-by-side editor (EN
        source next to each translation), translation-state indicators from
        the checksum model, safe Markdown preview (same renderer as the
        builder), per-language slugs, SEO fields, category, tags, cover.

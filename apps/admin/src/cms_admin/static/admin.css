@@ -186,6 +186,82 @@ body {
   font-weight: 600;
 }
 
+/* Editorial forms and the side-by-side editor */
+
+.admin-form {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.admin-form fieldset {
+  display: grid;
+  gap: 1rem;
+  border: 1px solid var(--neutralLight);
+  border-radius: 4px;
+  padding: 1rem;
+  background: var(--white);
+  margin: 0;
+}
+
+.admin-textarea {
+  width: 100%;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875rem;
+}
+
+.admin-sbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 2rem;
+  align-items: start;
+  margin-top: 1rem;
+}
+
+.admin-preview {
+  background: var(--white);
+  border: 1px solid var(--neutralLight);
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  overflow-x: auto;
+}
+
+.admin-source dt {
+  color: var(--neutralSecondary);
+  font-size: 0.875rem;
+}
+
+.admin-source dd {
+  margin: 0.125rem 0 0.75rem;
+}
+
+.admin-state {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.admin-state-complete {
+  color: #0b6a0b;
+  background: #dff6dd;
+  border-color: #9fd89f;
+}
+
+.admin-state-outdated {
+  color: #8a6116;
+  background: #fff4ce;
+  border-color: #f2dda0;
+}
+
+.admin-state-missing {
+  color: var(--errorText);
+  background: #fde7e9;
+  border-color: #f1bbbe;
+}
+
 /* Login */
 
 .admin-login {

@@ -1,0 +1,38 @@
+{% extends "shell.html.j2" %}
+{% from "_fields.html.j2" import state_badge %}
+{% block title %}Articles — Stillsite admin{% endblock %}
+{% block content %}
+<h1>Articles</h1>
+<p><a class="hoo-button-primary" href="/articles/new"><span class="hoo-button-label">New article</span></a></p>
+{% if articles %}
+<div class="admin-table-wrap">
+  <table class="hoo-table">
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Title (EN)</th>
+        <th scope="col">Status</th>
+        {% for language in target_languages %}<th scope="col">{{ language.value | upper }}</th>{% endfor %}
+        <th scope="col">Updated</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for article in articles %}
+      <tr>
+        <th scope="row"><a href="/articles/{{ article.id }}">{{ article.id }}</a></th>
+        <td>{{ article.source.title }}</td>
+        <td><span class="hoo-mtag"><span class="hoo-mtag-lbl">{{ article.status.value }}</span></span></td>
+        {% for language in target_languages %}
+        <td><a href="/articles/{{ article.id }}/translations/{{ language.value }}">
+          {{ state_badge(article.translation_state(language)) }}</a></td>
+        {% endfor %}
+        <td>{{ article.updated_at.strftime("%Y-%m-%d") }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="admin-empty">No articles yet — create the first one.</p>
+{% endif %}
+{% endblock %}
