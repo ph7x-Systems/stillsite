@@ -152,7 +152,12 @@ class _SiteBuilder:
         return {
             "head": head,
             "nav": {**_navigation(self.config, language), "menu": menu},
-            "footer": {"text": self.config.name, "menu": menu},
+            "footer": {
+                "text": self.config.footer_text or self.config.name,
+                "menu": menu,
+                "admin_url": self.config.admin_url,
+                "admin_label": ui_label(self.config, "admin", language),
+            },
             "asset_urls": self.asset_urls,
         }
 
@@ -387,6 +392,8 @@ class _SiteBuilder:
                 ),
                 "search_index_url": self._search_index_url(language),
                 "search_label": ui_label(self.config, "search", language),
+                "view_cards_label": ui_label(self.config, "view-cards", language),
+                "view_list_label": ui_label(self.config, "view-list", language),
                 "eyebrow": ui_label(self.config, "blog-eyebrow", language),
                 "sub": blog_sub,
                 "filters": self._category_filters(language),
@@ -449,6 +456,8 @@ class _SiteBuilder:
             "next_url": None,
             "search_index_url": self._search_index_url(language),
             "search_label": ui_label(self.config, "search", language),
+            "view_cards_label": ui_label(self.config, "view-cards", language),
+            "view_list_label": ui_label(self.config, "view-list", language),
             "eyebrow": ui_label(self.config, "blog-eyebrow", language),
             "sub": None,
             "filters": self._category_filters(language),

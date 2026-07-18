@@ -4,6 +4,7 @@ base_url = "https://example.com"
 languages = ["pt-pt", "es", "fr", "de"]
 blog_path = "blog"
 theme = "ph7x-reference"
+footer_text = "© 2026 Sardine Aerospace"
 
 [site.categories.missions]
 en = "Missions"
@@ -31,6 +32,13 @@ de = "Kantine"
 name = "Sardine Aerospace"
 url = "https://example.com/"
 
+
+[site.labels.search]
+en = "Search articles"
+pt-pt = "Pesquisar artigos"
+es = "Buscar artículos"
+fr = "Rechercher des articles"
+de = "Artikel suchen"
 
 [site.labels.blog-title]
 en = "Mission log."

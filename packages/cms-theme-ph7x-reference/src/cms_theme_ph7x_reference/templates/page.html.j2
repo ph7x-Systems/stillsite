@@ -19,8 +19,9 @@
     <h1>{{ section.data.heading }}{% if section.data.accent %} <span class="it">{{ section.data.accent }}</span>{% endif %}</h1>
     <div class="base">
       <p>{{ page.description }}</p>
+      {# Two calls to action like the original: the primary first, one secondary. #}
       <div class="cta">
-        {% for entry in nav.menu %}
+        {% for entry in nav.menu[:2] %}
         <a href="{{ entry.url }}" class="btn{% if loop.first %} btn-p{% endif %}">{{ entry.label }}</a>
         {% endfor %}
       </div>

@@ -21,6 +21,10 @@ class SiteConfig(BaseModel):
     categories: dict[str, dict[Language, str]] = Field(default_factory=dict)
     labels: dict[str, dict[Language, str]] = Field(default_factory=dict)
     organization: dict[str, JsonValue] | None = None
+    footer_text: str | None = None
+    """Footer line (e.g. a copyright notice); the site name when unset."""
+    admin_url: str | None = None
+    """When set, the footer links to the admin panel (dimmed, nofollow)."""
 
     def category_label(self, slug: str, language: Language) -> str:
         labels = self.categories.get(slug, {})

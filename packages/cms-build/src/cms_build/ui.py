@@ -24,6 +24,27 @@ DEFAULT_LABELS: dict[str, dict[Language, str]] = {
         Language.FR: "Rechercher",
         Language.DE: "Suchen",
     },
+    "admin": {
+        Language.EN: "Admin",
+        Language.PT_PT: "Admin",
+        Language.ES: "Admin",
+        Language.FR: "Admin",
+        Language.DE: "Admin",
+    },
+    "view-cards": {
+        Language.EN: "Cards",
+        Language.PT_PT: "Cartões",
+        Language.ES: "Tarjetas",
+        Language.FR: "Cartes",
+        Language.DE: "Karten",
+    },
+    "view-list": {
+        Language.EN: "List",
+        Language.PT_PT: "Lista",
+        Language.ES: "Lista",
+        Language.FR: "Liste",
+        Language.DE: "Liste",
+    },
     "back": {
         Language.EN: "Back to the blog",
         Language.PT_PT: "Voltar ao blog",
