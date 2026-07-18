@@ -83,7 +83,8 @@ bypasses them. Security gates per [SECURITY_STRATEGY.md](SECURITY_STRATEGY.md)
 (admin panel section). Phases in execution order; each lands as its own PR
 with tests:
 
-1. [ ] **ADR-0013 — admin UI architecture** (kickoff decision): FastAPI +
+1. [x] **ADR-0013 — admin UI architecture**
+       ([ADR-0013](adr/0013-admin-ui-architecture.md)): FastAPI +
        server-rendered Jinja + vendored **hTWOo** (Fluent, MIT — already in
        `vendor/`, see [COMPONENTS.md](COMPONENTS.md)), with Web-Component
        islands where interactivity demands it (ADR-0010 applies to the admin
@@ -281,13 +282,14 @@ technology strategy (native platform, Web Component islands, no framework) is
 
 ## Open decisions
 
-- Admin UI: server-rendered vs. lightweight TypeScript (decide in Milestone 3,
-  with an ADR). Leading candidate for the look: hTWOo (n8design/htwoo, MIT) —
-  Fluent Design in pure HTML/CSS/JS, pairs naturally with a server-rendered
-  FastAPI UI and adds no frontend framework; would be vendored as local assets
+- PyPI distribution naming, `stillsite-*` vs `cms-*` (ADR-0014 at first
+  release — see the release plan above)
 
 ## Decided
 
+- Admin UI: server-rendered FastAPI + Jinja with vendored hTWOo, islands per
+  ADR-0010, session-cookie auth
+  ([ADR-0013](adr/0013-admin-ui-architecture.md))
 - License: Apache-2.0 ([ADR-0002](adr/0002-license-apache-2.md))
 - Remote repository: `ph7x-Systems/stillsite` on GitHub (public since 2026-07-17)
 - Project name: **Stillsite** — coined, screened against PyPI/npm/GitHub and
