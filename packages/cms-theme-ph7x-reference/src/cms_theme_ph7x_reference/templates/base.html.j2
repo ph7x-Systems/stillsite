@@ -34,10 +34,11 @@
 <footer>
   <div class="wrap">
     <div class="fg">
+      <span>{{ footer.text }}</span>
       <nav class="fl">
         {% for entry in footer.menu %}<a href="{{ entry.url }}">{{ entry.label }}</a>{% endfor %}
+        {% if footer.admin_url %}<a class="fl-adm" href="{{ footer.admin_url }}" rel="nofollow">{{ footer.admin_label }}</a>{% endif %}
       </nav>
-      <span>{{ footer.text }}</span>
     </div>
   </div>
 </footer>

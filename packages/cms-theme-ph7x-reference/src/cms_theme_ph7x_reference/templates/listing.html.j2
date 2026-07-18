@@ -15,6 +15,11 @@
 {% if listing.search_index_url %}
 <div class="b-tools">
   <site-search index-url="{{ listing.search_index_url }}" label="{{ listing.search_label }}"></site-search>
+  {# CSS-only cards/list toggle (no JS, ADR-0010): radios drive .b-grid via :has(). #}
+  <div class="b-views" role="group" aria-label="{{ listing.view_cards_label }} / {{ listing.view_list_label }}">
+    <label class="bv"><input type="radio" name="bview" id="bv-cards" checked aria-label="{{ listing.view_cards_label }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></label>
+    <label class="bv"><input type="radio" name="bview" id="bv-list" aria-label="{{ listing.view_list_label }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg></label>
+  </div>
 </div>
 <script type="module" src="{{ asset_urls['assets/search.js'] }}"></script>
 {% endif %}
