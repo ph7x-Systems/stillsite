@@ -1,0 +1,41 @@
+{% extends "shell.html.j2" %}
+{% from "_fields.html.j2" import state_badge %}
+{% block title %}Pages — Stillsite admin{% endblock %}
+{% block content %}
+<h1>Pages</h1>
+<p><a class="hoo-button-primary" href="/pages/new"><span class="hoo-button-label">New page</span></a></p>
+{% if pages %}
+<div class="admin-table-wrap">
+  <table class="hoo-table">
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Title (EN)</th>
+        <th scope="col">Status</th>
+        <th scope="col">Sections</th>
+        {% for language in target_languages %}<th scope="col">{{ language.value | upper }}</th>{% endfor %}
+        <th scope="col">Updated</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for page in pages %}
+      <tr>
+        <th scope="row"><a href="/pages/{{ page.id }}">{{ page.id }}</a></th>
+        <td>{{ page.source.title }}</td>
+        <td><span class="hoo-mtag"><span class="hoo-mtag-lbl">{{ page.status.value }}</span></span></td>
+        <td class="align-right">{{ page.sections | length }}</td>
+        {% for language in target_languages %}
+        <td>{{ state_badge(page.translation_state(language)) }}</td>
+        {% endfor %}
+        <td>{{ page.updated_at.strftime("%Y-%m-%d") }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="admin-empty">Language states aggregate the page and all its sections — the
+  least-complete state wins.</p>
+{% else %}
+<p class="admin-empty">No pages yet — create the first one.</p>
+{% endif %}
+{% endblock %}

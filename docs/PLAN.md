@@ -114,7 +114,7 @@ with tests:
        source next to each translation), translation-state indicators from
        the checksum model, safe Markdown preview (same renderer as the
        builder), per-language slugs, SEO fields, category, tags, cover.
-6. [ ] **Pages and sections**: page metadata plus ordered typed sections
+6. [x] **Pages and sections**: page metadata plus ordered typed sections
        with kind-aware field forms; same side-by-side translation UX.
 7. [ ] **Media library**: uploads validated server-side (MIME sniffing,
        size limits, image dimensions), mandatory EN alt text, translatable

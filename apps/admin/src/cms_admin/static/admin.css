@@ -262,6 +262,30 @@ body {
   border-color: #f1bbbe;
 }
 
+.admin-row-actions {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.admin-row-actions form {
+  display: inline;
+}
+
+.admin-field-value {
+  width: 100%;
+  min-width: 14rem;
+}
+
+.admin-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* Login */
 
 .admin-login {

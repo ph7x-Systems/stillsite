@@ -33,7 +33,13 @@
              {% if active_section == "articles" %}aria-current="page"{% endif %}>Articles</a>
         </div>
       </li>
-      {# Pages and media join this list as their phases land. #}
+      <li class="hoo-navitem">
+        <div class="hoo-navitem-text">
+          <a class="hoo-navitem-link" href="/pages"
+             {% if active_section == "pages" %}aria-current="page"{% endif %}>Pages</a>
+        </div>
+      </li>
+      {# Media joins this list when its phase lands. #}
     </ul>
   </nav>
   <main id="main" class="admin-main">

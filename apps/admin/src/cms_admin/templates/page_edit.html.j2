@@ -1,0 +1,109 @@
+{% extends "shell.html.j2" %}
+{% from "_fields.html.j2" import text_field, textarea_field, errors_block, state_badge %}
+{% block title %}{{ page.id }} — Stillsite admin{% endblock %}
+{% block content %}
+<nav aria-label="Breadcrumb"><a href="/pages">&larr; Pages</a></nav>
+<h1>{{ page.id }}
+  <span class="hoo-mtag"><span class="hoo-mtag-lbl">{{ page.status.value }}</span></span></h1>
+{{ errors_block(errors) }}
+<div class="admin-sbs">
+  <form method="post" action="/pages/{{ page.id }}" class="admin-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <fieldset class="hoo-fieldset">
+      <legend class="hoo-legend">Content (EN)</legend>
+      {{ text_field("title", "Title", form.title, required=true) }}
+      {{ textarea_field("description", "Description", form.description, rows=3) }}
+      {{ text_field("slug", "Slug", form.slug, required=true) }}
+    </fieldset>
+    <div>
+      <button type="submit" class="hoo-button-primary"><span class="hoo-button-label">Save</span></button>
+    </div>
+  </form>
+  <section aria-labelledby="page-translations-heading">
+    <h2 id="page-translations-heading">Page translations</h2>
+    <p class="admin-empty">The page's own title/description/slug — section content is
+      translated on each section.</p>
+    <div class="admin-table-wrap">
+      <table class="hoo-table">
+        <thead><tr><th scope="col">Language</th><th scope="col">State</th><th scope="col"></th></tr></thead>
+        <tbody>
+          {% for language in target_languages %}
+          <tr>
+            <th scope="row">{{ language.value | upper }}</th>
+            <td>{{ state_badge(own_states[language]) }}</td>
+            <td><a href="/pages/{{ page.id }}/translations/{{ language.value }}">Edit translation</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<section class="admin-section" aria-labelledby="sections-heading">
+  <h2 id="sections-heading">Sections</h2>
+  {% if page.sections %}
+  <div class="admin-table-wrap">
+    <table class="hoo-table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Key</th>
+          <th scope="col">Kind</th>
+          {% for language in target_languages %}<th scope="col">{{ language.value | upper }}</th>{% endfor %}
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for section in page.sections %}
+        <tr>
+          <td class="align-right">{{ loop.index }}</td>
+          <th scope="row"><a href="/pages/{{ page.id }}/sections/{{ section.key }}">{{ section.key }}</a></th>
+          <td>{{ section.kind }}</td>
+          {% for language in target_languages %}
+          <td><a href="/pages/{{ page.id }}/sections/{{ section.key }}/translations/{{ language.value }}">
+            {{ state_badge(section.translation_state(language)) }}</a></td>
+          {% endfor %}
+          <td class="admin-row-actions">
+            <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}/move">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <input type="hidden" name="direction" value="up">
+              <button type="submit" class="hoo-buttonaction" {% if loop.first %}disabled{% endif %}
+                      aria-label="Move {{ section.key }} up">
+                <span class="hoo-button-label">&uarr;</span></button>
+            </form>
+            <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}/move">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <input type="hidden" name="direction" value="down">
+              <button type="submit" class="hoo-buttonaction" {% if loop.last %}disabled{% endif %}
+                      aria-label="Move {{ section.key }} down">
+                <span class="hoo-button-label">&darr;</span></button>
+            </form>
+            <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}/delete">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button type="submit" class="hoo-buttonaction"
+                      aria-label="Remove section {{ section.key }}">
+                <span class="hoo-button-label">Remove</span></button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="admin-empty">No sections yet.</p>
+  {% endif %}
+
+  <h3>Add a section</h3>
+  <form method="post" action="/pages/{{ page.id }}/sections" class="admin-form admin-form-inline">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    {{ text_field("key", "Key", "", required=true, hint="unique on this page, lowercase-with-dashes") }}
+    {{ text_field("kind", "Kind", "", required=true,
+                  hint="the theme template that renders it — reference theme kinds: " + kind_hints | join(", ")) }}
+    <div>
+      <button type="submit" class="hoo-button-primary"><span class="hoo-button-label">Add section</span></button>
+    </div>
+  </form>
+</section>
+{% endblock %}
