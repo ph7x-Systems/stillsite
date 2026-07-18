@@ -47,4 +47,7 @@ main:has(#bv-list:checked) .b-card h3{margin-top:6px;font-size:1.26rem}
 .pagination span{color:#8b909c}
 .b-pager span{color:#8b909c}
 .b-pager a{color:#9aa0ad}
+/* The original dims the admin link with opacity; that fails AA on our gate,
+   so dim via an AA-passing color at full opacity instead. */
+.fl-adm{opacity:1;color:#8b909c}
 .b-card h3{font-family:var(--serif);font-size:1.42rem;font-weight:400;line-height:1.28;color:var(--head);margin:12px 0 10px;overflow-wrap:break-word}

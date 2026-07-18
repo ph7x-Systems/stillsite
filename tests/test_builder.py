@@ -128,3 +128,14 @@ def test_draft_content_never_builds() -> None:
     content.articles[0].status = ContentStatus.DRAFT
     artifact = build_site(CONFIG, content)
     assert not any("first-post" in path for path in artifact.paths())
+
+
+def test_language_switcher_stays_on_the_current_page() -> None:
+    artifact = build_site(CONFIG, make_content())
+    article_html = artifact.files["blog/first-post/index.html"].decode("utf-8")
+    # PT keeps the reader on the translated article, not the PT home.
+    assert 'href="/pt-pt/blog/primeiro-post/">pt</a>' in article_html
+    # DE has no translation of this article: fall back to the DE home.
+    assert 'href="/de/">de</a>' in article_html
+    pt_article = artifact.files["pt-pt/blog/primeiro-post/index.html"].decode("utf-8")
+    assert 'href="/blog/first-post/">en</a>' in pt_article

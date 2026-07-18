@@ -6,7 +6,7 @@ actually exists, plus x-default), Open Graph data and description. Templates
 render it; they never assemble it.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from cms_core import SOURCE_LANGUAGE, Language
 
@@ -40,6 +40,9 @@ class Head:
     og_locale: str
     og_locale_alternates: tuple[str, ...]
     json_ld: str | None = None
+    paths_by_language: dict[Language, str] = field(default_factory=dict)
+    """Site-relative path of this page in every language it exists in —
+    the language switcher uses it to stay on the current page."""
 
 
 def hreflang_code(language: Language) -> str:
@@ -79,4 +82,5 @@ def build_head(
         og_locale=_OG_LOCALES[language],
         og_locale_alternates=tuple(_OG_LOCALES[lang] for lang in ordered if lang is not language),
         json_ld=json_ld,
+        paths_by_language=dict(paths_by_language),
     )

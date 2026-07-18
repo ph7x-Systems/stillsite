@@ -151,7 +151,7 @@ class _SiteBuilder:
         menu = self._menu(language)
         return {
             "head": head,
-            "nav": {**_navigation(self.config, language), "menu": menu},
+            "nav": {**_navigation(self.config, language, head.paths_by_language), "menu": menu},
             "footer": {
                 "text": self.config.footer_text or self.config.name,
                 "menu": menu,
@@ -552,13 +552,20 @@ def _reading_minutes(markdown: str) -> int:
     return max(1, round(words / 200))
 
 
-def _navigation(config: SiteConfig, language: Language) -> dict[str, object]:
+def _navigation(
+    config: SiteConfig,
+    language: Language,
+    paths_by_language: dict[Language, str] | None = None,
+) -> dict[str, object]:
+    """The switcher keeps the reader on the current page wherever it exists
+    in the other language, and falls back to that language's home."""
+    paths = paths_by_language or {}
     return {
         "home_url": urls.language_prefix(language) + "/",
         "languages": [
             {
                 "code": lang.value.split("-")[0],
-                "url": urls.language_prefix(lang) + "/",
+                "url": paths.get(lang, urls.language_prefix(lang) + "/"),
                 "current": lang is language,
             }
             for lang in config.all_languages
