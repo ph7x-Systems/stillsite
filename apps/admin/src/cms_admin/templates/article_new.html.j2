@@ -2,22 +2,23 @@
 {% from "_fields.html.j2" import text_field, content_fields, metadata_fields, errors_block %}
 {% block title %}New article — Stillsite admin{% endblock %}
 {% block content %}
+<nav class="admin-breadcrumb" aria-label="Breadcrumb"><a href="/articles">&larr; Articles</a></nav>
 <h1>New article</h1>
 {{ errors_block(errors) }}
 <form method="post" action="/articles" class="admin-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   {{ text_field("id", "Article ID", form.id, required=true, hint="permanent, lowercase-with-dashes") }}
-  <fieldset class="hoo-fieldset">
-    <legend class="hoo-legend">Source (EN)</legend>
+  <fieldset>
+    <legend>Source (EN)</legend>
     {{ content_fields(form) }}
   </fieldset>
-  <fieldset class="hoo-fieldset">
-    <legend class="hoo-legend">Metadata</legend>
+  <fieldset>
+    <legend>Metadata</legend>
     {{ metadata_fields(form) }}
   </fieldset>
   <div>
-    <button type="submit" class="hoo-button-primary"><span class="hoo-button-label">Create article</span></button>
-    <a class="hoo-button" href="/articles"><span class="hoo-button-label">Cancel</span></a>
+    <button type="submit" class="admin-btn admin-btn-primary">Create article</button>
+    <a class="admin-btn" href="/articles">Cancel</a>
   </div>
 </form>
 {% endblock %}

@@ -1,6 +1,8 @@
 # ADR-0013 — Admin UI: server-rendered FastAPI + Jinja with hTWOo
 
-- **Status:** accepted
+- **Status:** accepted; the hTWOo component-library choice is superseded by
+  [ADR-0015](0015-admin-ph7x-design.md) (the admin uses the ph7x design
+  system natively). Everything else here stands.
 - **Date:** 2026-07-18
 
 ## Context

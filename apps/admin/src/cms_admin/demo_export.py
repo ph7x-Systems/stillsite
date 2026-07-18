@@ -36,9 +36,9 @@ BANNER = (
 )
 
 BANNER_CSS = (
-    "<style>.admin-demo-note{background:#fff4ce;color:#5d4a11;padding:.6rem 1rem;"
-    "font-size:.9rem;border-bottom:1px solid #f2dda0}.admin-demo-note a{color:inherit}"
-    "button[disabled]{cursor:not-allowed}</style>"
+    "<style>.admin-demo-note{background:#1b1a12;color:#e0d5ac;padding:.6rem 1.2rem;"
+    "font-size:.85rem;border-bottom:1px solid #3a3420}.admin-demo-note a{color:inherit;"
+    "text-decoration:underline}button[disabled]{cursor:not-allowed}</style>"
 )
 
 

@@ -112,11 +112,10 @@ def test_dashboard_shows_the_shell_chrome(tmp_path: Path) -> None:
     with TestClient(_app(tmp_path), base_url="https://testserver") as client:
         _sign_in(client)
         page = client.get("/").text
-    assert "hoo-cmdbar" in page
-    assert "hoo-nav" in page
+    assert "admin-topbar" in page
+    assert "admin-nav" in page
     assert 'aria-current="page"' in page
     assert "ana" in page
-    assert "/static/vendor/htwoo.min.css" in page
     assert "/static/admin.css" in page
 
 
@@ -153,18 +152,22 @@ def test_dashboard_empty_states(tmp_path: Path) -> None:
     assert "No build or export has run from this panel yet." in page
 
 
-def test_htwoo_assets_are_served_locally_with_their_license(tmp_path: Path) -> None:
+def test_design_system_assets_are_served_locally(tmp_path: Path) -> None:
+    """The admin ships the ph7x design system natively (ADR-0015): its own
+    stylesheet plus the local font subsets with their license — no CDN."""
     with TestClient(_app(tmp_path)) as client:
-        css = client.get("/static/vendor/htwoo.min.css")
-        license_file = client.get("/static/vendor/HTWOO-LICENSE.txt")
         admin_css = client.get("/static/admin.css")
-    assert css.status_code == 200
-    assert "text/css" in css.headers["content-type"]
-    assert "hoo-cmdbar" in css.text
-    assert license_file.status_code == 200
-    assert "MIT" in license_file.text
+        font = client.get("/static/fonts/inter-normal-latin.woff2")
+        serif = client.get("/static/fonts/newsreader-normal-latin.woff2")
+        license_file = client.get("/static/fonts/OFL.txt")
     assert admin_css.status_code == 200
-    assert "--themePrimary" in admin_css.text
+    assert "text/css" in admin_css.headers["content-type"]
+    assert "--navy" in admin_css.text
+    assert "Newsreader" in admin_css.text
+    assert font.status_code == 200
+    assert serif.status_code == 200
+    assert license_file.status_code == 200
+    assert "SIL OPEN FONT LICENSE" in license_file.text.upper()
 
 
 def test_static_assets_do_not_require_a_session(tmp_path: Path) -> None:

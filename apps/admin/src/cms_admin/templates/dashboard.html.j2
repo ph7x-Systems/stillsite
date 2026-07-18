@@ -1,6 +1,7 @@
 {% extends "shell.html.j2" %}
 {% block title %}Dashboard — Stillsite admin{% endblock %}
 {% block content %}
+<span class="admin-kick">Overview</span>
 <h1>Dashboard</h1>
 
 <section class="admin-section" aria-labelledby="content-status">
@@ -8,7 +9,7 @@
   <dl class="admin-stats">
     {% for status in statuses %}
     <div class="admin-stat">
-      <dt>{{ status.value | capitalize }}</dt>
+      <dt>{{ status.value }}</dt>
       <dd>{{ counts[status] }}</dd>
     </div>
     {% endfor %}
@@ -20,11 +21,11 @@
   <h2 id="translation-coverage">Translation coverage</h2>
   {% if totals.articles + totals.pages > 0 %}
   <div class="admin-table-wrap">
-    <table class="hoo-table">
+    <table class="admin-table">
       <thead>
         <tr>
           <th scope="col">Language</th>
-          {% for state in states %}<th scope="col" class="align-right">{{ state.value | capitalize }}</th>{% endfor %}
+          {% for state in states %}<th scope="col" class="align-right">{{ state.value }}</th>{% endfor %}
           <th scope="col">Coverage</th>
         </tr>
       </thead>
@@ -56,7 +57,7 @@
   <p>{{ report.errors | length }} errors, {{ report.warnings | length }} warnings.
     {% if report.ok %}Publishing is not blocked.{% else %}Publishing is blocked until the errors are fixed.{% endif %}</p>
   <div class="admin-table-wrap">
-    <table class="hoo-table">
+    <table class="admin-table">
       <thead>
         <tr>
           <th scope="col">Severity</th>
@@ -69,9 +70,7 @@
       <tbody>
         {% for issue in report.issues %}
         <tr>
-          <td class="admin-severity-{{ issue.severity.value }}">
-            <span class="hoo-mtag"><span class="hoo-mtag-lbl">{{ issue.severity.value }}</span></span>
-          </td>
+          <td><span class="admin-state admin-state-{{ 'missing' if issue.severity.value == 'error' else 'outdated' }}">{{ issue.severity.value }}</span></td>
           <td>{{ issue.code }}</td>
           <td>{{ issue.subject }}</td>
           <td>{{ issue.language.value if issue.language else "" }}</td>

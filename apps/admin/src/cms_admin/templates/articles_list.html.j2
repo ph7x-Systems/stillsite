@@ -2,11 +2,12 @@
 {% from "_fields.html.j2" import state_badge %}
 {% block title %}Articles — Stillsite admin{% endblock %}
 {% block content %}
+<span class="admin-kick">Content</span>
 <h1>Articles</h1>
-<p><a class="hoo-button-primary" href="/articles/new"><span class="hoo-button-label">New article</span></a></p>
+<p><a class="admin-btn admin-btn-primary" href="/articles/new">New article</a></p>
 {% if articles %}
 <div class="admin-table-wrap">
-  <table class="hoo-table">
+  <table class="admin-table">
     <thead>
       <tr>
         <th scope="col">ID</th>
@@ -21,7 +22,7 @@
       <tr>
         <th scope="row"><a href="/articles/{{ article.id }}">{{ article.id }}</a></th>
         <td>{{ article.source.title }}</td>
-        <td><span class="hoo-mtag"><span class="hoo-mtag-lbl">{{ article.status.value }}</span></span></td>
+        <td><span class="admin-tag">{{ article.status.value }}</span></td>
         {% for language in target_languages %}
         <td><a href="/articles/{{ article.id }}/translations/{{ language.value }}">
           {{ state_badge(article.translation_state(language)) }}</a></td>

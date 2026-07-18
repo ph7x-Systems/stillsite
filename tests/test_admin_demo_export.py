@@ -52,8 +52,8 @@ def test_snapshot_captures_the_editorial_surface(tmp_path: Path) -> None:
         "pages/home/index.html",
         "pages/home/sections/hero-main/index.html",
         "pages/home/sections/hero-main/translations/es/index.html",
-        "static/vendor/htwoo.min.css",
         "static/admin.css",
+        "static/fonts/inter-normal-latin.woff2",
     ]:
         assert (out / expected).is_file(), expected
 

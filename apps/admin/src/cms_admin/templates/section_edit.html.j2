@@ -2,28 +2,28 @@
 {% from "_fields.html.j2" import textarea_field, errors_block, state_badge %}
 {% block title %}{{ page.id }} · {{ section.key }} — Stillsite admin{% endblock %}
 {% block content %}
-<nav aria-label="Breadcrumb"><a href="/pages/{{ page.id }}">&larr; {{ page.id }}</a></nav>
-<h1>{{ section.key }} <span class="hoo-mtag"><span class="hoo-mtag-lbl">{{ section.kind }}</span></span></h1>
+<nav class="admin-breadcrumb" aria-label="Breadcrumb"><a href="/pages/{{ page.id }}">&larr; {{ page.id }}</a></nav>
+<h1>{{ section.key }} <span class="admin-tag">{{ section.kind }}</span></h1>
 {{ errors_block(errors) }}
 <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}" class="admin-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <fieldset class="hoo-fieldset">
-    <legend class="hoo-legend">Fields (EN)</legend>
-    <p class="admin-empty">Free-form name/value pairs the theme's
+  <fieldset>
+    <legend>Fields (EN)</legend>
+    <p class="admin-hint">Free-form name/value pairs the theme's
       <code>{{ section.kind }}</code> template consumes. Clear a value to drop its
       field; use the blank rows to add more.</p>
     <div class="admin-table-wrap">
-      <table class="hoo-table">
+      <table class="admin-table">
         <thead><tr><th scope="col">Field</th><th scope="col">Value</th></tr></thead>
         <tbody>
           {% for row in rows %}
           <tr>
             <td><label>
               <span class="admin-visually-hidden">Field name</span>
-              <input class="hoo-input-text" name="field_name" value="{{ row.name }}"></label></td>
+              <input class="admin-input" name="field_name" value="{{ row.name }}"></label></td>
             <td><label>
               <span class="admin-visually-hidden">Field value</span>
-              <input class="hoo-input-text admin-field-value" name="field_value"
+              <input class="admin-input admin-field-value" name="field_value"
                      value="{{ row.value }}"></label></td>
           </tr>
           {% endfor %}
@@ -33,14 +33,14 @@
   </fieldset>
   {{ textarea_field("media", "Media asset IDs (one per line)", media_text, rows=3) }}
   <div>
-    <button type="submit" class="hoo-button-primary"><span class="hoo-button-label">Save section</span></button>
+    <button type="submit" class="admin-btn admin-btn-primary">Save section</button>
   </div>
 </form>
 
 <section class="admin-section" aria-labelledby="section-translations-heading">
   <h2 id="section-translations-heading">Translations</h2>
   <div class="admin-table-wrap">
-    <table class="hoo-table">
+    <table class="admin-table">
       <thead><tr><th scope="col">Language</th><th scope="col">State</th><th scope="col"></th></tr></thead>
       <tbody>
         {% for language in target_languages %}

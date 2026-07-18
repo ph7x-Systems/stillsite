@@ -2,7 +2,7 @@
 {% from "_fields.html.j2" import textarea_field, errors_block, state_badge %}
 {% block title %}{{ page.id }} · {{ section.key }} · {{ language.value | upper }} — Stillsite admin{% endblock %}
 {% block content %}
-<nav aria-label="Breadcrumb">
+<nav class="admin-breadcrumb" aria-label="Breadcrumb">
   <a href="/pages/{{ page.id }}/sections/{{ section.key }}">&larr; {{ section.key }}</a></nav>
 <h1>{{ section.key }} — {{ language.value | upper }} {{ state_badge(state) }}</h1>
 {{ errors_block(errors) }}
@@ -11,10 +11,10 @@
       action="/pages/{{ page.id }}/sections/{{ section.key }}/translations/{{ language.value }}"
       class="admin-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <fieldset class="hoo-fieldset">
-    <legend class="hoo-legend">Fields — source next to translation</legend>
+  <fieldset>
+    <legend>Fields — source next to translation</legend>
     <div class="admin-table-wrap">
-      <table class="hoo-table">
+      <table class="admin-table">
         <thead>
           <tr>
             <th scope="col">Field</th>
@@ -29,7 +29,7 @@
             <td>{{ value }}</td>
             <td><label>
               <span class="admin-visually-hidden">{{ name }} translation</span>
-              <input class="hoo-input-text admin-field-value" name="field__{{ name }}"
+              <input class="admin-input admin-field-value" name="field__{{ name }}"
                      value="{{ form[name] }}"></label></td>
           </tr>
           {% endfor %}
@@ -39,8 +39,7 @@
   </fieldset>
   {{ textarea_field("media", "Media asset IDs (one per line)", media_text, rows=3) }}
   <div>
-    <button type="submit" class="hoo-button-primary">
-      <span class="hoo-button-label">Save translation</span></button>
+    <button type="submit" class="admin-btn admin-btn-primary">Save translation</button>
   </div>
 </form>
 {% else %}

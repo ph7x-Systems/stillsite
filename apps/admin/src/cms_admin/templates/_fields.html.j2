@@ -1,18 +1,18 @@
 {# Shared form building blocks for the editorial pages. #}
 
 {% macro text_field(name, label, value, required=false, hint=None) %}
-<div class="hoo-input">
-  <label class="hoo-label" for="{{ name }}">{{ label }}</label>
-  <input class="hoo-input-text" id="{{ name }}" name="{{ name }}" type="text"
+<div class="admin-field">
+  <label for="{{ name }}">{{ label }}</label>
+  <input class="admin-input" id="{{ name }}" name="{{ name }}" type="text"
          value="{{ value }}"{% if required %} required{% endif %}>
-  {% if hint %}<span class="hoo-input-description">{{ hint }}</span>{% endif %}
+  {% if hint %}<span class="admin-hint">{{ hint }}</span>{% endif %}
 </div>
 {% endmacro %}
 
 {% macro textarea_field(name, label, value, rows=12) %}
-<div class="hoo-input">
-  <label class="hoo-label" for="{{ name }}">{{ label }}</label>
-  <textarea class="hoo-input-text admin-textarea" id="{{ name }}" name="{{ name }}"
+<div class="admin-field">
+  <label for="{{ name }}">{{ label }}</label>
+  <textarea class="admin-input admin-textarea" id="{{ name }}" name="{{ name }}"
             rows="{{ rows }}">{{ value }}</textarea>
 </div>
 {% endmacro %}

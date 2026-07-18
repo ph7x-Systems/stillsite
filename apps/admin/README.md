@@ -17,12 +17,14 @@ then sign in at `/login`:
 cms admin create-user editor-in-chief -p my-project --role admin
 ```
 
-The UI is built from vendored hTWOo components served by the admin itself
-under `/static/vendor/` (no CDN); the dashboard shows content by workflow
-status, the translation coverage matrix and a live validation report.
-Articles are edited in the browser: EN source plus a side-by-side editor per
-translation, with state indicators from the checksum model and a preview
-rendered by the builder's own Markdown renderer (raw HTML disabled).
+The UI speaks the ph7x design system natively (ADR-0015): the same tokens
+and local Inter/Newsreader font subsets as the reference theme, one
+self-served stylesheet, no component library, no CDN. The dashboard shows
+content by workflow status, the translation coverage matrix and a live
+validation report. Articles and pages are edited in the browser: EN source
+plus a side-by-side editor per translation, with state indicators from the
+checksum model and a preview rendered by the builder's own Markdown
+renderer (raw HTML disabled).
 
 Configuration is environment-only (no config files with secrets):
 

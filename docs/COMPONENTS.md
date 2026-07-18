@@ -46,32 +46,23 @@ URI and scroll-driven animations behind `@supports`, all disabled under
 | `story` | Two-column `.two` grid: sticky kick label + `h2`/`body` prose |
 | _any other_ | Generic field/image rendering (graceful fallback) |
 
-## hTWOo component set (vendored for the admin)
-
-hTWOo Core 2.7.1 lives in `apps/admin/src/cms_admin/static/vendor/` (MIT,
-license alongside; Segoe web-font fetches stripped, reduced-motion
-kill-switch appended) and is served by the admin itself under
-`/static/vendor/` — no CDN (ADR-0013). hTWOo ships components but no
-palette: the admin defines the Fluent slot variables it consumes in
-`static/admin.css`. The public reference theme uses the ph7x design system
-instead and never depends on hTWOo.
-
 ## Admin panel (Milestone 3 — in progress)
 
-Decided in [ADR-0013](adr/0013-admin-ui-architecture.md): server-rendered
-Jinja inside the FastAPI process, **hTWOo** (`n8design/htwoo`, MIT — Fluent
-Design in pure HTML/CSS/JS) vendored as local assets, no CDN, islands per
-ADR-0010. Mapping:
+Server-rendered Jinja inside the FastAPI process
+([ADR-0013](adr/0013-admin-ui-architecture.md)), styled **natively with the
+ph7x design system** ([ADR-0015](adr/0015-admin-ph7x-design.md)): the same
+tokens, local Inter/Newsreader subsets (OFL) and button/badge idioms as the
+reference theme, in one self-served stylesheet (`static/admin.css`) — no
+component library, no CDN, islands per ADR-0010. Surfaces:
 
-| Admin feature | hTWOo components |
+| Admin surface | Building blocks (`admin-*` classes) |
 | --- | --- |
-| Shell chrome (all authenticated pages) | command bar, navigation, tag (role badge) |
-| Dashboard (content/translation status) | cards, tables, progress indicators |
-| Content lists | details list/table, command bar, search box |
-| Side-by-side translation editor | split panels, text fields, persona/status badges |
-| Media library | file list, dialogs, upload button, image cells |
-| Workflow actions (draft→review→published) | buttons, dialogs, message bars, toggles |
-| Validation results | message bars, callouts |
+| Shell chrome (all authenticated pages) | navy top bar, side navigation, role tag, skip link |
+| Dashboard | stat cards (serif numerals), coverage table + progress, validation table |
+| Content lists | tables with per-language state badges (`admin-state-*`) |
+| Side-by-side editors | two-column grid (`admin-sbs`), fieldsets, Markdown preview panel |
+| Forms | `admin-field` / `admin-input` (+ mono textarea), inline hints, alert block |
+| Actions | `admin-btn` / `admin-btn-primary` / `admin-btn-small` (the site's `.btn` idiom) |
 
-The admin remains an application (not a theme); its component decisions do
-not constrain public-site themes.
+The admin remains an application (not a theme); sites theming the public
+output do not affect the admin's look.

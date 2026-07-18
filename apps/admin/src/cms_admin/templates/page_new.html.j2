@@ -2,20 +2,21 @@
 {% from "_fields.html.j2" import text_field, textarea_field, errors_block %}
 {% block title %}New page — Stillsite admin{% endblock %}
 {% block content %}
+<nav class="admin-breadcrumb" aria-label="Breadcrumb"><a href="/pages">&larr; Pages</a></nav>
 <h1>New page</h1>
 {{ errors_block(errors) }}
 <form method="post" action="/pages" class="admin-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   {{ text_field("id", "Page ID", form.id, required=true, hint="permanent, lowercase-with-dashes") }}
-  <fieldset class="hoo-fieldset">
-    <legend class="hoo-legend">Content (EN)</legend>
+  <fieldset>
+    <legend>Content (EN)</legend>
     {{ text_field("title", "Title", form.title, required=true) }}
     {{ textarea_field("description", "Description", form.description, rows=3) }}
     {{ text_field("slug", "Slug", form.slug, required=true, hint="lowercase-with-dashes") }}
   </fieldset>
   <div>
-    <button type="submit" class="hoo-button-primary"><span class="hoo-button-label">Create page</span></button>
-    <a class="hoo-button" href="/pages"><span class="hoo-button-label">Cancel</span></a>
+    <button type="submit" class="admin-btn admin-btn-primary">Create page</button>
+    <a class="admin-btn" href="/pages">Cancel</a>
   </div>
 </form>
 {% endblock %}

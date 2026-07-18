@@ -85,10 +85,11 @@ with tests:
 
 1. [x] **ADR-0013 — admin UI architecture**
        ([ADR-0013](adr/0013-admin-ui-architecture.md)): FastAPI +
-       server-rendered Jinja + vendored **hTWOo** (Fluent, MIT — already in
-       `vendor/`, see [COMPONENTS.md](COMPONENTS.md)), with Web-Component
-       islands where interactivity demands it (ADR-0010 applies to the admin
-       too); TypeScript only if a concrete need appears, with its own ADR.
+       server-rendered Jinja, with Web-Component islands where interactivity
+       demands it (ADR-0010 applies to the admin too); TypeScript only if a
+       concrete need appears, with its own ADR. The original hTWOo component
+       choice was later superseded by
+       [ADR-0015](adr/0015-admin-ph7x-design.md).
 2. [x] **Application skeleton**: `apps/admin` as an installable package
        (`cms-admin`, src layout like the rest), app factory, settings from
        environment only (no config files with secrets), health endpoint
@@ -106,8 +107,9 @@ with tests:
        live in the storage database via shared migration 6 but are
        **never exported**; the conformance suite covers them on every
        engine.
-4. [x] **Admin shell + dashboard**: hTWOo chrome (command bar, navigation,
-       tables per the COMPONENTS.md mapping); dashboard shows content by
+4. [x] **Admin shell + dashboard**: the chrome (top bar, navigation, tables
+       per the COMPONENTS.md mapping — restyled natively with the ph7x
+       design system per ADR-0015); dashboard shows content by
        status, the translation coverage matrix (missing/outdated/complete
        per language), current validation results and the last build/export.
 5. [x] **Articles**: list/create/edit with the side-by-side editor (EN
@@ -232,10 +234,10 @@ visitor can judge the product from it. Phases, in execution order:
 
 ## Design overhaul plan (component system, not a monolith)
 
-Written before execution, per the working rule. Goal: the demo chrome is
-built from a real component library — **hTWOo** (n8design/htwoo, MIT, Fluent
-Design in pure HTML/CSS) as requested — composed with our editorial identity,
-and the theme CSS becomes per-component files, not one monolithic sheet.
+**Historical.** This plan predates the verbatim-CSS decision (the demo now
+ships the real ph7x stylesheets) and the admin's hTWOo experiment, which
+ended with hTWOo removed everywhere
+([ADR-0015](adr/0015-admin-ph7x-design.md)). Kept for the record:
 
 1. **Vendor hTWOo Core** as local assets (npm tarball → dist CSS, no Node in
    the build, no CDN): new base layer available to official themes.
@@ -292,9 +294,10 @@ technology strategy (native platform, Web Component islands, no framework) is
 
 ## Decided
 
-- Admin UI: server-rendered FastAPI + Jinja with vendored hTWOo, islands per
-  ADR-0010, session-cookie auth
-  ([ADR-0013](adr/0013-admin-ui-architecture.md))
+- Admin UI: server-rendered FastAPI + Jinja, islands per ADR-0010,
+  session-cookie auth ([ADR-0013](adr/0013-admin-ui-architecture.md));
+  styled natively with the ph7x design system — no component library
+  ([ADR-0015](adr/0015-admin-ph7x-design.md))
 - License: Apache-2.0 ([ADR-0002](adr/0002-license-apache-2.md))
 - Remote repository: `ph7x-Systems/stillsite` on GitHub (public since 2026-07-17)
 - Project name: **Stillsite** — coined, screened against PyPI/npm/GitHub and

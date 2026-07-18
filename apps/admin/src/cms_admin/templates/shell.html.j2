@@ -1,44 +1,28 @@
-{# The authenticated chrome (ADR-0013): hTWOo command bar on top, section
-   navigation on the left, the working area as `main`. Pages set
+{# The authenticated chrome (ADR-0015): the ph7x design system natively —
+   navy top bar, dark side navigation, editorial main column. Pages set
    `active_section` so the navigation marks the current page. #}
 {% extends "base.html.j2" %}
 {% block body %}
 <a class="admin-skip" href="#main">Skip to content</a>
-<header class="admin-topbar hoo-cmdbar">
-  <span class="admin-brand">Stillsite admin</span>
+<header class="admin-topbar">
+  <span class="admin-brand">Stillsite<span class="adm-sub">Admin</span></span>
   <span class="admin-topbar-spacer"></span>
   <span class="admin-user">
     <span>{{ user.username }}</span>
-    <span class="hoo-mtag"><span class="hoo-mtag-lbl">{{ user.role.value }}</span></span>
+    <span class="admin-tag">{{ user.role.value }}</span>
   </span>
   <form method="post" action="/logout">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <button type="submit" class="hoo-buttonaction">
-      <span class="hoo-button-label">Sign out</span>
-    </button>
+    <button type="submit" class="admin-btn admin-btn-small">Sign out</button>
   </form>
 </header>
 <div class="admin-shell">
-  <nav class="hoo-nav admin-nav" aria-label="Admin sections">
-    <ul class="hoo-nav-list">
-      <li class="hoo-navitem">
-        <div class="hoo-navitem-text">
-          <a class="hoo-navitem-link" href="/"
-             {% if active_section == "dashboard" %}aria-current="page"{% endif %}>Dashboard</a>
-        </div>
-      </li>
-      <li class="hoo-navitem">
-        <div class="hoo-navitem-text">
-          <a class="hoo-navitem-link" href="/articles"
-             {% if active_section == "articles" %}aria-current="page"{% endif %}>Articles</a>
-        </div>
-      </li>
-      <li class="hoo-navitem">
-        <div class="hoo-navitem-text">
-          <a class="hoo-navitem-link" href="/pages"
-             {% if active_section == "pages" %}aria-current="page"{% endif %}>Pages</a>
-        </div>
-      </li>
+  <nav class="admin-nav" aria-label="Admin sections">
+    <span class="admin-nav-label">Content</span>
+    <ul>
+      <li><a href="/" {% if active_section == "dashboard" %}aria-current="page"{% endif %}>Dashboard</a></li>
+      <li><a href="/articles" {% if active_section == "articles" %}aria-current="page"{% endif %}>Articles</a></li>
+      <li><a href="/pages" {% if active_section == "pages" %}aria-current="page"{% endif %}>Pages</a></li>
       {# Media joins this list when its phase lands. #}
     </ul>
   </nav>
