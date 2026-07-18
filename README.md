@@ -45,7 +45,7 @@ tests/                          # unit and integration tests
 
 ## Status
 
-Early development, in the open. The content core (models, translation states, multi-engine storage, deterministic export) is implemented and tested; the validator, builder and CLI are next — see [docs/PLAN.md](docs/PLAN.md) for the execution plan, [docs/POC_PLAN.md](docs/POC_PLAN.md) for the proof-of-concept target and [docs/BRIEF.md](docs/BRIEF.md) for the full brief. No secrets, personal data or client content live in this repository.
+In development, in the open. The content core (models, translation states, multi-engine storage, deterministic export), the validator, the deterministic builder, the theme system and the `cms` CLI are implemented and tested — the live demo is built with them on every merge. In progress: the admin panel (Milestone 3 — the full editorial cycle in the browser). See [docs/PLAN.md](docs/PLAN.md) for the execution plan, [docs/POC_PLAN.md](docs/POC_PLAN.md) for the proof-of-concept target and [docs/BRIEF.md](docs/BRIEF.md) for the full brief. No secrets, personal data or client content live in this repository.
 
 ## Local development
 
@@ -56,7 +56,7 @@ python3 -m venv .venv && source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install --group dev            # ruff, mypy, pytest
 python -m pip install -e packages/cms-core -e packages/cms-validation \
-                      -e packages/cms-build -e packages/cms-cli
+                      -e packages/cms-build -e packages/cms-cli -e apps/admin
 
 ruff check . && ruff format --check .        # lint
 mypy                                         # type checking (strict)
