@@ -30,7 +30,7 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install --upgrade pip
       - run: |
-          for pkg in packages/cms-core packages/cms-validation packages/cms-build packages/cms-theme-ph7x-reference packages/cms-cli; do
+          for pkg in packages/cms-core packages/cms-validation packages/cms-build packages/cms-theme-ph7x-reference packages/cms-cli apps/admin; do
             python -m pip install -e "$pkg"
           done
       - name: Build the demo site (seeded SQLite content)
@@ -38,6 +38,11 @@ jobs:
           cms seed     -p examples/multilingual-company-site
           cms validate -p examples/multilingual-company-site
           cms export   -p examples/multilingual-company-site --target swa
+      - name: Capture the read-only admin snapshot
+        run: |
+          python -m cms_admin.demo_export \
+            --storage examples/multilingual-company-site/content.sqlite3 \
+            --out examples/multilingual-company-site/_site/admin
       - name: Deploy
         uses: Azure/static-web-apps-deploy@v1
         with:

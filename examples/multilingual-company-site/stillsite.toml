@@ -5,6 +5,7 @@ languages = ["pt-pt", "es", "fr", "de"]
 blog_path = "blog"
 theme = "ph7x-reference"
 footer_text = "© 2026 Sardine Aerospace"
+admin_url = "/admin/"
 
 [site.categories.missions]
 en = "Missions"
