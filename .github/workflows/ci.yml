@@ -126,6 +126,32 @@ jobs:
           cms build -p /tmp/init-smoke
           test -f /tmp/init-smoke/_site/index.html
 
+  accessibility:
+    name: Accessibility (axe)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      - run: |
+          for pkg in $PACKAGES; do python -m pip install -e "$pkg"; done
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Fetch pinned axe-core bundle
+        run: |
+          curl -sL https://registry.npmjs.org/axe-core/-/axe-core-4.12.1.tgz | tar -xz package/axe.min.js
+      - name: Build the example and run the accessibility gate
+        run: |
+          cms seed  -p examples/multilingual-company-site
+          cms build -p examples/multilingual-company-site
+          python scripts/a11y_check.py examples/multilingual-company-site/_site package/axe.min.js
+      - name: W3C markup validation (Nu checker)
+        run: |
+          python -m pip install html5validator
+          html5validator --root examples/multilingual-company-site/_site
+
   docs-links:
     name: Docs internal links
     runs-on: ubuntu-latest

@@ -106,7 +106,8 @@ README promises. Grows one check per new guarded fact.
 | Output integrity (HTML refs, CSS urls, theme assets) | `tests/test_output_integrity.py` | in force |
 | Backend conformance (SQL Server, MySQL) | same mold when implemented | planned |
 | Theme conformance (all shipped themes) | `tests/test_theme_conformance.py` | in force |
-| Accessibility (axe) + no-scroll checks | new job at M4 | planned |
+| Accessibility (axe serious/critical, 7 pages) | job `Accessibility (axe)` + `scripts/a11y_check.py` | in force |
+| W3C markup validity (Nu checker, all pages) | same job, `html5validator` | in force |
 | Coverage floor (fail under threshold) | add with M2, target ≥90% on packages | planned |
 
 ## 3. Policies

@@ -37,14 +37,17 @@
     <h2>{{ section.data.heading }}</h2>
     <div class="b-grid">
     {% for entry in latest %}
-      <article class="b-card">
+      <a class="b-card" href="{{ entry.url }}">
+        {% if entry.thumb %}
+        <div class="b-thumb"><img src="{{ entry.thumb.url }}" alt="{{ entry.thumb.alt }}" width="{{ entry.thumb.width }}" height="{{ entry.thumb.height }}" loading="lazy"></div>
+        {% endif %}
         <div class="b-cbody">
           {% if entry.category %}<span class="b-ctag">{{ entry.category }}</span>{% endif %}
-          <a class="b-title" href="{{ entry.url }}">{{ entry.title }}</a>
+          <h3>{{ entry.title }}</h3>
           {% if entry.summary %}<p>{{ entry.summary }}</p>{% endif %}
           <div class="b-cmeta"><time datetime="{{ entry.date_iso }}">{{ entry.date_human }}</time><span class="b-dot">·</span><span>{{ entry.minutes }} {{ entry.min_read_label }}</span></div>
         </div>
-      </article>
+      </a>
     {% endfor %}
     </div>
   </div>

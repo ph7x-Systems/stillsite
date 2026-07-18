@@ -157,9 +157,10 @@ visitor can judge the product from it. Phases, in execution order:
    production ph7x stylesheets and fonts verbatim with templates on the
    exact site classes; anchor menu, cover thumbnails, localized dates and
    editorial blog labels close the visual drifts; conformance suite green.
-6. **Ready gate** — WCAG 2.2 AA automated checks green on the built demo,
-   all five languages complete, README quickstart links the demo, social
-   preview uploaded. Then the Milestone 4 announcement.
+6. **Ready gate** — ✅ axe gate in force (zero serious/critical across 7
+   pages; contrast fixes applied), five languages complete, README links
+   the live demo and the documentation set. Remaining (owner): social
+   preview upload, then the announcement.
 
 ## Design overhaul plan (component system, not a monolith)
 

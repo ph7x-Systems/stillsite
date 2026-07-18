@@ -10,3 +10,14 @@ site-search{display:block}
 .site-search-results p{color:var(--muted);font-size:.9rem;margin:6px 0 0}
 .fl a{transition:color .3s}
 .story img{width:100%;height:auto;margin-top:40px;border:1px solid var(--line);border-radius:6px}
+
+/* WCAG AA: nav links need >=4.5:1 on the navy header; the token --muted
+   (#7b7e88) sits just under it there. One shade up, only in the header. */
+#hdr .lk a{color:#9aa0ad}
+#hdr .lang a{color:#8b909c}
+.exp .row .no{color:#8b909c}
+.b-ctag{color:#8b909c}
+.b-cmeta{color:#8b909c}
+.b-by{color:#8b909c}
+.pagination span{color:#8b909c}
+.b-card h3{font-family:var(--serif);font-size:1.42rem;font-weight:400;line-height:1.28;color:var(--head);margin:12px 0 10px;overflow-wrap:break-word}

@@ -12,6 +12,8 @@
 
 Reusable multilingual, static-first CMS framework extracted from the pH7x Systems website architecture.
 
+**Live demo:** <https://stillsite.ph7x.com> — the fictional "Sardine Aerospace" site in five languages, built and deployed by this framework on every merge (design is theme-level: bring your own, WordPress-style).
+
 > **License:** [Apache-2.0](LICENSE) (see [ADR-0002](docs/adr/0002-license-apache-2.md)).
 
 ## What it is
@@ -73,6 +75,14 @@ cms build    -p examples/multilingual-company-site   # deterministic _site/
 cms export   -p examples/multilingual-company-site --target swa   # or nginx | generic
 cms preview  -p examples/multilingual-company-site   # serve locally
 ```
+
+## Documentation
+
+[Architecture](docs/ARCHITECTURE.md) · [Execution plan](docs/PLAN.md) ·
+[Roadmap](docs/ROADMAP.md) · [Design rules](docs/DESIGN_RULES.md) ·
+[Theme guide](docs/THEME_GUIDE.md) · [Components](docs/COMPONENTS.md) ·
+[Ecosystem](docs/ECOSYSTEM.md) · [Testing](docs/TEST_PLAN.md) ·
+[Security](docs/SECURITY_STRATEGY.md) · [ADRs](docs/adr/)
 
 ## Principles
 
