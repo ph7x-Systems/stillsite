@@ -17,6 +17,10 @@ then sign in at `/login`:
 cms admin create-user editor-in-chief -p my-project --role admin
 ```
 
+The UI is built from vendored hTWOo components served by the admin itself
+under `/static/vendor/` (no CDN); the dashboard shows content by workflow
+status, the translation coverage matrix and a live validation report.
+
 Configuration is environment-only (no config files with secrets):
 
 | Variable                        | Meaning                                     | Default                |

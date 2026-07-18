@@ -1,0 +1,37 @@
+{# The authenticated chrome (ADR-0013): hTWOo command bar on top, section
+   navigation on the left, the working area as `main`. Pages set
+   `active_section` so the navigation marks the current page. #}
+{% extends "base.html.j2" %}
+{% block body %}
+<a class="admin-skip" href="#main">Skip to content</a>
+<header class="admin-topbar hoo-cmdbar">
+  <span class="admin-brand">Stillsite admin</span>
+  <span class="admin-topbar-spacer"></span>
+  <span class="admin-user">
+    <span>{{ user.username }}</span>
+    <span class="hoo-mtag"><span class="hoo-mtag-lbl">{{ user.role.value }}</span></span>
+  </span>
+  <form method="post" action="/logout">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button type="submit" class="hoo-buttonaction">
+      <span class="hoo-button-label">Sign out</span>
+    </button>
+  </form>
+</header>
+<div class="admin-shell">
+  <nav class="hoo-nav admin-nav" aria-label="Admin sections">
+    <ul class="hoo-nav-list">
+      <li class="hoo-navitem">
+        <div class="hoo-navitem-text">
+          <a class="hoo-navitem-link" href="/"
+             {% if active_section == "dashboard" %}aria-current="page"{% endif %}>Dashboard</a>
+        </div>
+      </li>
+      {# Articles, pages and media join this list as their phases land. #}
+    </ul>
+  </nav>
+  <main id="main" class="admin-main">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

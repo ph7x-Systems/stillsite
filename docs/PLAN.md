@@ -106,7 +106,7 @@ with tests:
        live in the storage database via shared migration 6 but are
        **never exported**; the conformance suite covers them on every
        engine.
-4. [ ] **Admin shell + dashboard**: hTWOo chrome (command bar, navigation,
+4. [x] **Admin shell + dashboard**: hTWOo chrome (command bar, navigation,
        tables per the COMPONENTS.md mapping); dashboard shows content by
        status, the translation coverage matrix (missing/outdated/complete
        per language), current validation results and the last build/export.

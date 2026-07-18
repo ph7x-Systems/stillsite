@@ -1,0 +1,207 @@
+/* Admin shell styles. hTWOo Core ships components but no palette: the host
+   defines the Fluent slot variables it consumes, so the standard Fluent
+   light palette lives here. Layout below sticks to those variables. */
+
+:root {
+  --themePrimary: #0078d4;
+  --themeLighterAlt: #eff6fc;
+  --themeLighter: #deecf9;
+  --themeLight: #c7e0f4;
+  --themeTertiary: #71afe5;
+  --themeSecondary: #2b88d8;
+  --themeDarkAlt: #106ebe;
+  --themeDark: #005a9e;
+  --themeDarker: #004578;
+  --neutralLighterAlt: #faf9f8;
+  --neutralLighter: #f3f2f1;
+  --neutralLight: #edebe9;
+  --neutralQuaternaryAlt: #e1dfdd;
+  --neutralQuaternary: #d0d0d0;
+  --neutralTertiaryAlt: #c8c6c4;
+  --neutralTertiary: #a19f9d;
+  --neutralSecondaryAlt: #8a8886;
+  --neutralSecondary: #605e5c;
+  --neutralPrimaryAlt: #3b3a39;
+  --neutralPrimary: #323130;
+  --neutralDark: #201f1e;
+  --black: #000000;
+  --white: #ffffff;
+  --errorText: #a4262c;
+  --inputIcon: #605e5c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  color: var(--neutralPrimary);
+  background: var(--neutralLighterAlt);
+}
+
+.admin-skip {
+  position: absolute;
+  left: -100vw;
+  top: 0;
+  padding: 0.5rem 1rem;
+  background: var(--white);
+  color: var(--themeDark);
+  z-index: 10;
+}
+
+.admin-skip:focus {
+  left: 0;
+}
+
+/* Shell: top command bar, side navigation, main working area. */
+
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--neutralLight);
+  background: var(--white);
+}
+
+.admin-brand {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.admin-topbar-spacer {
+  flex: 1;
+}
+
+.admin-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.admin-shell {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  min-height: calc(100vh - 3rem);
+}
+
+.admin-nav {
+  border-right: 1px solid var(--neutralLight);
+  background: var(--white);
+  padding-top: 0.5rem;
+}
+
+.admin-nav .hoo-navitem-link[aria-current="page"] {
+  font-weight: 600;
+  color: var(--themeDark);
+}
+
+.admin-main {
+  padding: 1.5rem 2rem 3rem;
+  max-width: 70rem;
+}
+
+@media (max-width: 820px) {
+  .admin-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-nav {
+    border-right: none;
+    border-bottom: 1px solid var(--neutralLight);
+  }
+}
+
+/* Dashboard */
+
+.admin-section {
+  margin-top: 2rem;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+.admin-stat {
+  background: var(--white);
+  border: 1px solid var(--neutralLight);
+  border-radius: 4px;
+  padding: 1rem;
+  margin: 0;
+}
+
+.admin-stat dt {
+  color: var(--neutralSecondary);
+  font-size: 0.875rem;
+}
+
+.admin-stat dd {
+  margin: 0.25rem 0 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+  background: var(--white);
+  border: 1px solid var(--neutralLight);
+  border-radius: 4px;
+}
+
+.admin-table-wrap .hoo-table {
+  width: 100%;
+}
+
+.admin-coverage {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-coverage progress {
+  accent-color: var(--themePrimary);
+}
+
+.admin-empty {
+  color: var(--neutralSecondary);
+}
+
+.admin-ok {
+  color: #0b6a0b;
+}
+
+.admin-severity-error .hoo-mtag-lbl {
+  color: var(--errorText);
+  font-weight: 600;
+}
+
+.admin-severity-warning .hoo-mtag-lbl {
+  color: #8a6116;
+  font-weight: 600;
+}
+
+/* Login */
+
+.admin-login {
+  max-width: 22rem;
+  margin: 4rem auto;
+  padding: 2rem;
+  background: var(--white);
+  border: 1px solid var(--neutralLight);
+  border-radius: 4px;
+}
+
+.admin-login form {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-alert {
+  color: var(--errorText);
+}

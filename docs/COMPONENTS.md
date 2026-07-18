@@ -46,14 +46,15 @@ URI and scroll-driven animations behind `@supports`, all disabled under
 | `story` | Two-column `.two` grid: sticky kick label + `h2`/`body` prose |
 | _any other_ | Generic field/image rendering (graceful fallback) |
 
-## hTWOo component set (vendored, reserved for the admin)
+## hTWOo component set (vendored for the admin)
 
-hTWOo Core 2.7.1 lives in `packages/cms-theme-ph7x-reference/vendor/` (MIT,
+hTWOo Core 2.7.1 lives in `apps/admin/src/cms_admin/static/vendor/` (MIT,
 license alongside; Segoe web-font fetches stripped, reduced-motion
-kill-switch appended). The public reference theme uses the ph7x design
-system instead; hTWOo is the component set **decided** for the Milestone 3
-admin UI ([ADR-0013](adr/0013-admin-ui-architecture.md)) — the copy moves
-into the admin package when the shell lands (phase 4).
+kill-switch appended) and is served by the admin itself under
+`/static/vendor/` — no CDN (ADR-0013). hTWOo ships components but no
+palette: the admin defines the Fluent slot variables it consumes in
+`static/admin.css`. The public reference theme uses the ph7x design system
+instead and never depends on hTWOo.
 
 ## Admin panel (Milestone 3 — in progress)
 
@@ -64,7 +65,8 @@ ADR-0010. Mapping:
 
 | Admin feature | hTWOo components |
 | --- | --- |
-| Dashboard (content/translation status) | cards, pivot, progress indicators |
+| Shell chrome (all authenticated pages) | command bar, navigation, tag (role badge) |
+| Dashboard (content/translation status) | cards, tables, progress indicators |
 | Content lists | details list/table, command bar, search box |
 | Side-by-side translation editor | split panels, text fields, persona/status badges |
 | Media library | file list, dialogs, upload button, image cells |

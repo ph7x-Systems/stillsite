@@ -1,10 +1,99 @@
-{% extends "base.html.j2" %}
+{% extends "shell.html.j2" %}
 {% block title %}Dashboard — Stillsite admin{% endblock %}
 {% block content %}
-<h1>Stillsite admin</h1>
-<p>Signed in as <strong>{{ user.username }}</strong> ({{ user.role.value }}).</p>
-<form method="post" action="/logout">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <button type="submit">Sign out</button>
-</form>
+<h1>Dashboard</h1>
+
+<section class="admin-section" aria-labelledby="content-status">
+  <h2 id="content-status">Content by status</h2>
+  <dl class="admin-stats">
+    {% for status in statuses %}
+    <div class="admin-stat">
+      <dt>{{ status.value | capitalize }}</dt>
+      <dd>{{ counts[status] }}</dd>
+    </div>
+    {% endfor %}
+  </dl>
+  <p>{{ totals.articles }} articles, {{ totals.pages }} pages, {{ totals.media }} media assets.</p>
+</section>
+
+<section class="admin-section" aria-labelledby="translation-coverage">
+  <h2 id="translation-coverage">Translation coverage</h2>
+  {% if totals.articles + totals.pages > 0 %}
+  <div class="admin-table-wrap">
+    <table class="hoo-table">
+      <thead>
+        <tr>
+          <th scope="col">Language</th>
+          {% for state in states %}<th scope="col" class="align-right">{{ state.value | capitalize }}</th>{% endfor %}
+          <th scope="col">Coverage</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for language, cells in matrix.items() %}
+        <tr>
+          <th scope="row">{{ language.value | upper }}</th>
+          {% for state in states %}<td class="align-right">{{ cells[state] }}</td>{% endfor %}
+          <td>
+            <span class="admin-coverage">
+              <progress max="100" value="{{ coverage[language] }}"
+                        aria-label="{{ language.value | upper }} coverage"></progress>
+              {{ coverage[language] }}%
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="admin-empty">No content yet — the coverage matrix appears once articles or pages exist.</p>
+  {% endif %}
+</section>
+
+<section class="admin-section" aria-labelledby="validation-results">
+  <h2 id="validation-results">Validation</h2>
+  {% if report.issues %}
+  <p>{{ report.errors | length }} errors, {{ report.warnings | length }} warnings.
+    {% if report.ok %}Publishing is not blocked.{% else %}Publishing is blocked until the errors are fixed.{% endif %}</p>
+  <div class="admin-table-wrap">
+    <table class="hoo-table">
+      <thead>
+        <tr>
+          <th scope="col">Severity</th>
+          <th scope="col">Rule</th>
+          <th scope="col">Subject</th>
+          <th scope="col">Language</th>
+          <th scope="col">Message</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for issue in report.issues %}
+        <tr>
+          <td class="admin-severity-{{ issue.severity.value }}">
+            <span class="hoo-mtag"><span class="hoo-mtag-lbl">{{ issue.severity.value }}</span></span>
+          </td>
+          <td>{{ issue.code }}</td>
+          <td>{{ issue.subject }}</td>
+          <td>{{ issue.language.value if issue.language else "" }}</td>
+          <td>{{ issue.message }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="admin-ok">All validation rules pass — publishing is not blocked.</p>
+  {% endif %}
+</section>
+
+<section class="admin-section" aria-labelledby="build-export">
+  <h2 id="build-export">Build and export</h2>
+  {% if last_build %}
+  <p>Last build: {{ last_build }}</p>
+  {% else %}
+  <p class="admin-empty">No build or export has run from this panel yet.
+    Panel-triggered builds arrive with the workflow phase; until then use the
+    <code>cms build</code> and <code>cms export</code> commands.</p>
+  {% endif %}
+</section>
 {% endblock %}

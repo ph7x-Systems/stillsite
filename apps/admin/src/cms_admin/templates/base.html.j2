@@ -5,10 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>{% block title %}Stillsite admin{% endblock %}</title>
+<link rel="stylesheet" href="/static/vendor/htwoo.min.css">
+<link rel="stylesheet" href="/static/admin.css">
 </head>
 <body>
-<main>
+{% block body %}
+<main id="main">
 {% block content %}{% endblock %}
 </main>
+{% endblock %}
 </body>
 </html>
