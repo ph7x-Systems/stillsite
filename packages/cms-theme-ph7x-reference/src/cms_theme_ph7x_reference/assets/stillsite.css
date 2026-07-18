@@ -45,4 +45,6 @@ main:has(#bv-list:checked) .b-card h3{margin-top:6px;font-size:1.26rem}
 .b-cmeta{color:#8b909c}
 .b-by{color:#8b909c}
 .pagination span{color:#8b909c}
+.b-pager span{color:#8b909c}
+.b-pager a{color:#9aa0ad}
 .b-card h3{font-family:var(--serif);font-size:1.42rem;font-weight:400;line-height:1.28;color:var(--head);margin:12px 0 10px;overflow-wrap:break-word}

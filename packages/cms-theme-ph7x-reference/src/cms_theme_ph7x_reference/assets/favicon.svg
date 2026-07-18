@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Tin rocket">
+  <rect width="64" height="64" rx="14" fill="#0a0c12"/>
+  <g transform="translate(32 32) rotate(-38)">
+    <ellipse rx="17" ry="7" fill="none" stroke="#d8cfc0" stroke-width="2.5"/>
+    <path fill="#d8cfc0" d="M-17 0 Q-21 -3.5 -24 -5 Q-22 -1.8 -22 0 Q-22 1.8 -24 5 Q-21 3.5 -17 0Z"/>
+    <circle cx="12" cy="-1.5" r="1.6" fill="#0a0c12" stroke="#d8cfc0" stroke-width="1.4"/>
+  </g>
+</svg>
