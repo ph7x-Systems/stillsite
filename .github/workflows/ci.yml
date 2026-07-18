@@ -15,6 +15,7 @@ env:
     packages/cms-build
     packages/cms-theme-ph7x-reference
     packages/cms-cli
+    apps/admin
 
 jobs:
   lint:

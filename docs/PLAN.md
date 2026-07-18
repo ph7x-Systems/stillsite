@@ -89,10 +89,12 @@ with tests:
        `vendor/`, see [COMPONENTS.md](COMPONENTS.md)), with Web-Component
        islands where interactivity demands it (ADR-0010 applies to the admin
        too); TypeScript only if a concrete need appears, with its own ADR.
-2. [ ] **Application skeleton**: `apps/admin` as an installable package
-       (src layout like the rest), app factory, settings from environment,
-       health endpoint, storage through `create_storage(url)` so any
-       supported engine works unchanged; test scaffold and CI wiring.
+2. [x] **Application skeleton**: `apps/admin` as an installable package
+       (`cms-admin`, src layout like the rest), app factory, settings from
+       environment only (no config files with secrets), health endpoint
+       reporting the migrated schema version, storage through
+       `create_storage(url)` so any supported engine works unchanged;
+       test scaffold and CI wiring (admin joins every job's PACKAGES).
 3. [ ] **Accounts and access control**: users with argon2 password hashes;
        roles `editor / reviewer / publisher / admin` enforced server-side on
        every endpoint; session cookies (HttpOnly, Secure, SameSite=Strict)
