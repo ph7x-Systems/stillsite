@@ -9,7 +9,9 @@ required CI gate. Rationale recorded in [ADR-0006](adr/0006-layered-architecture
 
 ```text
 ┌────────────────────────────────────────────────────────┐
-│  Interface        cms-cli (Typer), admin API (M3)      │  thin: parse input,
+│  Interface        cms-cli (Typer), cms-admin           │  thin: parse input,
+│                   (FastAPI + server-rendered UI,       │
+│                   ADR-0013)                            │
 ├────────────────────────────────────────────────────────┤  wire config, call
 │  Application      cms-validation (rule engine),        │  services, present
 │                   cms-build (builder, exporter)        │  results

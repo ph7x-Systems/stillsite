@@ -51,18 +51,16 @@ URI and scroll-driven animations behind `@supports`, all disabled under
 hTWOo Core 2.7.1 lives in `packages/cms-theme-ph7x-reference/vendor/` (MIT,
 license alongside; Segoe web-font fetches stripped, reduced-motion
 kill-switch appended). The public reference theme uses the ph7x design
-system instead; hTWOo is the component set planned for the Milestone 3
-admin UI:
+system instead; hTWOo is the component set **decided** for the Milestone 3
+admin UI ([ADR-0013](adr/0013-admin-ui-architecture.md)) — the copy moves
+into the admin package when the shell lands (phase 4).
 
-| Admin surface (planned) | hTWOo component |
-| --- | --- |
-| Command bars, dialogs, tables, inputs | per the Admin panel table below |
+## Admin panel (Milestone 3 — in progress)
 
-## Admin panel (Milestone 3 — planned)
-
-Leading candidate for the component set: **hTWOo** (`n8design/htwoo`, MIT —
-Fluent Design in pure HTML/CSS/JS; see PLAN "Open decisions"; final call in
-the M3 ADR). Vendored as local assets, no CDN. Intended mapping:
+Decided in [ADR-0013](adr/0013-admin-ui-architecture.md): server-rendered
+Jinja inside the FastAPI process, **hTWOo** (`n8design/htwoo`, MIT — Fluent
+Design in pure HTML/CSS/JS) vendored as local assets, no CDN, islands per
+ADR-0010. Mapping:
 
 | Admin feature | hTWOo components |
 | --- | --- |
