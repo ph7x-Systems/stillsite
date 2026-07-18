@@ -150,7 +150,10 @@ jobs:
       - name: W3C markup validation (Nu checker)
         run: |
           python -m pip install html5validator
-          html5validator --root examples/multilingual-company-site/_site
+          # The bundled vnu.jar predates the Speculation Rules API; the
+          # current W3C validator accepts type="speculationrules".
+          html5validator --root examples/multilingual-company-site/_site \
+            --ignore-re 'Bad value .speculationrules. for attribute .type.'
 
   docs-links:
     name: Docs internal links
