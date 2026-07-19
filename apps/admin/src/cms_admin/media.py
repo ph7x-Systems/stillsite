@@ -44,9 +44,8 @@ def sniff_mime(data: bytes) -> str | None:
     if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
         return "image/webp"
     head = data[:512].lstrip()
-    if head.startswith(b"<?xml") or head.startswith(b"<svg"):
-        if b"<svg" in data[:2048]:
-            return "image/svg+xml"
+    if head.startswith((b"<?xml", b"<svg")) and b"<svg" in data[:2048]:
+        return "image/svg+xml"
     return None
 
 

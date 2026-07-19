@@ -51,3 +51,18 @@ main:has(#bv-list:checked) .b-card h3{margin-top:6px;font-size:1.26rem}
    so dim via an AA-passing color at full opacity instead. */
 .fl-adm{opacity:1;color:#8b909c}
 .b-card h3{font-family:var(--serif);font-size:1.42rem;font-weight:400;line-height:1.28;color:var(--head);margin:12px 0 10px;overflow-wrap:break-word}
+
+/* Motion polish — all scroll-driven or time-based CSS, zero JavaScript.
+   Without animation-timeline support the page is simply static (complete
+   either way); prefers-reduced-motion kills everything via site.css. */
+@supports (animation-timeline: scroll()) {
+  .top{animation:sar-top-appear linear both;animation-timeline:scroll();animation-range:300px 700px}
+}
+@keyframes sar-top-appear{to{opacity:1;visibility:visible;transform:none}}
+.top:hover{color:var(--head);border-color:var(--faint)}
+@supports (animation-timeline: view()) {
+  .b-card,.exp .row{animation:sar-rise linear both;animation-timeline:view();animation-range:entry 0% entry 45%}
+}
+@keyframes sar-rise{from{opacity:.2;transform:translateY(16px)}to{opacity:1;transform:none}}
+.hero::after{animation:sar-twinkle 8s ease-in-out infinite alternate}
+@keyframes sar-twinkle{from{opacity:.55}to{opacity:.95}}

@@ -122,7 +122,7 @@ def test_upload_persists_the_asset_and_the_file(tmp_path: Path) -> None:
         editor = client.get("/media/hero-shot").text
         served = client.get("/media-files/hero-shot.png")
     assert "The tin at dawn" in editor
-    assert "3×2" in editor
+    assert "3×2" in editor  # noqa: RUF001 — the editor renders width×height
     assert served.status_code == 200
     assert (tmp_path / "media" / "hero-shot.png").is_file()
     with create_storage(f"sqlite:///{tmp_path / 'content.db'}") as storage:

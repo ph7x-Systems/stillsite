@@ -32,6 +32,9 @@
 <main id="main">
 {% block main %}{% endblock %}
 </main>
+{# Back to top — a plain anchor (the "#top" fragment is a native scroll-to-top);
+   it fades in through a scroll-driven animation, no JavaScript (ADR-0010). #}
+<a class="top" href="#top" aria-label="{{ nav.top_label | default("Back to top") }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></a>
 <footer>
   <div class="wrap">
     <div class="fg">
