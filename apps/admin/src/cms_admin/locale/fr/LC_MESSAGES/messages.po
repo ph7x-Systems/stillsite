@@ -622,3 +622,30 @@ msgstr "vide publie immédiatement une fois publié ; un moment futur garde l'en
 
 msgid "publish_at: use the picker format (YYYY-MM-DDTHH:MM, UTC)"
 msgstr "publish_at : utilisez le format du sélecteur (YYYY-MM-DDTHH:MM, UTC)"
+
+msgid "Author"
+msgstr "Auteur"
+
+msgid "Changes against the current content"
+msgstr "Changements par rapport au contenu actuel"
+
+msgid "Every save keeps a snapshot (the newest %(limit)s); restoring saves a new revision, so it is always undoable."
+msgstr "Chaque enregistrement garde un instantané (les %(limit)s plus récents) ; restaurer enregistre une nouvelle révision, donc c'est toujours réversible."
+
+msgid "No revisions yet — they appear after the first save."
+msgstr "Pas encore de révisions — elles apparaissent après le premier enregistrement."
+
+msgid "Restore this revision"
+msgstr "Restaurer cette révision"
+
+msgid "Revision"
+msgstr "Révision"
+
+msgid "Revisions"
+msgstr "Révisions"
+
+msgid "The source text is identical to the current content."
+msgstr "Le texte source est identique au contenu actuel."
+
+msgid "View and restore"
+msgstr "Voir et restaurer"

@@ -622,3 +622,30 @@ msgstr "leer veröffentlicht sofort nach der Veröffentlichung; ein zukünftiger
 
 msgid "publish_at: use the picker format (YYYY-MM-DDTHH:MM, UTC)"
 msgstr "publish_at: verwenden Sie das Format der Auswahl (YYYY-MM-DDTHH:MM, UTC)"
+
+msgid "Author"
+msgstr "Autor"
+
+msgid "Changes against the current content"
+msgstr "Änderungen gegenüber dem aktuellen Inhalt"
+
+msgid "Every save keeps a snapshot (the newest %(limit)s); restoring saves a new revision, so it is always undoable."
+msgstr "Jedes Speichern behält einen Schnappschuss (die neuesten %(limit)s); Wiederherstellen speichert eine neue Revision und ist daher immer umkehrbar."
+
+msgid "No revisions yet — they appear after the first save."
+msgstr "Noch keine Revisionen — sie erscheinen nach dem ersten Speichern."
+
+msgid "Restore this revision"
+msgstr "Diese Revision wiederherstellen"
+
+msgid "Revision"
+msgstr "Revision"
+
+msgid "Revisions"
+msgstr "Revisionen"
+
+msgid "The source text is identical to the current content."
+msgstr "Der Quelltext ist mit dem aktuellen Inhalt identisch."
+
+msgid "View and restore"
+msgstr "Ansehen und wiederherstellen"

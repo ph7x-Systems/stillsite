@@ -100,6 +100,23 @@ class StorageBackend(ABC):
 
     # Admin sessions
 
+    # Revisions (ADR-0025): a bounded per-entity edit history.
+
+    REVISION_LIMIT = 20
+
+    @abstractmethod
+    def save_revision(
+        self, entity_type: str, entity_id: str, author: str, payload_json: str, created_at: datetime
+    ) -> int:
+        """Append a revision, prune beyond REVISION_LIMIT; returns its number."""
+
+    @abstractmethod
+    def list_revisions(self, entity_type: str, entity_id: str) -> list[tuple[int, datetime, str]]:
+        """(revision, created_at, author), newest first."""
+
+    @abstractmethod
+    def load_revision(self, entity_type: str, entity_id: str, revision: int) -> str | None: ...
+
     @abstractmethod
     def save_session(self, session: AdminSession) -> None: ...
 

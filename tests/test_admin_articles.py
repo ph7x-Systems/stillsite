@@ -319,3 +319,32 @@ def test_publish_at_is_set_and_cleared_from_the_editor(tmp_path: Path) -> None:
         )
         assert bad.status_code == 422
         assert "publish_at" in bad.text
+
+
+def test_revisions_record_diff_and_restore(tmp_path: Path) -> None:
+    """ADR-0025: every save snapshots; restore brings the old body back and
+    is itself recorded as a new revision."""
+    with _client(_app(tmp_path, _article("piece"))) as client:
+        csrf = _sign_in(client)
+        client.post(
+            "/articles/piece",
+            data={**_form_payload(), "csrf_token": csrf, "body_markdown": "First body."},
+        )
+        client.post(
+            "/articles/piece",
+            data={**_form_payload(), "csrf_token": csrf, "body_markdown": "Second body."},
+        )
+        editor = client.get("/articles/piece").text
+        assert "Revisions" in editor
+        assert 'href="/articles/piece/revisions/1"' in editor
+        detail = client.get("/articles/piece/revisions/1").text
+        assert "First body." in detail  # the diff shows the old line
+        restored = client.post(
+            "/articles/piece/revisions/1/restore",
+            data={"csrf_token": csrf},
+            follow_redirects=False,
+        )
+        assert restored.status_code == 303
+        after = client.get("/articles/piece").text
+        assert "First body." in after
+        assert 'href="/articles/piece/revisions/3"' in after  # the restore itself

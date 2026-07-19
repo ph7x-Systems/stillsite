@@ -1,0 +1,23 @@
+{% extends "shell.html.j2" %}
+{% block title %}{{ entity_id }} · {{ _("Revision") }} {{ revision }} — Sardine CMS admin{% endblock %}
+{% block header %}
+<nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="{{ back_url }}">&larr; {{ entity_id }}</a></nav>
+<h1 class="h3 mb-0">{{ _("Revision") }} {{ revision }} — {{ snapshot_title }}</h1>
+{% endblock %}
+{% block content %}
+<div class="card mb-3">
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Changes against the current content") }}</h2></div>
+  <div class="card-body">
+    {% if diff %}
+    <pre class="admin-preview mb-0"><code>{{ diff }}</code></pre>
+    {% else %}
+    <p class="admin-empty mb-0">{{ _("The source text is identical to the current content.") }}</p>
+    {% endif %}
+  </div>
+</div>
+<form method="post" action="{{ restore_url }}" class="mb-0">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button type="submit" class="btn btn-primary">{{ _("Restore this revision") }}</button>
+  <a class="btn btn-outline-secondary" href="{{ back_url }}">{{ _("Cancel") }}</a>
+</form>
+{% endblock %}

@@ -8,6 +8,7 @@ kind. The side-by-side translation UX mirrors the article editor: the EN
 source read-only next to the translation, one field at a time.
 """
 
+import difflib
 from datetime import UTC, datetime
 
 from cms_core import (
@@ -19,6 +20,7 @@ from cms_core import (
     Role,
     Section,
     SectionContent,
+    StorageBackend,
     TranslationState,
     User,
     new_page,
@@ -89,9 +91,17 @@ def _section_or_404(page: Page, key: str) -> Section:
     return section
 
 
-async def _save_page(request: Request, page: Page) -> None:
+async def _save_page(request: Request, page: Page, author: str) -> None:
+    """Persist and append the revision snapshot (ADR-0025)."""
     page.updated_at = datetime.now(UTC)
-    await get_db(request).run(lambda storage: storage.save_page(page))
+    payload = page.model_dump_json()
+    when = datetime.now(UTC)
+
+    def run(storage: StorageBackend) -> None:
+        storage.save_page(page)
+        storage.save_revision("page", page.id, author, payload, when)
+
+    await get_db(request).run(run)
 
 
 def _page_response(
@@ -201,6 +211,7 @@ async def page_edit_form(
 ) -> object:
     user, session = user_session
     page = await _load_page(request, page_id)
+    revisions = await get_db(request).run(lambda storage: storage.list_revisions("page", page_id))
     return _page_response(
         request,
         "page_edit.html.j2",
@@ -208,6 +219,7 @@ async def page_edit_form(
             "user": user,
             "csrf_token": session.csrf_token,
             "errors": [],
+            "revisions": revisions,
             **_editor_context(page, role=user.role),
         },
     )
@@ -241,7 +253,7 @@ async def page_edit_save(
             },
             status_code=HTTP_422,
         )
-    await _save_page(request, page)
+    await _save_page(request, page, user.username)
     return RedirectResponse(f"/pages/{page.id}", status_code=status.HTTP_303_SEE_OTHER)
 
 
@@ -275,7 +287,7 @@ async def section_add(
             },
             status_code=HTTP_422,
         )
-    await _save_page(request, page)
+    await _save_page(request, page, user.username)
     return RedirectResponse(
         f"/pages/{page.id}/sections/{key}", status_code=status.HTTP_303_SEE_OTHER
     )
@@ -289,13 +301,14 @@ async def section_move(
     user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
     direction: str = Form(...),
 ) -> object:
+    user, _ = user_session
     page = await _load_page(request, page_id)
     _section_or_404(page, key)
     index = next(i for i, section in enumerate(page.sections) if section.key == key)
     swap = index - 1 if direction == "up" else index + 1
     if 0 <= swap < len(page.sections):
         page.sections[index], page.sections[swap] = page.sections[swap], page.sections[index]
-        await _save_page(request, page)
+        await _save_page(request, page, user.username)
     return RedirectResponse(f"/pages/{page.id}", status_code=status.HTTP_303_SEE_OTHER)
 
 
@@ -306,10 +319,11 @@ async def section_delete(
     key: str,
     user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
 ) -> object:
+    user, _ = user_session
     page = await _load_page(request, page_id)
     _section_or_404(page, key)
     page.sections = [section for section in page.sections if section.key != key]
-    await _save_page(request, page)
+    await _save_page(request, page, user.username)
     return RedirectResponse(f"/pages/{page.id}", status_code=status.HTTP_303_SEE_OTHER)
 
 
@@ -362,6 +376,7 @@ async def section_edit_save(
     key: str,
     user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
 ) -> object:
+    user, _ = user_session
     page = await _load_page(request, page_id)
     section = _section_or_404(page, key)
     form = await request.form()
@@ -373,7 +388,7 @@ async def section_edit_save(
         if name.strip() and value
     }
     section.source = SectionContent(fields=fields, media=parse_media(str(form.get("media", ""))))
-    await _save_page(request, page)
+    await _save_page(request, page, user.username)
     return RedirectResponse(
         f"/pages/{page.id}/sections/{key}", status_code=status.HTTP_303_SEE_OTHER
     )
@@ -448,7 +463,7 @@ async def page_translation_save(
             status_code=HTTP_422,
         )
     page.set_translation(language, content)
-    await _save_page(request, page)
+    await _save_page(request, page, user.username)
     return RedirectResponse(
         f"/pages/{page.id}/translations/{language.value}",
         status_code=status.HTTP_303_SEE_OTHER,
@@ -504,6 +519,7 @@ async def section_translation_save(
     language_code: str,
     user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
 ) -> object:
+    user, _ = user_session
     language = _target_language(language_code)
     page = await _load_page(request, page_id)
     section = _section_or_404(page, key)
@@ -515,7 +531,7 @@ async def section_translation_save(
     }
     content = SectionContent(fields=fields, media=parse_media(str(form.get("media", ""))))
     section.set_translation(language, content)
-    await _save_page(request, page)
+    await _save_page(request, page, user.username)
     return RedirectResponse(
         f"/pages/{page.id}/sections/{key}/translations/{language.value}",
         status_code=status.HTTP_303_SEE_OTHER,
@@ -564,5 +580,66 @@ async def page_status(
                 status_code=HTTP_422,
             )
     page.status = target
-    await _save_page(request, page)
+    await _save_page(request, page, user.username)
     return RedirectResponse(f"/pages/{page.id}", status_code=status.HTTP_303_SEE_OTHER)
+
+
+@router.get("/{page_id}/revisions/{revision}")
+async def page_revision_detail(
+    request: Request,
+    page_id: str,
+    revision: int,
+    user_session: tuple[User, AdminSession] = Depends(current_session),
+) -> object:
+    user, session = user_session
+    page = await _load_page(request, page_id)
+    payload = await get_db(request).run(
+        lambda storage: storage.load_revision("page", page_id, revision)
+    )
+    if payload is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="unknown revision")
+    snapshot = Page.model_validate_json(payload)
+    diff = "\n".join(
+        difflib.unified_diff(
+            snapshot.source.description.splitlines(),
+            page.source.description.splitlines(),
+            fromfile=f"revision {revision}",
+            tofile="current",
+            lineterm="",
+        )
+    )
+    return _page_response(
+        request,
+        "revision_detail.html.j2",
+        {
+            "user": user,
+            "csrf_token": session.csrf_token,
+            "active_section": "pages",
+            "entity_id": page.id,
+            "back_url": f"/pages/{page.id}",
+            "restore_url": f"/pages/{page.id}/revisions/{revision}/restore",
+            "snapshot_title": snapshot.source.title,
+            "revision": revision,
+            "diff": diff,
+        },
+    )
+
+
+@router.post("/{page_id}/revisions/{revision}/restore")
+async def page_revision_restore(
+    request: Request,
+    page_id: str,
+    revision: int,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+) -> RedirectResponse:
+    user, _ = user_session
+    await _load_page(request, page_id)
+    payload = await get_db(request).run(
+        lambda storage: storage.load_revision("page", page_id, revision)
+    )
+    if payload is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="unknown revision")
+    restored = Page.model_validate_json(payload)
+    restored = restored.model_copy(update={"id": page_id})
+    await _save_page(request, restored, user.username)
+    return RedirectResponse(f"/pages/{page_id}", status_code=status.HTTP_303_SEE_OTHER)

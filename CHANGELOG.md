@@ -5,6 +5,13 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Revisions with restore** (M5, ADR-0025): every article and page save
+  from the panel keeps a snapshot (bounded at the newest 20 per entity,
+  storage migration 9 on all four engines). The editors list the
+  history; each revision shows a unified diff against the current
+  content and restores with one click — the restore itself becomes a
+  new revision, so it is always undoable.
+
 - **Scheduled publishing** (M5, ADR-0024): articles and pages gain an
   optional `publish_at` (UTC) — published content with a future moment
   stays out of every build until a build runs after it; the build is the

@@ -77,6 +77,7 @@ content header with `breadcrumb`, `app-footer` with copyright. Surfaces:
 | Markdown editor (article bodies) | EasyMDE (MIT, vendored at `static/vendor/easymde/` — ADR-0023), Bootstrap Icons toolbar, localized titles, no built-in preview (the builder's preview is the truth) |
 | Workflow (status transitions) | role-filtered button group (`admin-workflow`), per-status badge colors |
 | Publishing panel | gate `callout` (success/danger), rules + issues tables in cards, target select, buttons |
+| Revisions (editors) | history card + detail page with unified diff in `admin-preview`, restore button |
 | Language selector (user menu) | `form-select` in the AdminLTE `user-body`, POST + CSRF like every form |
 | Validation report (shared partial) | `callout callout-success/-danger` verdict, `.table` per-rule outcomes with `text-bg-*` badges, issue subjects linked to edit screens |
 
