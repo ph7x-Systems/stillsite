@@ -60,17 +60,17 @@ extension = Extension(
 
 
 def test_dotted_path_loading_and_errors() -> None:
-    loaded = load_extensions(["tests.test_extensions:extension"])
+    loaded = load_extensions(["test_extensions:extension"])
     assert [e.name for e in loaded] == ["testext"]
     with pytest.raises(ExtensionError):
         load_extensions(["definitely.missing:nope"])
     with pytest.raises(ExtensionError):
-        load_extensions(["tests.test_extensions:runner"])  # not an Extension
+        load_extensions(["test_extensions:runner"])  # not an Extension
 
 
 def _project_with_extension(tmp_path: Path) -> Path:
     (tmp_path / "sardine.toml").write_text(
-        'extensions = ["tests.test_extensions:extension"]\n'
+        'extensions = ["test_extensions:extension"]\n'
         '[site]\nname = "T"\nbase_url = "https://t.example"\nlanguages = []\n',
         encoding="utf-8",
     )
