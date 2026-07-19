@@ -1,7 +1,7 @@
 """Shared fixtures: the storage conformance suite runs on every engine.
 
 `backend` is parameterized over all implemented engines. SQLite always runs;
-PostgreSQL runs when `STILLSITE_POSTGRES_URL` is set (CI service container or
+PostgreSQL runs when `SARDINE_POSTGRES_URL` is set (CI service container or
 a local Docker instance) and is skipped otherwise — never silently faked.
 """
 
@@ -26,9 +26,9 @@ def backend(request: pytest.FixtureRequest, tmp_path: Path) -> Iterator[StorageB
     if request.param == "sqlite":
         storage = create_storage(f"sqlite:///{tmp_path / 'cms.sqlite3'}")
     else:
-        url = os.environ.get("STILLSITE_POSTGRES_URL")
+        url = os.environ.get("SARDINE_POSTGRES_URL")
         if not url:
-            pytest.skip("STILLSITE_POSTGRES_URL not set")
+            pytest.skip("SARDINE_POSTGRES_URL not set")
         _wipe_postgres(url)
         storage = create_storage(url)
     yield storage

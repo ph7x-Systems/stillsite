@@ -16,18 +16,18 @@ DEFAULT_SESSION_HOURS = 12
 class AdminSettings:
     storage_url: str = DEFAULT_STORAGE_URL
     session_ttl: timedelta = timedelta(hours=DEFAULT_SESSION_HOURS)
-    # Secure cookies are the default; set STILLSITE_ADMIN_COOKIE_SECURE=0
+    # Secure cookies are the default; set SARDINE_ADMIN_COOKIE_SECURE=0
     # only for plain-http local development.
     cookie_secure: bool = True
 
     @classmethod
     def from_env(cls) -> "AdminSettings":
         return cls(
-            storage_url=os.environ.get("STILLSITE_STORAGE_URL", DEFAULT_STORAGE_URL),
+            storage_url=os.environ.get("SARDINE_STORAGE_URL", DEFAULT_STORAGE_URL),
             session_ttl=timedelta(
                 hours=float(
-                    os.environ.get("STILLSITE_ADMIN_SESSION_HOURS", str(DEFAULT_SESSION_HOURS))
+                    os.environ.get("SARDINE_ADMIN_SESSION_HOURS", str(DEFAULT_SESSION_HOURS))
                 )
             ),
-            cookie_secure=os.environ.get("STILLSITE_ADMIN_COOKIE_SECURE", "1") != "0",
+            cookie_secure=os.environ.get("SARDINE_ADMIN_COOKIE_SECURE", "1") != "0",
         )

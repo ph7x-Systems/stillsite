@@ -1,7 +1,7 @@
 [project]
 name = "cms-admin"
 version = "0.1.0"
-description = "Stillsite admin panel: FastAPI API + server-rendered UI"
+description = "Sardine CMS admin panel: FastAPI API + server-rendered UI"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"

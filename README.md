@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="assets/brand/banner-dark.png" alt="Stillsite — multilingual, static-first CMS framework">
+  <img src="assets/brand/banner-dark.png" alt="Sardine CMS — multilingual, static-first CMS framework">
 </p>
 
-# Stillsite
+# Sardine CMS
 
-[![CI](https://github.com/ph7x-Systems/stillsite/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ph7x-Systems/stillsite/actions/workflows/ci.yml)
+[![CI](https://github.com/ph7x-Systems/sardine-cms/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ph7x-Systems/sardine-cms/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](pyproject.toml)
 [![Checked with mypy (strict)](https://img.shields.io/badge/mypy-strict-blue.svg)](pyproject.toml)

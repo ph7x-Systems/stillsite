@@ -1,7 +1,7 @@
 [project]
 name = "cms-core"
 version = "0.1.0"
-description = "Content model, versioned schemas and translation states for Stillsite"
+description = "Content model, versioned schemas and translation states for Sardine CMS"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"

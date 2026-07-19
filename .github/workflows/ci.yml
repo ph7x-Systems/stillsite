@@ -71,18 +71,18 @@ jobs:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_USER: stillsite
+          POSTGRES_USER: sardine
           POSTGRES_PASSWORD: ci-only
-          POSTGRES_DB: stillsite
+          POSTGRES_DB: sardine
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U stillsite"
+          --health-cmd "pg_isready -U sardine"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
     env:
-      STILLSITE_POSTGRES_URL: postgresql://stillsite:ci-only@127.0.0.1:5432/stillsite
+      SARDINE_POSTGRES_URL: postgresql://sardine:ci-only@127.0.0.1:5432/sardine
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

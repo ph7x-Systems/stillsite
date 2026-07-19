@@ -1,6 +1,6 @@
 # Ecosystem — sharing themes, targets, backends and plugins
 
-Stillsite is free software (Apache-2.0) and its extension seams are public
+Sardine CMS is free software (Apache-2.0) and its extension seams are public
 contracts. This page is the community handbook: how to build something
 shareable, license it, name it, and get it listed. Policy rationale lives in
 [ADR-0011](adr/0011-community-ecosystem-policy.md).
@@ -22,7 +22,7 @@ shareable, license it, name it, and get it listed. Policy rationale lives in
 - Non-free or source-available licenses (BUSL, SUL, …) are your right to
   choose, but such packages are **not listed** in the registry.
 - You keep full commercial freedom: building and selling sites, support or
-  hosting with Stillsite is exactly what the Apache-2.0 core is for.
+  hosting with Sardine CMS is exactly what the Apache-2.0 core is for.
 
 ## Naming
 
@@ -30,11 +30,11 @@ Expressly permitted package-name patterns (limited nominative trademark
 grant — see ADR-0011):
 
 ```text
-stillsite-theme-<name>      stillsite-target-<name>
-stillsite-backend-<engine>  stillsite-plugin-<name>
+sardine-theme-<name>        sardine-target-<name>
+sardine-backend-<engine>    sardine-plugin-<name>
 ```
 
-Not permitted: the Stillsite logos, "official" claims, or names implying
+Not permitted: the Sardine CMS logos, "official" claims, or names implying
 pH7x Systems authorship. Official packages live in the `ph7x-Systems`
 GitHub organization.
 
@@ -48,8 +48,8 @@ Open a pull request adding one row to the registry below. Requirements
 3. README with a quickstart a stranger can follow.
 
 Delisting follows the same path: a PR with evidence of the failing gate.
-Tag your repo with the GitHub topics `stillsite` and the kind
-(`stillsite-theme`, …) for discovery.
+Tag your repo with the GitHub topics `sardine-cms` and the kind
+(`sardine-theme`, …) for discovery.
 
 ## Registry
 

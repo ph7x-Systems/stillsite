@@ -1,6 +1,6 @@
 # cms-cli
 
-The Stillsite command line. Reads `stillsite.toml` in the project directory
+The Sardine CMS command line. Reads `sardine.toml` in the project directory
 and drives the framework end-to-end:
 
 ```bash

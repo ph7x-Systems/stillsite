@@ -1,4 +1,4 @@
-"""Project configuration: `stillsite.toml` loading and content access."""
+"""Project configuration: `sardine.toml` loading and content access."""
 
 import tomllib
 from dataclasses import dataclass
@@ -9,7 +9,10 @@ from cms_core import Language
 from cms_core.storage import StorageBackend, create_storage
 from cms_validation import SiteContent
 
-PROJECT_FILE = "stillsite.toml"
+PROJECT_FILE = "sardine.toml"
+LEGACY_PROJECT_FILE = "stillsite.toml"
+"""Pre-rename projects keep working: read the old file when the new one
+is absent (the product was renamed from Stillsite to Sardine CMS)."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -49,7 +52,11 @@ class Project:
 def load_project(directory: Path) -> Project:
     config_path = directory / PROJECT_FILE
     if not config_path.is_file():
-        raise FileNotFoundError(f"{PROJECT_FILE} not found in {directory}")
+        legacy = directory / LEGACY_PROJECT_FILE
+        if legacy.is_file():
+            config_path = legacy
+        else:
+            raise FileNotFoundError(f"{PROJECT_FILE} not found in {directory}")
     data = tomllib.loads(config_path.read_text(encoding="utf-8"))
 
     site_data = data.get("site", {})

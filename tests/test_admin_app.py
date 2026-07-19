@@ -29,9 +29,9 @@ def test_storage_opens_on_startup_and_closes_on_shutdown(tmp_path: Path) -> None
 
 
 def test_settings_come_from_the_environment(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("STILLSITE_STORAGE_URL", raising=False)
+    monkeypatch.delenv("SARDINE_STORAGE_URL", raising=False)
     assert AdminSettings.from_env().storage_url == DEFAULT_STORAGE_URL
-    monkeypatch.setenv("STILLSITE_STORAGE_URL", "sqlite:///elsewhere.db")
+    monkeypatch.setenv("SARDINE_STORAGE_URL", "sqlite:///elsewhere.db")
     assert AdminSettings.from_env().storage_url == "sqlite:///elsewhere.db"
 
 

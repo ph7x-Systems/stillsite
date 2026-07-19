@@ -275,5 +275,5 @@ body > .hero, body > .meta{width:100%}
 .fl-adm{opacity:.45;font-size:.86em}
 .fl-adm:hover{opacity:1}
 
-/* Stillsite addition: reduced-motion kill-switch (theme conformance). */
+/* Sardine CMS addition: reduced-motion kill-switch (theme conformance). */
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}

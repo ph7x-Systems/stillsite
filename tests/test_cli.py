@@ -23,7 +23,7 @@ output = "_site"
 
 
 def make_project(tmp_path: Path) -> Path:
-    (tmp_path / "stillsite.toml").write_text(PROJECT_TOML, encoding="utf-8")
+    (tmp_path / "sardine.toml").write_text(PROJECT_TOML, encoding="utf-8")
     return tmp_path
 
 
@@ -59,7 +59,7 @@ def test_init_scaffolds_a_building_project(tmp_path: Path) -> None:
         ["init", str(target), "--name", "Test Site", "--base-url", "https://test.example"],
     )
     assert created.exit_code == 0, created.output
-    assert (target / "stillsite.toml").is_file()
+    assert (target / "sardine.toml").is_file()
     assert (target / ".copier-answers.yml").is_file()
 
     runner.invoke(app, ["seed", "-p", str(target)])

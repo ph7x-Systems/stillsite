@@ -49,7 +49,7 @@ def _load_entry_point(name: str) -> None:
     """Lazily resolve an installed theme package by name (ADR-0012)."""
     from importlib.metadata import entry_points
 
-    for entry_point in entry_points(group="stillsite.themes", name=name):
+    for entry_point in entry_points(group="sardine.themes", name=name):
         register_theme(name, entry_point.load())
 
 

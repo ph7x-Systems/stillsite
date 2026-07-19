@@ -37,7 +37,7 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
 def create_app(settings: AdminSettings | None = None) -> FastAPI:
     from cms_admin.auth import LoginRateLimiter
 
-    app = FastAPI(title="Stillsite admin", lifespan=_lifespan, docs_url=None, redoc_url=None)
+    app = FastAPI(title="Sardine CMS admin", lifespan=_lifespan, docs_url=None, redoc_url=None)
     app.state.settings = settings if settings is not None else AdminSettings.from_env()
     # autoescape must be forced on: the stock select_autoescape does not
     # recognize the .html.j2 extension and would render templates unescaped.

@@ -17,7 +17,7 @@ app = typer.Typer(add_completion=False, no_args_is_help=True)
 
 ProjectDir = Annotated[
     Path,
-    typer.Option("--project", "-p", help="Project directory containing stillsite.toml"),
+    typer.Option("--project", "-p", help="Project directory containing sardine.toml"),
 ]
 
 
@@ -62,7 +62,7 @@ def _write_artifact(artifact: Artifact, output: Path) -> int:
 @app.command()
 def init(
     directory: Annotated[Path, typer.Argument(help="Directory for the new project")],
-    name: Annotated[str, typer.Option(help="Site name")] = "My Stillsite",
+    name: Annotated[str, typer.Option(help="Site name")] = "My Sardine CMS",
     base_url: Annotated[str, typer.Option(help="Canonical base URL")] = "https://example.com",
     languages: Annotated[
         str, typer.Option(help="Required target languages, comma-separated")

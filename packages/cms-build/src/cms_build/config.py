@@ -1,7 +1,7 @@
 """Site configuration — the single source for everything configurable.
 
 Application code never hardcodes URLs, language sets or names; it reads them
-from here. Loaded from `stillsite.toml` by the CLI, or constructed directly
+from here. Loaded from `sardine.toml` by the CLI, or constructed directly
 in tests.
 """
 

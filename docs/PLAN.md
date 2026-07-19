@@ -1,11 +1,11 @@
-# Execution Plan — Stillsite
+# Execution Plan — Sardine CMS
 
 Short plan by milestones, per the brief ([BRIEF.md](BRIEF.md)). Small increments, clear commits, reversible decisions recorded as ADRs.
 
 ## Milestone 0 — Foundation (current)
 
 - [x] Repository initialized (`main`), folder structure, base docs
-- [x] Repository published to GitHub (`ph7x-Systems/stillsite`, public)
+- [x] Repository published to GitHub (`ph7x-Systems/sardine-cms`, public)
 - [x] License: Apache-2.0 (`LICENSE`, `NOTICE`, ADR-0002)
 - [x] Python toolchain: `pyproject.toml`, lint (ruff), type checking (mypy), pytest
 - [x] GitHub Actions CI: lint, types, tests, docs link check, secret scan
@@ -73,7 +73,7 @@ Layering and development rules for this milestone are fixed in
 
 ## Milestone 3 — Admin panel (detailed plan)
 
-**This is what makes Stillsite a CMS** — not a static site generator with
+**This is what makes Sardine CMS a CMS** — not a static site generator with
 extras: an editor runs the whole editorial cycle (create → translate →
 review → publish → deployed artifact) from the browser, with no JSON files,
 no CLI and no code. The admin is an Interface-layer application
@@ -138,7 +138,7 @@ gate green in CI.
 
 ## Release plan — first PyPI release (after Milestone 3 kickoff)
 
-- [ ] **ADR-0014 — distribution naming**: decide `stillsite-*` vs `cms-*`
+- [ ] **ADR-0014 — distribution naming**: decide `sardine-cms-*` vs `cms-*`
       for the five packages (import names may stay `cms_*`; the ADR weighs
       collision risk, brand and the ECOSYSTEM.md naming policy), then
       reserve the names on PyPI.
@@ -155,7 +155,7 @@ gate green in CI.
 Executed against DESIGN_RULES.md; every mechanical rule lands as a test in
 the theme conformance suite.
 
-- [x] **Theme discovery by entry points (ADR-0012)** — `stillsite.themes`
+- [x] **Theme discovery by entry points (ADR-0012)** — `sardine.themes`
       entry-point group; `create_theme` loads lazily on a registry miss, so
       installed theme packages need zero configuration; same policy will
       serve targets/backends/plugins later
@@ -196,12 +196,12 @@ the theme conformance suite.
    links the live demo; owner still owes the social preview upload and the
    announcement moment).
 5. **Milestone 3 — admin panel (next)**: the detailed plan above — this is
-   the milestone that makes Stillsite a full CMS, not a generator.
+   the milestone that makes Sardine CMS a full CMS, not a generator.
 6. **First PyPI release** (naming ADR, semver, trusted publishing) and the
    remaining server backends — see the release plan above.
 
 Small pending items: GitHub social preview upload (owner, web UI only);
-reserve the PyPI names (`stillsite`; decide `stillsite-*` vs `cms-*`
+reserve the PyPI names (`sardine-cms`; decide `sardine-cms-*` vs `cms-*`
 distribution naming at first release, with an ADR); rename the local working
 folder to match the project name.
 
@@ -271,7 +271,7 @@ Everything user-facing must be extensible without forking the framework:
 
 ## Design and themes
 
-**Positioning (definitive).** Stillsite is a framework, not a site: like
+**Positioning (definitive).** Sardine CMS is a framework, not a site: like
 WordPress, the design belongs to whoever uses it. Themes are installable
 packages (ADR-0012) or per-project overrides (ADR-0007); anyone can take an
 existing site's stylesheets and wrap them as a theme. The **ph7x design
@@ -289,7 +289,7 @@ technology strategy (native platform, Web Component islands, no framework) is
 
 ## Open decisions
 
-- PyPI distribution naming, `stillsite-*` vs `cms-*` (ADR-0014 at first
+- PyPI distribution naming, `sardine-cms-*` vs `cms-*` (ADR-0014 at first
   release — see the release plan above)
 
 ## Decided
@@ -299,8 +299,8 @@ technology strategy (native platform, Web Component islands, no framework) is
   styled natively with the ph7x design system — no component library
   ([ADR-0015](adr/0015-admin-ph7x-design.md))
 - License: Apache-2.0 ([ADR-0002](adr/0002-license-apache-2.md))
-- Remote repository: `ph7x-Systems/stillsite` on GitHub (public since 2026-07-17)
-- Project name: **Stillsite** — coined, screened against PyPI/npm/GitHub and
+- Remote repository: `ph7x-Systems/sardine-cms` on GitHub (public since 2026-07-17)
+- Project name: **Sardine CMS** — coined, screened against PyPI/npm/GitHub and
   trademark databases before adoption; owned by pH7x Systems
 
 ## Testing

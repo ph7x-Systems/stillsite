@@ -1,6 +1,6 @@
 {% extends "shell.html.j2" %}
 {% from "_fields.html.j2" import textarea_field, errors_block, state_badge %}
-{% block title %}{{ page.id }} · {{ section.key }} · {{ language.value | upper }} — Stillsite admin{% endblock %}
+{% block title %}{{ page.id }} · {{ section.key }} · {{ language.value | upper }} — Sardine CMS admin{% endblock %}
 {% block content %}
 <nav class="admin-breadcrumb" aria-label="Breadcrumb">
   <a href="/pages/{{ page.id }}/sections/{{ section.key }}">&larr; {{ section.key }}</a></nav>
