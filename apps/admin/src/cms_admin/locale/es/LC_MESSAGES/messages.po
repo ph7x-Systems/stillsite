@@ -730,3 +730,33 @@ msgstr "username: solo minúsculas, dígitos y guiones"
 
 msgid "you"
 msgstr "tú"
+
+msgid "%(shown)s of %(total)s assets"
+msgstr "%(shown)s de %(total)s archivos"
+
+msgid "Clear"
+msgstr "Limpiar"
+
+msgid "Everything"
+msgstr "Todo"
+
+msgid "Filter"
+msgstr "Filtrar"
+
+msgid "Images only"
+msgstr "Solo imágenes"
+
+msgid "Missing translated alt"
+msgstr "Falta alt traducido"
+
+msgid "Nothing matches the filter."
+msgstr "Nada coincide con el filtro."
+
+msgid "Search"
+msgstr "Buscar"
+
+msgid "Show"
+msgstr "Mostrar"
+
+msgid "id, path, type or alt text"
+msgstr "id, ruta, tipo o texto alternativo"

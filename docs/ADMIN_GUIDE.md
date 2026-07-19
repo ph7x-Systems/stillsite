@@ -69,7 +69,9 @@ with that entity's errors listed (the publish gate; disable only with
   from content checksums, never from flags.
 - **Pages**: metadata plus ordered typed sections; each section is a
   free-form field map the theme interprets, translated side by side.
-- **Media**: uploads validated server-side — the MIME type is sniffed from
+- **Media**: the library filters server-side — text search over id,
+  path, type and alt texts, plus quick views (images only, missing
+  translated alt). Uploads validated server-side — the MIME type is sniffed from
   the bytes (png, jpeg, gif, webp, svg), dimensions parsed, size limited.
   EN alt text is mandatory; alt is translatable per language. Assets
   referenced by covers or sections refuse deletion.

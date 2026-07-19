@@ -730,3 +730,33 @@ msgstr "username: nur Kleinbuchstaben, Ziffern und Bindestriche"
 
 msgid "you"
 msgstr "Sie"
+
+msgid "%(shown)s of %(total)s assets"
+msgstr "%(shown)s von %(total)s Dateien"
+
+msgid "Clear"
+msgstr "Zurücksetzen"
+
+msgid "Everything"
+msgstr "Alles"
+
+msgid "Filter"
+msgstr "Filtern"
+
+msgid "Images only"
+msgstr "Nur Bilder"
+
+msgid "Missing translated alt"
+msgstr "Übersetzter Alt-Text fehlt"
+
+msgid "Nothing matches the filter."
+msgstr "Nichts entspricht dem Filter."
+
+msgid "Search"
+msgstr "Suchen"
+
+msgid "Show"
+msgstr "Anzeigen"
+
+msgid "id, path, type or alt text"
+msgstr "ID, Pfad, Typ oder Alternativtext"
