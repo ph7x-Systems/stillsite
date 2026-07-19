@@ -56,3 +56,19 @@ def test_custom_target_registration() -> None:
 
     register_target("null", NullTarget)
     assert create_target("null").extra_files(CONFIG, Artifact()) == {"null.txt": b"ok"}
+
+
+def test_redirects_reach_both_target_configs() -> None:
+    """M6: configured redirects become real 301s per target."""
+    config = CONFIG.model_copy(update={"redirects": {"/old/": "/new/", "/blog-old/": "/blog/"}})
+    swa = json.loads(
+        create_target("swa").extra_files(config, Artifact())["staticwebapp.config.json"]
+    )
+    redirect_routes = [route for route in swa["routes"] if "redirect" in route]
+    assert redirect_routes == [
+        {"route": "/blog-old/", "redirect": "/blog/", "statusCode": 301},
+        {"route": "/old/", "redirect": "/new/", "statusCode": 301},
+    ]
+    conf = create_target("nginx").extra_files(config, Artifact())["nginx.conf"].decode("utf-8")
+    assert "location = /old/ { return 301 /new/; }" in conf
+    assert "location = /blog-old/ { return 301 /blog/; }" in conf

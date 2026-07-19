@@ -83,7 +83,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | SEO: canonical, hreflang, Open Graph, JSON-LD, sitemap, RSS | ✅ in every build | — |
 | Search | ✅ client-side index island | — |
 | Comments | ❌ | 🧭 integrations (privacy-respecting embed islands) behind a theme contract ADR (M6) |
-| Redirects | ❌ | 🔜 redirect map emitted per target (SWA/nginx rules) (M6) |
+| Redirects | ✅ `[redirects]` map: real 301s on SWA/nginx + meta-refresh fallback pages for any host | — |
 | Localized 404 / error pages | ✅ | — |
 | Multiple sites per install | ❌ one project = one site | out of scope before 1.0 |
 

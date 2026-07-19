@@ -75,6 +75,10 @@ class SwaTarget:
                 "404": {"rewrite": "/404.html", "statusCode": 404},
             },
             "routes": [
+                *[
+                    {"route": source, "redirect": destination, "statusCode": 301}
+                    for source, destination in sorted(config.redirects.items())
+                ],
                 {
                     "route": "/assets/*",
                     "headers": {"cache-control": "public, max-age=86400, must-revalidate"},
@@ -107,7 +111,11 @@ class NginxTarget:
             "    location /assets/ {\n"
             '        add_header cache-control "public, max-age=86400, must-revalidate";\n'
             "    }\n"
-            "    error_page 401 /401.html;\n"
+            + "".join(
+                f"    location = {source} {{ return 301 {destination}; }}\n"
+                for source, destination in sorted(config.redirects.items())
+            )
+            + "    error_page 401 /401.html;\n"
             "    error_page 403 /403.html;\n"
             "    error_page 404 /404.html;\n"
             "    error_page 500 502 503 504 /50x.html;\n"

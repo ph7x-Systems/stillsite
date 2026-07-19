@@ -5,6 +5,11 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Redirects** (M6): a `[redirects]` map in `sardine.toml` becomes
+  real 301s on the SWA and nginx targets, and the builder ships
+  meta-refresh fallback pages (canonical set, noindex) so redirects
+  work on any static host.
+
 - **Image derivatives** (M6, ADR-0029): opt-in responsive sizes at
   build time — `[build] image_widths = [480, 960]` plus the
   `sardine-cms-build[images]` extra (Pillow). Derivatives keep the

@@ -233,7 +233,8 @@ tests, docs and wiki updates, per the standing gates.
       empty list falls back to it
 - [x] Build-time image derivatives (ADR-0029): opt-in widths,
       deterministic, srcset in both themes (crop/focal point deferred)
-- [ ] Redirect map emitted per target (SWA rules, nginx rewrites)
+- [x] Redirect map: `[redirects]` in sardine.toml — 301s on SWA and
+      nginx, meta-refresh fallback pages in every artifact
 - [ ] Comments-integration contract for static sites (embed islands,
       privacy-respecting)
 - [ ] JSON content export target (headless consumption)

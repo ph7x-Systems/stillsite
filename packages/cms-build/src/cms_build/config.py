@@ -26,6 +26,9 @@ class SiteConfig(BaseModel):
     admin_url: str | None = None
     image_widths: tuple[int, ...] = ()
     """Responsive derivative widths (ADR-0029); empty disables."""
+    redirects: dict[str, str] = Field(default_factory=dict)
+    """Old path -> new URL (M6): targets emit real 301s, the builder
+    ships meta-refresh fallback pages so every host redirects."""
     """When set, the footer links to the admin panel (dimmed, nofollow)."""
 
     def category_label(self, slug: str, language: Language) -> str:

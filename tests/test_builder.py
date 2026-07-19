@@ -265,3 +265,13 @@ def test_image_derivatives_generate_and_reach_srcset() -> None:
     plain = build_site(CONFIG, content, media_files={"images/wide.png": png}, now=NOW)
     assert "media/images/wide@480.png" not in plain.files
     assert "srcset" not in plain.files["index.html"].decode("utf-8")
+
+
+def test_redirect_fallback_pages_ship_in_every_artifact() -> None:
+    """M6: meta-refresh fallbacks make redirects work on any static host."""
+    config = CONFIG.model_copy(update={"redirects": {"/old-post/": "/blog/new-post/"}})
+    artifact = build_site(config, SiteContent(), now=NOW)
+    page = artifact.files["old-post/index.html"].decode("utf-8")
+    assert 'http-equiv="refresh" content="0; url=/blog/new-post/"' in page
+    assert 'rel="canonical" href="/blog/new-post/"' in page
+    assert 'content="noindex"' in page

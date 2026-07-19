@@ -150,6 +150,7 @@ class _SiteBuilder:
             self._build_category_and_tag_pages(language)
             self._build_feeds(language)
 
+        self._build_redirects()
         self._build_not_found()
         self.artifact.add("sitemap.xml", _sitemap(sorted(self.sitemap_urls)))
         self.artifact.add("robots.txt", _robots(self.config))
@@ -547,6 +548,21 @@ class _SiteBuilder:
             for a in articles
         ]
         return json.dumps(entries, ensure_ascii=False, sort_keys=True) + "\n"
+
+    def _build_redirects(self) -> None:
+        """Meta-refresh fallback pages for every configured redirect (M6):
+        real 301s come from the target configs, but these make redirects
+        work on any static host — and hold canonical for crawlers."""
+        for source, destination in sorted(self.config.redirects.items()):
+            html = (
+                '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
+                f'<meta http-equiv="refresh" content="0; url={escape(destination)}">\n'
+                f'<link rel="canonical" href="{escape(destination)}">\n'
+                '<meta name="robots" content="noindex">\n'
+                f"<title>Redirecting</title>\n</head>\n<body>\n"
+                f'<p><a href="{escape(destination)}">Moved here</a></p>\n</body>\n</html>\n'
+            )
+            self.artifact.add(urls.output_file(source), html)
 
     # ADR-0021: the error-page contract — every build ships these four,
     # every target serves them. All render through the not_found template.

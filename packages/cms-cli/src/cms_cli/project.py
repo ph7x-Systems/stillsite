@@ -90,6 +90,7 @@ def load_project(directory: Path) -> Project:
         organization=site_data.get("organization"),
         footer_text=site_data.get("footer_text"),
         admin_url=site_data.get("admin_url"),
+        redirects=data.get("redirects", {}),
     )
 
     storage_url = data.get("storage", {}).get("url", "sqlite:///content.sqlite3")
