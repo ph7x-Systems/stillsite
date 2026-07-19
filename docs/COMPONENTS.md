@@ -82,6 +82,7 @@ content header with `breadcrumb`, `app-footer` with copyright. Surfaces:
 | Trash | sidebar entry, per-kind tables with Restore / admin-only Delete forever |
 | Design preview (editors) | card with a same-origin iframe onto `/preview/<entry>`, pointer to Publishing when no build exists |
 | Revisions (editors) | history card + detail page with unified diff in `admin-preview`, restore button |
+| Menu manager | items table + add/update card (per-language labels), publisher-gated writes |
 | Users screen (admin) | accounts table with inline role select, new-account card |
 | Language selector (user menu) | `form-select` in the AdminLTE `user-body`, POST + CSRF like every form |
 | Validation report (shared partial) | `callout callout-success/-danger` verdict, `.table` per-rule outcomes with `text-bg-*` badges, issue subjects linked to edit screens |

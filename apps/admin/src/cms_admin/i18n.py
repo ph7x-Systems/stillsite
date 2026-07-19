@@ -71,6 +71,8 @@ RUNTIME_MSGIDS: tuple[str, ...] = (
     "role: the last admin cannot be demoted",
     "delete: you cannot delete your own account",
     "delete: the last admin cannot be deleted",
+    # menu manager route error
+    "menu: id is lowercase-with-dashes, url and position are required",
     # media upload static errors
     "file: choose a file to upload",
     "file: could not read the image dimensions",

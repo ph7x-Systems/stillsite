@@ -12,6 +12,7 @@ from cms_core import (
     ContentStatus,
     Language,
     MediaAsset,
+    MenuItem,
     PageContent,
     Role,
     Section,
@@ -302,3 +303,28 @@ def test_article_custom_fields_round_trip(backend: StorageBackend) -> None:
     loaded = backend.load_article("fielded")
     assert loaded is not None
     assert loaded.fields == {"sponsor": "The canteen", "subtitle": "A tin odyssey"}
+
+
+def test_menu_items_round_trip_ordering_and_delete(backend: StorageBackend) -> None:
+    """M6: explicit menu items persist per language and order stably."""
+    backend.save_menu_item(
+        MenuItem(id="docs", url="/docs/", position=2, labels={Language.EN: "Docs"})
+    )
+    backend.save_menu_item(
+        MenuItem(
+            id="home",
+            url="/",
+            position=1,
+            labels={Language.EN: "Home", Language.PT_PT: "Início"},
+        )
+    )
+    items = backend.load_menu_items()
+    assert [item.id for item in items] == ["home", "docs"]
+    assert items[0].label(Language.PT_PT) == "Início"
+    assert items[0].label(Language.ES) == "Home"  # source-language fallback
+    backend.save_menu_item(
+        MenuItem(id="docs", url="/documentation/", position=0, labels={Language.EN: "Docs"})
+    )
+    assert backend.load_menu_items()[0].url == "/documentation/"  # upsert + reorder
+    assert backend.delete_menu_item("home")
+    assert not backend.delete_menu_item("home")

@@ -805,3 +805,33 @@ msgstr "Champs personnalisés"
 
 msgid "Free-form name/value pairs carried to themes and extensions (ADR-0028); clear a value to drop its field."
 msgstr "Paires nom/valeur libres transmises aux thèmes et extensions (ADR-0028) ; effacez une valeur pour retirer le champ."
+
+msgid "Add or update an item"
+msgstr "Ajouter ou mettre à jour un élément"
+
+msgid "Defined items replace the automatic menu on the next build; re-adding an id updates it (that is also how items reorder). Empty list = automatic menu."
+msgstr "Les éléments définis remplacent le menu automatique au prochain build ; ré-ajouter un id le met à jour (c'est aussi ainsi qu'on réordonne). Liste vide = menu automatique."
+
+msgid "Label"
+msgstr "Libellé"
+
+msgid "Labels"
+msgstr "Libellés"
+
+msgid "Menu"
+msgstr "Menu"
+
+msgid "Navigation items"
+msgstr "Éléments de navigation"
+
+msgid "No explicit items — the menu derives automatically from content (home anchors, blog, published pages)."
+msgstr "Aucun élément explicite — le menu dérive automatiquement du contenu (ancres de l'accueil, blog, pages publiées)."
+
+msgid "Position"
+msgstr "Position"
+
+msgid "Save item"
+msgstr "Enregistrer l'élément"
+
+msgid "menu: id is lowercase-with-dashes, url and position are required"
+msgstr "menu : l'id est en minuscules-avec-tirets ; url et position sont requis"

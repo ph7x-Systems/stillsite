@@ -7,6 +7,7 @@ from cms_core.accounts import AdminSession, Role, User
 from cms_core.extensions import ENTRY_POINT_GROUP, Extension, ExtensionError, load_extensions
 from cms_core.languages import SOURCE_LANGUAGE, TARGET_LANGUAGES, Language
 from cms_core.media import MediaAsset
+from cms_core.menus import MenuItem
 from cms_core.models import (
     SCHEMA_VERSION,
     Article,
@@ -42,6 +43,7 @@ __all__ = [
     "ExtensionError",
     "Language",
     "MediaAsset",
+    "MenuItem",
     "Page",
     "PageContent",
     "Role",

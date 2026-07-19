@@ -122,6 +122,7 @@ class _SiteBuilder:
         self.sitemap_urls: list[str] = []
         self.articles = _published_articles(content, now)
         self.pages = _published_pages(content, now)
+        self.menu_items = sorted(content.menu, key=lambda item: (item.position, item.id))
         self.media_by_id = {asset.id: asset for asset in content.media}
         self.theme_assets = dict(theme.assets())
         self.asset_urls = _asset_urls(self.theme_assets)
@@ -173,8 +174,11 @@ class _SiteBuilder:
         }
 
     def _menu(self, language: Language) -> list[dict[str, str]]:
-        """Site menu: home-section anchors (sections with a `menu` field),
-        then the blog, then every other published page."""
+        """Explicit menu items win (M6); with none defined, the menu
+        derives from content: home-section anchors (sections with a
+        `menu` field), then the blog, then every other published page."""
+        if self.menu_items:
+            return [{"label": item.label(language), "url": item.url} for item in self.menu_items]
         entries: list[dict[str, str]] = []
         home = next((p for p in self.pages if p.id == "home"), None)
         if home is not None and _available(home, language):

@@ -5,6 +5,13 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Menu manager** (M6, migration 14): explicit navigation from the
+  panel — per-language labels with source-language fallback, numeric
+  ordering, internal or external URLs. Defined items replace the
+  automatic menu on the next build; an empty list keeps the automatic
+  one (home anchors + blog + published pages). Carried in the portable
+  export.
+
 - **The extension contract** (ADR-0028): packages plug in through one
   `sardine.extensions` entry point (or a dotted path) — validation
   rules, deterministic build steps, deployment targets, storage

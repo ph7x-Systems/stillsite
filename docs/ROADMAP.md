@@ -61,7 +61,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Categories, tags, listing pages | ✅ incl. validation rule | — |
 | Custom content types | ❌ deliberate: pages-with-sections + article custom fields cover known cases | 🧭 own ADR when a real case appears (ADR-0028) |
 | Custom fields | ✅ free-form fields on articles (editable, exported, themed) and sections | — |
-| Navigation menus | 🟡 menus derive from section `menu` fields + published pages | 🔜 explicit menu manager (M6) |
+| Navigation menus | ✅ explicit menu manager (per-language labels, ordering, external links) with automatic-menu fallback | — |
 | Reusable blocks | 🟡 section kinds are the block library | 🔜 grow the kind gallery; document authoring (M6) |
 | Design-aware editing | ✅ themed side-preview in the editors (ADR-0027); live refresh arrives with the autosave layer | — |
 | Multilingual | ✅ **core strength**: EN source + per-language states, parity gates | — |

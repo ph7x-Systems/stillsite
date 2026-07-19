@@ -12,6 +12,7 @@ from types import TracebackType
 
 from cms_core.accounts import AdminSession, User
 from cms_core.media import MediaAsset
+from cms_core.menus import MenuItem
 from cms_core.models import Article
 from cms_core.pages import Page
 
@@ -99,6 +100,17 @@ class StorageBackend(ABC):
     def list_usernames(self) -> list[str]: ...
 
     # Admin sessions
+
+    # Menu items (M6): explicit navigation.
+
+    @abstractmethod
+    def save_menu_item(self, item: "MenuItem") -> None: ...
+
+    @abstractmethod
+    def load_menu_items(self) -> list["MenuItem"]: ...
+
+    @abstractmethod
+    def delete_menu_item(self, item_id: str) -> bool: ...
 
     # Editorial notes (M5): a comment trail per entity.
 

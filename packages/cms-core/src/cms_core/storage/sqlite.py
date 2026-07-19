@@ -12,6 +12,7 @@ from pathlib import Path
 from cms_core.accounts import AdminSession, Role, User
 from cms_core.languages import Language
 from cms_core.media import MediaAsset
+from cms_core.menus import MenuItem
 from cms_core.models import Article, ArticleContent
 from cms_core.pages import Page, PageContent, Section, SectionContent
 from cms_core.states import ContentStatus
@@ -362,6 +363,42 @@ class SQLiteBackend(StorageBackend):
     def list_media_ids(self) -> list[str]:
         rows = self._connection.execute("SELECT id FROM media_assets ORDER BY id").fetchall()
         return [str(row[0]) for row in rows]
+
+    # Menu items (M6)
+
+    def save_menu_item(self, item: MenuItem) -> None:
+        with self._connection as connection:
+            connection.execute(
+                "INSERT INTO menu_items (id, url, position, labels_json)"
+                " VALUES (?, ?, ?, ?)"
+                " ON CONFLICT(id) DO UPDATE SET url = excluded.url,"
+                " position = excluded.position, labels_json = excluded.labels_json",
+                (
+                    item.id,
+                    item.url,
+                    item.position,
+                    json.dumps({k.value: v for k, v in item.labels.items()}, sort_keys=True),
+                ),
+            )
+
+    def load_menu_items(self) -> list[MenuItem]:
+        rows = self._connection.execute(
+            "SELECT id, url, position, labels_json FROM menu_items ORDER BY position, id"
+        ).fetchall()
+        return [
+            MenuItem(
+                id=row[0],
+                url=row[1],
+                position=int(row[2]),
+                labels={Language(k): v for k, v in json.loads(row[3]).items()},
+            )
+            for row in rows
+        ]
+
+    def delete_menu_item(self, item_id: str) -> bool:
+        with self._connection as connection:
+            cursor = connection.execute("DELETE FROM menu_items WHERE id = ?", (item_id,))
+        return cursor.rowcount > 0
 
     # Editorial notes (M5)
 

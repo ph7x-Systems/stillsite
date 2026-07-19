@@ -145,4 +145,12 @@ MIGRATIONS: tuple[str, ...] = (
     """
     ALTER TABLE articles ADD COLUMN fields_json TEXT NOT NULL DEFAULT '{}';
     """,
+    """
+    CREATE TABLE menu_items (
+        id TEXT PRIMARY KEY,
+        url TEXT NOT NULL,
+        position INTEGER NOT NULL,
+        labels_json TEXT NOT NULL
+    );
+    """,
 )

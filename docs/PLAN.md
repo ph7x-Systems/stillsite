@@ -228,8 +228,9 @@ tests, docs and wiki updates, per the standing gates.
 - [x] **Design-aware editing** (ADR-0027, accepted): themed side-preview
       in the editors via the real preview pipeline; live refresh arrives
       with the autosave layer
-- [ ] Explicit menu manager (per-language labels, ordering, external
-      links)
+- [x] Explicit menu manager (migration 14): per-language labels,
+      ordering, external links; defined items replace the derived menu,
+      empty list falls back to it
 - [ ] Build-time image derivatives (responsive sizes; crop/focal point)
 - [ ] Redirect map emitted per target (SWA rules, nginx rewrites)
 - [ ] Comments-integration contract for static sites (embed islands,

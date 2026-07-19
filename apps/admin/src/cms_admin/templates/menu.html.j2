@@ -1,0 +1,73 @@
+{% extends "shell.html.j2" %}
+{% from "_fields.html.j2" import errors_block with context %}
+{% block title %}{{ _("Menu") }} — Sardine CMS admin{% endblock %}
+{% block header %}<h1 class="h3 mb-0">{{ _("Menu") }}</h1>{% endblock %}
+{% block content %}
+{{ errors_block(errors) }}
+<div class="row">
+  <div class="col-lg-7">
+    <div class="card mb-3">
+      <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Navigation items") }}</h2></div>
+      {% if items %}
+      <div class="card-body p-0 table-responsive admin-table-wrap">
+        <table class="table table-sm table-striped mb-0 admin-table admin-menu-table">
+          <thead><tr><th scope="col">#</th><th scope="col">{{ _("ID") }}</th><th scope="col">{{ _("Labels") }}</th><th scope="col">URL</th><th scope="col"></th></tr></thead>
+          <tbody>
+            {% for item in items %}
+            <tr>
+              <td class="text-end">{{ item.position }}</td>
+              <th scope="row">{{ item.id }}</th>
+              <td>{% for language, label in item.labels.items() | sort(attribute="0.value") %}<span class="badge text-bg-light border admin-tag me-1">{{ language.value }}: {{ label }}</span>{% endfor %}</td>
+              <td><code>{{ item.url }}</code></td>
+              <td>
+                <form method="post" action="/menu/{{ item.id }}/delete" class="mb-0">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                  <button type="submit" class="btn btn-outline-danger btn-sm">{{ _("Remove") }}</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer form-text">{{ _("Defined items replace the automatic menu on the next build; re-adding an id updates it (that is also how items reorder). Empty list = automatic menu.") }}</div>
+      {% else %}
+      <div class="card-body"><p class="admin-empty mb-0">{{ _("No explicit items — the menu derives automatically from content (home anchors, blog, published pages).") }}</p></div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Add or update an item") }}</h2></div>
+      <div class="card-body">
+        <form method="post" action="/menu" class="admin-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <div class="mb-2 admin-field">
+            <label class="form-label" for="menu-id">{{ _("ID") }}</label>
+            <input class="form-control admin-input" id="menu-id" name="id" required
+                   placeholder="{{ _("lowercase-with-dashes") }}">
+          </div>
+          <div class="mb-2 admin-field">
+            <label class="form-label" for="menu-url">URL</label>
+            <input class="form-control admin-input" id="menu-url" name="url" required
+                   placeholder="/about/ · https://example.com">
+          </div>
+          <div class="mb-2 admin-field">
+            <label class="form-label" for="menu-position">{{ _("Position") }}</label>
+            <input class="form-control admin-input" id="menu-position" name="position"
+                   type="number" value="{{ items | length + 1 }}">
+          </div>
+          {% for language in languages %}
+          <div class="mb-2 admin-field">
+            <label class="form-label" for="label-{{ language.value }}">{{ _("Label") }} ({{ language.value | upper }})</label>
+            <input class="form-control admin-input" id="label-{{ language.value }}"
+                   name="label_{{ language.value }}">
+          </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-primary">{{ _("Save item") }}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

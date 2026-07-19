@@ -9,6 +9,7 @@ from collections.abc import Iterable
 
 from cms_core.languages import SOURCE_LANGUAGE, Language
 from cms_core.media import MediaAsset
+from cms_core.menus import MenuItem
 from cms_core.models import SCHEMA_VERSION, Article, ArticleContent
 from cms_core.pages import Page, Section
 
@@ -105,10 +106,23 @@ def media_to_portable(asset: MediaAsset) -> dict[str, object]:
     }
 
 
+def menu_to_portable(item: MenuItem) -> dict[str, object]:
+    return {
+        "id": item.id,
+        "url": item.url,
+        "position": item.position,
+        "labels": {
+            language.value: label
+            for language, label in sorted(item.labels.items(), key=lambda kv: kv[0].value)
+        },
+    }
+
+
 def export_content_json(
     articles: Iterable[Article],
     pages: Iterable[Page] = (),
     media: Iterable[MediaAsset] = (),
+    menu: Iterable[MenuItem] = (),
 ) -> str:
     payload = {
         "schema_version": SCHEMA_VERSION,
@@ -118,6 +132,10 @@ def export_content_json(
         ],
         "pages": [page_to_portable(page) for page in sorted(pages, key=lambda page: page.id)],
         "media": [media_to_portable(asset) for asset in sorted(media, key=lambda asset: asset.id)],
+        "menu": [
+            menu_to_portable(item)
+            for item in sorted(menu, key=lambda item: (item.position, item.id))
+        ],
     }
     return json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
 

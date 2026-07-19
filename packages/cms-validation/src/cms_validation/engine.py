@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Protocol, runtime_checkable
 
-from cms_core import Article, Language, MediaAsset, Page
+from cms_core import Article, Language, MediaAsset, MenuItem, Page
 
 
 class Severity(StrEnum):
@@ -38,6 +38,8 @@ class SiteContent:
     articles: Sequence[Article] = ()
     pages: Sequence[Page] = ()
     media: Sequence[MediaAsset] = ()
+    menu: Sequence[MenuItem] = ()
+    """Explicit navigation items (M6); empty derives the menu from content."""
 
 
 @dataclass(frozen=True, slots=True)

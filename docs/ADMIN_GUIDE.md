@@ -110,6 +110,14 @@ The seeded example project intentionally keeps one article in review with a
 missing DE translation, so a fresh project (and the public demo) shows the
 gate holding a real warning instead of an empty all-green report.
 
+## Menu
+
+The **Menu** screen defines explicit navigation: items with per-language
+labels (source language as fallback), a numeric position and an internal
+or external URL. Defined items replace the automatic menu on the next
+build; re-adding an id updates it (that is also how items reorder), and
+an empty list keeps the automatic menu. Writes need the publisher role.
+
 ## Editorial notes and quick actions
 
 Each editor carries an **Editorial notes** card — a comment trail for

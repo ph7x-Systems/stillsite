@@ -805,3 +805,33 @@ msgstr "Benutzerdefinierte Felder"
 
 msgid "Free-form name/value pairs carried to themes and extensions (ADR-0028); clear a value to drop its field."
 msgstr "Freie Name/Wert-Paare für Themes und Erweiterungen (ADR-0028); leeren Sie einen Wert, um das Feld zu entfernen."
+
+msgid "Add or update an item"
+msgstr "Eintrag hinzufügen oder aktualisieren"
+
+msgid "Defined items replace the automatic menu on the next build; re-adding an id updates it (that is also how items reorder). Empty list = automatic menu."
+msgstr "Definierte Einträge ersetzen beim nächsten Build das automatische Menü; das erneute Hinzufügen einer ID aktualisiert sie (so wird auch umsortiert). Leere Liste = automatisches Menü."
+
+msgid "Label"
+msgstr "Beschriftung"
+
+msgid "Labels"
+msgstr "Beschriftungen"
+
+msgid "Menu"
+msgstr "Menü"
+
+msgid "Navigation items"
+msgstr "Navigationseinträge"
+
+msgid "No explicit items — the menu derives automatically from content (home anchors, blog, published pages)."
+msgstr "Keine expliziten Einträge — das Menü leitet sich automatisch aus dem Inhalt ab (Startseiten-Anker, Blog, veröffentlichte Seiten)."
+
+msgid "Position"
+msgstr "Position"
+
+msgid "Save item"
+msgstr "Eintrag speichern"
+
+msgid "menu: id is lowercase-with-dashes, url and position are required"
+msgstr "menu: die ID ist kleinbuchstaben-mit-bindestrichen; URL und Position sind erforderlich"

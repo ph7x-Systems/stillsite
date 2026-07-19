@@ -9,6 +9,7 @@ from cms_core import (
     ArticleContent,
     ContentStatus,
     Language,
+    MenuItem,
     PageContent,
     Section,
     SectionContent,
@@ -200,3 +201,24 @@ def test_featured_leads_the_highlight_and_author_reaches_the_context() -> None:
     assert listing.index("Newer") < listing.index("Older")  # listings stay recency
     article_html = artifact.files["blog/older/index.html"].decode("utf-8")
     assert "Commander Sardinha" in article_html
+
+
+def test_explicit_menu_items_replace_the_derived_menu() -> None:
+    """M6: defined menu items render exactly, localized with fallback;
+    without any, the derived menu keeps working (covered elsewhere)."""
+    home = new_page("home", PageContent(title="Home", slug="home"), now=NOW)
+    home.status = ContentStatus.PUBLISHED
+    menu = [
+        MenuItem(id="docs", url="https://docs.example", position=2, labels={Language.EN: "Docs"}),
+        MenuItem(
+            id="start",
+            url="/",
+            position=1,
+            labels={Language.EN: "Start", Language.PT_PT: "Início"},
+        ),
+    ]
+    artifact = build_site(CONFIG, SiteContent(pages=[home], menu=menu), now=NOW)
+    html = artifact.files["index.html"].decode("utf-8")
+    assert html.index(">Start<") < html.index(">Docs<")  # position order
+    assert "https://docs.example" in html
+    assert "/blog/" not in html.split("<nav")[1].split("</nav>")[0]  # derived menu replaced

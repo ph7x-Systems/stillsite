@@ -58,6 +58,7 @@ def _load_content(storage: StorageBackend) -> SiteContent:
         articles=[a for a in storage.load_all_articles() if a.deleted_at is None],
         pages=[p for p in storage.load_all_pages() if p.deleted_at is None],
         media=storage.load_all_media_assets(),
+        menu=storage.load_menu_items(),
     )
 
 
