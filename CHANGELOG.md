@@ -5,6 +5,11 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Direct unpublish** (M5): published content goes straight back to
+  draft with one click (publisher role and up) — no more
+  archive-then-restore detour. The next build drops the entry from the
+  site, as always.
+
 - **Markdown editor for article bodies** (ADR-0023): EasyMDE (MIT,
   vendored, no CDN) with a Bootstrap-Icons toolbar in the editor's
   language, attached progressively — without JavaScript the plain

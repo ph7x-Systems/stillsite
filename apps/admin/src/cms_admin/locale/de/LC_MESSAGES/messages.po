@@ -610,3 +610,6 @@ msgstr "Zitat"
 
 msgid "Unordered list"
 msgstr "Ungeordnete Liste"
+
+msgid "Unpublish"
+msgstr "Veröffentlichung aufheben"

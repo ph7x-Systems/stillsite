@@ -194,8 +194,8 @@ Everything an editor expects from a mature CMS, inside the panel. The
 outward framing lives in [ROADMAP.md](ROADMAP.md); each item ships with
 tests, docs and wiki updates, per the standing gates.
 
-- [ ] **Direct unpublish**: `published → draft` transition (publisher
-      role), one click — today it takes archive + restore
+- [x] **Direct unpublish**: `published → draft` transition (publisher
+      role), one click
 - [ ] **Scheduled publishing**: `publish_at` on articles/pages; the build
       excludes future content, so the next build after the moment
       publishes it; documented cron/Actions recipe

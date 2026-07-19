@@ -100,9 +100,10 @@ def test_transitions_follow_the_role_ladder() -> None:
     assert available_transitions(review, Role.EDITOR) == []
     targets = {t["to"] for t in available_transitions(review, Role.PUBLISHER)}
     assert targets == {"draft", "published"}
-    assert [t["to"] for t in available_transitions(ContentStatus.PUBLISHED, Role.ADMIN)] == [
-        "archived"
-    ]
+    published = ContentStatus.PUBLISHED
+    published_targets = {t["to"] for t in available_transitions(published, Role.ADMIN)}
+    assert published_targets == {"draft", "archived"}  # direct unpublish + archive
+    assert available_transitions(published, Role.REVIEWER) == []
 
 
 def test_publish_blockers_scope_to_the_entity() -> None:
@@ -179,6 +180,25 @@ def test_publisher_full_cycle_publish_archive_restore(tmp_path: Path) -> None:
             assert response.status_code == 303, target
         invalid = client.post("/articles/cycle/status", data={"csrf_token": csrf, "to": "archived"})
     assert invalid.status_code == 400  # draft→archived is not a transition
+
+
+def test_direct_unpublish_takes_one_click(tmp_path: Path) -> None:
+    """M5: published content returns to draft directly — no archive detour."""
+    app = _app(tmp_path, _article("live", ContentStatus.PUBLISHED, complete=True))
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        page = client.get("/articles/live").text
+        assert "Unpublish" in page
+        response = client.post(
+            "/articles/live/status",
+            data={"csrf_token": csrf, "to": "draft"},
+            follow_redirects=False,
+        )
+        assert response.status_code == 303
+    with create_storage(f"sqlite:///{tmp_path / 'content.db'}") as storage:
+        stored = storage.load_article("live")
+    assert stored is not None
+    assert stored.status is ContentStatus.DRAFT
 
 
 def test_preview_builds_into_the_served_directory(tmp_path: Path) -> None:
