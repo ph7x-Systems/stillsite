@@ -64,4 +64,6 @@
     </table>
   </div>
 </div>
+{% set base_url = "/articles/" ~ article.id %}
+{% include "_revisions.html.j2" %}
 {% endblock %}

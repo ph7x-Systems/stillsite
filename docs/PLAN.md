@@ -199,8 +199,8 @@ tests, docs and wiki updates, per the standing gates.
 - [x] **Scheduled publishing** (ADR-0024): `publish_at` on articles and
       pages; the build excludes future content, the next build after the
       moment publishes it; CI-cron recipe in ADMIN_GUIDE
-- [ ] **Revisions**: a revision log on every save (storage migration),
-      diff view against the current version, restore
+- [x] **Revisions** (ADR-0025): snapshot on every save (migration 9,
+      bounded at 20), diff view, undoable restore
 - [ ] **Trash**: soft-delete status with restore and explicit purge;
       deletes stop being final
 - [ ] **Duplicate as draft** from the list and the editor

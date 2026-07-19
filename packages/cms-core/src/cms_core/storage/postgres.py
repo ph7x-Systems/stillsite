@@ -341,6 +341,47 @@ class PostgresBackend(StorageBackend):
         rows = self._connection.execute("SELECT id FROM media_assets ORDER BY id").fetchall()
         return [str(row[0]) for row in rows]
 
+    # Revisions (ADR-0025)
+
+    def save_revision(
+        self, entity_type: str, entity_id: str, author: str, payload_json: str, created_at: datetime
+    ) -> int:
+        with self._connection.transaction():
+            row = self._connection.execute(
+                "SELECT COALESCE(MAX(revision), 0) FROM revisions"
+                " WHERE entity_type = %s AND entity_id = %s",
+                (entity_type, entity_id),
+            ).fetchone()
+            number = int(row[0]) + 1 if row else 1
+            self._connection.execute(
+                "INSERT INTO revisions"
+                " (entity_type, entity_id, revision, created_at, author, payload_json)"
+                " VALUES (%s, %s, %s, %s, %s, %s)",
+                (entity_type, entity_id, number, created_at.isoformat(), author, payload_json),
+            )
+            self._connection.execute(
+                "DELETE FROM revisions WHERE entity_type = %s AND entity_id = %s"
+                " AND revision <= %s",
+                (entity_type, entity_id, number - self.REVISION_LIMIT),
+            )
+        return number
+
+    def list_revisions(self, entity_type: str, entity_id: str) -> list[tuple[int, datetime, str]]:
+        rows = self._connection.execute(
+            "SELECT revision, created_at, author FROM revisions"
+            " WHERE entity_type = %s AND entity_id = %s ORDER BY revision DESC",
+            (entity_type, entity_id),
+        ).fetchall()
+        return [(int(r[0]), datetime.fromisoformat(r[1]), str(r[2])) for r in rows]
+
+    def load_revision(self, entity_type: str, entity_id: str, revision: int) -> str | None:
+        row = self._connection.execute(
+            "SELECT payload_json FROM revisions"
+            " WHERE entity_type = %s AND entity_id = %s AND revision = %s",
+            (entity_type, entity_id, revision),
+        ).fetchone()
+        return str(row[0]) if row else None
+
     # Admin accounts
 
     def save_user(self, user: User) -> None:

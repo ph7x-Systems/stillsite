@@ -622,3 +622,30 @@ msgstr "vazio publica imediatamente depois de publicado; um momento futuro mant�
 
 msgid "publish_at: use the picker format (YYYY-MM-DDTHH:MM, UTC)"
 msgstr "publish_at: usa o formato do seletor (YYYY-MM-DDTHH:MM, UTC)"
+
+msgid "Author"
+msgstr "Autor"
+
+msgid "Changes against the current content"
+msgstr "Alterações face ao conteúdo atual"
+
+msgid "Every save keeps a snapshot (the newest %(limit)s); restoring saves a new revision, so it is always undoable."
+msgstr "Cada gravação guarda um snapshot (os %(limit)s mais recentes); restaurar grava uma nova revisão, por isso é sempre reversível."
+
+msgid "No revisions yet — they appear after the first save."
+msgstr "Ainda não há revisões — aparecem depois da primeira gravação."
+
+msgid "Restore this revision"
+msgstr "Restaurar esta revisão"
+
+msgid "Revision"
+msgstr "Revisão"
+
+msgid "Revisions"
+msgstr "Revisões"
+
+msgid "The source text is identical to the current content."
+msgstr "O texto fonte é idêntico ao conteúdo atual."
+
+msgid "View and restore"
+msgstr "Ver e restaurar"

@@ -44,7 +44,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Markdown editor with toolbar | ✅ EasyMDE vendored, localized toolbar (ADR-0023); builder preview stays the truth | — |
 | **Unpublish** (published straight back to draft) | ✅ one click, publisher role; the next build drops the entry | — |
 | Scheduled publishing | ✅ `publish_at` on articles/pages (ADR-0024): the build is the clock; documented CI-cron recipe | — |
-| Revisions + restore | ❌ last write wins | 🔜 revision log on save, diff view, restore (M5) |
+| Revisions + restore | ✅ bounded history on every save (ADR-0025), diff view, undoable restore | — |
 | Trash / restore | ❌ delete is final (admin refuses only referenced media) | 🔜 soft-delete status + restore + purge (M5) |
 | Duplicate content | ❌ | 🔜 "Duplicate as draft" (M5) |
 | Per-entry preview | 🟡 whole-site preview at `/preview/` | 🔜 jump from editor to the entry's preview URL (M5) |

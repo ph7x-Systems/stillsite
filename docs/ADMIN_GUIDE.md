@@ -101,6 +101,17 @@ The seeded example project intentionally keeps one article in review with a
 missing DE translation, so a fresh project (and the public demo) shows the
 gate holding a real warning instead of an empty all-green report.
 
+## Revisions
+
+Every article or page save from the panel keeps a snapshot (ADR-0025):
+the **Revisions** card on each editor lists the newest 20 with moment and
+author; each revision opens a detail page showing a unified diff of the
+source text against the current content, with **Restore**. Restoring
+validates the snapshot back through the model and saves — which records a
+new revision, so a restore is always undoable. Revisions are editorial
+history, not backup: they are never exported and are removed with the
+entity.
+
 ## Scheduled publishing
 
 Articles and pages carry an optional **Publish at (UTC)** moment

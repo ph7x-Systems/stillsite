@@ -239,3 +239,21 @@ def test_expired_sessions_are_purged(backend: StorageBackend) -> None:
     assert backend.load_session("digest-new") == fresh
     assert backend.delete_session("digest-new")
     assert not backend.delete_session("digest-new")
+
+
+def test_revisions_append_list_load_and_prune(backend: StorageBackend) -> None:
+    """ADR-0025: bounded per-entity history on every engine."""
+    when = datetime(2027, 1, 1, tzinfo=UTC)
+    first = backend.save_revision("article", "post", "ana", '{"v": 1}', when)
+    second = backend.save_revision("article", "post", "rui", '{"v": 2}', when)
+    assert (first, second) == (1, 2)
+    listed = backend.list_revisions("article", "post")
+    assert [(number, author) for number, _, author in listed] == [(2, "rui"), (1, "ana")]
+    assert backend.load_revision("article", "post", 1) == '{"v": 1}'
+    assert backend.load_revision("article", "post", 99) is None
+    assert backend.list_revisions("article", "other") == []
+    for extra in range(backend.REVISION_LIMIT + 3):
+        backend.save_revision("article", "post", "ana", f'{{"v": {extra + 3}}}', when)
+    kept = backend.list_revisions("article", "post")
+    assert len(kept) == backend.REVISION_LIMIT
+    assert backend.load_revision("article", "post", 1) is None  # pruned

@@ -120,4 +120,6 @@
     </form>
   </div>
 </div>
+{% set base_url = "/pages/" ~ page.id %}
+{% include "_revisions.html.j2" %}
 {% endblock %}

@@ -112,4 +112,15 @@ MIGRATIONS: tuple[str, ...] = (
     ALTER TABLE articles ADD COLUMN publish_at TEXT;
     ALTER TABLE pages ADD COLUMN publish_at TEXT;
     """,
+    """
+    CREATE TABLE revisions (
+        entity_type TEXT NOT NULL,
+        entity_id TEXT NOT NULL,
+        revision INTEGER NOT NULL,
+        created_at TEXT NOT NULL,
+        author TEXT NOT NULL,
+        payload_json TEXT NOT NULL,
+        PRIMARY KEY (entity_type, entity_id, revision)
+    );
+    """,
 )

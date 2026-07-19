@@ -7,6 +7,7 @@ the builder's own Markdown renderer, so what an editor sees is exactly what
 the published site will render — raw HTML stays disabled.
 """
 
+import difflib
 from datetime import UTC, datetime
 
 from cms_build import render_markdown
@@ -17,6 +18,7 @@ from cms_core import (
     ContentStatus,
     Language,
     Role,
+    StorageBackend,
     User,
     new_article,
 )
@@ -93,6 +95,19 @@ def _target_language(code: str) -> Language:
             detail="the source language is edited on the article page",
         )
     return language
+
+
+async def _save_article(request: Request, article: Article, author: str) -> None:
+    """Persist and append the revision snapshot (ADR-0025) atomically-ish:
+    the snapshot records exactly what was saved."""
+    payload = article.model_dump_json()
+    when = datetime.now(UTC)
+
+    def run(storage: StorageBackend) -> None:
+        storage.save_article(article)
+        storage.save_revision("article", article.id, author, payload, when)
+
+    await get_db(request).run(run)
 
 
 async def _load_article(request: Request, article_id: str) -> Article:
@@ -197,7 +212,7 @@ async def article_create(
     else:
         existing = await db.run(lambda storage: storage.load_article(article_id))
         if existing is None:
-            await db.run(lambda storage: storage.save_article(article))
+            await _save_article(request, article, user.username)
             return RedirectResponse(
                 f"/articles/{article.id}", status_code=status.HTTP_303_SEE_OTHER
             )
@@ -238,6 +253,9 @@ async def article_edit_form(
 ) -> object:
     user, session = user_session
     article = await _load_article(request, article_id)
+    revisions = await get_db(request).run(
+        lambda storage: storage.list_revisions("article", article_id)
+    )
     return _page(
         request,
         "article_edit.html.j2",
@@ -245,6 +263,7 @@ async def article_edit_form(
             "user": user,
             "csrf_token": session.csrf_token,
             "errors": [],
+            "revisions": revisions,
             **_editor_context(article, role=user.role),
         },
     )
@@ -290,7 +309,7 @@ async def article_edit_save(
             },
             status_code=HTTP_422,
         )
-    await get_db(request).run(lambda storage: storage.save_article(article))
+    await _save_article(request, article, user.username)
     return RedirectResponse(f"/articles/{article.id}", status_code=status.HTTP_303_SEE_OTHER)
 
 
@@ -364,7 +383,7 @@ async def translation_save(
         )
     article.set_translation(language, content)
     article.updated_at = datetime.now(UTC)
-    await get_db(request).run(lambda storage: storage.save_article(article))
+    await _save_article(request, article, user.username)
     return RedirectResponse(
         f"/articles/{article.id}/translations/{language.value}",
         status_code=status.HTTP_303_SEE_OTHER,
@@ -414,5 +433,68 @@ async def article_status(
             )
     article.status = target
     article.updated_at = datetime.now(UTC)
-    await get_db(request).run(lambda storage: storage.save_article(article))
+    await _save_article(request, article, user.username)
     return RedirectResponse(f"/articles/{article.id}", status_code=status.HTTP_303_SEE_OTHER)
+
+
+@router.get("/{article_id}/revisions/{revision}")
+async def article_revision_detail(
+    request: Request,
+    article_id: str,
+    revision: int,
+    user_session: tuple[User, AdminSession] = Depends(current_session),
+) -> object:
+    user, session = user_session
+    article = await _load_article(request, article_id)
+    payload = await get_db(request).run(
+        lambda storage: storage.load_revision("article", article_id, revision)
+    )
+    if payload is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="unknown revision")
+    snapshot = Article.model_validate_json(payload)
+    diff = "\n".join(
+        difflib.unified_diff(
+            snapshot.source.body_markdown.splitlines(),
+            article.source.body_markdown.splitlines(),
+            fromfile=f"revision {revision}",
+            tofile="current",
+            lineterm="",
+        )
+    )
+    return _page(
+        request,
+        "revision_detail.html.j2",
+        {
+            "user": user,
+            "csrf_token": session.csrf_token,
+            "active_section": "articles",
+            "entity_id": article.id,
+            "back_url": f"/articles/{article.id}",
+            "restore_url": f"/articles/{article.id}/revisions/{revision}/restore",
+            "snapshot_title": snapshot.source.title,
+            "revision": revision,
+            "diff": diff,
+        },
+    )
+
+
+@router.post("/{article_id}/revisions/{revision}/restore")
+async def article_revision_restore(
+    request: Request,
+    article_id: str,
+    revision: int,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+) -> RedirectResponse:
+    """Restore = validate the snapshot back through the model and save,
+    which records a new revision — a restore is itself undoable."""
+    user, _ = user_session
+    await _load_article(request, article_id)  # 404 before touching history
+    payload = await get_db(request).run(
+        lambda storage: storage.load_revision("article", article_id, revision)
+    )
+    if payload is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="unknown revision")
+    restored = Article.model_validate_json(payload)
+    restored = restored.model_copy(update={"id": article_id, "updated_at": datetime.now(UTC)})
+    await _save_article(request, restored, user.username)
+    return RedirectResponse(f"/articles/{article_id}", status_code=status.HTTP_303_SEE_OTHER)
