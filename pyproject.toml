@@ -35,6 +35,12 @@ files = ["apps", "packages", "tests"]
 exclude = ["build", "dist"]
 plugins = ["pydantic.mypy"]
 
+[[tool.mypy.overrides]]
+# pymssql ships no type stubs; the backend guards the import and types its
+# own surface, so the missing stub is acceptable.
+module = "pymssql"
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests", "packages", "apps"]
 addopts = "-q --strict-markers"
