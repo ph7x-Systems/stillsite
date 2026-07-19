@@ -1,5 +1,5 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import state_badge, status_tag with context %}
+{% from "_fields.html.j2" import translation_badges, status_tag with context %}
 {% block title %}{{ _("Pages") }} — Sardine CMS admin{% endblock %}
 {% block header %}
 <div class="d-flex justify-content-between align-items-center">
@@ -10,7 +10,7 @@
 {% block content %}
 {% if pages %}
 <div class="card">
-  <div class="card-body p-0 admin-table-wrap">
+  <div class="card-body p-0 table-responsive admin-table-wrap">
     <table class="table table-striped table-hover mb-0 admin-table">
       <thead>
         <tr>
@@ -18,7 +18,7 @@
           <th scope="col">{{ _("Title (EN)") }}</th>
           <th scope="col">{{ _("Status") }}</th>
           <th scope="col">{{ _("Sections") }}</th>
-          {% for language in target_languages %}<th scope="col">{{ language.value | upper }}</th>{% endfor %}
+          <th scope="col">{{ _("Translations") }}</th>
           <th scope="col">{{ _("Updated") }}</th>
         </tr>
       </thead>
@@ -29,9 +29,7 @@
           <td>{{ page.source.title }}</td>
           <td>{{ status_tag(page.status) }}</td>
           <td class="text-end">{{ page.sections | length }}</td>
-          {% for language in target_languages %}
-          <td>{{ state_badge(page.translation_state(language)) }}</td>
-          {% endfor %}
+          <td>{{ translation_badges(page, target_languages) }}</td>
           <td>{{ page.updated_at.strftime("%Y-%m-%d") }}</td>
         </tr>
         {% endfor %}

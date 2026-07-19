@@ -53,3 +53,23 @@
 {% set tone = {"draft": "text-bg-secondary", "review": "text-bg-warning", "published": "text-bg-success", "archived": "text-bg-dark"}[status.value] %}
 <span class="badge {{ tone }} admin-tag admin-tag-{{ status.value }}">{{ _(status.value) }}</span>
 {% endmacro %}
+
+{% macro translation_badges(entry, target_languages, base_url=None) %}
+{# Compact per-language states for list rows: one cell instead of one
+   column per language — the state is in the color, the title and the
+   hidden text (never color alone). #}
+<span class="d-inline-flex flex-wrap gap-1 admin-lang-badges">
+  {% for language in target_languages %}
+  {% set state = entry.translation_state(language) %}
+  {% set tone = {"complete": "text-bg-success", "outdated": "text-bg-warning", "missing": "text-bg-danger"}[state.value] %}
+  {% if base_url %}
+  <a href="{{ base_url }}/translations/{{ language.value }}"
+     class="badge {{ tone }} admin-state admin-state-{{ state.value }} text-decoration-none"
+     title="{{ language.value | upper }}: {{ _(state.value) }}">{{ language.value | upper }}<span class="visually-hidden">: {{ _(state.value) }}</span></a>
+  {% else %}
+  <span class="badge {{ tone }} admin-state admin-state-{{ state.value }}"
+        title="{{ language.value | upper }}: {{ _(state.value) }}">{{ language.value | upper }}<span class="visually-hidden">: {{ _(state.value) }}</span></span>
+  {% endif %}
+  {% endfor %}
+</span>
+{% endmacro %}

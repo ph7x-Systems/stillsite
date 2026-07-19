@@ -14,7 +14,7 @@
     <div class="card-body">
       <p class="form-text">{{ _("Free-form name/value pairs the theme's") }}
         <code>{{ section.kind }}</code> {{ _("template consumes. Clear a value to drop its field; use the blank rows to add more.") }}</p>
-      <div class="admin-table-wrap">
+      <div class="table-responsive admin-table-wrap">
         <table class="table table-sm mb-0 admin-table">
           <thead><tr><th scope="col">{{ _("Field") }}</th><th scope="col">{{ _("Value") }}</th></tr></thead>
           <tbody>
@@ -41,7 +41,7 @@
 </form>
 <div class="card">
   <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Translations") }}</h2></div>
-  <div class="card-body p-0 admin-table-wrap">
+  <div class="card-body p-0 table-responsive admin-table-wrap">
     <table class="table table-striped mb-0 admin-table">
       <thead><tr><th scope="col">{{ _("Language") }}</th><th scope="col">{{ _("State") }}</th><th scope="col"></th></tr></thead>
       <tbody>

@@ -5,6 +5,13 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Responsive lists**: the per-language columns collapse into one
+  compact Translations cell of state-colored badges (linked to the
+  translation editors; state also in the title and hidden text, never
+  color alone), and every admin table sits in Bootstrap's
+  `table-responsive` wrapper — no more horizontal page scroll on
+  narrow screens.
+
 - **Direct unpublish** (M5): published content goes straight back to
   draft with one click (publisher role and up) — no more
   archive-then-restore detour. The next build drops the entry from the
