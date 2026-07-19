@@ -196,7 +196,7 @@ the theme conformance suite.
 2. ~~Close Milestone 1 — PostgreSQL~~ **done** (ADR-0009; SQL Server and
    MySQL/MariaDB remain, same mold).
 3. ~~Reference theme~~ **done** (production stylesheets vendored; demo on
-   stillsite.ph7x.com).
+   sardine.ph7x.com).
 4. ~~Demo ready gate~~ **done** (axe/WCAG + W3C Nu job required in CI, README
    links the live demo; owner still owes the social preview upload and the
    announcement moment).
@@ -210,7 +210,7 @@ reserve the PyPI names (`sardine-cms`; decide `sardine-cms-*` vs `cms-*`
 distribution naming at first release, with an ADR); rename the local working
 folder to match the project name.
 
-## Demo readiness plan (stillsite.ph7x.com)
+## Demo readiness plan (sardine.ph7x.com)
 
 The public demo is live and auto-deployed from `main`. "Demo = ready" means a
 visitor can judge the product from it. Phases, in execution order:

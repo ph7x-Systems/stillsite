@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: demo
-      url: https://kind-flower-05a928f03.7.azurestaticapps.net
+      url: https://sardine.ph7x.com
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

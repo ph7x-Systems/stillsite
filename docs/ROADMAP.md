@@ -3,7 +3,7 @@
 The outward view: where Sardine CMS is, what ships next, and what "done" means
 at each horizon. Execution detail lives in [PLAN.md](PLAN.md) (milestones,
 checkboxes) — this page never duplicates it, it points at it. Live demo:
-<https://stillsite.ph7x.com>.
+<https://sardine.ph7x.com>.
 
 ## Where the project stands
 

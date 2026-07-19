@@ -28,7 +28,7 @@ name people remember. The owner decided the product follows the brand:
   `sardine-cms-*` as the leading candidate.
 - Historical documents (ADRs 0001–0015, BRIEF) keep the name they were
   written with; everything current-facing says Sardine CMS.
-- The demo domain (`stillsite.ph7x.com`) keeps working; a rename of the
+- The demo domain (`sardine.ph7x.com`) keeps working; a rename of the
   domain is a separate owner-level DNS decision.
 
 ## Consequences

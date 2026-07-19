@@ -1,6 +1,6 @@
 [site]
 name = "Sardine Aerospace"
-base_url = "https://example.com"
+base_url = "https://sardine.ph7x.com"
 languages = ["pt-pt", "es", "fr", "de"]
 blog_path = "blog"
 theme = "ph7x-reference"
