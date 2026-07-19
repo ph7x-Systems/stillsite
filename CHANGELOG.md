@@ -5,6 +5,14 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Markdown editor for article bodies** (ADR-0023): EasyMDE (MIT,
+  vendored, no CDN) with a Bootstrap-Icons toolbar in the editor's
+  language, attached progressively — without JavaScript the plain
+  textarea still works. The builder's server-rendered preview remains
+  the single truth (EasyMDE's own preview is disabled). CSP note: style
+  attributes are now allowed for vendored runtime code (CodeMirror,
+  Popper); scripts stay strictly same-origin.
+
 - **The admin panel speaks the editor's language** (ADR-0022): real
   gettext i18n — PT-PT, ES, FR and DE catalogs shipped, resolution by
   stored per-user preference (new language selector in the user menu,

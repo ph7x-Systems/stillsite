@@ -49,9 +49,13 @@ def test_every_response_carries_the_security_headers(tmp_path: Path) -> None:
 def test_the_csp_allows_only_same_origin_scripts() -> None:
     csp = SECURITY_HEADERS["Content-Security-Policy"]
     assert "default-src 'none'" in csp
-    assert "script-src 'self'" in csp  # ADR-0020: vendored scripts only
-    assert "unsafe-inline" not in csp
+    # ADR-0020: vendored scripts only — and never inline ones.
+    assert "script-src 'self';" in csp
+    assert "script-src 'self' 'unsafe-inline'" not in csp
     assert "unsafe-eval" not in csp
+    # ADR-0023: runtime style *attributes* only (CodeMirror, Popper);
+    # templates themselves stay attribute-free (test below).
+    assert "style-src 'self' 'unsafe-inline'" in csp
     assert "frame-ancestors 'none'" in csp
     assert SECURITY_HEADERS["X-Frame-Options"] == "DENY"
 

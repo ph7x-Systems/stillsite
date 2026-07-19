@@ -580,3 +580,33 @@ msgid "%(count)s warning"
 msgid_plural "%(count)s warnings"
 msgstr[0] "%(count)s aviso"
 msgstr[1] "%(count)s avisos"
+
+msgid "Bold"
+msgstr "Negrito"
+
+msgid "Code"
+msgstr "Código"
+
+msgid "Create link"
+msgstr "Criar ligação"
+
+msgid "Heading"
+msgstr "Título"
+
+msgid "Insert image"
+msgstr "Inserir imagem"
+
+msgid "Italic"
+msgstr "Itálico"
+
+msgid "Markdown guide"
+msgstr "Guia de Markdown"
+
+msgid "Ordered list"
+msgstr "Lista ordenada"
+
+msgid "Quote"
+msgstr "Citação"
+
+msgid "Unordered list"
+msgstr "Lista não ordenada"

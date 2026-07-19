@@ -40,11 +40,15 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 # Hardening (SECURITY_STRATEGY, M3 phase 9; scripts per ADR-0020): every
 # script, style, font and image comes from the app itself — vendored files,
-# no CDN, no inline scripts ('self' only, never 'unsafe-inline'); nothing
-# may frame it.
+# no CDN, and scripts are strictly 'self' (never 'unsafe-inline'). Style
+# *attributes* are allowed (ADR-0023): CodeMirror's measurements and
+# Popper's positioning set element styles at runtime; templates still ship
+# zero style attributes (enforced by the hardening suite) and autoescape
+# keeps user content inert. Nothing may frame the admin.
 SECURITY_HEADERS = {
     "Content-Security-Policy": (
-        "default-src 'none'; script-src 'self'; style-src 'self'; "
+        "default-src 'none'; script-src 'self'; "
+        "style-src 'self' 'unsafe-inline'; "
         "font-src 'self'; img-src 'self' data:; form-action 'self'; "
         "base-uri 'none'; frame-ancestors 'none'"
     ),

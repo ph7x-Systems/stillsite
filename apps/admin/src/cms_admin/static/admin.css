@@ -55,3 +55,26 @@
 /* Bootstrap's default code pink is 4.27:1 on white — one shade darker for
    AA, in the light palette only (the dark palette's default passes). */
 :root:not([data-bs-theme="dark"]) code { color: #a02766; }
+
+/* EasyMDE (ADR-0023) ships light-only styles; map its surfaces onto the
+   active Bootstrap palette so the editor follows the color mode. */
+.EasyMDEContainer .CodeMirror {
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border-color: var(--bs-border-color);
+}
+.EasyMDEContainer .CodeMirror-cursor { border-left-color: var(--bs-body-color); }
+.EasyMDEContainer .editor-toolbar {
+  background: var(--bs-body-bg);
+  border-color: var(--bs-border-color);
+}
+.EasyMDEContainer .editor-toolbar button { color: var(--bs-body-color); }
+.EasyMDEContainer .editor-toolbar button.active,
+.EasyMDEContainer .editor-toolbar button:hover {
+  background: var(--bs-tertiary-bg);
+  border-color: var(--bs-border-color);
+}
+.EasyMDEContainer .editor-toolbar i.separator {
+  border-left-color: var(--bs-border-color);
+  border-right-color: var(--bs-border-color);
+}

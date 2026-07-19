@@ -267,3 +267,15 @@ def test_status_is_displayed_but_not_editable_here(tmp_path: Path) -> None:
         stored = storage.load_article("first-post")
     assert stored is not None
     assert stored.status is ContentStatus.REVIEW  # workflow transitions arrive in phase 8
+
+
+def test_markdown_bodies_carry_the_editor_marker(tmp_path: Path) -> None:
+    """ADR-0023: the Markdown textarea is enhanced by the vendored editor;
+    plain textareas (summary) are not. Toolbar labels ship localized."""
+    with TestClient(_app(tmp_path), base_url="https://testserver") as client:
+        _sign_in(client)
+        page = client.get("/articles/new").text
+    assert 'name="body_markdown"' in page
+    assert "data-markdown-editor" in page
+    assert "data-markdown-labels" in page
+    assert page.count("data-markdown-editor") == 1  # summary stays plain

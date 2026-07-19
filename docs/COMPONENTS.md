@@ -74,6 +74,7 @@ content header with `breadcrumb`, `app-footer` with copyright. Surfaces:
 | Content lists | cards with striped/hover tables, per-language state badges (`admin-state-*`) |
 | Side-by-side editors | Bootstrap grid (`row`/`col`, `admin-sbs`), cards, Markdown preview panel |
 | Forms | `form-control`/`form-label` (+ mono textarea), form-text hints, alert block |
+| Markdown editor (article bodies) | EasyMDE (MIT, vendored at `static/vendor/easymde/` — ADR-0023), Bootstrap Icons toolbar, localized titles, no built-in preview (the builder's preview is the truth) |
 | Workflow (status transitions) | role-filtered button group (`admin-workflow`), per-status badge colors |
 | Publishing panel | gate `callout` (success/danger), rules + issues tables in cards, target select, buttons |
 | Language selector (user menu) | `form-select` in the AdminLTE `user-body`, POST + CSRF like every form |

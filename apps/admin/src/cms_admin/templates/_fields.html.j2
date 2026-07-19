@@ -9,18 +9,23 @@
 </div>
 {% endmacro %}
 
-{% macro textarea_field(name, label, value, rows=12) %}
+{% macro textarea_field(name, label, value, rows=12, markdown=false) %}
 <div class="mb-1 admin-field">
   <label class="form-label" for="{{ name }}">{{ label }}</label>
   <textarea class="form-control admin-input admin-textarea" id="{{ name }}" name="{{ name }}"
-            rows="{{ rows }}">{{ value }}</textarea>
+            rows="{{ rows }}"{% if markdown %} data-markdown-editor
+            data-markdown-labels="{{ {"bold": _("Bold"), "italic": _("Italic"),
+              "heading": _("Heading"), "quote": _("Quote"),
+              "unordered-list": _("Unordered list"), "ordered-list": _("Ordered list"),
+              "link": _("Create link"), "image": _("Insert image"),
+              "code": _("Code"), "guide": _("Markdown guide")} | tojson }}"{% endif %}>{{ value }}</textarea>
 </div>
 {% endmacro %}
 
 {% macro content_fields(form) %}
 {{ text_field("title", _("Title"), form.title, required=true) }}
 {{ textarea_field("summary", _("Summary"), form.summary, rows=3) }}
-{{ textarea_field("body_markdown", _("Body (Markdown)"), form.body_markdown, rows=16) }}
+{{ textarea_field("body_markdown", _("Body (Markdown)"), form.body_markdown, rows=16, markdown=true) }}
 {{ text_field("slug", _("Slug"), form.slug, hint=_("lowercase-with-dashes; empty falls back to the article id")) }}
 {% endmacro %}
 

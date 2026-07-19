@@ -60,8 +60,10 @@ with that entity's errors listed (the publish gate; disable only with
 ## Editing
 
 - **Articles**: EN source with metadata (per-language slug, category, tags,
-  cover), a preview rendered by the builder's own Markdown renderer (raw
-  HTML disabled), and a side-by-side editor per translation. Editing the
+  cover), a Markdown editor (EasyMDE, vendored — ADR-0023) with a
+  localized formatting toolbar, a preview rendered by the builder's own
+  Markdown renderer (raw HTML disabled — the single source of truth for
+  what publishes), and a side-by-side editor per translation. Editing the
   source marks its translations `outdated` automatically — states derive
   from content checksums, never from flags.
 - **Pages**: metadata plus ordered typed sections; each section is a

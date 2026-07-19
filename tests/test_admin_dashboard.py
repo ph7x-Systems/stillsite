@@ -166,6 +166,8 @@ def test_design_system_assets_are_served_locally(tmp_path: Path) -> None:
         icons_font = client.get("/static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2")
         icons_license = client.get("/static/vendor/bootstrap-icons/LICENSE")
         theme_init = client.get("/static/theme-init.js")
+        easymde_js = client.get("/static/vendor/easymde/easymde.min.js")
+        easymde_license = client.get("/static/vendor/easymde/LICENSE")
     assert admin_css.status_code == 200
     assert "text/css" in admin_css.headers["content-type"]
     assert "Newsreader" not in admin_css.text  # the theme's typography rules
@@ -177,6 +179,8 @@ def test_design_system_assets_are_served_locally(tmp_path: Path) -> None:
     assert icons_font.status_code == 200
     assert "MIT" in icons_license.text
     assert "lte-theme" in theme_init.text  # the reference theme-init, external
+    assert easymde_js.status_code == 200  # ADR-0023, vendored with license
+    assert "MIT" in easymde_license.text
 
 
 def test_static_assets_do_not_require_a_session(tmp_path: Path) -> None:

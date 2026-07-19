@@ -41,6 +41,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Capability | Today | Gap → where |
 | --- | --- | --- |
 | Draft / review / publish / archive, role-gated | ✅ | — |
+| Markdown editor with toolbar | ✅ EasyMDE vendored, localized toolbar (ADR-0023); builder preview stays the truth | — |
 | **Unpublish** (published straight back to draft) | ❌ only publish→archive→draft, two steps | 🔜 direct transition (M5) |
 | Scheduled publishing | ❌ | 🔜 `publish_at` + build-time gate; static-first = the scheduled build publishes it (M5) |
 | Revisions + restore | ❌ last write wins | 🔜 revision log on save, diff view, restore (M5) |
