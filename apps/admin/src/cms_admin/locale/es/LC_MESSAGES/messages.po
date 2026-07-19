@@ -769,3 +769,15 @@ msgstr "firma editorial; vacío muestra el nombre del sitio"
 
 msgid "featured articles lead the home highlight"
 msgstr "los artículos destacados encabezan el destacado de la portada"
+
+msgid "Design preview"
+msgstr "Vista previa del diseño"
+
+msgid "Open full page"
+msgstr "Abrir página completa"
+
+msgid "Run a preview build from the"
+msgstr "Ejecuta un build de vista previa en el panel de"
+
+msgid "panel to see this entry with the real theme; it refreshes on every save."
+msgstr "para ver esta entrada con el tema real; se actualiza con cada guardado."

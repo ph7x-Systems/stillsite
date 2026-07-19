@@ -9,6 +9,7 @@ the published site will render — raw HTML stays disabled.
 
 import difflib
 from datetime import UTC, datetime
+from pathlib import Path
 
 from cms_build import render_markdown, urls
 from cms_core import (
@@ -273,6 +274,14 @@ async def article_edit_form(
     preview_path = (
         "/preview" + urls.article_path(project.site, article, SOURCE_LANGUAGE) if project else None
     )
+    preview_ready = bool(
+        preview_path
+        and (
+            Path(request.app.state.preview_dir)
+            / preview_path.removeprefix("/preview/").rstrip("/")
+            / "index.html"
+        ).is_file()
+    )
     return _page(
         request,
         "article_edit.html.j2",
@@ -282,6 +291,7 @@ async def article_edit_form(
             "errors": [],
             "revisions": revisions,
             "preview_path": preview_path,
+            "preview_ready": preview_ready,
             **_editor_context(article, role=user.role),
         },
     )

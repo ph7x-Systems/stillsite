@@ -63,7 +63,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Custom fields | 🟡 sections carry typed fields; articles have a fixed schema | 🔜 article custom fields (M6) |
 | Navigation menus | 🟡 menus derive from section `menu` fields + published pages | 🔜 explicit menu manager (M6) |
 | Reusable blocks | 🟡 section kinds are the block library | 🔜 grow the kind gallery; document authoring (M6) |
-| Design-aware editing | 🟡 per-entry preview links | 🧭 ADR-0027 (proposed): themed side-preview in the editor, then live refresh with the autosave layer (M6) |
+| Design-aware editing | ✅ themed side-preview in the editors (ADR-0027); live refresh arrives with the autosave layer | — |
 | Multilingual | ✅ **core strength**: EN source + per-language states, parity gates | — |
 | Authors / bylines | ✅ editorial byline on articles, rendered by the themes | — |
 
@@ -111,6 +111,18 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Health check | 🟡 `cms validate` covers content | 🔜 `cms doctor` (storage, media, config) (M7) |
 | Backups | ✅ export is the backup; the DB is disposable | — (document the restore path, M7) |
 | Scheduled builds | ✅ recipe in ADMIN_GUIDE (CI `schedule:` + `cms export`); `publish_at`-aware by construction | — |
+
+## Execution order (ADR-driven)
+
+The queue evolves with the ADRs, in this order:
+
+1. **Close M5**: list quick actions, editorial notes.
+2. **M6 by ADR**: ADR-0028 extension contract (custom content types,
+   fields, rules, build steps) → menu manager → image derivatives →
+   redirects → importers → ADR-0027 live refresh together with the
+   autosave layer.
+3. **M7 by ADR**: email/notifications ADR → TOTP 2FA → webhooks →
+   `cms doctor`.
 
 ## Milestones ahead
 

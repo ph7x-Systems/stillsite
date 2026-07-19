@@ -769,3 +769,15 @@ msgstr "signature éditoriale ; vide affiche le nom du site"
 
 msgid "featured articles lead the home highlight"
 msgstr "les articles à la une mènent la mise en avant de l'accueil"
+
+msgid "Design preview"
+msgstr "Aperçu du design"
+
+msgid "Open full page"
+msgstr "Ouvrir la page complète"
+
+msgid "Run a preview build from the"
+msgstr "Lancez un build d'aperçu depuis le panneau"
+
+msgid "panel to see this entry with the real theme; it refreshes on every save."
+msgstr "pour voir cette entrée avec le vrai thème ; il se rafraîchit à chaque enregistrement."

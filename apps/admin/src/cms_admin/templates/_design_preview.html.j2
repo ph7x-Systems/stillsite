@@ -1,0 +1,23 @@
+{# Design-aware editing (ADR-0027): the entry rendered by the real builder
+   and the real theme, framed from /preview/. Context: preview_path,
+   preview_ready. #}
+{% if preview_path %}
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h2 class="card-title h6 mb-0">{{ _("Design preview") }}</h2>
+    {% if preview_ready %}
+    <a href="{{ preview_path }}" class="form-text mb-0">{{ _("Open full page") }}</a>
+    {% endif %}
+  </div>
+  <div class="card-body p-0">
+    {% if preview_ready %}
+    <iframe class="admin-design-preview" src="{{ preview_path }}"
+            title="{{ _("Design preview") }}" loading="lazy"></iframe>
+    {% else %}
+    <p class="admin-empty m-3">{{ _("Run a preview build from the") }}
+      <a href="/publishing">{{ _("Publishing") }}</a>
+      {{ _("panel to see this entry with the real theme; it refreshes on every save.") }}</p>
+    {% endif %}
+  </div>
+</div>
+{% endif %}

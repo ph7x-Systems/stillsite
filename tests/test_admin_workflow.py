@@ -284,3 +284,17 @@ def test_publishing_report_links_issues_to_their_edit_screens(tmp_path: Path) ->
     assert "Publish gate open" in panel  # warnings never block
     assert "warning" in panel
     assert 'href="/articles/halfway"' in panel
+
+
+def test_design_preview_frames_the_entry_after_a_preview_build(tmp_path: Path) -> None:
+    """ADR-0027: before a preview build the editor points at Publishing;
+    after one, it frames the themed entry from /preview/."""
+    app = _app(tmp_path, _article("live", ContentStatus.PUBLISHED), with_project=True)
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        before = client.get("/articles/live").text
+        assert "Design preview" in before
+        assert "<iframe" not in before
+        client.post("/publishing/preview", data={"csrf_token": csrf})
+        after = client.get("/articles/live").text
+        assert '<iframe class="admin-design-preview" src="/preview/blog/live/"' in after

@@ -222,8 +222,9 @@ tests, docs and wiki updates, per the standing gates.
 - [ ] Extension contract ADR + implementation: custom content types,
       custom fields on articles, custom validation rules, build steps,
       CLI subcommands
-- [ ] **Design-aware editing** (ADR-0027, proposed): themed side-preview
-      in the editor via the real preview pipeline; live refresh later
+- [x] **Design-aware editing** (ADR-0027, accepted): themed side-preview
+      in the editors via the real preview pipeline; live refresh arrives
+      with the autosave layer
 - [ ] Explicit menu manager (per-language labels, ordering, external
       links)
 - [ ] Build-time image derivatives (responsive sizes; crop/focal point)

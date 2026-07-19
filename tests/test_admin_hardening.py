@@ -79,3 +79,14 @@ def test_login_page_renders_under_the_policy(tmp_path: Path) -> None:
     assert 'href="/static/admin.css"' in page
     assert "http://" not in page.split("<body>")[0]  # no external head resources
     assert "https://" not in page.split("<body>")[0]
+
+
+def test_preview_mount_allows_same_origin_framing_only(tmp_path: Path) -> None:
+    """ADR-0027: the editor frames /preview/; the admin itself never frames."""
+    with TestClient(_app(tmp_path), base_url="https://testserver") as client:
+        admin = client.get("/login")
+        preview = client.get("/preview/anything/", follow_redirects=False)
+    assert "frame-ancestors 'none'" in admin.headers["Content-Security-Policy"]
+    assert admin.headers["X-Frame-Options"] == "DENY"
+    assert "frame-ancestors 'self'" in preview.headers["Content-Security-Policy"]
+    assert preview.headers["X-Frame-Options"] == "SAMEORIGIN"

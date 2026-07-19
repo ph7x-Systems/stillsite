@@ -769,3 +769,15 @@ msgstr "redaktionelle Zeile; leer zeigt den Site-Namen"
 
 msgid "featured articles lead the home highlight"
 msgstr "hervorgehobene Artikel führen die Startseiten-Highlights an"
+
+msgid "Design preview"
+msgstr "Design-Vorschau"
+
+msgid "Open full page"
+msgstr "Ganze Seite öffnen"
+
+msgid "Run a preview build from the"
+msgstr "Führen Sie einen Vorschau-Build im Panel"
+
+msgid "panel to see this entry with the real theme; it refreshes on every save."
+msgstr "aus, um diesen Eintrag mit dem echten Theme zu sehen; sie aktualisiert sich bei jedem Speichern."
