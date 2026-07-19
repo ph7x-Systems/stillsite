@@ -5,6 +5,12 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Trash** (M5, ADR-0026): deleting becomes reversible — Move to trash
+  hides an article or page from builds, validation, export and every
+  list; the Trash page restores it exactly as it was, and Delete forever
+  (admin role, trash-only) is the panel's single permanent removal.
+  Storage migration 10 on all four engines.
+
 - **Revisions with restore** (M5, ADR-0025): every article and page save
   from the panel keeps a snapshot (bounded at the newest 20 per entity,
   storage migration 9 on all four engines). The editors list the

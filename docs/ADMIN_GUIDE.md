@@ -101,6 +101,15 @@ The seeded example project intentionally keeps one article in review with a
 missing DE translation, so a fresh project (and the public demo) shows the
 gate holding a real warning instead of an empty all-green report.
 
+## Trash
+
+Deletion is reversible (ADR-0026): **Move to trash** on any article or
+page hides it from every build, validation run, export and list — it
+lives only in the **Trash** page, from where any role can **Restore** it
+exactly as it was. **Delete forever** (admin role only) is the panel's
+single permanent removal, and only works from the trash. Trashing and
+restoring are recorded as revisions; nothing expires automatically.
+
 ## Revisions
 
 Every article or page save from the panel keeps a snapshot (ADR-0025):

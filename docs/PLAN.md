@@ -201,8 +201,8 @@ tests, docs and wiki updates, per the standing gates.
       moment publishes it; CI-cron recipe in ADMIN_GUIDE
 - [x] **Revisions** (ADR-0025): snapshot on every save (migration 9,
       bounded at 20), diff view, undoable restore
-- [ ] **Trash**: soft-delete status with restore and explicit purge;
-      deletes stop being final
+- [x] **Trash** (ADR-0026): reversible deletion with exact restore and
+      admin-only purge (migration 10)
 - [ ] **Duplicate as draft** from the list and the editor
 - [ ] **Per-entry preview**: the editor links straight to the entry's URL
       inside `/preview/`

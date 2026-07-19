@@ -48,6 +48,9 @@ class Page(TranslatableModel[PageContent]):
     publish_at: datetime | None = None
     """UTC moment before which a published page stays out of builds
     (ADR-0024); None publishes immediately once published."""
+    deleted_at: datetime | None = None
+    """Set = in the trash (ADR-0026): invisible to builds, validation,
+    export and the admin lists until restored or purged."""
     sections: list[Section] = Field(default_factory=list)
 
     def translation_state(self, language: Language) -> TranslationState:

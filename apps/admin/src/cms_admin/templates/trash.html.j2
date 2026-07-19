@@ -1,0 +1,44 @@
+{% extends "shell.html.j2" %}
+{% from "_fields.html.j2" import status_tag with context %}
+{% block title %}{{ _("Trash") }} — Sardine CMS admin{% endblock %}
+{% block header %}<h1 class="h3 mb-0">{{ _("Trash") }}</h1>{% endblock %}
+{% block content %}
+{% if not articles and not pages %}
+<p class="admin-empty">{{ _("The trash is empty.") }}</p>
+{% endif %}
+{% for kind, label, entries in [("article", _("Articles"), articles), ("page", _("Pages"), pages)] %}
+{% if entries %}
+<div class="card mb-3">
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ label }}</h2></div>
+  <div class="card-body p-0 table-responsive admin-table-wrap">
+    <table class="table table-sm table-striped mb-0 admin-table admin-trash-table">
+      <thead><tr><th scope="col">{{ _("ID") }}</th><th scope="col">{{ _("Title (EN)") }}</th><th scope="col">{{ _("Status") }}</th><th scope="col">{{ _("Trashed") }}</th><th scope="col">{{ _("Actions") }}</th></tr></thead>
+      <tbody>
+        {% for entry in entries %}
+        <tr>
+          <th scope="row">{{ entry.id }}</th>
+          <td>{{ entry.source.title }}</td>
+          <td>{{ status_tag(entry.status) }}</td>
+          <td>{{ entry.deleted_at.strftime("%Y-%m-%d %H:%M") }} UTC</td>
+          <td class="d-flex gap-2">
+            <form method="post" action="/trash/{{ kind }}/{{ entry.id }}/restore" class="mb-0">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button type="submit" class="btn btn-outline-secondary btn-sm">{{ _("Restore") }}</button>
+            </form>
+            {% if user.role.value == "admin" %}
+            <form method="post" action="/trash/{{ kind }}/{{ entry.id }}/purge" class="mb-0">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button type="submit" class="btn btn-outline-danger btn-sm">{{ _("Delete forever") }}</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endfor %}
+<p class="form-text">{{ _("Trashed content is invisible to builds, validation, export and the lists; restore brings it back exactly as it was. Delete forever is the only permanent removal and needs the admin role.") }}</p>
+{% endblock %}

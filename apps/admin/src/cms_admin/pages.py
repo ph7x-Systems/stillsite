@@ -126,7 +126,9 @@ async def pages_list(
     user_session: tuple[User, AdminSession] = Depends(current_session),
 ) -> object:
     user, session = user_session
-    pages = await get_db(request).run(lambda storage: storage.load_all_pages())
+    everything = await get_db(request).run(lambda storage: storage.load_all_pages())
+    pages = [p for p in everything if p.deleted_at is None]
+    trashed_count = len(everything) - len(pages)
     return _page_response(
         request,
         "pages_list.html.j2",
@@ -134,6 +136,7 @@ async def pages_list(
             "user": user,
             "csrf_token": session.csrf_token,
             "pages": pages,
+            "trashed_count": trashed_count,
             "target_languages": TARGET_LANGUAGES,
         },
     )
@@ -561,9 +564,11 @@ async def page_status(
         )
     if target is ContentStatus.PUBLISHED and request.app.state.settings.publish_gate:
         db = get_db(request)
+        all_articles = await db.run(lambda storage: storage.load_all_articles())
+        all_pages = await db.run(lambda storage: storage.load_all_pages())
         content = SiteContent(
-            articles=await db.run(lambda storage: storage.load_all_articles()),
-            pages=await db.run(lambda storage: storage.load_all_pages()),
+            articles=[a for a in all_articles if a.deleted_at is None],
+            pages=[entry for entry in all_pages if entry.deleted_at is None],
             media=await db.run(lambda storage: storage.load_all_media_assets()),
         )
         blockers = publish_blockers(page, content)

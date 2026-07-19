@@ -26,10 +26,12 @@ class Project:
         return create_storage(self.storage_url)
 
     def load_content(self) -> SiteContent:
+        """The current editorial world: trashed entries (ADR-0026) are
+        invisible to every consumer — builder, validator, exporter."""
         with self.open_storage() as storage:
             return SiteContent(
-                articles=storage.load_all_articles(),
-                pages=storage.load_all_pages(),
+                articles=[a for a in storage.load_all_articles() if a.deleted_at is None],
+                pages=[p for p in storage.load_all_pages() if p.deleted_at is None],
                 media=storage.load_all_media_assets(),
             )
 

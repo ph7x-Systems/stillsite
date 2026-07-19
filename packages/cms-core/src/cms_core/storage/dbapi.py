@@ -144,6 +144,7 @@ class DbApiBackend(StorageBackend):
                     "tags_json": json.dumps(list(article.tags)),
                     "cover": article.cover,
                     "publish_at": article.publish_at.isoformat() if article.publish_at else None,
+                    "deleted_at": article.deleted_at.isoformat() if article.deleted_at else None,
                 },
             )
             self._execute("DELETE FROM translations WHERE article_id = %s", (article.id,))
@@ -169,7 +170,7 @@ class DbApiBackend(StorageBackend):
     def load_article(self, article_id: str) -> Article | None:
         row = self._fetchone(
             "SELECT id, status, created_at, updated_at, title, summary, body_markdown, slug,"
-            " category, tags_json, cover, publish_at FROM articles WHERE id = %s",
+            " category, tags_json, cover, publish_at, deleted_at FROM articles WHERE id = %s",
             (article_id,),
         )
         if row is None:
@@ -197,6 +198,7 @@ class DbApiBackend(StorageBackend):
             tags=tuple(json.loads(row[9])),
             cover=row[10],
             publish_at=datetime.fromisoformat(row[11]) if row[11] else None,
+            deleted_at=datetime.fromisoformat(row[12]) if row[12] else None,
         )
 
     def delete_article(self, article_id: str) -> bool:
@@ -223,6 +225,7 @@ class DbApiBackend(StorageBackend):
                     "description": page.source.description,
                     "slug": page.source.slug,
                     "publish_at": page.publish_at.isoformat() if page.publish_at else None,
+                    "deleted_at": page.deleted_at.isoformat() if page.deleted_at else None,
                 },
             )
             self._execute("DELETE FROM page_translations WHERE page_id = %s", (page.id,))
@@ -311,8 +314,8 @@ class DbApiBackend(StorageBackend):
 
     def load_page(self, page_id: str) -> Page | None:
         row = self._fetchone(
-            "SELECT id, status, created_at, updated_at, title, description, slug, publish_at"
-            " FROM pages WHERE id = %s",
+            "SELECT id, status, created_at, updated_at, title, description, slug, publish_at,"
+            " deleted_at FROM pages WHERE id = %s",
             (page_id,),
         )
         if row is None:
@@ -336,6 +339,7 @@ class DbApiBackend(StorageBackend):
             translations=translations,
             sections=self._load_sections(row[0]),
             publish_at=datetime.fromisoformat(row[7]) if row[7] else None,
+            deleted_at=datetime.fromisoformat(row[8]) if row[8] else None,
         )
 
     def delete_page(self, page_id: str) -> bool:

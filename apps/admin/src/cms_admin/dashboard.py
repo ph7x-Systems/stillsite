@@ -55,8 +55,8 @@ def coverage_percent(cells: dict[TranslationState, int]) -> int:
 
 def _load_content(storage: StorageBackend) -> SiteContent:
     return SiteContent(
-        articles=storage.load_all_articles(),
-        pages=storage.load_all_pages(),
+        articles=[a for a in storage.load_all_articles() if a.deleted_at is None],
+        pages=[p for p in storage.load_all_pages() if p.deleted_at is None],
         media=storage.load_all_media_assets(),
     )
 

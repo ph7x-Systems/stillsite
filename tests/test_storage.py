@@ -257,3 +257,22 @@ def test_revisions_append_list_load_and_prune(backend: StorageBackend) -> None:
     kept = backend.list_revisions("article", "post")
     assert len(kept) == backend.REVISION_LIMIT
     assert backend.load_revision("article", "post", 1) is None  # pruned
+
+
+def test_deleted_at_round_trips(backend: StorageBackend) -> None:
+    """ADR-0026: the trash flag persists and clears on every engine."""
+    when = datetime(2027, 2, 1, tzinfo=UTC)
+    article = new_article("bin-me", ArticleContent(title="Binned"))
+    article.deleted_at = when
+    backend.save_article(article)
+    loaded = backend.load_article("bin-me")
+    assert loaded is not None and loaded.deleted_at == when
+    article.deleted_at = None
+    backend.save_article(article)
+    restored = backend.load_article("bin-me")
+    assert restored is not None and restored.deleted_at is None
+    page = new_page("bin-page", PageContent(title="Binned", slug="binned"))
+    page.deleted_at = when
+    backend.save_page(page)
+    stored = backend.load_page("bin-page")
+    assert stored is not None and stored.deleted_at == when

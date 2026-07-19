@@ -649,3 +649,24 @@ msgstr "Der Quelltext ist mit dem aktuellen Inhalt identisch."
 
 msgid "View and restore"
 msgstr "Ansehen und wiederherstellen"
+
+msgid "Delete forever"
+msgstr "Endgültig löschen"
+
+msgid "Move to trash"
+msgstr "In den Papierkorb verschieben"
+
+msgid "Restore"
+msgstr "Wiederherstellen"
+
+msgid "The trash is empty."
+msgstr "Der Papierkorb ist leer."
+
+msgid "Trash"
+msgstr "Papierkorb"
+
+msgid "Trashed"
+msgstr "In den Papierkorb gelegt"
+
+msgid "Trashed content is invisible to builds, validation, export and the lists; restore brings it back exactly as it was. Delete forever is the only permanent removal and needs the admin role."
+msgstr "Inhalte im Papierkorb sind für Builds, Validierung, Export und Listen unsichtbar; Wiederherstellen bringt sie exakt zurück. Endgültig löschen ist die einzige dauerhafte Entfernung und erfordert die Admin-Rolle."

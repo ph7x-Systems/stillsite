@@ -7,6 +7,10 @@
 {% endblock %}
 {% block content %}
 {{ errors_block(errors) }}
+<form method="post" action="/trash/page/{{ page.id }}" class="mb-3">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button type="submit" class="btn btn-outline-danger btn-sm">{{ _("Move to trash") }}</button>
+</form>
 {% if transitions %}
 <div class="mb-3 d-flex gap-2 admin-workflow" role="group" aria-label="{{ _('Workflow') }}">
   {% for t in transitions %}

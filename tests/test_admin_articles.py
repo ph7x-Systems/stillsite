@@ -348,3 +348,62 @@ def test_revisions_record_diff_and_restore(tmp_path: Path) -> None:
         after = client.get("/articles/piece").text
         assert "First body." in after
         assert 'href="/articles/piece/revisions/3"' in after  # the restore itself
+
+
+def test_trash_restore_and_purge_flow(tmp_path: Path) -> None:
+    """ADR-0026: trash hides everywhere, restore is exact, purge is the
+    only hard delete and needs the admin role."""
+    with _client(_app(tmp_path, _article("bin-me"))) as client:
+        csrf = _sign_in(client)
+        trashed = client.post(
+            "/trash/article/bin-me", data={"csrf_token": csrf}, follow_redirects=False
+        )
+        assert trashed.status_code == 303
+        listing = client.get("/articles").text
+        assert 'href="/articles/bin-me"' not in listing  # hidden from the list
+        trash_page = client.get("/trash").text
+        assert "bin-me" in trash_page
+        restored = client.post(
+            "/trash/article/bin-me/restore", data={"csrf_token": csrf}, follow_redirects=False
+        )
+        assert restored.status_code == 303
+        assert 'href="/articles/bin-me"' in client.get("/articles").text
+        client.post("/trash/article/bin-me", data={"csrf_token": csrf})
+        forbidden = client.post(
+            "/trash/article/bin-me/purge", data={"csrf_token": csrf}, follow_redirects=False
+        )
+        assert forbidden.status_code == 403  # purge is admin-only; editors cannot
+        assert "bin-me" in client.get("/trash").text  # still safely in the trash
+
+
+def test_purge_needs_the_admin_role_and_is_final(tmp_path: Path) -> None:
+    url = f"sqlite:///{tmp_path / 'content.db'}"
+    with create_storage(url) as storage:
+        storage.save_user(
+            User(
+                username="root",
+                password_hash=hash_password(PASSWORD),
+                role=Role.ADMIN,
+                created_at=NOW,
+            )
+        )
+        storage.save_article(_article("bin-me"))
+    app = create_app(AdminSettings(storage_url=url, media_dir=tmp_path / "media"))
+    with _client(app) as client:
+        form = client.get("/login")
+        client.post(
+            "/login",
+            data={
+                "username": "root",
+                "password": PASSWORD,
+                "login_csrf": form.cookies["sardine_login_csrf"],
+            },
+        )
+        csrf = client.get("/").text.split('name="csrf_token" value="')[1].split('"')[0]
+        client.post("/trash/article/bin-me", data={"csrf_token": csrf})
+        purged = client.post(
+            "/trash/article/bin-me/purge", data={"csrf_token": csrf}, follow_redirects=False
+        )
+        assert purged.status_code == 303
+        assert client.get("/articles/bin-me").status_code == 404
+        assert "bin-me" not in client.get("/trash").text

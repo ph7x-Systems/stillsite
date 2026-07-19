@@ -123,4 +123,8 @@ MIGRATIONS: tuple[str, ...] = (
         PRIMARY KEY (entity_type, entity_id, revision)
     );
     """,
+    """
+    ALTER TABLE articles ADD COLUMN deleted_at TEXT;
+    ALTER TABLE pages ADD COLUMN deleted_at TEXT;
+    """,
 )

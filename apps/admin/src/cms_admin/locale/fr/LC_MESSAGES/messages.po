@@ -649,3 +649,24 @@ msgstr "Le texte source est identique au contenu actuel."
 
 msgid "View and restore"
 msgstr "Voir et restaurer"
+
+msgid "Delete forever"
+msgstr "Supprimer définitivement"
+
+msgid "Move to trash"
+msgstr "Mettre à la corbeille"
+
+msgid "Restore"
+msgstr "Restaurer"
+
+msgid "The trash is empty."
+msgstr "La corbeille est vide."
+
+msgid "Trash"
+msgstr "Corbeille"
+
+msgid "Trashed"
+msgstr "Mis à la corbeille"
+
+msgid "Trashed content is invisible to builds, validation, export and the lists; restore brings it back exactly as it was. Delete forever is the only permanent removal and needs the admin role."
+msgstr "Le contenu à la corbeille est invisible pour les builds, la validation, l'export et les listes ; restaurer le ramène exactement tel quel. Supprimer définitivement est la seule suppression permanente et requiert le rôle admin."

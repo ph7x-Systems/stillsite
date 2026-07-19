@@ -649,3 +649,24 @@ msgstr "O texto fonte é idêntico ao conteúdo atual."
 
 msgid "View and restore"
 msgstr "Ver e restaurar"
+
+msgid "Delete forever"
+msgstr "Apagar para sempre"
+
+msgid "Move to trash"
+msgstr "Mover para a reciclagem"
+
+msgid "Restore"
+msgstr "Restaurar"
+
+msgid "The trash is empty."
+msgstr "A reciclagem está vazia."
+
+msgid "Trash"
+msgstr "Reciclagem"
+
+msgid "Trashed"
+msgstr "Enviado para a reciclagem"
+
+msgid "Trashed content is invisible to builds, validation, export and the lists; restore brings it back exactly as it was. Delete forever is the only permanent removal and needs the admin role."
+msgstr "Conteúdo na reciclagem é invisível para builds, validação, export e listas; restaurar devolve-o exatamente como estava. Apagar para sempre é a única remoção permanente e exige o papel admin."

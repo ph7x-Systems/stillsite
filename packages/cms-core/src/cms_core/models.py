@@ -36,6 +36,9 @@ class Article(TranslatableModel[ArticleContent]):
     publish_at: datetime | None = None
     """UTC moment before which a published entry stays out of builds
     (ADR-0024); None publishes immediately once published."""
+    deleted_at: datetime | None = None
+    """Set = in the trash (ADR-0026): invisible to builds, validation,
+    export and the admin lists until restored or purged."""
     category: str | None = Field(default=None, pattern=SLUG_PATTERN)
     cover: str | None = Field(default=None, pattern=SLUG_PATTERN)
     tags: tuple[str, ...] = ()

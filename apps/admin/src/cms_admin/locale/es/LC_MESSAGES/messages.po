@@ -649,3 +649,24 @@ msgstr "El texto fuente es idéntico al contenido actual."
 
 msgid "View and restore"
 msgstr "Ver y restaurar"
+
+msgid "Delete forever"
+msgstr "Eliminar para siempre"
+
+msgid "Move to trash"
+msgstr "Mover a la papelera"
+
+msgid "Restore"
+msgstr "Restaurar"
+
+msgid "The trash is empty."
+msgstr "La papelera está vacía."
+
+msgid "Trash"
+msgstr "Papelera"
+
+msgid "Trashed"
+msgstr "Enviado a la papelera"
+
+msgid "Trashed content is invisible to builds, validation, export and the lists; restore brings it back exactly as it was. Delete forever is the only permanent removal and needs the admin role."
+msgstr "El contenido en la papelera es invisible para builds, validación, exportación y listas; restaurar lo devuelve exactamente como estaba. Eliminar para siempre es la única eliminación permanente y requiere el rol admin."

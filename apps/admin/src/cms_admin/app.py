@@ -26,6 +26,7 @@ from cms_admin.media import router as media_router
 from cms_admin.pages import router as pages_router
 from cms_admin.publishing import router as publishing_router
 from cms_admin.settings import AdminSettings
+from cms_admin.trash import router as trash_router
 
 
 @asynccontextmanager
@@ -91,6 +92,7 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
     app.include_router(pages_router)
     app.include_router(media_router)
     app.include_router(publishing_router)
+    app.include_router(trash_router)
     app.state.preview_dir = tempfile.mkdtemp(prefix="sardine-preview-")
     app.mount("/static", StaticFiles(directory=Path(__file__).parent / "static"), name="static")
     app.mount(

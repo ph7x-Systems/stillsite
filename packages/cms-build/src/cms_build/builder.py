@@ -62,9 +62,10 @@ class _SafeHtml(str):
 
 
 def _live(entry: Article | Page, now: datetime) -> bool:
-    """Published, and its moment has come (ADR-0024): a future publish_at
-    keeps the entry out of the artifact until a build runs past it."""
-    if entry.status is not ContentStatus.PUBLISHED:
+    """Published, not in the trash (ADR-0026), and its moment has come
+    (ADR-0024): a future publish_at keeps the entry out of the artifact
+    until a build runs past it."""
+    if entry.status is not ContentStatus.PUBLISHED or entry.deleted_at is not None:
         return False
     return entry.publish_at is None or entry.publish_at <= now
 

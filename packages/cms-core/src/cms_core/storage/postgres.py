@@ -69,14 +69,15 @@ class PostgresBackend(StorageBackend):
             self._connection.execute(
                 "INSERT INTO articles"
                 " (id, status, created_at, updated_at, title, summary, body_markdown, slug,"
-                "  category, tags_json, cover, publish_at)"
-                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                "  category, tags_json, cover, publish_at, deleted_at)"
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 " ON CONFLICT (id) DO UPDATE SET"
                 " status = excluded.status, updated_at = excluded.updated_at,"
                 " title = excluded.title, summary = excluded.summary,"
                 " body_markdown = excluded.body_markdown, slug = excluded.slug,"
                 " category = excluded.category, tags_json = excluded.tags_json,"
-                " cover = excluded.cover, publish_at = excluded.publish_at",
+                " cover = excluded.cover, publish_at = excluded.publish_at,"
+                " deleted_at = excluded.deleted_at",
                 (
                     article.id,
                     article.status.value,
@@ -90,6 +91,7 @@ class PostgresBackend(StorageBackend):
                     json.dumps(list(article.tags)),
                     article.cover,
                     article.publish_at.isoformat() if article.publish_at else None,
+                    article.deleted_at.isoformat() if article.deleted_at else None,
                 ),
             )
             self._connection.execute(
@@ -117,7 +119,7 @@ class PostgresBackend(StorageBackend):
     def load_article(self, article_id: str) -> Article | None:
         row = self._connection.execute(
             "SELECT id, status, created_at, updated_at, title, summary, body_markdown, slug,"
-            " category, tags_json, cover, publish_at"
+            " category, tags_json, cover, publish_at, deleted_at"
             " FROM articles WHERE id = %s",
             (article_id,),
         ).fetchone()
@@ -146,6 +148,7 @@ class PostgresBackend(StorageBackend):
             tags=tuple(json.loads(row[9])),
             cover=row[10],
             publish_at=datetime.fromisoformat(row[11]) if row[11] else None,
+            deleted_at=datetime.fromisoformat(row[12]) if row[12] else None,
         )
 
     def delete_article(self, article_id: str) -> bool:
@@ -163,12 +166,14 @@ class PostgresBackend(StorageBackend):
         with self._connection.transaction():
             self._connection.execute(
                 "INSERT INTO pages"
-                " (id, status, created_at, updated_at, title, description, slug, publish_at)"
-                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                " (id, status, created_at, updated_at, title, description, slug,"
+                "  publish_at, deleted_at)"
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 " ON CONFLICT (id) DO UPDATE SET"
                 " status = excluded.status, updated_at = excluded.updated_at,"
                 " title = excluded.title, description = excluded.description,"
-                " slug = excluded.slug, publish_at = excluded.publish_at",
+                " slug = excluded.slug, publish_at = excluded.publish_at,"
+                " deleted_at = excluded.deleted_at",
                 (
                     page.id,
                     page.status.value,
@@ -178,6 +183,7 @@ class PostgresBackend(StorageBackend):
                     page.source.description,
                     page.source.slug,
                     page.publish_at.isoformat() if page.publish_at else None,
+                    page.deleted_at.isoformat() if page.deleted_at else None,
                 ),
             )
             self._connection.execute("DELETE FROM page_translations WHERE page_id = %s", (page.id,))
@@ -259,7 +265,8 @@ class PostgresBackend(StorageBackend):
 
     def load_page(self, page_id: str) -> Page | None:
         row = self._connection.execute(
-            "SELECT id, status, created_at, updated_at, title, description, slug, publish_at"
+            "SELECT id, status, created_at, updated_at, title, description, slug, publish_at,"
+            " deleted_at"
             " FROM pages WHERE id = %s",
             (page_id,),
         ).fetchone()
@@ -284,6 +291,7 @@ class PostgresBackend(StorageBackend):
             translations=translations,
             sections=self._load_sections(row[0]),
             publish_at=datetime.fromisoformat(row[7]) if row[7] else None,
+            deleted_at=datetime.fromisoformat(row[8]) if row[8] else None,
         )
 
     def delete_page(self, page_id: str) -> bool:
