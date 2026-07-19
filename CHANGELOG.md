@@ -5,6 +5,15 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Admin design is now genuinely AdminLTE**: the panel renders exactly as
+  the AdminLTE 4 reference pages do — Source Sans 3 (the font the theme
+  itself asks for; OFL, local files) instead of the previous brand fonts,
+  vendored Bootstrap Icons (MIT) across the sidebar, navbar and stat
+  boxes, content headers with breadcrumbs, the canonical footer, and
+  small-boxes with icons and footer links. `admin.css` no longer restyles
+  the theme; it only adds the font-face, accessibility fixes and the
+  no-JavaScript fallbacks.
+
 - **Validation report** across the panel and CLI: `Report` now carries one
   `RuleResult` per rule that ran (passing rules included, each with a
   human description). The admin dashboard and publishing pages share a

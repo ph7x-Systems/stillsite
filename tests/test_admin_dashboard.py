@@ -153,21 +153,27 @@ def test_dashboard_empty_states(tmp_path: Path) -> None:
 
 
 def test_design_system_assets_are_served_locally(tmp_path: Path) -> None:
-    """The admin ships the ph7x design system natively (ADR-0015): its own
-    stylesheet plus the local font subsets with their license — no CDN."""
+    """The admin ships AdminLTE's design verbatim (ADR-0017): the vendored
+    stylesheet, the font the theme asks for (Source Sans 3) and Bootstrap
+    Icons, all local with their licenses — no CDN, no restyling."""
     with TestClient(_app(tmp_path)) as client:
         admin_css = client.get("/static/admin.css")
-        font = client.get("/static/fonts/inter-normal-latin.woff2")
-        serif = client.get("/static/fonts/newsreader-normal-latin.woff2")
-        license_file = client.get("/static/fonts/OFL.txt")
+        adminlte = client.get("/static/vendor/adminlte/adminlte.min.css")
+        font = client.get("/static/vendor/source-sans/source-sans-3-latin-wght-normal.woff2")
+        font_license = client.get("/static/vendor/source-sans/LICENSE")
+        icons_css = client.get("/static/vendor/bootstrap-icons/bootstrap-icons.min.css")
+        icons_font = client.get("/static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2")
+        icons_license = client.get("/static/vendor/bootstrap-icons/LICENSE")
     assert admin_css.status_code == 200
     assert "text/css" in admin_css.headers["content-type"]
-    assert "--navy" in admin_css.text
-    assert "Newsreader" in admin_css.text
+    assert "Source Sans 3" in admin_css.text
+    assert "Newsreader" not in admin_css.text  # the theme's typography rules
+    assert "Source Sans 3" in adminlte.text  # AdminLTE itself asks for it
     assert font.status_code == 200
-    assert serif.status_code == 200
-    assert license_file.status_code == 200
-    assert "SIL OPEN FONT LICENSE" in license_file.text.upper()
+    assert "SIL OPEN FONT LICENSE" in font_license.text.upper()
+    assert icons_css.status_code == 200
+    assert icons_font.status_code == 200
+    assert "MIT" in icons_license.text
 
 
 def test_static_assets_do_not_require_a_session(tmp_path: Path) -> None:

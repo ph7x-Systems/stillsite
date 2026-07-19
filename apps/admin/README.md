@@ -18,9 +18,10 @@ cms admin create-user editor-in-chief -p my-project --role admin
 ```
 
 The UI is built on AdminLTE 4 (MIT, vendored verbatim with its license —
-ADR-0017), used CSS-only: the admin ships zero JavaScript and serves
-everything itself, no CDN. A small overlay adds the brand (local
-Inter/Newsreader) and accessibility fixes. The dashboard shows
+ADR-0017), used CSS-only and implemented as its reference pages do:
+Source Sans 3 (OFL) and Bootstrap Icons (MIT) ship as local files, the
+admin serves everything itself with zero JavaScript and no CDN, and the
+only overlay is accessibility fixes and no-JS fallbacks. The dashboard shows
 content by workflow status, the translation coverage matrix and a live
 validation report. Articles and pages are edited in the browser: EN source
 plus a side-by-side editor per translation, with state indicators from the
