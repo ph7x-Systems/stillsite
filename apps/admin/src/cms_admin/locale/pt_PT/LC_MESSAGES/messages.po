@@ -769,3 +769,15 @@ msgstr "assinatura editorial; vazio mostra o nome do site"
 
 msgid "featured articles lead the home highlight"
 msgstr "artigos destacados lideram o destaque da página inicial"
+
+msgid "Design preview"
+msgstr "Pré-visualização do design"
+
+msgid "Open full page"
+msgstr "Abrir página completa"
+
+msgid "Run a preview build from the"
+msgstr "Corre um build de pré-visualização no painel de"
+
+msgid "panel to see this entry with the real theme; it refreshes on every save."
+msgstr "para veres esta entrada com o tema real; atualiza a cada gravação."

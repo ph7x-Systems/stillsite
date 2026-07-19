@@ -94,3 +94,11 @@
   --bs-btn-hover-color: #000;
   --bs-btn-hover-border-color: #adb5bd;
 }
+
+/* Design preview (ADR-0027): the themed entry framed from /preview/. */
+.admin-design-preview {
+  display: block;
+  width: 100%;
+  height: 70vh;
+  border: 0;
+}

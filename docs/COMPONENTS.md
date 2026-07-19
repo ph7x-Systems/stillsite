@@ -78,6 +78,7 @@ content header with `breadcrumb`, `app-footer` with copyright. Surfaces:
 | Workflow (status transitions) | role-filtered button group (`admin-workflow`), per-status badge colors |
 | Publishing panel | gate `callout` (success/danger), rules + issues tables in cards, target select, buttons |
 | Trash | sidebar entry, per-kind tables with Restore / admin-only Delete forever |
+| Design preview (editors) | card with a same-origin iframe onto `/preview/<entry>`, pointer to Publishing when no build exists |
 | Revisions (editors) | history card + detail page with unified diff in `admin-preview`, restore button |
 | Users screen (admin) | accounts table with inline role select, new-account card |
 | Language selector (user menu) | `form-select` in the AdminLTE `user-body`, POST + CSRF like every form |

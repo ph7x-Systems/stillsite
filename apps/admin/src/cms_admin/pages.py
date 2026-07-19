@@ -10,6 +10,7 @@ source read-only next to the translation, one field at a time.
 
 import difflib
 from datetime import UTC, datetime
+from pathlib import Path
 
 from cms_build import urls
 from cms_core import (
@@ -226,6 +227,11 @@ async def page_edit_form(
     revisions = await get_db(request).run(lambda storage: storage.list_revisions("page", page_id))
     project = _project(request)
     preview_path = "/preview" + urls.page_path(page, SOURCE_LANGUAGE) if project else None
+    preview_target = (preview_path or "").removeprefix("/preview/").rstrip("/")
+    preview_ready = bool(
+        preview_path
+        and (Path(request.app.state.preview_dir) / preview_target / "index.html").is_file()
+    )
     return _page_response(
         request,
         "page_edit.html.j2",
@@ -235,6 +241,7 @@ async def page_edit_form(
             "errors": [],
             "revisions": revisions,
             "preview_path": preview_path,
+            "preview_ready": preview_ready,
             **_editor_context(page, role=user.role),
         },
     )

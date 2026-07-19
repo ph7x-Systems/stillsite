@@ -5,6 +5,12 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Design-aware editing** (ADR-0027, owner-approved): the article and
+  page editors gain a Design preview — the entry rendered by the real
+  builder and the real theme, framed from `/preview/` and refreshed on
+  every save. Only the `/preview/` mount allows same-origin framing;
+  the admin document itself remains unframeable.
+
 - **Featured and authorship** (M5, migration 11): articles gain a
   Featured flag — featured entries lead the home highlight while
   listings and feeds keep pure recency — and an editorial byline the

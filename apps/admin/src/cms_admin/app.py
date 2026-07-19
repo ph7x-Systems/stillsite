@@ -69,7 +69,15 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
     @app.middleware("http")
     async def _security_headers(request: Request, call_next):  # type: ignore[no-untyped-def]
         response = await call_next(request)
-        for name, value in SECURITY_HEADERS.items():
+        headers = dict(SECURITY_HEADERS)
+        if request.url.path.startswith("/preview/"):
+            # ADR-0027: the same-origin editor frames the preview; nothing
+            # external ever can. Only this mount relaxes the frame policy.
+            headers["Content-Security-Policy"] = headers["Content-Security-Policy"].replace(
+                "frame-ancestors 'none'", "frame-ancestors 'self'"
+            )
+            headers["X-Frame-Options"] = "SAMEORIGIN"
+        for name, value in headers.items():
             response.headers.setdefault(name, value)
         return response
 

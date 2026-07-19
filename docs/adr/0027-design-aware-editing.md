@@ -1,6 +1,6 @@
 # ADR-0027 — Design-aware editing: see the real theme while you edit
 
-- **Status:** proposed
+- **Status:** accepted
 - **Date:** 2026-07-19
 
 ## Context
@@ -26,9 +26,9 @@ design* converge, before any implementation.
    to a render endpoint, same renderer). More moving parts; needs its
    own security look (a render endpoint that accepts unsaved content).
 
-## Direction (to confirm before implementation)
+## Decision
 
-Adopt **option 2 now, option 3 later**: a split editor view — form on
+Owner-confirmed 2026-07-19. Adopt **option 2 now, option 3 later**: a split editor view — form on
 the left, the themed entry in an iframe on the right, rendered by the
 existing preview pipeline on every save. It reuses what exists (builder,
 theme discovery, `/preview/` mount), keeps themes fully sovereign over
@@ -40,6 +40,12 @@ render.
 
 ## Consequences
 
-- Implementation lands as an M6 item after confirmation; the per-entry
-  preview links (already shipped) are the stepping stone.
+- The editors gain a **Design preview** card: the entry framed from
+  `/preview/` when a preview build exists, a pointer to the Publishing
+  panel otherwise.
+- **CSP nuance**: the admin document keeps `frame-ancestors 'none'`;
+  responses under `/preview/` alone move to `frame-ancestors 'self'`
+  (with `X-Frame-Options SAMEORIGIN`) so the same-origin editor can
+  frame them — nothing external ever can.
+- Live refresh (option 3) lands together with the autosave layer.
 - The theme contract gains nothing to implement — that is the point.

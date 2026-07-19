@@ -60,6 +60,11 @@ with that entity's errors listed (the publish gate; disable only with
 
 ## Editing
 
+- **Design preview** (ADR-0027): each article and page editor frames the
+  entry rendered by the real builder and the real theme (from
+  `/preview/`), refreshed on every save — run a preview build from the
+  Publishing panel first. Only `/preview/` allows same-origin framing;
+  the admin itself can never be framed.
 - **Articles**: EN source with metadata (per-language slug, category, tags,
   cover, editorial byline, Featured flag — featured articles lead the home
   highlight), a Markdown editor (EasyMDE, vendored — ADR-0023) with a
