@@ -50,6 +50,7 @@ Content moves through `draft → review → published → archived`:
 | draft → review | Submit for review | editor |
 | review → draft | Send back to draft | reviewer |
 | review → published | Publish | publisher |
+| published → draft | Unpublish | publisher |
 | published → archived | Archive | publisher |
 | archived → draft | Restore to draft | publisher |
 

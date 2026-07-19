@@ -610,3 +610,6 @@ msgstr "Citation"
 
 msgid "Unordered list"
 msgstr "Liste à puces"
+
+msgid "Unpublish"
+msgstr "Dépublier"

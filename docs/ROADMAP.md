@@ -42,7 +42,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | --- | --- | --- |
 | Draft / review / publish / archive, role-gated | ✅ | — |
 | Markdown editor with toolbar | ✅ EasyMDE vendored, localized toolbar (ADR-0023); builder preview stays the truth | — |
-| **Unpublish** (published straight back to draft) | ❌ only publish→archive→draft, two steps | 🔜 direct transition (M5) |
+| **Unpublish** (published straight back to draft) | ✅ one click, publisher role; the next build drops the entry | — |
 | Scheduled publishing | ❌ | 🔜 `publish_at` + build-time gate; static-first = the scheduled build publishes it (M5) |
 | Revisions + restore | ❌ last write wins | 🔜 revision log on save, diff view, restore (M5) |
 | Trash / restore | ❌ delete is final (admin refuses only referenced media) | 🔜 soft-delete status + restore + purge (M5) |

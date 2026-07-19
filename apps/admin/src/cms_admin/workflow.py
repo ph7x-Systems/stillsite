@@ -18,6 +18,7 @@ TRANSITIONS: dict[tuple[ContentStatus, ContentStatus], Role] = {
     (ContentStatus.DRAFT, ContentStatus.REVIEW): Role.EDITOR,
     (ContentStatus.REVIEW, ContentStatus.DRAFT): Role.REVIEWER,
     (ContentStatus.REVIEW, ContentStatus.PUBLISHED): Role.PUBLISHER,
+    (ContentStatus.PUBLISHED, ContentStatus.DRAFT): Role.PUBLISHER,
     (ContentStatus.PUBLISHED, ContentStatus.ARCHIVED): Role.PUBLISHER,
     (ContentStatus.ARCHIVED, ContentStatus.DRAFT): Role.PUBLISHER,
 }
@@ -26,6 +27,7 @@ LABELS: dict[tuple[ContentStatus, ContentStatus], str] = {
     (ContentStatus.DRAFT, ContentStatus.REVIEW): "Submit for review",
     (ContentStatus.REVIEW, ContentStatus.DRAFT): "Send back to draft",
     (ContentStatus.REVIEW, ContentStatus.PUBLISHED): "Publish",
+    (ContentStatus.PUBLISHED, ContentStatus.DRAFT): "Unpublish",
     (ContentStatus.PUBLISHED, ContentStatus.ARCHIVED): "Archive",
     (ContentStatus.ARCHIVED, ContentStatus.DRAFT): "Restore to draft",
 }
