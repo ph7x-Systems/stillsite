@@ -1,6 +1,6 @@
 [project]
 name = "sardine-cms-theme-ph7x-reference"
-version = "0.1.0"
+version = "0.1.1"
 description = "Sardine CMS reference theme: dark editorial design system with local fonts"
 readme = "README.md"
 requires-python = ">=3.12"

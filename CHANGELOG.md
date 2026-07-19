@@ -3,6 +3,12 @@
 All notable changes to Sardine CMS. The project follows semantic versioning
 from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
+## 0.1.1 — 2026-07-19
+
+Documentation release: every package ships a proper PyPI description —
+what it does, how to install it (including the database extras), and links
+to the live demo, repository and documentation. No code changes.
+
 ## 0.1.0 — 2026-07-19
 
 The first release: a multilingual, static-first CMS framework.
@@ -11,8 +17,8 @@ The first release: a multilingual, static-first CMS framework.
   sections, media with mandatory translatable alt text; translation states
   (`missing / outdated / complete`) derived from content checksums; the
   `draft → review → published → archived` workflow; storage contract with
-  SQLite and PostgreSQL backends behind `create_storage(url)`, shared
-  versioned migrations, admin accounts (argon2id) that are never exported.
+  SQLite, PostgreSQL, MySQL/MariaDB and SQL Server backends behind
+  `create_storage(url)`, shared versioned migrations, admin accounts (argon2id) that are never exported.
 - **Validation** (`sardine-cms-validation`): composable rule engine —
   required translations, unique slugs per language, media references,
   alt-text coverage, known categories. Errors block publishing.
