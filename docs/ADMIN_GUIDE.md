@@ -105,8 +105,8 @@ gate holding a real warning instead of an empty all-green report.
 - Synchronizer CSRF tokens on every authenticated state-changing request,
   plus a double-submit token on the login form; failed-login rate limiting.
 - Security headers on every response, including a Content-Security-Policy
-  with no script sources at all (the admin ships zero JavaScript) and
-  frame denial.
+  allowing only same-origin scripts — the vendored AdminLTE behaviors, no
+  inline scripts, no CDN (ADR-0020) — and frame denial.
 - Accounts live in the storage database via the shared migrations and are
   **never exported**.
 - The axe accessibility gate (WCAG 2.2 AA) runs over the admin pages in CI,

@@ -37,14 +37,15 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
         app.state.db.close()
 
 
-# Hardening (SECURITY_STRATEGY, M3 phase 9): the admin ships zero JavaScript,
-# so the CSP allows no script source at all; styles, fonts and images come
-# only from the app itself; nothing may frame it.
+# Hardening (SECURITY_STRATEGY, M3 phase 9; scripts per ADR-0020): every
+# script, style, font and image comes from the app itself — vendored files,
+# no CDN, no inline scripts ('self' only, never 'unsafe-inline'); nothing
+# may frame it.
 SECURITY_HEADERS = {
     "Content-Security-Policy": (
-        "default-src 'none'; style-src 'self'; font-src 'self'; "
-        "img-src 'self' data:; form-action 'self'; base-uri 'none'; "
-        "frame-ancestors 'none'"
+        "default-src 'none'; script-src 'self'; style-src 'self'; "
+        "font-src 'self'; img-src 'self' data:; form-action 'self'; "
+        "base-uri 'none'; frame-ancestors 'none'"
     ),
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",

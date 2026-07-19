@@ -13,7 +13,7 @@
 
 Reusable multilingual, static-first CMS framework extracted from the pH7x Systems website architecture.
 
-**Live demo:** <https://sardine.ph7x.com> — the fictional "Sardine Aerospace" site in five languages, built and deployed by this framework on every merge (design is theme-level: bring your own, WordPress-style).
+**Live demo:** <https://sardine.ph7x.com> — the fictional "Sardine Aerospace" site in five languages, built and deployed by this framework on every merge (design is theme-level: bring your own).
 
 > **License:** [Apache-2.0](LICENSE) (see [ADR-0002](docs/adr/0002-license-apache-2.md)).
 

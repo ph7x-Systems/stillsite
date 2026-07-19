@@ -10,8 +10,7 @@ pip install sardine-cms-theme-ph7x-reference
 ```
 
 Themes are packages discovered through the `sardine.themes` entry-point
-group — this one is an example, not a constraint: bring your own design,
-WordPress-style.
+group — this one is an example, not a constraint: bring your own design.
 
 ## Sardine CMS
 

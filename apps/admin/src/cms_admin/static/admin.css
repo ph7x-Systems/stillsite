@@ -55,18 +55,5 @@
 /* Links inside prose must not rely on color alone (axe link-in-text-block) */
 .card-body p a, .form-text a { text-decoration: underline; text-underline-offset: 2px; }
 
-/* The admin ships zero JavaScript: below the desktop breakpoint AdminLTE
-   would hide the sidebar behind a JS toggle, so render it statically. */
-@media (max-width: 991.98px) {
-  .app-wrapper { display: block; }
-  .app-sidebar {
-    position: static !important;
-    transform: none !important;
-    height: auto;
-    width: 100%;
-    box-shadow: none !important;
-  }
-}
-
 /* Bootstrap's default code pink is 4.27:1 on white — one shade darker for AA. */
 code { color: #a02766; }

@@ -276,8 +276,8 @@ Everything user-facing must be extensible without forking the framework:
 
 ## Design and themes
 
-**Positioning (definitive).** Sardine CMS is a framework, not a site: like
-WordPress, the design belongs to whoever uses it. Themes are installable
+**Positioning (definitive).** Sardine CMS is a framework, not a site: the
+design belongs to whoever uses it. Themes are installable
 packages (ADR-0012) or per-project overrides (ADR-0007); anyone can take an
 existing site's stylesheets and wrap them as a theme. The **ph7x design
 system is only the reference theme** (`cms-theme-ph7x-reference`, vendoring

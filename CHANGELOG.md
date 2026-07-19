@@ -5,6 +5,13 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **The admin ships the theme's behaviors** (ADR-0020): AdminLTE's own
+  scripts, the Bootstrap bundle and OverlayScrollbars are vendored and
+  served same-origin — working sidebar toggle (mobile included), user
+  dropdown menu, automatic light/dark mode. CSP allows exactly
+  `script-src 'self'`: no inline scripts, no CDN. The ugly no-JS static
+  sidebar fallback is gone.
+
 - **Admin design is now genuinely AdminLTE**: the panel renders exactly as
   the AdminLTE 4 reference pages do — Source Sans 3 (the font the theme
   itself asks for; OFL, local files) instead of the previous brand fonts,

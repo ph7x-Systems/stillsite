@@ -51,10 +51,13 @@ URI and scroll-driven animations behind `@supports`, all disabled under
 Server-rendered Jinja inside the FastAPI process
 ([ADR-0013](adr/0013-admin-ui-architecture.md)), built on **AdminLTE 4**
 (MIT, vendored verbatim with its license at `static/vendor/adminlte/`,
-Bootstrap 5 bundled — [ADR-0017](adr/0017-admin-adminlte.md)). CSS only:
-the admin ships zero JavaScript, so JS-only widgets (sidebar toggle,
-dropdowns, treeview) are simply not used and the CSP allows no script
-source. The design is AdminLTE's, implemented as its reference pages do:
+Bootstrap 5 bundled — [ADR-0017](adr/0017-admin-adminlte.md)), behaviors
+included ([ADR-0020](adr/0020-admin-adminlte-behaviors.md)): the theme's
+own scripts (adminlte.min.js, Bootstrap bundle, OverlayScrollbars) ship
+vendored and same-origin — sidebar toggle, user dropdown, treeview all
+work as the theme intends, with a CSP of exactly `script-src 'self'` (no
+inline, no CDN). The design is AdminLTE's, implemented as its reference
+pages do:
 **Source Sans 3** (the font AdminLTE's own `--bs-font-sans-serif` asks
 for; OFL, local variable-font files at `static/vendor/source-sans/`) and
 **Bootstrap Icons** (MIT, vendored at `static/vendor/bootstrap-icons/`)
