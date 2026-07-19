@@ -138,13 +138,15 @@ gate green in CI.
 
 ## Release plan — first PyPI release (after Milestone 3 kickoff)
 
-- [ ] **ADR-0014 — distribution naming**: decide `sardine-cms-*` vs `cms-*`
-      for the five packages (import names may stay `cms_*`; the ADR weighs
-      collision risk, brand and the ECOSYSTEM.md naming policy), then
-      reserve the names on PyPI.
-- [ ] **Trusted publishing**: release workflow on version tags using PyPI
-      OIDC (no long-lived tokens), semantic versioning from `0.1.0`,
-      hand-written `CHANGELOG.md`, one single-sourced version per package.
+- [x] **ADR-0014 — distribution naming**: `sardine-cms-*` for all six
+      packages, import names unchanged
+      ([ADR-0014](adr/0014-distribution-naming.md)). Reserving the names on
+      PyPI (pending publishers) is an owner web-UI step before the first
+      tag.
+- [x] **Trusted publishing**: `release.yml` publishes all six packages on
+      `v*` tags via PyPI OIDC (no long-lived tokens), with a tag-vs-version
+      consistency check; semantic versioning from `0.1.0` in lockstep;
+      hand-written `CHANGELOG.md`; one single-sourced version per package.
 - [ ] **Remaining backends**: SQL Server and MySQL/MariaDB, same mold as
       [ADR-0009](adr/0009-postgres-backend.md) — own ADR each, optional
       extra, shared ANSI migrations with engine-specific version tracking,

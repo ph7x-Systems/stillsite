@@ -1,5 +1,5 @@
 [project]
-name = "cms-core"
+name = "sardine-cms-core"
 version = "0.1.0"
 description = "Content model, versioned schemas and translation states for Sardine CMS"
 readme = "README.md"
