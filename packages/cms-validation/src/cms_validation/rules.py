@@ -19,6 +19,10 @@ class RequiredTranslationsRule:
     """Published/review content must be complete in every required language."""
 
     name = "required-translations"
+    description = (
+        "Content in review or published carries every required language; "
+        "incomplete translations warn in review and block once published"
+    )
 
     def check(self, content: SiteContent, context: ValidationContext) -> Iterator[Issue]:
         entries: Iterable[tuple[str, Article | Page]] = [
@@ -47,6 +51,7 @@ class UniqueSlugsRule:
     """Within each language, generated URLs must not collide."""
 
     name = "unique-slugs"
+    description = "Generated URLs never collide within a language, across articles and pages"
 
     def check(self, content: SiteContent, context: ValidationContext) -> Iterator[Issue]:
         for language in (Language.EN, *context.required_languages):
@@ -80,6 +85,7 @@ class MediaReferencesRule:
     """Sections may only reference media assets that exist."""
 
     name = "media-references"
+    description = "Page sections only reference media assets that actually exist"
 
     def check(self, content: SiteContent, context: ValidationContext) -> Iterator[Issue]:
         known = {asset.id for asset in content.media}
@@ -99,6 +105,7 @@ class MediaAltCoverageRule:
     """Media used by publishable content must have alt text in required languages."""
 
     name = "media-alt-coverage"
+    description = "Every media asset has alt text in each required language"
 
     def check(self, content: SiteContent, context: ValidationContext) -> Iterator[Issue]:
         for asset in content.media:
@@ -137,6 +144,9 @@ class KnownCategoriesRule:
     """When the project declares categories, articles may only use those."""
 
     name = "known-categories"
+    description = (
+        "Articles only use categories the project declares (skipped when none are declared)"
+    )
 
     def check(self, content: SiteContent, context: ValidationContext) -> Iterator[Issue]:
         if context.known_categories is None:

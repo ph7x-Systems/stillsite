@@ -97,3 +97,32 @@ def test_rules_can_be_disabled() -> None:
     ruleset = RuleSet(rules=default_ruleset(), disabled={"required-translations"})
     report = ruleset.run(SiteContent(articles=[article]), CONTEXT)
     assert report.ok
+
+
+def test_report_lists_every_rule_result_even_when_all_pass() -> None:
+    report = RuleSet(rules=default_ruleset()).run(SiteContent(), CONTEXT)
+    assert [result.rule for result in report.results] == [
+        "required-translations",
+        "unique-slugs",
+        "media-references",
+        "media-alt-coverage",
+        "known-categories",
+    ]
+    assert all(result.ok for result in report.results)
+    assert all(result.description for result in report.results)
+
+
+def test_rule_results_carry_their_own_issues() -> None:
+    article = new_article("post", ArticleContent(title="Post"), now=NOW)
+    article.status = ContentStatus.PUBLISHED
+    report = RuleSet(rules=default_ruleset()).run(SiteContent(articles=[article]), CONTEXT)
+    by_rule = {result.rule: result for result in report.results}
+    assert not by_rule["required-translations"].ok
+    assert by_rule["unique-slugs"].ok
+    assert sum(len(result.issues) for result in report.results) == len(report.issues)
+
+
+def test_disabled_rules_do_not_appear_in_results() -> None:
+    ruleset = RuleSet(rules=default_ruleset(), disabled={"media-alt-coverage"})
+    report = ruleset.run(SiteContent(), CONTEXT)
+    assert "media-alt-coverage" not in {result.rule for result in report.results}

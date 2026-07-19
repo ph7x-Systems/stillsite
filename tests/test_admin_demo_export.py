@@ -118,3 +118,13 @@ def test_neutralize_rewrites_only_root_relative_links() -> None:
     assert "tok" not in result
     assert 'method="get"' in result
     assert "disabled" in result
+
+
+def test_snapshot_publishing_page_shows_the_full_report(tmp_path: Path) -> None:
+    db = _storage_file(tmp_path)
+    out = tmp_path / "admin"
+    export_demo(db, out)
+    publishing = (out / "publishing/index.html").read_text(encoding="utf-8")
+    assert "admin-rules-table" in publishing
+    for rule in ("required-translations", "unique-slugs", "media-alt-coverage"):
+        assert rule in publishing

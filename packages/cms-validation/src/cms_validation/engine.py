@@ -52,13 +52,37 @@ class ValidationContext:
 @runtime_checkable
 class Rule(Protocol):
     name: str
+    description: str
 
     def check(self, content: SiteContent, context: ValidationContext) -> Iterable[Issue]: ...
 
 
 @dataclass(frozen=True, slots=True)
+class RuleResult:
+    """The outcome of one rule over the full content set — pass or not."""
+
+    rule: str
+    description: str
+    issues: tuple[Issue, ...]
+
+    @property
+    def errors(self) -> tuple[Issue, ...]:
+        return tuple(issue for issue in self.issues if issue.severity is Severity.ERROR)
+
+    @property
+    def warnings(self) -> tuple[Issue, ...]:
+        return tuple(issue for issue in self.issues if issue.severity is Severity.WARNING)
+
+    @property
+    def ok(self) -> bool:
+        return not self.issues
+
+
+@dataclass(frozen=True, slots=True)
 class Report:
     issues: tuple[Issue, ...]
+    results: tuple[RuleResult, ...] = ()
+    """One entry per rule that ran, passing rules included."""
 
     @property
     def errors(self) -> tuple[Issue, ...]:
@@ -83,7 +107,10 @@ class RuleSet:
 
     def run(self, content: SiteContent, context: ValidationContext) -> Report:
         issues: list[Issue] = []
+        results: list[RuleResult] = []
         for rule in self.enabled_rules():
-            issues.extend(rule.check(content, context))
+            found = tuple(rule.check(content, context))
+            results.append(RuleResult(rule=rule.name, description=rule.description, issues=found))
+            issues.extend(found)
         issues.sort(key=lambda issue: (issue.subject, issue.code, issue.language or ""))
-        return Report(issues=tuple(issues))
+        return Report(issues=tuple(issues), results=tuple(results))

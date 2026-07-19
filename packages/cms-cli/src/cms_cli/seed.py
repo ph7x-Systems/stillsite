@@ -36,6 +36,8 @@ from cms_cli.seed_data import (
     HOME_HERO,
     HOME_LATEST,
     MEDIA_ALT,
+    REVIEW_ARTICLE,
+    REVIEW_ARTICLE_ID,
     ROCKET_SVG,
     SEED_TIME,
 )
@@ -99,6 +101,21 @@ def seed(storage: StorageBackend, project_dir: Path | None = None) -> tuple[int,
         entry.cover = f"cover-{category}"
         storage.save_article(entry)
 
+    # Still in review, DE translation deliberately missing: the seeded
+    # project shows the publish gate holding a real warning instead of an
+    # empty all-green report. Never exported (not published).
+    pending = new_article(
+        REVIEW_ARTICLE_ID, REVIEW_ARTICLE[Language.EN], now=SEED_TIME + timedelta(days=1)
+    )
+    for language, content in REVIEW_ARTICLE.items():
+        if language is not Language.EN:
+            pending.set_translation(language, content)
+    pending.status = ContentStatus.REVIEW
+    pending.category = "missions"
+    pending.tags = ("training", "parking")
+    pending.cover = "cover-missions"
+    storage.save_article(pending)
+
     rocket = MediaAsset(
         id="rocket",
         path="images/rocket.svg",
@@ -130,4 +147,4 @@ def seed(storage: StorageBackend, project_dir: Path | None = None) -> tuple[int,
         if not target.exists():
             target.write_text(ROCKET_SVG, encoding="utf-8")
 
-    return 2, len(ARTICLES), 1 + len(COVER_SVGS)
+    return 2, len(ARTICLES) + 1, 1 + len(COVER_SVGS)

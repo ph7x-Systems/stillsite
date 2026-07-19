@@ -41,6 +41,11 @@ def test_seed_validate_build_export_flow(tmp_path: Path) -> None:
     validated = runner.invoke(app, ["validate", "-p", str(project)])
     assert validated.exit_code == 0, validated.output
     assert "0 error(s)" in validated.output
+    # Every rule reports its outcome, passing rules included; the seeded
+    # review article keeps a live warning without blocking anything.
+    assert "unique-slugs: pass" in validated.output
+    assert "required-translations:" in validated.output
+    assert "warning" in validated.output
 
     built = runner.invoke(app, ["build", "-p", str(project)])
     assert built.exit_code == 0, built.output

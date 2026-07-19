@@ -57,30 +57,7 @@
     </div>
   </div>
   <div class="col-lg-5">
-    <div class="card mb-4">
-      <div class="card-header"><h2 class="card-title h6 mb-0">Validation</h2></div>
-      <div class="card-body{% if report.issues %} p-0 admin-table-wrap{% endif %}">
-        {% if report.issues %}
-        <p class="px-3 pt-3">{{ report.errors | length }} errors, {{ report.warnings | length }} warnings.
-          {% if report.ok %}Publishing is not blocked.{% else %}Publishing is blocked until the errors are fixed.{% endif %}</p>
-        <table class="table table-sm mb-0 admin-table">
-          <thead><tr><th scope="col">Severity</th><th scope="col">Rule</th><th scope="col">Subject</th><th scope="col">Message</th></tr></thead>
-          <tbody>
-            {% for issue in report.issues %}
-            <tr>
-              <td><span class="badge {{ 'text-bg-danger admin-state-missing' if issue.severity.value == 'error' else 'text-bg-warning admin-state-outdated' }} admin-state">{{ issue.severity.value }}</span></td>
-              <td>{{ issue.code }}</td>
-              <td>{{ issue.subject }}{% if issue.language %} <span class="text-body-secondary">[{{ issue.language.value }}]</span>{% endif %}</td>
-              <td>{{ issue.message }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% else %}
-        <p class="admin-ok text-success mb-0">All validation rules pass — publishing is not blocked.</p>
-        {% endif %}
-      </div>
-    </div>
+    {% include "_validation_report.html.j2" %}
     <div class="card mb-4">
       <div class="card-header"><h2 class="card-title h6 mb-0">Build and export</h2></div>
       <div class="card-body">

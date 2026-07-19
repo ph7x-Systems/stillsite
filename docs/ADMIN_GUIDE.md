@@ -73,12 +73,30 @@ with that entity's errors listed (the publish gate; disable only with
 
 ## Publishing panel
 
-`/publishing` shows the project (`sardine.toml`), the live validation
+`/publishing` shows the project (`sardine.toml`), the full validation
 report, and two actions: **Preview build** (any role) into a temporary
 directory served under `/preview/`, and **Build & export** (publisher and
 up) which validates first, then writes the project's output directory with
 the chosen target's extras (`generic`, `swa`, `nginx`). Every run is
 recorded and shown on the panel and the dashboard.
+
+The validation report (shared with the dashboard) always shows the whole
+story, not only failures: a gate callout (open/blocked) with the scope that
+was validated (articles, pages, media assets, languages), one row per rule
+with its outcome — every rule is listed even when it passes — and the issue
+list with each subject linked to its edit screen. The five default rules:
+
+| Rule | Checks that |
+| --- | --- |
+| `required-translations` | Review/published content carries every required language; incomplete translations warn in review and block once published |
+| `unique-slugs` | Generated URLs never collide within a language |
+| `media-references` | Sections only reference media assets that exist |
+| `media-alt-coverage` | Every media asset has alt text in each required language |
+| `known-categories` | Articles only use declared categories (skipped when none are declared) |
+
+The seeded example project intentionally keeps one article in review with a
+missing DE translation, so a fresh project (and the public demo) shows the
+gate holding a real warning instead of an empty all-green report.
 
 ## Security model
 

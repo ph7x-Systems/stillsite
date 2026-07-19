@@ -42,6 +42,19 @@ def _validate(project: Project) -> Report:
 
 
 def _report(report: Report) -> None:
+    for result in report.results:
+        if result.ok:
+            outcome = "pass"
+        else:
+            outcome = ", ".join(
+                part
+                for part in (
+                    f"{len(result.errors)} error(s)" if result.errors else "",
+                    f"{len(result.warnings)} warning(s)" if result.warnings else "",
+                )
+                if part
+            )
+        typer.echo(f"{result.rule}: {outcome}")
     for issue in report.issues:
         typer.echo(str(issue))
     typer.echo(f"{len(report.errors)} error(s), {len(report.warnings)} warning(s)")

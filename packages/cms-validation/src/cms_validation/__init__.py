@@ -1,9 +1,13 @@
 """Configurable content validation rules."""
 
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _dist_version
+
 from cms_validation.engine import (
     Issue,
     Report,
     Rule,
+    RuleResult,
     RuleSet,
     Severity,
     SiteContent,
@@ -18,7 +22,10 @@ from cms_validation.rules import (
     default_ruleset,
 )
 
-__version__ = "0.1.0"
+try:
+    __version__ = _dist_version("sardine-cms-validation")
+except PackageNotFoundError:  # running from a source tree without install
+    __version__ = "0+unknown"
 
 __all__ = [
     "Issue",
@@ -28,6 +35,7 @@ __all__ = [
     "Report",
     "RequiredTranslationsRule",
     "Rule",
+    "RuleResult",
     "RuleSet",
     "Severity",
     "SiteContent",

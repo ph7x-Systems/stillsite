@@ -20,10 +20,11 @@ from cms_core import (
     TranslationState,
     User,
 )
-from cms_validation import RuleSet, SiteContent, ValidationContext, default_ruleset
+from cms_validation import SiteContent
 from fastapi import APIRouter, Depends, Request
 
 from cms_admin.auth import current_session
+from cms_admin.validation_report import report_context
 
 router = APIRouter()
 
@@ -68,9 +69,6 @@ async def dashboard(
     user, session = user_session
     content: SiteContent = await request.app.state.db.run(_load_content)
     entries: list[Article | Page] = [*content.articles, *content.pages]
-    report = RuleSet(rules=default_ruleset()).run(
-        content, ValidationContext(required_languages=TARGET_LANGUAGES)
-    )
     matrix = translation_matrix(entries)
     return request.app.state.templates.TemplateResponse(
         request,
@@ -89,7 +87,7 @@ async def dashboard(
                 "pages": len(content.pages),
                 "media": len(content.media),
             },
-            "report": report,
+            **report_context(content),
             "last_build": getattr(request.app.state, "last_build", None),
         },
     )

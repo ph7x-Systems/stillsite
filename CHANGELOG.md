@@ -3,6 +3,21 @@
 All notable changes to Sardine CMS. The project follows semantic versioning
 from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
+## Unreleased
+
+- **Validation report** across the panel and CLI: `Report` now carries one
+  `RuleResult` per rule that ran (passing rules included, each with a
+  human description). The admin dashboard and publishing pages share a
+  full report — gate callout with the validated scope, a per-rule outcome
+  table, and issues linked to their edit screens; `cms validate` prints
+  the per-rule outcomes too.
+- The seeded example keeps one article in review with a missing DE
+  translation, so fresh projects and the demo show the publish gate
+  holding a real warning.
+- Package `__version__` attributes now derive from the installed
+  distribution metadata (they were stuck at `0.1.0`); a test keeps all six
+  pyproject versions in lockstep.
+
 ## 0.1.1 — 2026-07-19
 
 Documentation release: every package ships a proper PyPI description —

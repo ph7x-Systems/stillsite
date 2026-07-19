@@ -140,7 +140,7 @@ def test_dashboard_shows_validation_errors_that_block_publishing(tmp_path: Path)
         _sign_in(client)
         page = client.get("/").text
     assert "required-translations" in page
-    assert "Publishing is blocked" in page
+    assert "Publish gate blocked" in page
 
 
 def test_dashboard_empty_states(tmp_path: Path) -> None:
@@ -148,7 +148,7 @@ def test_dashboard_empty_states(tmp_path: Path) -> None:
         _sign_in(client)
         page = client.get("/").text
     assert "No content yet" in page
-    assert "All validation rules pass" in page
+    assert "Publish gate open" in page
     assert "No build or export has run from this panel yet." in page
 
 

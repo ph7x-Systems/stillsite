@@ -11,19 +11,9 @@
 <p><strong>{{ project.site.name }}</strong> · {{ project.site.base_url }} ·
   theme <code>{{ project.site.theme }}</code> · output <code>{{ project.output }}</code></p>
 {% endif %}
+{% include "_validation_report.html.j2" %}
 <div class="row">
   <div class="col-lg-6">
-    <div class="card mb-3">
-      <div class="card-header"><h2 class="card-title h6 mb-0">Publish gate</h2></div>
-      <div class="card-body">
-        {% if report.issues %}
-        <p class="mb-0">{{ report.errors | length }} errors, {{ report.warnings | length }} warnings.
-          {% if report.ok %}Builds are not blocked.{% else %}Builds are blocked until the errors are fixed.{% endif %}</p>
-        {% else %}
-        <p class="admin-ok text-success mb-0">All validation rules pass — builds are not blocked.</p>
-        {% endif %}
-      </div>
-    </div>
     <div class="card mb-3">
       <div class="card-header"><h2 class="card-title h6 mb-0">Run</h2></div>
       <div class="card-body">

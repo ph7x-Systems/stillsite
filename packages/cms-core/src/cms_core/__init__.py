@@ -1,5 +1,8 @@
 """Content model, versioned schemas and translation states."""
 
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _dist_version
+
 from cms_core.accounts import AdminSession, Role, User
 from cms_core.languages import SOURCE_LANGUAGE, TARGET_LANGUAGES, Language
 from cms_core.media import MediaAsset
@@ -19,7 +22,10 @@ from cms_core.translatable import (
     worst_state,
 )
 
-__version__ = "0.1.0"
+try:
+    __version__ = _dist_version("sardine-cms-core")
+except PackageNotFoundError:  # running from a source tree without install
+    __version__ = "0+unknown"
 
 __all__ = [
     "SCHEMA_VERSION",

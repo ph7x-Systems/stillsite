@@ -17,11 +17,12 @@ from cms_cli.project import Project, load_project
 from cms_core import Role, StorageBackend, User
 from cms_core.accounts import AdminSession
 from cms_core.languages import TARGET_LANGUAGES
-from cms_validation import RuleSet, SiteContent, ValidationContext, default_ruleset
+from cms_validation import SiteContent
 from fastapi import APIRouter, Depends, Form, Request, status
 from fastapi.responses import RedirectResponse
 
 from cms_admin.auth import current_session, enforce_csrf, get_db, require_at_least
+from cms_admin.validation_report import report_context, run_report
 
 router = APIRouter(prefix="/publishing")
 
@@ -74,9 +75,6 @@ async def publishing_home(
     project = _project(request)
     content = await _site_content(request)
     languages = project.site.languages if project else TARGET_LANGUAGES
-    report = RuleSet(rules=default_ruleset()).run(
-        content, ValidationContext(required_languages=languages)
-    )
     return request.app.state.templates.TemplateResponse(
         request,
         "publishing.html.j2",
@@ -86,7 +84,7 @@ async def publishing_home(
             "csrf_token": session.csrf_token,
             "project": project,
             "project_dir": str(request.app.state.settings.project_dir.resolve()),
-            "report": report,
+            **report_context(content, tuple(languages)),
             "targets": TARGETS,
             "last_build": getattr(request.app.state, "last_build", None),
         },
@@ -139,9 +137,7 @@ async def run_build(
         _record(request, "build", ok=False, detail=f"unknown target {target!r}")
         return _redirect()
     content = await _site_content(request)
-    report = RuleSet(rules=default_ruleset()).run(
-        content, ValidationContext(required_languages=project.site.languages)
-    )
+    report = run_report(content, tuple(project.site.languages))
     if not report.ok:
         _record(
             request,

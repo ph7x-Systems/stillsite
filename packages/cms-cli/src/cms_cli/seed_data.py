@@ -1802,3 +1802,82 @@ COVER_ALT: dict[str, dict[Language, str]] = {
         DE: "Die Kantinenkarte, der niemand folgt",
     },
 }
+
+
+# One article deliberately left in review with the DE translation missing:
+# the seeded project must exercise the publish gate, not only pass it. The
+# entry never reaches the public site (only published content is exported),
+# but the dashboard and publishing report show the live warning.
+REVIEW_ARTICLE_ID = "parallel-parking-the-rocket"
+REVIEW_ARTICLE: dict[Language, ArticleContent] = {
+    EN: ArticleContent(
+        title="Parallel parking the rocket",
+        summary="A launch pad is easy. The spot between two comets is not.",
+        body_markdown=(
+            "Nobody warns you about parking.\n\n"
+            "Launching is loud and glorious and the brochure covers it in "
+            "detail. What the brochure does not cover is arriving at a busy "
+            "orbit at rush hour and finding one free spot between two comets, "
+            "both of which parked diagonally.\n\n"
+            "The committee has therefore opened a training programme: forty "
+            "hours of simulator time, a traffic cone borrowed from the "
+            "canteen, and an instructor who keeps saying *mirror, signal, "
+            "retro-burn*. Certification is mandatory before anyone is allowed "
+            "to dock the tin anywhere with witnesses.\n\n"
+            "The German translation of this report is still with the review "
+            "board, which is exactly the kind of thing our own publish gate "
+            "is for."
+        ),
+    ),
+    PT: ArticleContent(
+        title="Estacionar o foguetao em paralelo",
+        summary="Uma plataforma de lancamento é fácil. A vaga entre dois cometas não.",
+        body_markdown=(
+            "Ninguém nos avisa sobre o estacionamento.\n\n"
+            "Lançar é barulhento e glorioso e a brochura cobre isso ao "
+            "detalhe. O que a brochura não cobre é chegar a uma órbita "
+            "movimentada à hora de ponta e encontrar uma única vaga entre "
+            "dois cometas, ambos estacionados na diagonal.\n\n"
+            "O comité abriu por isso um programa de treino: quarenta horas de "
+            "simulador, um cone de trânsito emprestado pela cantina e um "
+            "instrutor que repete *espelho, pisca, retro-propulsão*. A "
+            "certificação é obrigatória antes de alguém poder atracar a lata "
+            "num sítio com testemunhas."
+        ),
+        slug="estacionar-o-foguetao-em-paralelo",
+    ),
+    ES: ArticleContent(
+        title="Aparcar el cohete en paralelo",
+        summary="Una plataforma de lanzamiento es fácil. El hueco entre dos cometas no.",
+        body_markdown=(
+            "Nadie te avisa sobre el aparcamiento.\n\n"
+            "Lanzar es ruidoso y glorioso y el folleto lo cubre con detalle. "
+            "Lo que el folleto no cubre es llegar a una órbita concurrida en "
+            "hora punta y encontrar un único hueco entre dos cometas, los dos "
+            "aparcados en diagonal.\n\n"
+            "El comité ha abierto por ello un programa de entrenamiento: "
+            "cuarenta horas de simulador, un cono de tráfico prestado por la "
+            "cantina y un instructor que repite *espejo, intermitente, "
+            "retropropulsión*. La certificación es obligatoria antes de que "
+            "nadie pueda atracar la lata donde haya testigos."
+        ),
+        slug="aparcar-el-cohete-en-paralelo",
+    ),
+    FR: ArticleContent(
+        title="Garer la fusée en créneau",
+        summary="Un pas de tir, c'est facile. La place entre deux comètes, non.",
+        body_markdown=(
+            "Personne ne vous prévient pour le stationnement.\n\n"
+            "Décoller est bruyant et glorieux et la brochure couvre le sujet "
+            "en détail. Ce que la brochure ne couvre pas, c'est l'arrivée sur "
+            "une orbite chargée à l'heure de pointe, avec une seule place "
+            "libre entre deux comètes garées en diagonale.\n\n"
+            "Le comité a donc ouvert un programme d'entraînement : quarante "
+            "heures de simulateur, un cône de chantier prêté par la cantine "
+            "et un instructeur qui répète *rétroviseur, clignotant, "
+            "rétro-poussée*. La certification est obligatoire avant d'amarrer "
+            "la boîte devant témoins."
+        ),
+        slug="garer-la-fusee-en-creneau",
+    ),
+}

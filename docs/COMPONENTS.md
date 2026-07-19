@@ -64,7 +64,8 @@ Inter/Newsreader, OFL), state helpers and no-JS fallbacks. Surfaces:
 | Side-by-side editors | Bootstrap grid (`row`/`col`, `admin-sbs`), cards, Markdown preview panel |
 | Forms | `form-control`/`form-label` (+ mono textarea), form-text hints, alert block |
 | Workflow (status transitions) | role-filtered button group (`admin-workflow`), per-status badge colors |
-| Publishing panel | cards for gate/run/last-run, target select, buttons |
+| Publishing panel | gate `callout` (success/danger), rules + issues tables in cards, target select, buttons |
+| Validation report (shared partial) | `callout callout-success/-danger` verdict, `.table` per-rule outcomes with `text-bg-*` badges, issue subjects linked to edit screens |
 
 The admin remains an application (not a theme); sites theming the public
 output do not affect the admin's look.

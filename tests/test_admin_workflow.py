@@ -232,3 +232,33 @@ def test_build_requires_publisher_and_a_project(tmp_path: Path) -> None:
         client.post("/publishing/build", data={"csrf_token": csrf})
         panel = client.get("/publishing").text
     assert "no sardine.toml" in panel
+
+
+def test_publishing_report_lists_every_rule_with_outcomes(tmp_path: Path) -> None:
+    """The publish gate shows what ran: all five rules, pass or fail, plus
+    the scope of the content set it validated."""
+    app = _app(tmp_path, _article("live", ContentStatus.PUBLISHED, complete=True))
+    with _client(app) as client:
+        _sign_in(client)
+        panel = client.get("/publishing").text
+    for rule in (
+        "required-translations",
+        "unique-slugs",
+        "media-references",
+        "media-alt-coverage",
+        "known-categories",
+    ):
+        assert rule in panel
+    assert "Publish gate open" in panel
+    assert "admin-rules-table" in panel
+    assert "1 article" in panel  # the validated scope is stated
+
+
+def test_publishing_report_links_issues_to_their_edit_screens(tmp_path: Path) -> None:
+    app = _app(tmp_path, _article("halfway", ContentStatus.REVIEW))
+    with _client(app) as client:
+        _sign_in(client)
+        panel = client.get("/publishing").text
+    assert "Publish gate open" in panel  # warnings never block
+    assert "warning" in panel
+    assert 'href="/articles/halfway"' in panel
