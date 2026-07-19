@@ -676,3 +676,57 @@ msgstr "Als Entwurf duplizieren"
 
 msgid "View in preview"
 msgstr "In der Vorschau ansehen"
+
+msgid "Accounts"
+msgstr "Konten"
+
+msgid "Create account"
+msgstr "Konto erstellen"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "New account"
+msgstr "Neues Konto"
+
+msgid "Role"
+msgstr "Rolle"
+
+msgid "Since"
+msgstr "Seit"
+
+msgid "Users"
+msgstr "Benutzer"
+
+msgid "You cannot delete your own account, and the last admin can neither be deleted nor demoted."
+msgstr "Sie können Ihr eigenes Konto nicht löschen, und der letzte Admin kann weder gelöscht noch herabgestuft werden."
+
+msgid "at least 12 characters"
+msgstr "mindestens 12 Zeichen"
+
+msgid "delete: the last admin cannot be deleted"
+msgstr "delete: der letzte Admin kann nicht gelöscht werden"
+
+msgid "delete: you cannot delete your own account"
+msgstr "delete: Sie können Ihr eigenes Konto nicht löschen"
+
+msgid "language: unknown language"
+msgstr "language: unbekannte Sprache"
+
+msgid "password: at least 12 characters"
+msgstr "password: mindestens 12 Zeichen"
+
+msgid "role: the last admin cannot be demoted"
+msgstr "role: der letzte Admin kann nicht herabgestuft werden"
+
+msgid "role: unknown role"
+msgstr "role: unbekannte Rolle"
+
+msgid "username: already taken"
+msgstr "username: bereits vergeben"
+
+msgid "username: lowercase letters, digits and dashes only"
+msgstr "username: nur Kleinbuchstaben, Ziffern und Bindestriche"
+
+msgid "you"
+msgstr "Sie"

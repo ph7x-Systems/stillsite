@@ -91,7 +91,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Capability | Today | Gap → where |
 | --- | --- | --- |
 | Role ladder | ✅ editor < reviewer < publisher < admin | — |
-| User management UI | 🟡 CLI only (`cms admin create-user`) | 🔜 users screen in the admin (M5) |
+| User management UI | ✅ Users screen (admin role): create, role change, delete — self and last-admin safeguards; CLI stays the bootstrap | — |
 | Admin panel in the editor's language | ✅ gettext i18n (ADR-0022): PT-PT/ES/FR/DE shipped, per-user preference + browser fallback, completeness enforced by tests | — |
 | Password reset | ❌ no email subsystem | 🧭 email/notification ADR (M7) |
 | Two-factor authentication | ❌ | 🔜 TOTP (M7) |

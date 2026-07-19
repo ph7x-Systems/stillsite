@@ -5,6 +5,12 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Users screen** (M5): admins manage accounts from the panel — create
+  (with role and panel language), change roles, delete — with the
+  safeguards that matter: you cannot delete yourself, and the last admin
+  can neither be deleted nor demoted. The CLI remains the bootstrap for
+  the first account.
+
 - **Duplicate as draft and per-entry preview** (M5): one click copies an
   article or page — content, metadata and sections intact, fresh
   collision-safe id, workflow reset to draft, no schedule, no trash

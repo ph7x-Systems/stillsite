@@ -1,0 +1,83 @@
+{% extends "shell.html.j2" %}
+{% from "_fields.html.j2" import errors_block with context %}
+{% block title %}{{ _("Users") }} — Sardine CMS admin{% endblock %}
+{% block header %}<h1 class="h3 mb-0">{{ _("Users") }}</h1>{% endblock %}
+{% block content %}
+{{ errors_block(errors) }}
+<div class="row">
+  <div class="col-lg-7">
+    <div class="card mb-3">
+      <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Accounts") }}</h2></div>
+      <div class="card-body p-0 table-responsive admin-table-wrap">
+        <table class="table table-sm table-striped mb-0 admin-table admin-users-table">
+          <thead><tr><th scope="col">{{ _("Username") }}</th><th scope="col">{{ _("Role") }}</th><th scope="col">{{ _("Language") }}</th><th scope="col">{{ _("Since") }}</th><th scope="col">{{ _("Actions") }}</th></tr></thead>
+          <tbody>
+            {% for account in users %}
+            <tr>
+              <th scope="row">{{ account.username }}{% if account.username == user.username %} <span class="badge text-bg-light border admin-tag">{{ _("you") }}</span>{% endif %}</th>
+              <td>
+                <form method="post" action="/users/{{ account.username }}/role" class="d-flex gap-1 mb-0">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                  <label class="mb-0">
+                    <span class="visually-hidden">{{ _("Role") }}</span>
+                    <select class="form-select form-select-sm" name="role">
+                      {% for role in roles %}
+                      <option value="{{ role }}" {% if account.role.value == role %}selected{% endif %}>{{ role }}</option>
+                      {% endfor %}
+                    </select>
+                  </label>
+                  <button type="submit" class="btn btn-outline-secondary btn-sm">{{ _("Save") }}</button>
+                </form>
+              </td>
+              <td>{{ account.language.value if account.language else _("Browser default") }}</td>
+              <td>{{ account.created_at.strftime("%Y-%m-%d") }}</td>
+              <td>
+                <form method="post" action="/users/{{ account.username }}/delete" class="mb-0">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                  <button type="submit" class="btn btn-outline-danger btn-sm">{{ _("Delete") }}</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer form-text">{{ _("You cannot delete your own account, and the last admin can neither be deleted nor demoted.") }}</div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("New account") }}</h2></div>
+      <div class="card-body">
+        <form method="post" action="/users" class="admin-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <div class="mb-2 admin-field">
+            <label class="form-label" for="new-username">{{ _("Username") }}</label>
+            <input class="form-control admin-input" id="new-username" name="username" required>
+          </div>
+          <div class="mb-2 admin-field">
+            <label class="form-label" for="new-password">{{ _("Password") }}</label>
+            <input class="form-control admin-input" id="new-password" name="password" type="password"
+                   minlength="12" required>
+            <div class="form-text admin-hint">{{ _("at least 12 characters") }}</div>
+          </div>
+          <div class="mb-2 admin-field">
+            <label class="form-label" for="new-role">{{ _("Role") }}</label>
+            <select class="form-select" id="new-role" name="role">
+              {% for role in roles %}<option value="{{ role }}">{{ role }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="mb-3 admin-field">
+            <label class="form-label" for="new-language">{{ _("Language") }}</label>
+            <select class="form-select" id="new-language" name="language">
+              <option value="">{{ _("Browser default") }}</option>
+              {% for code in languages %}<option value="{{ code }}">{{ code }}</option>{% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">{{ _("Create account") }}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
