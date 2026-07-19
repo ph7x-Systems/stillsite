@@ -94,3 +94,20 @@ def test_every_shipped_custom_element_is_documented() -> None:
     assert defined, "no custom elements found in theme assets"
     for element in sorted(defined):
         assert f"`<{element}>`" in components, f"custom element <{element}> not in COMPONENTS.md"
+
+
+def test_admin_guide_tracks_the_settings_and_workflow() -> None:
+    """ADMIN_GUIDE.md anti-drift: env vars and transitions match the code."""
+    import re as _re
+
+    from cms_admin.workflow import LABELS, TRANSITIONS
+
+    guide = (REPO_ROOT / "docs" / "ADMIN_GUIDE.md").read_text(encoding="utf-8")
+    settings_src = (REPO_ROOT / "apps" / "admin" / "src" / "cms_admin" / "settings.py").read_text(
+        encoding="utf-8"
+    )
+    for variable in sorted(set(_re.findall(r'"(SARDINE_[A-Z_]+)"', settings_src))):
+        assert f"`{variable}`" in guide, f"{variable} missing from ADMIN_GUIDE.md"
+    for pair, label in LABELS.items():
+        assert label in guide, f"transition label {label!r} missing from ADMIN_GUIDE.md"
+        assert TRANSITIONS[pair].value in guide

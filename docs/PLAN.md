@@ -126,7 +126,7 @@ with tests:
        and blocks on errors (configurable); preview builds through
        `cms-build` into a temporary directory; build/export can be
        triggered from the panel with visible results.
-9. [ ] **Hardening + accessibility gate**: security headers (CSP with no
+9. [x] **Hardening + accessibility gate**: security headers (CSP with no
        inline script, frame denial), the SECURITY_STRATEGY M3 test suites
        (authn/authz, CSRF, upload validation, failed-login rate limiting),
        axe over the admin pages (WCAG 2.2 AA, same gate as the public

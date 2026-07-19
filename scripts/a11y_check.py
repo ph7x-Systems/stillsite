@@ -5,7 +5,7 @@ representative pages and fails on any serious/critical axe violation.
 Used locally and by the CI `Accessibility (axe)` job — one script, one truth.
 
 Usage:
-    python scripts/a11y_check.py <site_dir> <axe_min_js>
+    python scripts/a11y_check.py <site_dir> <axe_min_js> [pages...]
 """
 
 import http.server
@@ -42,13 +42,14 @@ def _serve(directory: Path) -> tuple[socketserver.TCPServer, int]:
 def main() -> int:
     site_dir = Path(sys.argv[1]).resolve()
     axe_source = Path(sys.argv[2]).read_text(encoding="utf-8")
+    pages = sys.argv[3:] or PAGES
     server, port = _serve(site_dir)
     failures: list[str] = []
     try:
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch()
             page = browser.new_page()
-            for path in PAGES:
+            for path in pages:
                 page.goto(f"http://127.0.0.1:{port}{path}", wait_until="load")
                 page.evaluate(axe_source)
                 result = page.evaluate("() => axe.run(document)")
@@ -68,7 +69,7 @@ def main() -> int:
         print(json.dumps(failures, indent=2, ensure_ascii=False))
         print(f"FAIL: {len(failures)} serious/critical accessibility violations")
         return 1
-    print(f"OK: no serious/critical axe violations across {len(PAGES)} pages")
+    print(f"OK: no serious/critical axe violations across {len(pages)} pages")
     return 0
 
 

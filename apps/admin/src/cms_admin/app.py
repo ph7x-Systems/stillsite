@@ -37,10 +37,34 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
         app.state.db.close()
 
 
+# Hardening (SECURITY_STRATEGY, M3 phase 9): the admin ships zero JavaScript,
+# so the CSP allows no script source at all; styles, fonts and images come
+# only from the app itself; nothing may frame it.
+SECURITY_HEADERS = {
+    "Content-Security-Policy": (
+        "default-src 'none'; style-src 'self'; font-src 'self'; "
+        "img-src 'self' data:; form-action 'self'; base-uri 'none'; "
+        "frame-ancestors 'none'"
+    ),
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+}
+
+
 def create_app(settings: AdminSettings | None = None) -> FastAPI:
     from cms_admin.auth import LoginRateLimiter
 
     app = FastAPI(title="Sardine CMS admin", lifespan=_lifespan, docs_url=None, redoc_url=None)
+
+    @app.middleware("http")
+    async def _security_headers(request: Request, call_next):  # type: ignore[no-untyped-def]
+        response = await call_next(request)
+        for name, value in SECURITY_HEADERS.items():
+            response.headers.setdefault(name, value)
+        return response
+
     app.state.settings = settings if settings is not None else AdminSettings.from_env()
     # autoescape must be forced on: the stock select_autoescape does not
     # recognize the .html.j2 extension and would render templates unescaped.

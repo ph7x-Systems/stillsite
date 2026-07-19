@@ -116,7 +116,10 @@ Security work is part of each milestone's definition of done:
 - **M2 (build/CLI):** autoescaping verified by tests; safe Markdown rendering;
   dependency lockfile + update automation; export path confinement tests.
 - **M3 (admin):** authn/authz test suite; CSRF protection; upload validation
-  tests; failed-login rate limiting; security section in the admin docs.
+  tests; failed-login rate limiting; security section in the admin docs —
+  **all in force**, plus security headers on every admin response (CSP with
+  no script source at all, frame denial) and the axe gate over the admin
+  pages in CI. See [ADMIN_GUIDE.md](ADMIN_GUIDE.md).
 - **M4 (theme/example):** CSP-compatible reference theme (no inline styles —
   already a theme rule); accessibility (WCAG 2.2 AA) checks in CI.
 - **Go-public:** the checklist in section 4, executed and recorded in the PR

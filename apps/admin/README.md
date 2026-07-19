@@ -45,5 +45,7 @@ Configuration is environment-only (no config files with secrets):
 | `SARDINE_PROJECT_DIR`           | Project directory (`sardine.toml`)          | `.`                    |
 | `SARDINE_ADMIN_PUBLISH_GATE`    | Set `0` to publish despite validation errors | `1`                   |
 
-Milestone 3 status and the phased plan live in
+The full admin guide — configuration, roles, workflow, publishing,
+security model — is [docs/ADMIN_GUIDE.md](../../docs/ADMIN_GUIDE.md)
+(anti-drift-checked). Milestone 3 status and the phased plan live in
 [docs/PLAN.md](../../docs/PLAN.md).

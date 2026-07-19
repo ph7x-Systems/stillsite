@@ -148,6 +148,19 @@ jobs:
           cms seed  -p examples/multilingual-company-site
           cms build -p examples/multilingual-company-site
           python scripts/a11y_check.py examples/multilingual-company-site/_site package/axe.min.js
+      - name: Run the accessibility gate over the admin (snapshot)
+        run: |
+          python -m pip install httpx2
+          python -m cms_admin.demo_export \
+            --storage examples/multilingual-company-site/content.sqlite3 \
+            --out demo-admin/admin \
+            --media-dir examples/multilingual-company-site/media \
+            --project-dir examples/multilingual-company-site
+          python scripts/a11y_check.py demo-admin package/axe.min.js \
+            /admin/login/ /admin/ /admin/articles/ \
+            /admin/articles/we-choose-the-tin/ \
+            /admin/articles/we-choose-the-tin/translations/pt-pt/ \
+            /admin/pages/home/ /admin/media/ /admin/publishing/
       - name: W3C markup validation (Nu checker)
         run: |
           python -m pip install html5validator
