@@ -63,6 +63,8 @@ component library, no CDN, islands per ADR-0010. Surfaces:
 | Side-by-side editors | two-column grid (`admin-sbs`), fieldsets, Markdown preview panel |
 | Forms | `admin-field` / `admin-input` (+ mono textarea), inline hints, alert block |
 | Actions | `admin-btn` / `admin-btn-primary` / `admin-btn-small` (the site's `.btn` idiom) |
+| Workflow (status transitions) | role-filtered button group (`admin-workflow`), per-status tag colors |
+| Publishing panel | project summary, gate report, preview/build forms, last-run record |
 
 The admin remains an application (not a theme); sites theming the public
 output do not affect the admin's look.
