@@ -1,6 +1,6 @@
 # ADR-0028 — The extension contract: how Sardine CMS grows without forks
 
-- **Status:** proposed
+- **Status:** accepted
 - **Date:** 2026-07-19
 
 ## Context
@@ -12,7 +12,9 @@ rules (`RuleSet(rules=[...])`). What is missing is the umbrella
 contract — how a third-party package plugs new capability into all of
 it at once, discoverably, without patching the framework.
 
-## Proposed decision
+## Decision
+
+Owner-approved 2026-07-19.
 
 - **One entry-point group, `sardine.extensions`.** An extension is a
   package exposing a single `Extension` object with optional
