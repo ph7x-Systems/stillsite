@@ -2,12 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
 <title>{% block title %}Sardine CMS admin{% endblock %}</title>
-<link rel="stylesheet" href="/static/vendor/adminlte/adminlte.min.css">
-<link rel="stylesheet" href="/static/vendor/bootstrap-icons/bootstrap-icons.min.css">
+{# Theme init first, exactly as the AdminLTE reference pages do (prevents
+   the flash of the wrong theme); external file because the CSP allows no
+   inline scripts — still blocking, still before first paint. #}
+<script src="/static/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)">
+<meta name="robots" content="noindex">
+{# Stylesheet order mirrors the reference: font, OverlayScrollbars,
+   Bootstrap Icons, AdminLTE — then the local overlay. #}
+<link rel="stylesheet" href="/static/vendor/source-sans/source-sans-3.css">
 <link rel="stylesheet" href="/static/vendor/overlayscrollbars/overlayscrollbars.min.css">
+<link rel="stylesheet" href="/static/vendor/bootstrap-icons/bootstrap-icons.min.css">
+<link rel="stylesheet" href="/static/vendor/adminlte/adminlte.min.css">
 <link rel="stylesheet" href="/static/admin.css">
 </head>
 <body class="{% block bodyclass %}layout-fixed sidebar-expand-lg bg-body-tertiary{% endblock %}">

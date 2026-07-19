@@ -185,7 +185,7 @@ jobs:
             --out demo-admin/admin \
             --media-dir examples/multilingual-company-site/media \
             --project-dir examples/multilingual-company-site
-          python scripts/a11y_check.py demo-admin package/axe.min.js \
+          python scripts/a11y_check.py demo-admin package/axe.min.js --scheme both \
             /admin/login/ /admin/ /admin/articles/ \
             /admin/articles/we-choose-the-tin/ \
             /admin/articles/we-choose-the-tin/translations/pt-pt/ \

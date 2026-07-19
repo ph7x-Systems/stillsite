@@ -159,21 +159,24 @@ def test_design_system_assets_are_served_locally(tmp_path: Path) -> None:
     with TestClient(_app(tmp_path)) as client:
         admin_css = client.get("/static/admin.css")
         adminlte = client.get("/static/vendor/adminlte/adminlte.min.css")
+        font_css = client.get("/static/vendor/source-sans/source-sans-3.css")
         font = client.get("/static/vendor/source-sans/source-sans-3-latin-wght-normal.woff2")
         font_license = client.get("/static/vendor/source-sans/LICENSE")
         icons_css = client.get("/static/vendor/bootstrap-icons/bootstrap-icons.min.css")
         icons_font = client.get("/static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2")
         icons_license = client.get("/static/vendor/bootstrap-icons/LICENSE")
+        theme_init = client.get("/static/theme-init.js")
     assert admin_css.status_code == 200
     assert "text/css" in admin_css.headers["content-type"]
-    assert "Source Sans 3" in admin_css.text
     assert "Newsreader" not in admin_css.text  # the theme's typography rules
+    assert "Source Sans 3" in font_css.text
     assert "Source Sans 3" in adminlte.text  # AdminLTE itself asks for it
     assert font.status_code == 200
     assert "SIL OPEN FONT LICENSE" in font_license.text.upper()
     assert icons_css.status_code == 200
     assert icons_font.status_code == 200
     assert "MIT" in icons_license.text
+    assert "lte-theme" in theme_init.text  # the reference theme-init, external
 
 
 def test_static_assets_do_not_require_a_session(tmp_path: Path) -> None:

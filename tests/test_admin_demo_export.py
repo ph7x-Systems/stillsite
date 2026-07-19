@@ -130,3 +130,13 @@ def test_snapshot_publishing_page_shows_the_full_report(tmp_path: Path) -> None:
     assert "admin-rules-table" in publishing
     for rule in ("required-translations", "unique-slugs", "media-alt-coverage"):
         assert rule in publishing
+
+
+def test_snapshot_preview_link_points_at_the_public_site(tmp_path: Path) -> None:
+    """The static snapshot cannot serve /preview/ — the public site is the
+    preview, so the navbar link goes to the site root instead of a 404."""
+    db = _storage_file(tmp_path)
+    out = tmp_path / "admin"
+    export_demo(db, out)
+    dashboard = (out / "index.html").read_text(encoding="utf-8")
+    assert 'href="/admin/preview/"' not in dashboard

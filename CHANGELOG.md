@@ -5,6 +5,14 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Admin chrome 1:1 with the AdminLTE reference pages**: theme-init
+  before first paint (external file — the CSP still allows no inline
+  scripts), the reference's stylesheet order, fullscreen toggle, the
+  light/dark/auto color-mode switcher, and the canonical user menu
+  (user-header/user-footer). The axe CI gate now audits the admin in
+  **both color schemes**; the demo snapshot's Preview link points at the
+  public site (the snapshot cannot serve /preview/).
+
 - **Error pages for every host** (ADR-0021): each build now ships
   `401.html`, `403.html`, `404.html` and `50x.html` (localized titles via
   the label system, rendered through the theme's `not_found` template).

@@ -1,12 +1,22 @@
 /* Sardine CMS admin — overlay on top of vendored AdminLTE 4 (ADR-0017).
    AdminLTE (MIT, ColorlibHQ) ships verbatim in vendor/adminlte with its
-   license and states the design: this file never restyles it. It only
-   provides the font the theme asks for (Source Sans 3, OFL, local files —
-   AdminLTE's own --bs-font-sans-serif lists it first), the accessibility
-   fixes and the no-JavaScript fallbacks. */
+   license and states the design: this file never restyles it. The font it
+   asks for loads from vendor/source-sans; this file holds only the
+   accessibility fixes and CSP-safe transpositions of the reference pages'
+   inline bits. */
 
-@font-face{font-family:'Source Sans 3';font-style:normal;font-weight:200 900;font-display:swap;src:url(vendor/source-sans/source-sans-3-latin-wght-normal.woff2) format('woff2-variations');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:'Source Sans 3';font-style:normal;font-weight:200 900;font-display:swap;src:url(vendor/source-sans/source-sans-3-latin-ext-wght-normal.woff2) format('woff2-variations');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+/* The reference sets this width inline on the color-mode dropdown; the CSP
+   forbids inline styles, so the same value lives here. */
+.admin-theme-menu { --bs-dropdown-min-width: 8rem; }
+
+/* The avatar is an inline SVG (the sardine mark), not an <img>: give it the
+   exact sizes AdminLTE gives `.user-image` and `.user-header > img`. */
+.user-menu > .dropdown-menu > li.user-header > svg {
+  width: 90px;
+  height: 90px;
+  border: 3px solid var(--bs-border-color-translucent);
+  border-radius: 50%;
+}
 
 /* Brand mark in the sidebar (the tin rocket keeps its size in check). */
 .sidebar-brand .brand-image { width: 30px; height: 30px; border-radius: 6px; }
@@ -55,5 +65,6 @@
 /* Links inside prose must not rely on color alone (axe link-in-text-block) */
 .card-body p a, .form-text a { text-decoration: underline; text-underline-offset: 2px; }
 
-/* Bootstrap's default code pink is 4.27:1 on white — one shade darker for AA. */
-code { color: #a02766; }
+/* Bootstrap's default code pink is 4.27:1 on white — one shade darker for
+   AA, in the light palette only (the dark palette's default passes). */
+:root:not([data-bs-theme="dark"]) code { color: #a02766; }
