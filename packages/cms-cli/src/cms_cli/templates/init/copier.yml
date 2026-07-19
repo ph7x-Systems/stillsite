@@ -3,7 +3,7 @@ _subdirectory: template
 project_name:
   type: str
   help: Site name shown in titles and feeds
-  default: My Stillsite
+  default: My Sardine CMS
 
 base_url:
   type: str

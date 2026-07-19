@@ -1,4 +1,4 @@
-# Test Plan — Stillsite
+# Test Plan — Sardine CMS
 
 What gets tested, at which layer, with which gate. Rule of thumb: **every
 guarantee the docs promise has a test that fails when it stops being true.**

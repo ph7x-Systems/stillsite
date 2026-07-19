@@ -1,4 +1,4 @@
-"""Stillsite reference theme (dark editorial design system)."""
+"""Sardine CMS reference theme (dark editorial design system)."""
 
 from pathlib import Path
 

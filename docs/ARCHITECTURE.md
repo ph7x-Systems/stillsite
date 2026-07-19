@@ -1,6 +1,6 @@
 # Architecture — Layers and Development Rules
 
-Stillsite follows a strict layered architecture (ports & adapters). The rules
+Sardine CMS follows a strict layered architecture (ports & adapters). The rules
 below are enforceable, not aspirational: dependency direction is checked by
 review and tests, contracts are typed `Protocol`s/ABCs, and mypy strict is a
 required CI gate. Rationale recorded in [ADR-0006](adr/0006-layered-architecture.md).

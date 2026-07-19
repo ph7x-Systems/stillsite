@@ -1,6 +1,6 @@
 # Roadmap
 
-The outward view: where Stillsite is, what ships next, and what "done" means
+The outward view: where Sardine CMS is, what ships next, and what "done" means
 at each horizon. Execution detail lives in [PLAN.md](PLAN.md) (milestones,
 checkboxes) — this page never duplicates it, it points at it. Live demo:
 <https://stillsite.ph7x.com>.
@@ -30,13 +30,13 @@ checkboxes) — this page never duplicates it, it points at it. Live demo:
 
 ## Mid term
 
-- **Admin panel (Milestone 3) — next**: what makes Stillsite a full CMS —
+- **Admin panel (Milestone 3) — next**: what makes Sardine CMS a full CMS —
   the entire editorial cycle in the browser. FastAPI, explicit auth/roles,
   translation dashboard, side-by-side editor, media library, editorial
   workflow; UI approach decided by ADR at kickoff (detailed phased plan in
   [PLAN.md](PLAN.md)).
 - **First release on PyPI** — distribution naming decided by ADR
-  (`stillsite-*` vs `cms-*`), semantic versioning from `0.1.0`, changelog,
+  (`sardine-cms-*` vs `cms-*`), semantic versioning from `0.1.0`, changelog,
   release workflow with trusted publishing.
 - **SQL Server and MySQL/MariaDB backends** — same mold as ADR-0009
   (shared migrations, engine-specific version tracking, conformance suite).
@@ -48,7 +48,7 @@ checkboxes) — this page never duplicates it, it points at it. Live demo:
 - **Extension ecosystem** — the plugin registration ADR (content types,
   validation rules, build steps, CLI subcommands), plus a documented gallery
   of themes/targets/backends passing the public conformance suites.
-- **Dogfooding** — the project's documentation site built with Stillsite
+- **Dogfooding** — the project's documentation site built with Sardine CMS
   itself, deployed like the demo.
 - **1.0** — criteria: admin panel stable, two production deployments beyond
   ph7x.com, PyPI packages with a deprecation policy, all conformance suites

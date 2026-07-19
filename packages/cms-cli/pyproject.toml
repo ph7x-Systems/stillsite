@@ -1,7 +1,7 @@
 [project]
 name = "cms-cli"
 version = "0.1.0"
-description = "Stillsite command line: validate, build, export, seed, preview"
+description = "Sardine CMS command line: validate, build, export, seed, preview"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"

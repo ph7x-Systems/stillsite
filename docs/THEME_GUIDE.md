@@ -1,6 +1,6 @@
 # Theme Authoring Guide
 
-How to build a Stillsite theme — from override to installable package. The
+How to build a Sardine CMS theme — from override to installable package. The
 contracts referenced here are code (`cms_build.themes.Theme`), guarded by
 tests; this guide shows the path. Read [DESIGN_RULES.md](DESIGN_RULES.md)
 first: conformance is what makes a theme a theme. The shipped components and
@@ -13,7 +13,7 @@ the project's `theme/` directory shadow the theme's own:
 
 ```text
 my-site/
-  stillsite.toml
+  sardine.toml
   theme/
     templates/article.html.j2    # replaces the theme's article template
     assets/site.css              # replaces the stylesheet (tokens included)
@@ -49,7 +49,7 @@ class MidnightTheme:
 register_theme("midnight", MidnightTheme)
 ```
 
-A project selects it with `theme = "midnight"` in `stillsite.toml`. The
+A project selects it with `theme = "midnight"` in `sardine.toml`. The
 built-in [`DefaultTheme`](../packages/cms-build/src/cms_build/themes/default/__init__.py)
 is the working reference implementation — start by copying its shape.
 

@@ -1,6 +1,6 @@
 {% extends "shell.html.j2" %}
 {% from "_fields.html.j2" import content_fields, errors_block, state_badge %}
-{% block title %}{{ article.id }} · {{ language.value | upper }} — Stillsite admin{% endblock %}
+{% block title %}{{ article.id }} · {{ language.value | upper }} — Sardine CMS admin{% endblock %}
 {% block content %}
 <nav class="admin-breadcrumb" aria-label="Breadcrumb"><a href="/articles/{{ article.id }}">&larr; {{ article.id }}</a></nav>
 <h1>{{ article.id }} — {{ language.value | upper }} {{ state_badge(state) }}</h1>

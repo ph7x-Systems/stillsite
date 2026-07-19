@@ -18,8 +18,8 @@ from fastapi.responses import RedirectResponse
 from cms_admin.db import StorageExecutor
 from cms_admin.security import new_token, token_digest, verify_password
 
-SESSION_COOKIE = "stillsite_session"
-LOGIN_CSRF_COOKIE = "stillsite_login_csrf"
+SESSION_COOKIE = "sardine_session"
+LOGIN_CSRF_COOKIE = "sardine_login_csrf"
 
 # Least-privilege ladder (cms_core.accounts.Role docstring).
 ROLE_ORDER = (Role.EDITOR, Role.REVIEWER, Role.PUBLISHER, Role.ADMIN)

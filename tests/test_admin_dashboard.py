@@ -61,7 +61,7 @@ def _sign_in(client: TestClient) -> None:
         data={
             "username": "ana",
             "password": PASSWORD,
-            "login_csrf": form.cookies["stillsite_login_csrf"],
+            "login_csrf": form.cookies["sardine_login_csrf"],
         },
     )
 

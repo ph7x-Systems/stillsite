@@ -1,13 +1,13 @@
 [project]
 name = "cms-theme-ph7x-reference"
 version = "0.1.0"
-description = "Stillsite reference theme: dark editorial design system with local fonts"
+description = "Sardine CMS reference theme: dark editorial design system with local fonts"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"
 dependencies = ["cms-build"]
 
-[project.entry-points."stillsite.themes"]
+[project.entry-points."sardine.themes"]
 ph7x-reference = "cms_theme_ph7x_reference:ReferenceTheme"
 
 [build-system]

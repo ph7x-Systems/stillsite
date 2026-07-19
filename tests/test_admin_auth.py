@@ -41,7 +41,7 @@ def _client(app: FastAPI) -> TestClient:
 def _login(client: TestClient, username: str = "ana", password: str = PASSWORD) -> object:
     form = client.get("/login")
     csrf = form.cookies[  # the double-submit value equals the cookie by construction
-        "stillsite_login_csrf"
+        "sardine_login_csrf"
     ]
     return client.post(
         "/login",
@@ -107,7 +107,7 @@ def test_expired_sessions_are_rejected(tmp_path: Path) -> None:
     app = _app(tmp_path, ana=Role.EDITOR)
     with _client(app) as client:
         _login(client)
-        token = client.cookies["stillsite_session"]
+        token = client.cookies["sardine_session"]
         settings: AdminSettings = app.state.settings
         with create_storage(settings.storage_url) as storage:
             session = storage.load_session(token_digest(token))

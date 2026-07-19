@@ -1,4 +1,4 @@
-# Stillsite brand assets
+# Sardine CMS brand assets
 
 | File | Use |
 | --- | --- |
@@ -8,7 +8,7 @@
 | `banner.png` | Wide banner, light (2316×1565) — social previews |
 | `banner-dark.png` | Wide banner, dark navy (2316×1565) — the README header |
 
-**Trademark notice.** The Stillsite name, wordmark and logos are trademarks
+**Trademark notice.** The Sardine CMS name, wordmark and logos are trademarks
 of pH7x Systems. Per Section 6 of the [Apache-2.0 license](../../LICENSE),
 the license does **not** grant permission to use them, except for reasonable
 and customary use in describing the origin of the software. Do not use these

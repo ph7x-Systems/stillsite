@@ -30,8 +30,8 @@ PREFIX = "/admin"
 
 BANNER = (
     '<div class="admin-demo-note" role="note">Read-only demo — nothing here is saved. '
-    "This is a static snapshot of the Stillsite admin; install "
-    '<a href="https://github.com/ph7x-Systems/stillsite">Stillsite</a> to run the real one.'
+    "This is a static snapshot of the Sardine CMS admin; install "
+    '<a href="https://github.com/ph7x-Systems/sardine-cms">Sardine CMS</a> to run the real one.'
     "</div>"
 )
 
@@ -109,7 +109,7 @@ def export_demo(storage_file: Path, out_dir: Path) -> int:
                 data={
                     "username": "demo",
                     "password": password,
-                    "login_csrf": form.cookies["stillsite_login_csrf"],
+                    "login_csrf": form.cookies["sardine_login_csrf"],
                 },
             )
             for path in _demo_paths(db_copy):
