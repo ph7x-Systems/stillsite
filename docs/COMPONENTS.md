@@ -77,6 +77,8 @@ content header with `breadcrumb`, `app-footer` with copyright. Surfaces:
 | Markdown editor (article bodies) | EasyMDE (MIT, vendored at `static/vendor/easymde/` — ADR-0023), Bootstrap Icons toolbar, localized titles, no built-in preview (the builder's preview is the truth) |
 | Workflow (status transitions) | role-filtered button group (`admin-workflow`), per-status badge colors |
 | Publishing panel | gate `callout` (success/danger), rules + issues tables in cards, target select, buttons |
+| Editorial notes (editors) | comment trail card with inline add form, author-or-admin removal |
+| List quick actions | per-row Bootstrap dropdown (bi-three-dots): workflow transitions + trash |
 | Trash | sidebar entry, per-kind tables with Restore / admin-only Delete forever |
 | Design preview (editors) | card with a same-origin iframe onto `/preview/<entry>`, pointer to Publishing when no build exists |
 | Revisions (editors) | history card + detail page with unified diff in `admin-preview`, restore button |

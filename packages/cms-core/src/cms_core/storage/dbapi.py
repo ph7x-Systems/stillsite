@@ -409,6 +409,41 @@ class DbApiBackend(StorageBackend):
 
     # --- admin accounts ----------------------------------------------------------
 
+    # Editorial notes (M5)
+
+    def add_note(
+        self, entity_type: str, entity_id: str, author: str, body: str, created_at: datetime
+    ) -> int:
+        with self._tx():
+            row = self._fetchone(
+                "SELECT COALESCE(MAX(seq), 0) FROM notes WHERE entity_type = %s AND entity_id = %s",
+                (entity_type, entity_id),
+            )
+            number = int(row[0]) + 1 if row else 1
+            self._execute(
+                "INSERT INTO notes (entity_type, entity_id, seq, created_at, author, body)"
+                " VALUES (%s, %s, %s, %s, %s, %s)",
+                (entity_type, entity_id, number, created_at.isoformat(), author, body),
+            )
+        return number
+
+    def list_notes(self, entity_type: str, entity_id: str) -> list[tuple[int, datetime, str, str]]:
+        rows = self._fetchall(
+            "SELECT seq, created_at, author, body FROM notes"
+            " WHERE entity_type = %s AND entity_id = %s ORDER BY seq DESC",
+            (entity_type, entity_id),
+        )
+        return [(int(r[0]), datetime.fromisoformat(r[1]), str(r[2]), str(r[3])) for r in rows]
+
+    def delete_note(self, entity_type: str, entity_id: str, seq: int) -> bool:
+        with self._tx():
+            cursor = self._execute(
+                "DELETE FROM notes WHERE entity_type = %s AND entity_id = %s AND seq = %s",
+                (entity_type, entity_id, seq),
+            )
+            count = int(cursor.rowcount)
+        return count > 0
+
     # Revisions (ADR-0025)
 
     def save_revision(

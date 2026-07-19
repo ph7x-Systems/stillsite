@@ -131,4 +131,15 @@ MIGRATIONS: tuple[str, ...] = (
     ALTER TABLE articles ADD COLUMN featured INTEGER NOT NULL DEFAULT 0;
     ALTER TABLE articles ADD COLUMN author TEXT;
     """,
+    """
+    CREATE TABLE notes (
+        entity_type TEXT NOT NULL,
+        entity_id TEXT NOT NULL,
+        seq INTEGER NOT NULL,
+        created_at TEXT NOT NULL,
+        author TEXT NOT NULL,
+        body TEXT NOT NULL,
+        PRIMARY KEY (entity_type, entity_id, seq)
+    );
+    """,
 )

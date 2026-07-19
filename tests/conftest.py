@@ -36,6 +36,7 @@ def _wipe_mysql(url: str) -> None:
 
 
 MSSQL_DROP_ORDER = (
+    "notes",
     "revisions",
     "section_translations",
     "sections",

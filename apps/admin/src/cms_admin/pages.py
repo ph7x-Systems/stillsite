@@ -139,6 +139,7 @@ async def pages_list(
     everything = await get_db(request).run(lambda storage: storage.load_all_pages())
     pages = [p for p in everything if p.deleted_at is None]
     trashed_count = len(everything) - len(pages)
+    row_actions_map = {page.id: available_transitions(page.status, user.role) for page in pages}
     return _page_response(
         request,
         "pages_list.html.j2",
@@ -147,6 +148,7 @@ async def pages_list(
             "csrf_token": session.csrf_token,
             "pages": pages,
             "trashed_count": trashed_count,
+            "row_actions_map": row_actions_map,
             "target_languages": TARGET_LANGUAGES,
         },
     )
@@ -225,6 +227,7 @@ async def page_edit_form(
     user, session = user_session
     page = await _load_page(request, page_id)
     revisions = await get_db(request).run(lambda storage: storage.list_revisions("page", page_id))
+    notes = await get_db(request).run(lambda storage: storage.list_notes("page", page_id))
     project = _project(request)
     preview_path = "/preview" + urls.page_path(page, SOURCE_LANGUAGE) if project else None
     preview_target = (preview_path or "").removeprefix("/preview/").rstrip("/")
@@ -240,6 +243,9 @@ async def page_edit_form(
             "csrf_token": session.csrf_token,
             "errors": [],
             "revisions": revisions,
+            "notes": notes,
+            "note_kind": "page",
+            "entity_id": page_id,
             "preview_path": preview_path,
             "preview_ready": preview_ready,
             **_editor_context(page, role=user.role),

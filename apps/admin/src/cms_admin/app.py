@@ -23,6 +23,7 @@ from cms_admin.dashboard import router as dashboard_router
 from cms_admin.db import StorageExecutor
 from cms_admin.i18n import i18n_context, load_catalogs
 from cms_admin.media import router as media_router
+from cms_admin.notes import router as notes_router
 from cms_admin.pages import router as pages_router
 from cms_admin.publishing import router as publishing_router
 from cms_admin.settings import AdminSettings
@@ -103,6 +104,7 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
     app.include_router(publishing_router)
     app.include_router(trash_router)
     app.include_router(users_router)
+    app.include_router(notes_router)
     app.state.preview_dir = tempfile.mkdtemp(prefix="sardine-preview-")
     app.mount("/static", StaticFiles(directory=Path(__file__).parent / "static"), name="static")
     app.mount(

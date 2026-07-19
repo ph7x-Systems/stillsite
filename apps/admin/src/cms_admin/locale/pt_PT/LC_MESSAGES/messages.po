@@ -781,3 +781,21 @@ msgstr "Corre um build de pré-visualização no painel de"
 
 msgid "panel to see this entry with the real theme; it refreshes on every save."
 msgstr "para veres esta entrada com o tema real; atualiza a cada gravação."
+
+msgid "A note for the team — never published"
+msgstr "Uma nota para a equipa — nunca é publicada"
+
+msgid "Actions for %(id)s"
+msgstr "Ações para %(id)s"
+
+msgid "Add note"
+msgstr "Adicionar nota"
+
+msgid "Editorial notes"
+msgstr "Notas editoriais"
+
+msgid "New note"
+msgstr "Nova nota"
+
+msgid "No notes yet — leave the first one for the team."
+msgstr "Ainda não há notas — deixa a primeira para a equipa."

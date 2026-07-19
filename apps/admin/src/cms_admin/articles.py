@@ -137,6 +137,9 @@ async def articles_list(
     everything = await get_db(request).run(lambda storage: storage.load_all_articles())
     articles = [a for a in everything if a.deleted_at is None]
     trashed_count = len(everything) - len(articles)
+    row_actions_map = {
+        article.id: available_transitions(article.status, user.role) for article in articles
+    }
     return _page(
         request,
         "articles_list.html.j2",
@@ -145,6 +148,7 @@ async def articles_list(
             "csrf_token": session.csrf_token,
             "articles": articles,
             "trashed_count": trashed_count,
+            "row_actions_map": row_actions_map,
             "target_languages": TARGET_LANGUAGES,
         },
     )
@@ -270,6 +274,7 @@ async def article_edit_form(
     revisions = await get_db(request).run(
         lambda storage: storage.list_revisions("article", article_id)
     )
+    notes = await get_db(request).run(lambda storage: storage.list_notes("article", article_id))
     project = _project(request)
     preview_path = (
         "/preview" + urls.article_path(project.site, article, SOURCE_LANGUAGE) if project else None
@@ -290,6 +295,9 @@ async def article_edit_form(
             "csrf_token": session.csrf_token,
             "errors": [],
             "revisions": revisions,
+            "notes": notes,
+            "note_kind": "article",
+            "entity_id": article_id,
             "preview_path": preview_path,
             "preview_ready": preview_ready,
             **_editor_context(article, role=user.role),

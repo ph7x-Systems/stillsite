@@ -5,6 +5,12 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **M5 closes: editorial notes and list quick actions.** Every article
+  and page carries a team-only note trail (never published, never
+  exported; the author or an admin removes) — storage migration 12 on
+  all four engines. The content lists gain a per-row actions dropdown:
+  workflow transitions and trash without opening the editor.
+
 - **Design-aware editing** (ADR-0027, owner-approved): the article and
   page editors gain a Design preview — the entry rendered by the real
   builder and the real theme, framed from `/preview/` and refreshed on

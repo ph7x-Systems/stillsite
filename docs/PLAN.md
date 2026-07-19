@@ -188,7 +188,7 @@ the theme conformance suite.
 - [ ] Documentation pass: installation, architecture, content model, theme
       extension, deployment (pre-announcement)
 
-## Milestone 5 — Editorial completeness (next)
+## Milestone 5 — Editorial completeness (CLOSED)
 
 Everything an editor expects from a mature CMS, inside the panel. The
 outward framing lives in [ROADMAP.md](ROADMAP.md); each item ships with
@@ -206,8 +206,9 @@ tests, docs and wiki updates, per the standing gates.
 - [x] **Duplicate as draft** from the editor (collision-safe ids)
 - [x] **Per-entry preview**: the editor links straight to the entry's URL
       inside `/preview/`
-- [ ] **Quick list actions**: status transition and slug edit from the
-      list rows
+- [x] **Quick list actions**: per-row dropdown with the workflow
+      transitions and trash (slug stays in the editor — it is a
+      deliberate, careful change)
 - [x] **Featured flag** on articles (migration 11): leads the home
       highlight, listings stay recency
 - [x] **Authorship**: editorial byline on articles, rendered by themes
@@ -215,7 +216,8 @@ tests, docs and wiki updates, per the standing gates.
       plus quick views (images only, missing translated alt)
 - [x] **Users screen** in the admin (list, create, role change, delete
       with self/last-admin safeguards) — CLI stays for bootstrap
-- [ ] **Editorial notes**: a comment trail per entry (author, timestamp)
+- [x] **Editorial notes**: comment trail per entry (migration 12),
+      author-or-admin removal, never published
 
 ## Milestone 6 — Extensibility and adoption
 

@@ -100,6 +100,21 @@ class StorageBackend(ABC):
 
     # Admin sessions
 
+    # Editorial notes (M5): a comment trail per entity.
+
+    @abstractmethod
+    def add_note(
+        self, entity_type: str, entity_id: str, author: str, body: str, created_at: datetime
+    ) -> int:
+        """Append a note; returns its sequence number."""
+
+    @abstractmethod
+    def list_notes(self, entity_type: str, entity_id: str) -> list[tuple[int, datetime, str, str]]:
+        """(seq, created_at, author, body), newest first."""
+
+    @abstractmethod
+    def delete_note(self, entity_type: str, entity_id: str, seq: int) -> bool: ...
+
     # Revisions (ADR-0025): a bounded per-entity edit history.
 
     REVISION_LIMIT = 20

@@ -425,3 +425,39 @@ def test_duplicate_as_draft_resets_state_and_resolves_id(tmp_path: Path) -> None
         assert second.headers["location"] == "/articles/origin-copy-2"
         editor = client.get("/articles/origin-copy").text
         assert "draft" in editor  # the copy starts over in the workflow
+
+
+def test_notes_add_and_delete_with_authorship_gate(tmp_path: Path) -> None:
+    """M5: the note trail — anyone writes, only the author or an admin
+    removes; notes never publish."""
+    with _client(_app(tmp_path, _article("piece"))) as client:
+        csrf = _sign_in(client)
+        added = client.post(
+            "/notes/article/piece",
+            data={"csrf_token": csrf, "body": "Needs a better title."},
+            follow_redirects=False,
+        )
+        assert added.status_code == 303
+        editor = client.get("/articles/piece").text
+        assert "Needs a better title." in editor
+        removed = client.post(
+            "/notes/article/piece/1/delete", data={"csrf_token": csrf}, follow_redirects=False
+        )
+        assert removed.status_code == 303  # author removes their own
+        assert "Needs a better title." not in client.get("/articles/piece").text
+
+
+def test_list_quick_actions_transition_without_the_editor(tmp_path: Path) -> None:
+    """M5: workflow moves straight from the list row."""
+    with _client(_app(tmp_path, _article("piece"))) as client:
+        csrf = _sign_in(client)
+        listing = client.get("/articles").text
+        assert "bi-three-dots" in listing
+        assert "Submit for review" in listing
+        moved = client.post(
+            "/articles/piece/status",
+            data={"csrf_token": csrf, "to": "review"},
+            follow_redirects=False,
+        )
+        assert moved.status_code == 303
+        assert "review" in client.get("/articles").text

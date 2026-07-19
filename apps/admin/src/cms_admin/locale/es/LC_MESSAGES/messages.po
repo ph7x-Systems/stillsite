@@ -781,3 +781,21 @@ msgstr "Ejecuta un build de vista previa en el panel de"
 
 msgid "panel to see this entry with the real theme; it refreshes on every save."
 msgstr "para ver esta entrada con el tema real; se actualiza con cada guardado."
+
+msgid "A note for the team — never published"
+msgstr "Una nota para el equipo — nunca se publica"
+
+msgid "Actions for %(id)s"
+msgstr "Acciones para %(id)s"
+
+msgid "Add note"
+msgstr "Añadir nota"
+
+msgid "Editorial notes"
+msgstr "Notas editoriales"
+
+msgid "New note"
+msgstr "Nueva nota"
+
+msgid "No notes yet — leave the first one for the team."
+msgstr "Aún no hay notas — deja la primera para el equipo."

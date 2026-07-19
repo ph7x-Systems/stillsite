@@ -354,6 +354,40 @@ class PostgresBackend(StorageBackend):
         rows = self._connection.execute("SELECT id FROM media_assets ORDER BY id").fetchall()
         return [str(row[0]) for row in rows]
 
+    # Editorial notes (M5)
+
+    def add_note(
+        self, entity_type: str, entity_id: str, author: str, body: str, created_at: datetime
+    ) -> int:
+        with self._connection.transaction():
+            row = self._connection.execute(
+                "SELECT COALESCE(MAX(seq), 0) FROM notes WHERE entity_type = %s AND entity_id = %s",
+                (entity_type, entity_id),
+            ).fetchone()
+            number = int(row[0]) + 1 if row else 1
+            self._connection.execute(
+                "INSERT INTO notes (entity_type, entity_id, seq, created_at, author, body)"
+                " VALUES (%s, %s, %s, %s, %s, %s)",
+                (entity_type, entity_id, number, created_at.isoformat(), author, body),
+            )
+        return number
+
+    def list_notes(self, entity_type: str, entity_id: str) -> list[tuple[int, datetime, str, str]]:
+        rows = self._connection.execute(
+            "SELECT seq, created_at, author, body FROM notes"
+            " WHERE entity_type = %s AND entity_id = %s ORDER BY seq DESC",
+            (entity_type, entity_id),
+        ).fetchall()
+        return [(int(r[0]), datetime.fromisoformat(r[1]), str(r[2]), str(r[3])) for r in rows]
+
+    def delete_note(self, entity_type: str, entity_id: str, seq: int) -> bool:
+        with self._connection.transaction():
+            cursor = self._connection.execute(
+                "DELETE FROM notes WHERE entity_type = %s AND entity_id = %s AND seq = %s",
+                (entity_type, entity_id, seq),
+            )
+        return cursor.rowcount > 0
+
     # Revisions (ADR-0025)
 
     def save_revision(

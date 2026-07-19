@@ -1,0 +1,33 @@
+{# Editorial notes card (M5). Context: notes (seq, when, author, body),
+   note_kind ("article"/"page"), entity_id. #}
+<div class="card mb-3">
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Editorial notes") }}</h2></div>
+  <div class="card-body">
+    {% for seq, when, author, body in notes %}
+    <div class="d-flex justify-content-between align-items-start border-bottom pb-2 mb-2">
+      <div>
+        <p class="mb-1">{{ body }}</p>
+        <p class="form-text mb-0">{{ author }} · {{ when.strftime("%Y-%m-%d %H:%M") }} UTC</p>
+      </div>
+      {% if author == user.username or user.role.value == "admin" %}
+      <form method="post" action="/notes/{{ note_kind }}/{{ entity_id }}/{{ seq }}/delete" class="mb-0 ms-2">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="btn btn-link btn-sm p-0">{{ _("Remove") }}</button>
+      </form>
+      {% endif %}
+    {% if not loop.last %}{% endif %}
+    </div>
+    {% else %}
+    <p class="admin-empty">{{ _("No notes yet — leave the first one for the team.") }}</p>
+    {% endfor %}
+    <form method="post" action="/notes/{{ note_kind }}/{{ entity_id }}" class="d-flex gap-2 mb-0">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <label class="mb-0 flex-grow-1">
+        <span class="visually-hidden">{{ _("New note") }}</span>
+        <input class="form-control form-control-sm admin-input" name="body"
+               placeholder="{{ _("A note for the team — never published") }}" required>
+      </label>
+      <button type="submit" class="btn btn-outline-secondary btn-sm">{{ _("Add note") }}</button>
+    </form>
+  </div>
+</div>

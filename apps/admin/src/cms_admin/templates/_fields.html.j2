@@ -91,3 +91,33 @@
   {% endfor %}
 </span>
 {% endmacro %}
+
+{% macro row_actions(kind, entity_id, transitions) %}
+{# List quick actions (M5): the workflow transitions and trash for this
+   row, in a Bootstrap dropdown — no editor round-trip. #}
+<div class="dropdown">
+  <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
+          data-bs-toggle="dropdown" aria-expanded="false"
+          aria-label="{{ _('Actions for %(id)s') | format(id=entity_id) }}">
+    <i class="bi bi-three-dots" aria-hidden="true"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    {% for t in transitions %}
+    <li>
+      <form method="post" action="/{{ kind }}s/{{ entity_id }}/status" class="mb-0">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="to" value="{{ t.to }}">
+        <button type="submit" class="dropdown-item">{{ _(t.label) }}</button>
+      </form>
+    </li>
+    {% endfor %}
+    {% if transitions %}<li><hr class="dropdown-divider"></li>{% endif %}
+    <li>
+      <form method="post" action="/trash/{{ kind }}/{{ entity_id }}" class="mb-0">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="dropdown-item text-danger">{{ _("Move to trash") }}</button>
+      </form>
+    </li>
+  </ul>
+</div>
+{% endmacro %}

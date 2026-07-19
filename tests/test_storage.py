@@ -276,3 +276,19 @@ def test_deleted_at_round_trips(backend: StorageBackend) -> None:
     backend.save_page(page)
     stored = backend.load_page("bin-page")
     assert stored is not None and stored.deleted_at == when
+
+
+def test_notes_append_list_and_delete(backend: StorageBackend) -> None:
+    """M5: the editorial note trail works on every engine."""
+    when = datetime(2027, 3, 1, tzinfo=UTC)
+    first = backend.add_note("article", "post", "ana", "Needs a better title.", when)
+    second = backend.add_note("article", "post", "rui", "Agreed.", when)
+    assert (first, second) == (1, 2)
+    notes = backend.list_notes("article", "post")
+    assert [(seq, author, body) for seq, _, author, body in notes] == [
+        (2, "rui", "Agreed."),
+        (1, "ana", "Needs a better title."),
+    ]
+    assert backend.delete_note("article", "post", 1)
+    assert not backend.delete_note("article", "post", 1)
+    assert len(backend.list_notes("article", "post")) == 1

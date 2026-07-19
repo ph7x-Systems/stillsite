@@ -109,6 +109,15 @@ The seeded example project intentionally keeps one article in review with a
 missing DE translation, so a fresh project (and the public demo) shows the
 gate holding a real warning instead of an empty all-green report.
 
+## Editorial notes and quick actions
+
+Each editor carries an **Editorial notes** card — a comment trail for
+the team (author and moment shown; the author or an admin removes).
+Notes are collaboration, not content: never published, never exported,
+gone with the entity. The content lists offer a per-row **actions
+dropdown** with the workflow transitions your role allows plus Move to
+trash — no editor round-trip for routine moves.
+
 ## Duplicating and previewing an entry
 
 **Duplicate as draft** copies an article or page — content, metadata,

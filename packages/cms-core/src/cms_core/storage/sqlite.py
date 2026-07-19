@@ -360,6 +360,40 @@ class SQLiteBackend(StorageBackend):
         rows = self._connection.execute("SELECT id FROM media_assets ORDER BY id").fetchall()
         return [str(row[0]) for row in rows]
 
+    # Editorial notes (M5)
+
+    def add_note(
+        self, entity_type: str, entity_id: str, author: str, body: str, created_at: datetime
+    ) -> int:
+        with self._connection as connection:
+            row = connection.execute(
+                "SELECT COALESCE(MAX(seq), 0) FROM notes WHERE entity_type = ? AND entity_id = ?",
+                (entity_type, entity_id),
+            ).fetchone()
+            number = int(row[0]) + 1
+            connection.execute(
+                "INSERT INTO notes (entity_type, entity_id, seq, created_at, author, body)"
+                " VALUES (?, ?, ?, ?, ?, ?)",
+                (entity_type, entity_id, number, created_at.isoformat(), author, body),
+            )
+        return number
+
+    def list_notes(self, entity_type: str, entity_id: str) -> list[tuple[int, datetime, str, str]]:
+        rows = self._connection.execute(
+            "SELECT seq, created_at, author, body FROM notes"
+            " WHERE entity_type = ? AND entity_id = ? ORDER BY seq DESC",
+            (entity_type, entity_id),
+        ).fetchall()
+        return [(int(r[0]), datetime.fromisoformat(r[1]), str(r[2]), str(r[3])) for r in rows]
+
+    def delete_note(self, entity_type: str, entity_id: str, seq: int) -> bool:
+        with self._connection as connection:
+            cursor = connection.execute(
+                "DELETE FROM notes WHERE entity_type = ? AND entity_id = ? AND seq = ?",
+                (entity_type, entity_id, seq),
+            )
+        return cursor.rowcount > 0
+
     # Revisions (ADR-0025)
 
     def save_revision(

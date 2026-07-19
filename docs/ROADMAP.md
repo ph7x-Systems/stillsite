@@ -48,9 +48,9 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Trash / restore | ✅ reversible deletion (ADR-0026): trash view, exact restore, admin-only purge | — |
 | Duplicate content | ✅ Duplicate as draft on articles and pages, collision-safe ids | — |
 | Per-entry preview | ✅ editors link straight to the entry's URL inside `/preview/` | — |
-| Quick edit (slug/status from the list) | ❌ | 🔜 list-row actions (M5) |
+| Quick actions from the list | ✅ per-row dropdown: workflow transitions + trash | — |
 | Featured / pinned content | ✅ featured flag: leads the home highlight; listings stay recency | — |
-| Editorial notes on entries | ❌ | 🔜 note trail per entry (M5) |
+| Editorial notes on entries | ✅ note trail per article/page (author-or-admin removal); never published | — |
 | Autosave while editing | ❌ | 🔜 with the admin's JS layer (M5, after ADR-0020) |
 
 ### Content model
@@ -116,21 +116,20 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 
 The queue evolves with the ADRs, in this order:
 
-1. **Close M5**: list quick actions, editorial notes.
-2. **M6 by ADR**: ADR-0028 extension contract (custom content types,
+1. **M6 by ADR** (M5 closed): ADR-0028 extension contract (custom content types,
    fields, rules, build steps) → menu manager → image derivatives →
    redirects → importers → ADR-0027 live refresh together with the
    autosave layer.
-3. **M7 by ADR**: email/notifications ADR → TOTP 2FA → webhooks →
+2. **M7 by ADR**: email/notifications ADR → TOTP 2FA → webhooks →
    `cms doctor`.
 
 ## Milestones ahead
 
-- **M5 — Editorial completeness** (next): everything an editor expects
-  inside the panel — direct unpublish, scheduling, revisions with
-  restore, trash, duplicates, per-entry preview, quick actions, featured
-  flag, authorship, media filters, users screen, editorial notes.
-  Checklist in [PLAN.md](PLAN.md).
+- **M5 — Editorial completeness: CLOSED.** Direct unpublish, scheduling,
+  revisions with restore, trash, duplicates, per-entry and design-aware
+  preview (ADR-0027), quick actions, featured flag, authorship, media
+  filters, users screen, editorial notes — all shipped, all live on the
+  demo. (Autosave remains queued with the ADR-0027 live-refresh work.)
 - **M6 — Extensibility and adoption**: the plugin/extension ADR executed
   (custom content types, custom fields, rules, build steps), menu
   manager, image derivatives, redirects, comments-integration contract,

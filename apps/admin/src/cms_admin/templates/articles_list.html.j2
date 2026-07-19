@@ -1,5 +1,5 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import translation_badges, status_tag with context %}
+{% from "_fields.html.j2" import translation_badges, status_tag, row_actions with context %}
 {% block title %}{{ _("Articles") }} — Sardine CMS admin{% endblock %}
 {% block header %}
 <div class="d-flex justify-content-between align-items-center">
@@ -19,6 +19,7 @@
           <th scope="col">{{ _("Status") }}</th>
           <th scope="col">{{ _("Translations") }}</th>
           <th scope="col">{{ _("Updated") }}</th>
+          <th scope="col"><span class="visually-hidden">{{ _("Actions") }}</span></th>
         </tr>
       </thead>
       <tbody>
@@ -29,6 +30,7 @@
           <td>{{ status_tag(article.status) }}</td>
           <td>{{ translation_badges(article, target_languages, "/articles/" + article.id) }}</td>
           <td>{{ article.updated_at.strftime("%Y-%m-%d") }}</td>
+          <td>{{ row_actions("article", article.id, row_actions_map[article.id]) }}</td>
         </tr>
         {% endfor %}
       </tbody>
