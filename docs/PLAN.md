@@ -121,7 +121,7 @@ with tests:
 7. [x] **Media library**: uploads validated server-side (MIME sniffing,
        size limits, image dimensions), mandatory EN alt text, translatable
        alt, usage references checked before delete.
-8. [ ] **Workflow and publishing**: `draft → review → published → archived`
+8. [x] **Workflow and publishing**: `draft → review → published → archived`
        transitions gated by role; the publish gate runs `cms-validation`
        and blocks on errors (configurable); preview builds through
        `cms-build` into a temporary directory; build/export can be

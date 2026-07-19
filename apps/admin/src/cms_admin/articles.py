@@ -14,16 +14,25 @@ from cms_core import (
     AdminSession,
     Article,
     ArticleContent,
+    ContentStatus,
     Language,
+    Role,
     User,
     new_article,
 )
 from cms_core.languages import SOURCE_LANGUAGE, TARGET_LANGUAGES
+from cms_validation import SiteContent
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from pydantic import ValidationError
 
 from cms_admin.auth import current_session, enforce_csrf, get_db
+from cms_admin.workflow import (
+    allowed,
+    available_transitions,
+    publish_blockers,
+    transition_minimum,
+)
 
 router = APIRouter(prefix="/articles")
 
@@ -179,9 +188,12 @@ async def article_create(
     )
 
 
-def _editor_context(article: Article, form: dict[str, str] | None = None) -> dict[str, object]:
+def _editor_context(
+    article: Article, form: dict[str, str] | None = None, role: Role | None = None
+) -> dict[str, object]:
     return {
         "article": article,
+        "transitions": available_transitions(article.status, role) if role else [],
         "states": article.translation_states(),
         "target_languages": TARGET_LANGUAGES,
         "preview_html": render_markdown(article.source.body_markdown),
@@ -206,7 +218,12 @@ async def article_edit_form(
     return _page(
         request,
         "article_edit.html.j2",
-        {"user": user, "csrf_token": session.csrf_token, "errors": [], **_editor_context(article)},
+        {
+            "user": user,
+            "csrf_token": session.csrf_token,
+            "errors": [],
+            **_editor_context(article, role=user.role),
+        },
     )
 
 
@@ -244,7 +261,7 @@ async def article_edit_save(
                 "user": user,
                 "csrf_token": session.csrf_token,
                 "errors": form_errors(error),
-                **_editor_context(article, form),
+                **_editor_context(article, form, role=user.role),
             },
             status_code=HTTP_422,
         )
@@ -327,3 +344,50 @@ async def translation_save(
         f"/articles/{article.id}/translations/{language.value}",
         status_code=status.HTTP_303_SEE_OTHER,
     )
+
+
+@router.post("/{article_id}/status")
+async def article_status(
+    request: Request,
+    article_id: str,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+    to: str = Form(...),
+) -> object:
+    user, session = user_session
+    article = await _load_article(request, article_id)
+    try:
+        target = ContentStatus(to)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="unknown status") from None
+    minimum = transition_minimum(article.status, target)
+    if minimum is None:
+        raise HTTPException(status_code=400, detail="invalid transition")
+    if not allowed(user.role, minimum):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"requires the {minimum.value} role",
+        )
+    if target is ContentStatus.PUBLISHED and request.app.state.settings.publish_gate:
+        db = get_db(request)
+        content = SiteContent(
+            articles=await db.run(lambda storage: storage.load_all_articles()),
+            pages=await db.run(lambda storage: storage.load_all_pages()),
+            media=await db.run(lambda storage: storage.load_all_media_assets()),
+        )
+        blockers = publish_blockers(article, content)
+        if blockers:
+            return _page(
+                request,
+                "article_edit.html.j2",
+                {
+                    "user": user,
+                    "csrf_token": session.csrf_token,
+                    "errors": blockers,
+                    **_editor_context(article, role=user.role),
+                },
+                status_code=HTTP_422,
+            )
+    article.status = target
+    article.updated_at = datetime.now(UTC)
+    await get_db(request).run(lambda storage: storage.save_article(article))
+    return RedirectResponse(f"/articles/{article.id}", status_code=status.HTTP_303_SEE_OTHER)

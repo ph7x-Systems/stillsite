@@ -12,9 +12,11 @@ from datetime import UTC, datetime
 
 from cms_core import (
     AdminSession,
+    ContentStatus,
     Language,
     Page,
     PageContent,
+    Role,
     Section,
     SectionContent,
     TranslationState,
@@ -23,12 +25,19 @@ from cms_core import (
 )
 from cms_core.languages import SOURCE_LANGUAGE, TARGET_LANGUAGES
 from cms_core.translatable import TranslatableModel
+from cms_validation import SiteContent
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from pydantic import ValidationError
 
 from cms_admin.articles import form_errors
 from cms_admin.auth import current_session, enforce_csrf, get_db
+from cms_admin.workflow import (
+    allowed,
+    available_transitions,
+    publish_blockers,
+    transition_minimum,
+)
 
 router = APIRouter(prefix="/pages")
 
@@ -164,9 +173,12 @@ async def page_create(
     )
 
 
-def _editor_context(page: Page, form: dict[str, str] | None = None) -> dict[str, object]:
+def _editor_context(
+    page: Page, form: dict[str, str] | None = None, role: Role | None = None
+) -> dict[str, object]:
     return {
         "page": page,
+        "transitions": available_transitions(page.status, role) if role else [],
         "states": {language: page.translation_state(language) for language in TARGET_LANGUAGES},
         "own_states": own_states(page),
         "target_languages": TARGET_LANGUAGES,
@@ -191,7 +203,12 @@ async def page_edit_form(
     return _page_response(
         request,
         "page_edit.html.j2",
-        {"user": user, "csrf_token": session.csrf_token, "errors": [], **_editor_context(page)},
+        {
+            "user": user,
+            "csrf_token": session.csrf_token,
+            "errors": [],
+            **_editor_context(page, role=user.role),
+        },
     )
 
 
@@ -500,3 +517,49 @@ async def section_translation_save(
         f"/pages/{page.id}/sections/{key}/translations/{language.value}",
         status_code=status.HTTP_303_SEE_OTHER,
     )
+
+
+@router.post("/{page_id}/status")
+async def page_status(
+    request: Request,
+    page_id: str,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+    to: str = Form(...),
+) -> object:
+    user, session = user_session
+    page = await _load_page(request, page_id)
+    try:
+        target = ContentStatus(to)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="unknown status") from None
+    minimum = transition_minimum(page.status, target)
+    if minimum is None:
+        raise HTTPException(status_code=400, detail="invalid transition")
+    if not allowed(user.role, minimum):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"requires the {minimum.value} role",
+        )
+    if target is ContentStatus.PUBLISHED and request.app.state.settings.publish_gate:
+        db = get_db(request)
+        content = SiteContent(
+            articles=await db.run(lambda storage: storage.load_all_articles()),
+            pages=await db.run(lambda storage: storage.load_all_pages()),
+            media=await db.run(lambda storage: storage.load_all_media_assets()),
+        )
+        blockers = publish_blockers(page, content)
+        if blockers:
+            return _page_response(
+                request,
+                "page_edit.html.j2",
+                {
+                    "user": user,
+                    "csrf_token": session.csrf_token,
+                    "errors": blockers,
+                    **_editor_context(page, role=user.role),
+                },
+                status_code=HTTP_422,
+            )
+    page.status = target
+    await _save_page(request, page)
+    return RedirectResponse(f"/pages/{page.id}", status_code=status.HTTP_303_SEE_OTHER)

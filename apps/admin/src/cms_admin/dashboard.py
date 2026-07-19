@@ -90,6 +90,6 @@ async def dashboard(
                 "media": len(content.media),
             },
             "report": report,
-            "last_build": None,  # populated when the panel can trigger builds (phase 8)
+            "last_build": getattr(request.app.state, "last_build", None),
         },
     )

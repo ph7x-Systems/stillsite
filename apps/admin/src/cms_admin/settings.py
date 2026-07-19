@@ -25,6 +25,11 @@ class AdminSettings:
     # same one `cms build` collects.
     media_dir: Path = field(default_factory=lambda: Path("media"))
     upload_max_bytes: int = DEFAULT_UPLOAD_MAX_MB * 1024 * 1024
+    # The project directory (sardine.toml) — publishing builds read it.
+    project_dir: Path = field(default_factory=lambda: Path("."))
+    # The publish gate: block the review→published transition on validation
+    # errors for the entity. Set SARDINE_ADMIN_PUBLISH_GATE=0 to disable.
+    publish_gate: bool = True
 
     @classmethod
     def from_env(cls) -> "AdminSettings":
@@ -42,4 +47,6 @@ class AdminSettings:
                 * 1024
                 * 1024
             ),
+            project_dir=Path(os.environ.get("SARDINE_PROJECT_DIR", ".")),
+            publish_gate=os.environ.get("SARDINE_ADMIN_PUBLISH_GATE", "1") != "0",
         )

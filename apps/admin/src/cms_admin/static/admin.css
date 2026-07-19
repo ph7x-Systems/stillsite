@@ -451,3 +451,22 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fo
 
 .admin-login h1 { font-size: 1.9rem; }
 .admin-login form { display: grid; gap: 1.1rem; }
+
+
+/* Workflow, publishing and nav polish */
+
+.admin-workflow { display: flex; gap: .5rem; margin: 0 0 1.4rem; }
+.admin-workflow form { display: inline; }
+
+.admin-tag-published { color: var(--green); border-color: rgba(126, 200, 162, .4); }
+.admin-tag-review { color: var(--amber); border-color: rgba(224, 177, 94, .4); }
+.admin-tag-archived { color: var(--faint); }
+
+.admin-nav a { display: flex; align-items: center; gap: .6rem; }
+.admin-nav a svg { width: 15px; height: 15px; flex: none; opacity: .8; }
+.admin-nav > .admin-nav-label:not(:first-child) { margin-top: 1.4rem; }
+
+.admin-runrow { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.admin-target-pick { min-width: 8rem; }
+
+.admin-login-mark { width: 64px; height: 64px; display: block; margin-bottom: 1.2rem; }

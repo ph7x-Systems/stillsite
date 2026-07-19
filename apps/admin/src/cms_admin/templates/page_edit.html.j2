@@ -3,8 +3,21 @@
 {% block title %}{{ page.id }} — Sardine CMS admin{% endblock %}
 {% block content %}
 <nav class="admin-breadcrumb" aria-label="Breadcrumb"><a href="/pages">&larr; Pages</a></nav>
-<h1>{{ page.id }} <span class="admin-tag">{{ page.status.value }}</span></h1>
+<h1>{{ page.id }} <span class="admin-tag admin-tag-{{ page.status.value }}">{{ page.status.value }}</span></h1>
 {{ errors_block(errors) }}
+{% if transitions %}
+<div class="admin-workflow" role="group" aria-label="Workflow">
+  {% for t in transitions %}
+  <form method="post" action="/pages/{{ page.id }}/status">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="to" value="{{ t.to }}">
+    <button type="submit"
+            class="admin-btn{% if t.to == "published" %} admin-btn-primary{% endif %}">{{ t.label }}</button>
+  </form>
+  {% endfor %}
+</div>
+{% endif %}
+
 <div class="admin-sbs">
   <form method="post" action="/pages/{{ page.id }}" class="admin-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">

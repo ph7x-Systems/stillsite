@@ -6,6 +6,7 @@ thread-affine ``StorageExecutor``) and closed on shutdown; handlers reach it
 through ``get_db``.
 """
 
+import tempfile
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -22,6 +23,7 @@ from cms_admin.dashboard import router as dashboard_router
 from cms_admin.db import StorageExecutor
 from cms_admin.media import router as media_router
 from cms_admin.pages import router as pages_router
+from cms_admin.publishing import router as publishing_router
 from cms_admin.settings import AdminSettings
 
 
@@ -54,7 +56,14 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
     app.include_router(articles_router)
     app.include_router(pages_router)
     app.include_router(media_router)
+    app.include_router(publishing_router)
+    app.state.preview_dir = tempfile.mkdtemp(prefix="sardine-preview-")
     app.mount("/static", StaticFiles(directory=Path(__file__).parent / "static"), name="static")
+    app.mount(
+        "/preview",
+        StaticFiles(directory=app.state.preview_dir, html=True, check_dir=False),
+        name="preview",
+    )
     app.mount(
         "/media-files",
         StaticFiles(directory=app.state.settings.media_dir, check_dir=False),

@@ -9,6 +9,7 @@ dependencies = [
     "cms-core",
     "cms-validation",
     "cms-build",
+    "cms-cli",
     "fastapi>=0.115",
     "jinja2>=3.1",
     "uvicorn>=0.30",

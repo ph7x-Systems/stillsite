@@ -1,0 +1,67 @@
+{% extends "shell.html.j2" %}
+{% block title %}Publishing — Sardine CMS admin{% endblock %}
+{% block content %}
+<span class="admin-kick">Pipeline</span>
+<h1>Publishing</h1>
+
+{% if not project %}
+<div class="admin-alert" role="alert">
+  <p>No <code>sardine.toml</code> found in <code>{{ project_dir }}</code> — point
+    <code>SARDINE_PROJECT_DIR</code> at the project directory to build from the panel.</p>
+</div>
+{% else %}
+<p><strong>{{ project.site.name }}</strong> · {{ project.site.base_url }} ·
+  theme <code>{{ project.site.theme }}</code> · output <code>{{ project.output }}</code></p>
+{% endif %}
+
+<section class="admin-section" aria-labelledby="gate-heading">
+  <h2 id="gate-heading">Publish gate</h2>
+  {% if report.issues %}
+  <p>{{ report.errors | length }} errors, {{ report.warnings | length }} warnings.
+    {% if report.ok %}Builds are not blocked.{% else %}Builds are blocked until the errors are fixed.{% endif %}</p>
+  {% else %}
+  <p class="admin-ok">All validation rules pass — builds are not blocked.</p>
+  {% endif %}
+</section>
+
+<section class="admin-section" aria-labelledby="actions-heading">
+  <h2 id="actions-heading">Run</h2>
+  <div class="admin-runrow">
+    <form method="post" action="/publishing/preview">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button type="submit" class="admin-btn">Preview build</button>
+    </form>
+    <form method="post" action="/publishing/build" class="admin-runrow">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <label class="admin-field admin-target-pick">
+        <span class="admin-visually-hidden">Target</span>
+        <select class="admin-input" name="target">
+          {% for target in targets %}<option value="{{ target }}">{{ target }}</option>{% endfor %}
+        </select>
+      </label>
+      <button type="submit" class="admin-btn admin-btn-primary">Build &amp; export</button>
+    </form>
+  </div>
+  <p class="admin-hint">Preview writes to a temporary directory served at
+    <a href="/preview/">/preview/</a> (any role). Build &amp; export validates first, then
+    writes the project's output directory with the target's extras — publisher role
+    and up.</p>
+</section>
+
+<section class="admin-section" aria-labelledby="last-heading">
+  <h2 id="last-heading">Last run</h2>
+  {% if last_build %}
+  <dl class="admin-source">
+    <dt>Kind</dt><dd>{{ last_build.kind }}
+      {% if last_build.ok %}<span class="admin-state admin-state-complete">ok</span>
+      {% else %}<span class="admin-state admin-state-missing">failed</span>{% endif %}</dd>
+    <dt>When</dt><dd>{{ last_build.when }}</dd>
+    {% if last_build.files %}<dt>Files</dt><dd>{{ last_build.files }}</dd>{% endif %}
+    {% if last_build.digest %}<dt>Digest</dt><dd><code>{{ last_build.digest }}</code></dd>{% endif %}
+    {% if last_build.detail %}<dt>Detail</dt><dd>{{ last_build.detail }}</dd>{% endif %}
+  </dl>
+  {% else %}
+  <p class="admin-empty">Nothing has run from this panel yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

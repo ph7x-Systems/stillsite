@@ -65,6 +65,7 @@ def _demo_paths(storage_path: Path) -> list[str]:
         "/pages/new",
         "/media",
         "/media/new",
+        "/publishing",
     ]
     with create_storage(f"sqlite:///{storage_path}") as storage:
         paths.extend(f"/media/{asset_id}" for asset_id in storage.list_media_ids())
@@ -89,7 +90,12 @@ def _demo_paths(storage_path: Path) -> list[str]:
     return paths
 
 
-def export_demo(storage_file: Path, out_dir: Path, media_dir: Path | None = None) -> int:
+def export_demo(
+    storage_file: Path,
+    out_dir: Path,
+    media_dir: Path | None = None,
+    project_dir: Path | None = None,
+) -> int:
     """Write the static admin snapshot; returns the number of pages."""
     from fastapi.testclient import TestClient
 
@@ -113,6 +119,7 @@ def export_demo(storage_file: Path, out_dir: Path, media_dir: Path | None = None
             storage_url=f"sqlite:///{db_copy}",
             cookie_secure=False,
             media_dir=media_dir if media_dir is not None else Path(scratch) / "media",
+            project_dir=project_dir if project_dir is not None else Path(scratch),
         )
         app = create_app(settings)
         pages = 0
@@ -146,8 +153,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--storage", type=Path, required=True, help="SQLite content database")
     parser.add_argument("--out", type=Path, required=True, help="output directory (…/admin)")
     parser.add_argument("--media-dir", type=Path, default=None, help="project media directory")
+    parser.add_argument("--project-dir", type=Path, default=None, help="project directory")
     arguments = parser.parse_args(argv)
-    pages = export_demo(arguments.storage, arguments.out, arguments.media_dir)
+    pages = export_demo(
+        arguments.storage, arguments.out, arguments.media_dir, arguments.project_dir
+    )
     print(f"captured {pages} admin page(s) into {arguments.out}")
     return 0
 

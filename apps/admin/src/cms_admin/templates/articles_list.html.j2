@@ -22,7 +22,7 @@
       <tr>
         <th scope="row"><a href="/articles/{{ article.id }}">{{ article.id }}</a></th>
         <td>{{ article.source.title }}</td>
-        <td><span class="admin-tag">{{ article.status.value }}</span></td>
+        <td><span class="admin-tag admin-tag-{{ article.status.value }}">{{ article.status.value }}</span></td>
         {% for language in target_languages %}
         <td><a href="/articles/{{ article.id }}/translations/{{ language.value }}">
           {{ state_badge(article.translation_state(language)) }}</a></td>

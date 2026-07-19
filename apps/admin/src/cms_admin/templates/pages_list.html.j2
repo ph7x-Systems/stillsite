@@ -23,7 +23,7 @@
       <tr>
         <th scope="row"><a href="/pages/{{ page.id }}">{{ page.id }}</a></th>
         <td>{{ page.source.title }}</td>
-        <td><span class="admin-tag">{{ page.status.value }}</span></td>
+        <td><span class="admin-tag admin-tag-{{ page.status.value }}">{{ page.status.value }}</span></td>
         <td class="align-right">{{ page.sections | length }}</td>
         {% for language in target_languages %}
         <td>{{ state_badge(page.translation_state(language)) }}</td>

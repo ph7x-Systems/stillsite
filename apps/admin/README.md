@@ -27,7 +27,11 @@ checksum model and a preview rendered by the builder's own Markdown
 renderer (raw HTML disabled). The media library uploads with server-side
 validation (MIME sniffed from bytes, size limit, parsed image dimensions),
 manages mandatory EN + translatable alt text, and refuses to delete assets
-that articles or sections still reference.
+that articles or sections still reference. The workflow moves content through
+draft → review → published → archived with each transition owned by a rung
+of the role ladder; publishing runs the validation gate. The Publishing
+panel previews into `/preview/` and builds/exports the project output with
+target extras, with every run recorded on the dashboard.
 
 Configuration is environment-only (no config files with secrets):
 
@@ -38,6 +42,8 @@ Configuration is environment-only (no config files with secrets):
 | `SARDINE_ADMIN_COOKIE_SECURE` | Set `0` only for plain-http local dev       | `1`                    |
 | `SARDINE_MEDIA_DIR`             | Media upload directory (the project's)      | `media`                |
 | `SARDINE_ADMIN_UPLOAD_MAX_MB`   | Upload size limit in MB                     | `10`                   |
+| `SARDINE_PROJECT_DIR`           | Project directory (`sardine.toml`)          | `.`                    |
+| `SARDINE_ADMIN_PUBLISH_GATE`    | Set `0` to publish despite validation errors | `1`                   |
 
 Milestone 3 status and the phased plan live in
 [docs/PLAN.md](../../docs/PLAN.md).
