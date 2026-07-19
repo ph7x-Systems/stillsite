@@ -231,7 +231,8 @@ tests, docs and wiki updates, per the standing gates.
 - [x] Explicit menu manager (migration 14): per-language labels,
       ordering, external links; defined items replace the derived menu,
       empty list falls back to it
-- [ ] Build-time image derivatives (responsive sizes; crop/focal point)
+- [x] Build-time image derivatives (ADR-0029): opt-in widths,
+      deterministic, srcset in both themes (crop/focal point deferred)
 - [ ] Redirect map emitted per target (SWA rules, nginx rewrites)
 - [ ] Comments-integration contract for static sites (embed islands,
       privacy-respecting)

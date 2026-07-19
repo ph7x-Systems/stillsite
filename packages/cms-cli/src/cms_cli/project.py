@@ -99,7 +99,15 @@ def load_project(directory: Path) -> Project:
         resolved = raw_path if raw_path.is_absolute() else directory / raw_path
         storage_url = f"sqlite:///{resolved}"
 
-    output = directory / data.get("build", {}).get("output", "_site")
+    build_data = data.get("build", {})
+    site = (
+        site.model_copy(
+            update={"image_widths": tuple(int(w) for w in build_data.get("image_widths", []))}
+        )
+        if build_data.get("image_widths")
+        else site
+    )
+    output = directory / build_data.get("output", "_site")
     return Project(
         directory=directory,
         site=site,

@@ -24,6 +24,8 @@ class SiteConfig(BaseModel):
     footer_text: str | None = None
     """Footer line (e.g. a copyright notice); the site name when unset."""
     admin_url: str | None = None
+    image_widths: tuple[int, ...] = ()
+    """Responsive derivative widths (ADR-0029); empty disables."""
     """When set, the footer links to the admin panel (dimmed, nofollow)."""
 
     def category_label(self, slug: str, language: Language) -> str:

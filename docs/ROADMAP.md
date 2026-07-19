@@ -72,7 +72,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Capability | Today | Gap → where |
 | --- | --- | --- |
 | Library: validated uploads, translatable alt, safe delete | ✅ MIME-sniffed, dimensions parsed | — |
-| Image derivatives / responsive sizes | 🟡 dimensions recorded; no derivatives | 🔜 build-time derivatives (M6) |
+| Image derivatives / responsive sizes | ✅ opt-in build-time derivatives (ADR-0029): `[build] image_widths`, deterministic, `srcset` in both themes | — |
 | Crop / focal point | ❌ | 🔜 with derivatives (M6) |
 | Media search / filters | ✅ server-side search (id/path/type/alt) + quick views (images, missing alt) | — |
 

@@ -5,6 +5,13 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Image derivatives** (M6, ADR-0029): opt-in responsive sizes at
+  build time — `[build] image_widths = [480, 960]` plus the
+  `sardine-cms-build[images]` extra (Pillow). Derivatives keep the
+  source format, never upscale, and stay deterministic; the builder's
+  image contexts gain `srcset` and both bundled themes render it.
+  Configured widths without Pillow fail the build loudly.
+
 - **Menu manager** (M6, migration 14): explicit navigation from the
   panel — per-language labels with source-language fallback, numeric
   ordering, internal or external URLs. Defined items replace the

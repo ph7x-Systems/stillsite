@@ -8,6 +8,7 @@ dev = [
     "pytest>=8.3",
     "httpx2>=0.5",  # fastapi.testclient transport (httpx is deprecated there)
     "types-PyMySQL>=1.1",  # stubs for the mysql backend
+    "pillow>=10.4",  # image-derivative tests (cms-build[images])
 ]
 
 [tool.ruff]

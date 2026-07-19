@@ -27,6 +27,7 @@ from cms_validation import SiteContent
 from cms_build import urls
 from cms_build.config import SiteConfig
 from cms_build.head import Head, build_head, hreflang_code
+from cms_build.images import generate_derivatives
 from cms_build.markdown import render_markdown
 from cms_build.themes import Theme, create_theme
 from cms_build.ui import format_date, ui_label
@@ -126,7 +127,9 @@ class _SiteBuilder:
         self.media_by_id = {asset.id: asset for asset in content.media}
         self.theme_assets = dict(theme.assets())
         self.asset_urls = _asset_urls(self.theme_assets)
-        self.media_files = media_files
+        self.media_files = dict(media_files)
+        # ADR-0029: opt-in responsive derivatives extend the media set.
+        self.image_variants = generate_derivatives(self.media_files, config.image_widths)
         self.articles_by_language: dict[Language, list[Article]] = {
             language: [a for a in self.articles if _available(a, language)]
             for language in config.all_languages
@@ -255,18 +258,10 @@ class _SiteBuilder:
                 body = translation.content if translation else section.source
             images = []
             for media_id in body.media:
-                asset = self.media_by_id.get(media_id)
-                if asset is None or not asset.is_image:
+                image = self._media_image(media_id, language)
+                if image is None:
                     continue
-                alt = asset.alt.get(language) or asset.alt[SOURCE_LANGUAGE]
-                images.append(
-                    {
-                        "url": f"/{MEDIA_PREFIX}/{asset.path}",
-                        "alt": alt,
-                        "width": asset.width,
-                        "height": asset.height,
-                    }
-                )
+                images.append(image)
             contexts.append(
                 {
                     "key": section.key,
@@ -495,12 +490,20 @@ class _SiteBuilder:
         asset = self.media_by_id.get(media_id)
         if asset is None or not asset.is_image:
             return None
-        return {
+        image = {
             "url": f"/{MEDIA_PREFIX}/{asset.path}",
             "alt": asset.alt.get(language) or asset.alt[SOURCE_LANGUAGE],
             "width": asset.width,
             "height": asset.height,
         }
+        variants = self.image_variants.get(asset.path)
+        if variants and asset.width:
+            candidates = [
+                f"/{MEDIA_PREFIX}/{path} {width}w" for width, path in sorted(variants.items())
+            ]
+            candidates.append(f"/{MEDIA_PREFIX}/{asset.path} {asset.width}w")
+            image["srcset"] = ", ".join(candidates)
+        return image
 
     def _category_filters(self, language: Language) -> list[dict[str, str]]:
         slugs = sorted(

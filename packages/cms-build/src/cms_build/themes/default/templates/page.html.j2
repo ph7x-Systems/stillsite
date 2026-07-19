@@ -27,7 +27,7 @@
     <div class="field field-{{ name }}">{{ value }}</div>
     {% endfor %}
     {% for image in section.images %}
-    <img src="{{ image.url }}" alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}">
+    <img src="{{ image.url }}"{% if image.srcset %} srcset="{{ image.srcset }}" sizes="100vw"{% endif %} alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}">
     {% endfor %}
   </section>
   {% endif %}

@@ -104,3 +104,8 @@ DESIGN_RULES §5).
 Run the output-integrity suite against a build with your theme
 (`tests/test_output_integrity.py` shows how): every local reference in your
 HTML/CSS must resolve inside the artifact.
+
+Image contexts (`image`, `entry.thumb`) carry an optional `srcset`
+string when the project configures `[build] image_widths` (ADR-0029) —
+render it with an appropriate `sizes` attribute; ignoring it keeps
+working.

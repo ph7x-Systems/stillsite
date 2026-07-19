@@ -9,6 +9,7 @@ from cms_core import (
     ArticleContent,
     ContentStatus,
     Language,
+    MediaAsset,
     MenuItem,
     PageContent,
     Section,
@@ -222,3 +223,45 @@ def test_explicit_menu_items_replace_the_derived_menu() -> None:
     assert html.index(">Start<") < html.index(">Docs<")  # position order
     assert "https://docs.example" in html
     assert "/blog/" not in html.split("<nav")[1].split("</nav>")[0]  # derived menu replaced
+
+
+def test_image_derivatives_generate_and_reach_srcset() -> None:
+    """ADR-0029: opt-in widths produce deterministic variants and srcset;
+    without widths nothing changes."""
+    from io import BytesIO
+
+    from PIL import Image
+
+    buffer = BytesIO()
+    Image.new("RGB", (1200, 600), color=(10, 20, 30)).save(buffer, format="PNG")
+    png = buffer.getvalue()
+    asset = MediaAsset(
+        id="wide",
+        path="images/wide.png",
+        mime_type="image/png",
+        width=1200,
+        height=600,
+        alt={Language.EN: "Wide"},
+    )
+    home = new_page("home", PageContent(title="Home", slug="home"), now=NOW)
+    home.status = ContentStatus.PUBLISHED
+    home.sections.append(
+        Section(
+            key="hero",
+            kind="hero",
+            source=SectionContent(fields={"heading": "Hi"}, media=["wide"]),
+        )
+    )
+    content = SiteContent(pages=[home], media=[asset])
+    config = CONFIG.model_copy(update={"image_widths": (480, 960, 2000)})
+    artifact = build_site(config, content, media_files={"images/wide.png": png}, now=NOW)
+    assert "media/images/wide@480.png" in artifact.files
+    assert "media/images/wide@960.png" in artifact.files
+    assert "media/images/wide@2000.png" not in artifact.files  # never upscale
+    html = artifact.files["index.html"].decode("utf-8")
+    assert 'srcset="/media/images/wide@480.png 480w, /media/images/wide@960.png 960w' in html
+    again = build_site(config, content, media_files={"images/wide.png": png}, now=NOW)
+    assert again.digest() == artifact.digest()  # deterministic
+    plain = build_site(CONFIG, content, media_files={"images/wide.png": png}, now=NOW)
+    assert "media/images/wide@480.png" not in plain.files
+    assert "srcset" not in plain.files["index.html"].decode("utf-8")

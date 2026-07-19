@@ -32,7 +32,7 @@
 {% for entry in listing.entries %}
   <a class="b-card" href="{{ entry.url }}">
     {% if entry.thumb %}
-    <div class="b-thumb"><img src="{{ entry.thumb.url }}" alt="{{ entry.thumb.alt }}" width="{{ entry.thumb.width }}" height="{{ entry.thumb.height }}" loading="lazy"></div>
+    <div class="b-thumb"><img src="{{ entry.thumb.url }}"{% if entry.thumb.srcset %} srcset="{{ entry.thumb.srcset }}" sizes="(max-width: 820px) 100vw, 33vw"{% endif %} alt="{{ entry.thumb.alt }}" width="{{ entry.thumb.width }}" height="{{ entry.thumb.height }}" loading="lazy"></div>
     {% endif %}
     <div class="b-cbody">
       {% if entry.category %}<span class="b-ctag">{{ entry.category }}</span>{% endif %}
