@@ -69,15 +69,16 @@ class PostgresBackend(StorageBackend):
             self._connection.execute(
                 "INSERT INTO articles"
                 " (id, status, created_at, updated_at, title, summary, body_markdown, slug,"
-                "  category, tags_json, cover, publish_at, deleted_at)"
-                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                "  category, tags_json, cover, publish_at, deleted_at, featured, author)"
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 " ON CONFLICT (id) DO UPDATE SET"
                 " status = excluded.status, updated_at = excluded.updated_at,"
                 " title = excluded.title, summary = excluded.summary,"
                 " body_markdown = excluded.body_markdown, slug = excluded.slug,"
                 " category = excluded.category, tags_json = excluded.tags_json,"
                 " cover = excluded.cover, publish_at = excluded.publish_at,"
-                " deleted_at = excluded.deleted_at",
+                " deleted_at = excluded.deleted_at, featured = excluded.featured,"
+                " author = excluded.author",
                 (
                     article.id,
                     article.status.value,
@@ -92,6 +93,8 @@ class PostgresBackend(StorageBackend):
                     article.cover,
                     article.publish_at.isoformat() if article.publish_at else None,
                     article.deleted_at.isoformat() if article.deleted_at else None,
+                    1 if article.featured else 0,
+                    article.author,
                 ),
             )
             self._connection.execute(
@@ -119,7 +122,7 @@ class PostgresBackend(StorageBackend):
     def load_article(self, article_id: str) -> Article | None:
         row = self._connection.execute(
             "SELECT id, status, created_at, updated_at, title, summary, body_markdown, slug,"
-            " category, tags_json, cover, publish_at, deleted_at"
+            " category, tags_json, cover, publish_at, deleted_at, featured, author"
             " FROM articles WHERE id = %s",
             (article_id,),
         ).fetchone()
@@ -149,6 +152,8 @@ class PostgresBackend(StorageBackend):
             cover=row[10],
             publish_at=datetime.fromisoformat(row[11]) if row[11] else None,
             deleted_at=datetime.fromisoformat(row[12]) if row[12] else None,
+            featured=bool(row[13]),
+            author=row[14],
         )
 
     def delete_article(self, article_id: str) -> bool:

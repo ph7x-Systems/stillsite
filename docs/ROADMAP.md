@@ -49,7 +49,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Duplicate content | ✅ Duplicate as draft on articles and pages, collision-safe ids | — |
 | Per-entry preview | ✅ editors link straight to the entry's URL inside `/preview/` | — |
 | Quick edit (slug/status from the list) | ❌ | 🔜 list-row actions (M5) |
-| Featured / pinned content | ❌ | 🔜 featured flag consumed by themes (M5) |
+| Featured / pinned content | ✅ featured flag: leads the home highlight; listings stay recency | — |
 | Editorial notes on entries | ❌ | 🔜 note trail per entry (M5) |
 | Autosave while editing | ❌ | 🔜 with the admin's JS layer (M5, after ADR-0020) |
 
@@ -63,8 +63,9 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Custom fields | 🟡 sections carry typed fields; articles have a fixed schema | 🔜 article custom fields (M6) |
 | Navigation menus | 🟡 menus derive from section `menu` fields + published pages | 🔜 explicit menu manager (M6) |
 | Reusable blocks | 🟡 section kinds are the block library | 🔜 grow the kind gallery; document authoring (M6) |
+| Design-aware editing | 🟡 per-entry preview links | 🧭 ADR-0027 (proposed): themed side-preview in the editor, then live refresh with the autosave layer (M6) |
 | Multilingual | ✅ **core strength**: EN source + per-language states, parity gates | — |
-| Authors / bylines | ❌ content has no author field | 🔜 authorship fields + theme credit (M5) |
+| Authors / bylines | ✅ editorial byline on articles, rendered by the themes | — |
 
 ### Media
 

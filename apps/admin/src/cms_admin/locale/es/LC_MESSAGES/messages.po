@@ -760,3 +760,12 @@ msgstr "Mostrar"
 
 msgid "id, path, type or alt text"
 msgstr "id, ruta, tipo o texto alternativo"
+
+msgid "Featured"
+msgstr "Destacado"
+
+msgid "editorial byline; empty shows the site name"
+msgstr "firma editorial; vacío muestra el nombre del sitio"
+
+msgid "featured articles lead the home highlight"
+msgstr "los artículos destacados encabezan el destacado de la portada"

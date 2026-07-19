@@ -52,6 +52,7 @@ def test_snapshot_captures_the_editorial_surface(tmp_path: Path) -> None:
         "articles/hello-orbit/translations/pt-pt/index.html",
         "pages/home/index.html",
         "trash/index.html",
+        "users/index.html",
         "pages/home/sections/hero-main/index.html",
         "pages/home/sections/hero-main/translations/es/index.html",
         "static/admin.css",
@@ -147,3 +148,21 @@ def test_snapshot_preview_links_point_at_the_public_site(tmp_path: Path) -> None
     assert 'href="/blog/hello-orbit/"' in editor  # per-entry preview -> the site itself
     for page in out.rglob("index.html"):
         assert "/admin/preview/" not in page.read_text(encoding="utf-8"), page
+
+
+def test_every_sidebar_entry_is_captured(tmp_path: Path) -> None:
+    """Anti-recurrence: /trash and /users both shipped with sidebar links
+    the snapshot never captured (owner-reported 404s). Every sidebar link
+    in the captured dashboard must exist in the snapshot."""
+    import re
+
+    db = _storage_file(tmp_path)
+    out = tmp_path / "admin"
+    export_demo(db, out)
+    dashboard = (out / "index.html").read_text(encoding="utf-8")
+    sidebar = dashboard.split("sidebar-menu")[1].split("</aside>")[0]
+    targets = re.findall(r'href="/admin(/[^"]*)"', sidebar)
+    assert targets, "sidebar scan is broken"
+    for target in targets:
+        page = out / target.strip("/") / "index.html"
+        assert page.is_file(), f"sidebar links {target} but the snapshot lacks it"

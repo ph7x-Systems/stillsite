@@ -16,7 +16,7 @@
     <h1>{{ article.title }}</h1>
     {% if article.summary %}<p class="b-lede">{{ article.summary }}</p>{% endif %}
     <div class="b-by">
-      <span>{{ head.site_name }}</span>
+      <span>{{ article.author or head.site_name }}</span>
       <span class="b-dot">·</span>
       <time datetime="{{ article.date_iso }}">{{ article.date_human }}</time>
       <span class="b-dot">·</span>

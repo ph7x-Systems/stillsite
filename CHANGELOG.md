@@ -5,6 +5,14 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Featured and authorship** (M5, migration 11): articles gain a
+  Featured flag — featured entries lead the home highlight while
+  listings and feeds keep pure recency — and an editorial byline the
+  themes render (site name when empty). The demo snapshot captures the
+  Users page (its sidebar link 404ed), and a new anti-recurrence test
+  asserts every sidebar entry exists in the snapshot. ADR-0027
+  (proposed) records the direction for design-aware editing.
+
 - **Media library filters** (M5): server-side search over id, path, MIME
   type and alt texts, plus quick views (images only, missing translated
   alt) with a shown-of-total counter — a plain GET form, no JavaScript

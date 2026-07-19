@@ -127,4 +127,8 @@ MIGRATIONS: tuple[str, ...] = (
     ALTER TABLE articles ADD COLUMN deleted_at TEXT;
     ALTER TABLE pages ADD COLUMN deleted_at TEXT;
     """,
+    """
+    ALTER TABLE articles ADD COLUMN featured INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE articles ADD COLUMN author TEXT;
+    """,
 )

@@ -42,6 +42,13 @@
 {{ text_field("category", _("Category"), form.category, hint=_("a category slug, or empty")) }}
 {{ text_field("tags", _("Tags"), form.tags, hint=_("comma-separated slugs")) }}
 {{ text_field("cover", _("Cover"), form.cover, hint=_("a media asset id, or empty")) }}
+{{ text_field("author", _("Author"), form.author, hint=_("editorial byline; empty shows the site name")) }}
+<div class="mb-1 form-check admin-field">
+  <input class="form-check-input" type="checkbox" id="featured" name="featured" value="1"
+         {% if form.featured %}checked{% endif %}>
+  <label class="form-check-label" for="featured">{{ _("Featured") }}</label>
+  <div class="form-text admin-hint">{{ _("featured articles lead the home highlight") }}</div>
+</div>
 {{ datetime_field("publish_at", _("Publish at (UTC)"), form.publish_at,
                   hint=_("empty publishes immediately once published; a future moment keeps the entry out of builds until a build runs after it")) }}
 {% endmacro %}

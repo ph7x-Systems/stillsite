@@ -173,3 +173,30 @@ def test_publish_at_gates_the_artifact_until_the_moment_passes() -> None:
     assert "scheduled" in after.files["sitemap.xml"].decode("utf-8")
     again = build_site(CONFIG, content, now=datetime(2027, 5, 31, tzinfo=UTC))
     assert again.digest() == before.digest()  # deterministic for the same clock
+
+
+def test_featured_leads_the_highlight_and_author_reaches_the_context() -> None:
+    """M5: featured articles lead the home highlight (recency elsewhere);
+    the byline reaches the article context."""
+    older = new_article("older", ArticleContent(title="Older", body_markdown="A."), now=NOW)
+    older.status = ContentStatus.PUBLISHED
+    older.featured = True
+    older.author = "Commander Sardinha"
+    newer = new_article(
+        "newer",
+        ArticleContent(title="Newer", body_markdown="B."),
+        now=NOW.replace(year=2027),
+    )
+    newer.status = ContentStatus.PUBLISHED
+    home = new_page("home", PageContent(title="Home", slug="home"), now=NOW)
+    home.status = ContentStatus.PUBLISHED
+    home.sections.append(
+        Section(key="latest", kind="latest-articles", source=SectionContent(fields={}))
+    )
+    artifact = build_site(CONFIG, SiteContent(articles=[older, newer], pages=[home]), now=NOW)
+    home_html = artifact.files["index.html"].decode("utf-8")
+    assert home_html.index("Older") < home_html.index("Newer")  # featured first
+    listing = artifact.files["blog/index.html"].decode("utf-8")
+    assert listing.index("Newer") < listing.index("Older")  # listings stay recency
+    article_html = artifact.files["blog/older/index.html"].decode("utf-8")
+    assert "Commander Sardinha" in article_html

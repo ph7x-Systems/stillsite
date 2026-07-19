@@ -760,3 +760,12 @@ msgstr "Anzeigen"
 
 msgid "id, path, type or alt text"
 msgstr "ID, Pfad, Typ oder Alternativtext"
+
+msgid "Featured"
+msgstr "Hervorgehoben"
+
+msgid "editorial byline; empty shows the site name"
+msgstr "redaktionelle Zeile; leer zeigt den Site-Namen"
+
+msgid "featured articles lead the home highlight"
+msgstr "hervorgehobene Artikel führen die Startseiten-Highlights an"

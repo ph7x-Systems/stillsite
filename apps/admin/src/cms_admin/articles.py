@@ -177,6 +177,8 @@ def _validated_article(base: Article, form: dict[str, str]) -> Article:
         cover=form["cover"] or None,
         tags=parse_tags(form["tags"]),
         publish_at=parse_publish_at(form.get("publish_at", "")),
+        author=form.get("author", "").strip() or None,
+        featured=bool(form.get("featured")),
         updated_at=datetime.now(UTC),
     )
     return Article.model_validate(payload)
@@ -195,6 +197,8 @@ async def article_create(
     tags: str = Form(""),
     cover: str = Form(""),
     publish_at: str = Form(""),
+    author: str = Form(""),
+    featured: str = Form(""),
 ) -> object:
     user, session = user_session
     db = get_db(request)
@@ -208,6 +212,8 @@ async def article_create(
         "tags": tags,
         "cover": cover,
         "publish_at": publish_at,
+        "author": author,
+        "featured": featured,
     }
     try:
         base = new_article(article_id, ArticleContent(title=title or "-"))
@@ -246,6 +252,8 @@ def _editor_context(
             "tags": ", ".join(article.tags),
             "cover": article.cover or "",
             "publish_at": publish_at_form(article.publish_at),
+            "author": article.author or "",
+            "featured": "1" if article.featured else "",
         },
     }
 
@@ -292,6 +300,8 @@ async def article_edit_save(
     tags: str = Form(""),
     cover: str = Form(""),
     publish_at: str = Form(""),
+    author: str = Form(""),
+    featured: str = Form(""),
 ) -> object:
     user, session = user_session
     article = await _load_article(request, article_id)
@@ -304,6 +314,8 @@ async def article_edit_save(
         "tags": tags,
         "cover": cover,
         "publish_at": publish_at,
+        "author": author,
+        "featured": featured,
     }
     try:
         article = _validated_article(article, form)

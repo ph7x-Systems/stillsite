@@ -6,6 +6,7 @@
   <p class="lead">{{ article.summary }}</p>
   {% endif %}
   <p class="meta">
+    {% if article.author %}<span class="byline">{{ article.author }}</span> · {% endif %}
     <time datetime="{{ article.date_iso }}">{{ article.date_iso }}</time>
     {% if article.category %}
     · <a class="category" href="{{ article.category.url }}">{{ article.category.label }}</a>

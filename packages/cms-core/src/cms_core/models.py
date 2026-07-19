@@ -42,6 +42,10 @@ class Article(TranslatableModel[ArticleContent]):
     category: str | None = Field(default=None, pattern=SLUG_PATTERN)
     cover: str | None = Field(default=None, pattern=SLUG_PATTERN)
     tags: tuple[str, ...] = ()
+    featured: bool = False
+    """Pinned/priority content — themes decide the placement (M5)."""
+    author: str | None = None
+    """Editorial byline (free text); themes render it when present."""
 
     @field_validator("tags")
     @classmethod

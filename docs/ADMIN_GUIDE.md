@@ -61,7 +61,8 @@ with that entity's errors listed (the publish gate; disable only with
 ## Editing
 
 - **Articles**: EN source with metadata (per-language slug, category, tags,
-  cover), a Markdown editor (EasyMDE, vendored — ADR-0023) with a
+  cover, editorial byline, Featured flag — featured articles lead the home
+  highlight), a Markdown editor (EasyMDE, vendored — ADR-0023) with a
   localized formatting toolbar, a preview rendered by the builder's own
   Markdown renderer (raw HTML disabled — the single source of truth for
   what publishes), and a side-by-side editor per translation. Editing the

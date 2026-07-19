@@ -208,9 +208,9 @@ tests, docs and wiki updates, per the standing gates.
       inside `/preview/`
 - [ ] **Quick list actions**: status transition and slug edit from the
       list rows
-- [ ] **Featured flag** on articles, exposed to themes (hero/pinned
-      placement)
-- [ ] **Authorship**: author fields on content, theme credit line
+- [x] **Featured flag** on articles (migration 11): leads the home
+      highlight, listings stay recency
+- [x] **Authorship**: editorial byline on articles, rendered by themes
 - [x] **Media library filters**: server-side search over id/path/type/alt
       plus quick views (images only, missing translated alt)
 - [x] **Users screen** in the admin (list, create, role change, delete
@@ -222,6 +222,8 @@ tests, docs and wiki updates, per the standing gates.
 - [ ] Extension contract ADR + implementation: custom content types,
       custom fields on articles, custom validation rules, build steps,
       CLI subcommands
+- [ ] **Design-aware editing** (ADR-0027, proposed): themed side-preview
+      in the editor via the real preview pipeline; live refresh later
 - [ ] Explicit menu manager (per-language labels, ordering, external
       links)
 - [ ] Build-time image derivatives (responsive sizes; crop/focal point)

@@ -72,6 +72,7 @@ def _demo_paths(storage_path: Path) -> list[str]:
         "/media/new",
         "/publishing",
         "/trash",
+        "/users",
     ]
     with create_storage(f"sqlite:///{storage_path}") as storage:
         paths.extend(f"/media/{asset_id}" for asset_id in storage.list_media_ids())

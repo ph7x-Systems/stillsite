@@ -214,9 +214,12 @@ class _SiteBuilder:
             context = self._base_context(language, head)
             context["page"] = _page_context(page, language)
             context["sections"] = self._section_contexts(page, language)
-            context["latest"] = self._listing_entries(
-                self.articles_by_language[language][:3], language
-            )
+            # Featured articles lead the home highlight; recency breaks ties
+            # (M5). Listings, feeds and pagination keep pure recency.
+            highlight = sorted(
+                self.articles_by_language[language], key=lambda a: (not a.featured,)
+            )[:3]
+            context["latest"] = self._listing_entries(highlight, language)
             self._render("page", path, context)
 
     def _page_head(self, page: Page, language: Language) -> Head:
@@ -299,6 +302,8 @@ class _SiteBuilder:
                     for tag in article.tags
                 ],
                 "body_html": _SafeHtml(render_markdown(body.body_markdown)),
+                "author": article.author,
+                "featured": article.featured,
             }
             self._render("article", path, context)
 
@@ -361,6 +366,8 @@ class _SiteBuilder:
                     self.config.category_label(a.category, language) if a.category else None
                 ),
                 "thumb": self._media_image(a.cover, language),
+                "featured": a.featured,
+                "author": a.author,
             }
             for a in articles
         ]
