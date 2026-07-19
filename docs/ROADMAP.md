@@ -73,7 +73,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Library: validated uploads, translatable alt, safe delete | ✅ MIME-sniffed, dimensions parsed | — |
 | Image derivatives / responsive sizes | 🟡 dimensions recorded; no derivatives | 🔜 build-time derivatives (M6) |
 | Crop / focal point | ❌ | 🔜 with derivatives (M6) |
-| Media search / filters | ❌ flat list | 🔜 filters + search in the library (M5) |
+| Media search / filters | ✅ server-side search (id/path/type/alt) + quick views (images, missing alt) | — |
 
 ### Site features (static-first)
 

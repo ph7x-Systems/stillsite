@@ -5,6 +5,11 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Media library filters** (M5): server-side search over id, path, MIME
+  type and alt texts, plus quick views (images only, missing translated
+  alt) with a shown-of-total counter — a plain GET form, no JavaScript
+  required.
+
 - **Users screen** (M5): admins manage accounts from the panel — create
   (with role and panel language), change roles, delete — with the
   safeguards that matter: you cannot delete yourself, and the last admin

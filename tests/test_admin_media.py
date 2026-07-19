@@ -240,3 +240,27 @@ def test_unreferenced_assets_delete_with_their_file(tmp_path: Path) -> None:
     assert not (tmp_path / "media" / "tin-photo.png").exists()
     with create_storage(f"sqlite:///{tmp_path / 'content.db'}") as storage:
         assert storage.load_media_asset("tin-photo") is None
+
+
+def test_media_filters_search_and_views(tmp_path: Path) -> None:
+    """M5: the library filters server-side — text search and quick views."""
+    app = _app(tmp_path)
+    with TestClient(app, base_url="https://testserver") as client:
+        _sign_in(client)
+        csrf = client.get("/").text.split('name="csrf_token" value="')[1].split('"')[0]
+        for asset_id, alt in (("tin-rocket", "A tin rocket"), ("sea-chart", "A sea chart")):
+            client.post(
+                "/media",
+                data={"csrf_token": csrf, "id": asset_id, "alt": alt},
+                files={"upload": (f"{asset_id}.svg", b'<svg xmlns="x" width="4" height="4"/>')},
+            )
+        everything = client.get("/media").text
+        assert "tin-rocket" in everything and "sea-chart" in everything
+        searched = client.get("/media", params={"q": "rocket"}).text
+        assert "tin-rocket" in searched
+        assert 'href="/media/sea-chart"' not in searched
+        assert "1" in searched  # shown-of-total counter
+        missing = client.get("/media", params={"show": "missing-alt"}).text
+        assert "tin-rocket" in missing  # translations still missing
+        none = client.get("/media", params={"q": "nothing-here"}).text
+        assert "Nothing matches the filter." in none

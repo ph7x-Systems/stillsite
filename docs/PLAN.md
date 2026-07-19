@@ -211,8 +211,8 @@ tests, docs and wiki updates, per the standing gates.
 - [ ] **Featured flag** on articles, exposed to themes (hero/pinned
       placement)
 - [ ] **Authorship**: author fields on content, theme credit line
-- [ ] **Media library filters**: search by id/path/type, referenced-by
-      filter
+- [x] **Media library filters**: server-side search over id/path/type/alt
+      plus quick views (images only, missing translated alt)
 - [x] **Users screen** in the admin (list, create, role change, delete
       with self/last-admin safeguards) — CLI stays for bootstrap
 - [ ] **Editorial notes**: a comment trail per entry (author, timestamp)

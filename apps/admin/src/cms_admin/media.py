@@ -128,9 +128,29 @@ def _alt_form(asset: MediaAsset | None) -> dict[str, str]:
 async def media_list(
     request: Request,
     user_session: tuple[User, AdminSession] = Depends(current_session),
+    q: str = "",
+    show: str = "all",
 ) -> object:
+    """The library with server-side filters (M5): a text search over id,
+    path, MIME type and alt texts, plus quick views — images only and
+    assets still missing translated alt text."""
     user, session = user_session
     assets = await get_db(request).run(lambda storage: storage.load_all_media_assets())
+    total = len(assets)
+    needle = q.strip().lower()
+    if needle:
+        assets = [
+            asset
+            for asset in assets
+            if needle in asset.id.lower()
+            or needle in asset.path.lower()
+            or needle in asset.mime_type.lower()
+            or any(needle in alt.lower() for alt in asset.alt.values())
+        ]
+    if show == "images":
+        assets = [asset for asset in assets if asset.is_image]
+    elif show == "missing-alt":
+        assets = [asset for asset in assets if asset.missing_alt_languages()]
     return _page(
         request,
         "media_list.html.j2",
@@ -138,6 +158,9 @@ async def media_list(
             "user": user,
             "csrf_token": session.csrf_token,
             "assets": assets,
+            "total": total,
+            "q": q,
+            "show": show if show in ("all", "images", "missing-alt") else "all",
             "target_languages": TARGET_LANGUAGES,
             "source_language": SOURCE_LANGUAGE,
         },
