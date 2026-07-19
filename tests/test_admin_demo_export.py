@@ -51,6 +51,7 @@ def test_snapshot_captures_the_editorial_surface(tmp_path: Path) -> None:
         "articles/hello-orbit/index.html",
         "articles/hello-orbit/translations/pt-pt/index.html",
         "pages/home/index.html",
+        "trash/index.html",
         "pages/home/sections/hero-main/index.html",
         "pages/home/sections/hero-main/translations/es/index.html",
         "static/admin.css",

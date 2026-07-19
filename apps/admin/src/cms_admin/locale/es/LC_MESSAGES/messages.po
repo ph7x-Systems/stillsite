@@ -670,3 +670,9 @@ msgstr "Enviado a la papelera"
 
 msgid "Trashed content is invisible to builds, validation, export and the lists; restore brings it back exactly as it was. Delete forever is the only permanent removal and needs the admin role."
 msgstr "El contenido en la papelera es invisible para builds, validación, exportación y listas; restaurar lo devuelve exactamente como estaba. Eliminar para siempre es la única eliminación permanente y requiere el rol admin."
+
+msgid "Duplicate as draft"
+msgstr "Duplicar como borrador"
+
+msgid "View in preview"
+msgstr "Ver en la vista previa"

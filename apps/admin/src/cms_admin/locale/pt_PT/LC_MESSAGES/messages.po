@@ -670,3 +670,9 @@ msgstr "Enviado para a reciclagem"
 
 msgid "Trashed content is invisible to builds, validation, export and the lists; restore brings it back exactly as it was. Delete forever is the only permanent removal and needs the admin role."
 msgstr "Conteúdo na reciclagem é invisível para builds, validação, export e listas; restaurar devolve-o exatamente como estava. Apagar para sempre é a única remoção permanente e exige o papel admin."
+
+msgid "Duplicate as draft"
+msgstr "Duplicar como rascunho"
+
+msgid "View in preview"
+msgstr "Ver na pré-visualização"

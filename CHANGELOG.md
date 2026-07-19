@@ -5,6 +5,13 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Duplicate as draft and per-entry preview** (M5): one click copies an
+  article or page — content, metadata and sections intact, fresh
+  collision-safe id, workflow reset to draft, no schedule, no trash
+  flag; and the editors link straight to the entry's own URL inside
+  `/preview/`. The demo snapshot now captures the Trash page (it 404ed
+  on the live demo).
+
 - **Trash** (M5, ADR-0026): deleting becomes reversible — Move to trash
   hides an article or page from builds, validation, export and every
   list; the Trash page restores it exactly as it was, and Delete forever

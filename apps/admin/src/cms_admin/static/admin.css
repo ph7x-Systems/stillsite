@@ -78,3 +78,19 @@
   border-left-color: var(--bs-border-color);
   border-right-color: var(--bs-border-color);
 }
+
+/* Bootstrap's outline-secondary reads 4.39:1 on the content area's
+   tertiary background — one shade stronger per palette for WCAG AA. */
+.app-content .btn-outline-secondary {
+  --bs-btn-color: #565e64;
+  --bs-btn-border-color: #565e64;
+  --bs-btn-hover-bg: #565e64;
+  --bs-btn-hover-border-color: #565e64;
+}
+[data-bs-theme="dark"] .app-content .btn-outline-secondary {
+  --bs-btn-color: #adb5bd;
+  --bs-btn-border-color: #adb5bd;
+  --bs-btn-hover-bg: #adb5bd;
+  --bs-btn-hover-color: #000;
+  --bs-btn-hover-border-color: #adb5bd;
+}

@@ -7,10 +7,19 @@
 {% endblock %}
 {% block content %}
 {{ errors_block(errors) }}
-<form method="post" action="/trash/page/{{ page.id }}" class="mb-3">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <button type="submit" class="btn btn-outline-danger btn-sm">{{ _("Move to trash") }}</button>
-</form>
+<div class="d-flex gap-2 mb-3">
+  <form method="post" action="/pages/{{ page.id }}/duplicate" class="mb-0">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button type="submit" class="btn btn-outline-secondary btn-sm">{{ _("Duplicate as draft") }}</button>
+  </form>
+  {% if preview_path %}
+  <a class="btn btn-outline-secondary btn-sm" href="{{ preview_path }}">{{ _("View in preview") }}</a>
+  {% endif %}
+  <form method="post" action="/trash/page/{{ page.id }}" class="mb-0">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button type="submit" class="btn btn-outline-danger btn-sm">{{ _("Move to trash") }}</button>
+  </form>
+</div>
 {% if transitions %}
 <div class="mb-3 d-flex gap-2 admin-workflow" role="group" aria-label="{{ _('Workflow') }}">
   {% for t in transitions %}

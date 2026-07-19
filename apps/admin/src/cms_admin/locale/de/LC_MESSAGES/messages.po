@@ -670,3 +670,9 @@ msgstr "In den Papierkorb gelegt"
 
 msgid "Trashed content is invisible to builds, validation, export and the lists; restore brings it back exactly as it was. Delete forever is the only permanent removal and needs the admin role."
 msgstr "Inhalte im Papierkorb sind für Builds, Validierung, Export und Listen unsichtbar; Wiederherstellen bringt sie exakt zurück. Endgültig löschen ist die einzige dauerhafte Entfernung und erfordert die Admin-Rolle."
+
+msgid "Duplicate as draft"
+msgstr "Als Entwurf duplizieren"
+
+msgid "View in preview"
+msgstr "In der Vorschau ansehen"

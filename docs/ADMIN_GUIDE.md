@@ -101,6 +101,15 @@ The seeded example project intentionally keeps one article in review with a
 missing DE translation, so a fresh project (and the public demo) shows the
 gate holding a real warning instead of an empty all-green report.
 
+## Duplicating and previewing an entry
+
+**Duplicate as draft** copies an article or page — content, metadata,
+translations and sections intact — under a fresh collision-safe id
+(`-copy`, `-copy-2`, …), with the workflow reset to draft and no
+schedule or trash flag. **View in preview** on each editor jumps
+straight to that entry's URL inside `/preview/` (run a preview build
+from the Publishing panel first).
+
 ## Trash
 
 Deletion is reversible (ADR-0026): **Move to trash** on any article or

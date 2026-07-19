@@ -203,8 +203,8 @@ tests, docs and wiki updates, per the standing gates.
       bounded at 20), diff view, undoable restore
 - [x] **Trash** (ADR-0026): reversible deletion with exact restore and
       admin-only purge (migration 10)
-- [ ] **Duplicate as draft** from the list and the editor
-- [ ] **Per-entry preview**: the editor links straight to the entry's URL
+- [x] **Duplicate as draft** from the editor (collision-safe ids)
+- [x] **Per-entry preview**: the editor links straight to the entry's URL
       inside `/preview/`
 - [ ] **Quick list actions**: status transition and slug edit from the
       list rows
