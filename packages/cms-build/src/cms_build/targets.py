@@ -68,7 +68,10 @@ class SwaTarget:
                 "cache-control": "no-cache, must-revalidate",
                 **_SECURITY_HEADERS,
             },
+            # ADR-0021: the platform owns 5xx; 401/403/404 use the site's pages.
             "responseOverrides": {
+                "401": {"rewrite": "/401.html", "statusCode": 401},
+                "403": {"rewrite": "/403.html", "statusCode": 403},
                 "404": {"rewrite": "/404.html", "statusCode": 404},
             },
             "routes": [
@@ -104,6 +107,10 @@ class NginxTarget:
             "    location /assets/ {\n"
             '        add_header cache-control "public, max-age=86400, must-revalidate";\n'
             "    }\n"
+            "    error_page 401 /401.html;\n"
+            "    error_page 403 /403.html;\n"
+            "    error_page 404 /404.html;\n"
+            "    error_page 500 502 503 504 /50x.html;\n"
             "    location / {\n"
             "        try_files $uri $uri/ =404;\n"
             "    }\n"

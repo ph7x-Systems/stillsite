@@ -5,6 +5,14 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Error pages for every host** (ADR-0021): each build now ships
+  `401.html`, `403.html`, `404.html` and `50x.html` (localized titles via
+  the label system, rendered through the theme's `not_found` template).
+  The SWA config overrides 401/403/404, the nginx config maps all four
+  groups including 500/502/503/504, and `cms preview` serves the site's
+  own pages with the right status instead of the dev server's bare error
+  page.
+
 - **The admin ships the theme's behaviors** (ADR-0020): AdminLTE's own
   scripts, the Bootstrap bundle and OverlayScrollbars are vendored and
   served same-origin — working sidebar toggle (mobile included), user

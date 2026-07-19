@@ -522,18 +522,27 @@ class _SiteBuilder:
         ]
         return json.dumps(entries, ensure_ascii=False, sort_keys=True) + "\n"
 
+    # ADR-0021: the error-page contract — every build ships these four,
+    # every target serves them. All render through the not_found template.
+    ERROR_PAGES: tuple[tuple[str, str], ...] = (
+        ("401.html", "error-unauthorized"),
+        ("403.html", "error-forbidden"),
+        ("404.html", "not-found"),
+        ("50x.html", "error-server"),
+    )
+
     def _build_not_found(self) -> None:
-        head = build_head(
-            self.config,
-            title=ui_label(self.config, "not-found", SOURCE_LANGUAGE),
-            description=self.config.name,
-            language=SOURCE_LANGUAGE,
-            paths_by_language={SOURCE_LANGUAGE: "/404.html"},
-        )
-        context = self._base_context(SOURCE_LANGUAGE, head)
-        context["not_found"] = {"home_url": "/"}
-        html = self.theme.render("not_found", context)
-        self.artifact.add("404.html", html)
+        for filename, label in self.ERROR_PAGES:
+            head = build_head(
+                self.config,
+                title=ui_label(self.config, label, SOURCE_LANGUAGE),
+                description=self.config.name,
+                language=SOURCE_LANGUAGE,
+                paths_by_language={SOURCE_LANGUAGE: f"/{filename}"},
+            )
+            context = self._base_context(SOURCE_LANGUAGE, head)
+            context["not_found"] = {"home_url": "/"}
+            self.artifact.add(filename, self.theme.render("not_found", context))
 
 
 def build_site(

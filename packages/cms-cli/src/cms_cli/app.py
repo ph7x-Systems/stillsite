@@ -3,7 +3,7 @@
 import http.server
 from functools import partial
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, ClassVar
 
 import typer
 from cms_build import build_site, create_target, create_theme
@@ -171,6 +171,33 @@ def export(
     typer.echo(f"exported {written} file(s) for target {adapter.name} into {project.output}")
 
 
+class PreviewHandler(http.server.SimpleHTTPRequestHandler):
+    """Static preview that serves the site's own error pages (ADR-0021),
+    exactly as the production targets configure their hosts to do — never
+    the dev server's bare error page."""
+
+    ERROR_PAGES: ClassVar[dict[int, str]] = {
+        401: "401.html",
+        403: "403.html",
+        404: "404.html",
+    }
+
+    def send_error(self, code: int, message: str | None = None, explain: str | None = None) -> None:
+        filename = self.ERROR_PAGES.get(code, "50x.html" if code >= 500 else None)
+        if filename and self.directory:
+            page = Path(self.directory) / filename
+            if page.is_file():
+                body = page.read_bytes()
+                self.send_response(code)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                if self.command != "HEAD":
+                    self.wfile.write(body)
+                return
+        super().send_error(code, message, explain)
+
+
 @app.command()
 def preview(
     project_dir: ProjectDir = Path(),
@@ -181,7 +208,7 @@ def preview(
     if not project.output.is_dir():
         typer.echo("error: output directory missing — run `cms build` first", err=True)
         raise typer.Exit(code=2)
-    handler = partial(http.server.SimpleHTTPRequestHandler, directory=str(project.output))
+    handler = partial(PreviewHandler, directory=str(project.output))
     typer.echo(f"serving {project.output} at http://127.0.0.1:{port}/ (Ctrl+C to stop)")
     with http.server.ThreadingHTTPServer(("127.0.0.1", port), handler) as server:
         server.serve_forever()

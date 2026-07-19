@@ -81,6 +81,27 @@ DEFAULT_LABELS: dict[str, dict[Language, str]] = {
         Language.FR: "Page introuvable",
         Language.DE: "Seite nicht gefunden",
     },
+    "error-unauthorized": {
+        Language.EN: "Sign-in required",
+        Language.PT_PT: "Autenticação necessária",
+        Language.ES: "Se requiere iniciar sesión",
+        Language.FR: "Connexion requise",
+        Language.DE: "Anmeldung erforderlich",
+    },
+    "error-forbidden": {
+        Language.EN: "Access denied",
+        Language.PT_PT: "Acesso negado",
+        Language.ES: "Acceso denegado",
+        Language.FR: "Accès refusé",
+        Language.DE: "Zugriff verweigert",
+    },
+    "error-server": {
+        Language.EN: "Something went wrong",
+        Language.PT_PT: "Algo correu mal",
+        Language.ES: "Algo salió mal",
+        Language.FR: "Une erreur est survenue",
+        Language.DE: "Etwas ist schiefgelaufen",
+    },
 }
 
 

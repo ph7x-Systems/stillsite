@@ -188,6 +188,58 @@ the theme conformance suite.
 - [ ] Documentation pass: installation, architecture, content model, theme
       extension, deployment (pre-announcement)
 
+## Milestone 5 — Editorial completeness (next)
+
+Everything an editor expects from a mature CMS, inside the panel. The
+outward framing lives in [ROADMAP.md](ROADMAP.md); each item ships with
+tests, docs and wiki updates, per the standing gates.
+
+- [ ] **Direct unpublish**: `published → draft` transition (publisher
+      role), one click — today it takes archive + restore
+- [ ] **Scheduled publishing**: `publish_at` on articles/pages; the build
+      excludes future content, so the next build after the moment
+      publishes it; documented cron/Actions recipe
+- [ ] **Revisions**: a revision log on every save (storage migration),
+      diff view against the current version, restore
+- [ ] **Trash**: soft-delete status with restore and explicit purge;
+      deletes stop being final
+- [ ] **Duplicate as draft** from the list and the editor
+- [ ] **Per-entry preview**: the editor links straight to the entry's URL
+      inside `/preview/`
+- [ ] **Quick list actions**: status transition and slug edit from the
+      list rows
+- [ ] **Featured flag** on articles, exposed to themes (hero/pinned
+      placement)
+- [ ] **Authorship**: author fields on content, theme credit line
+- [ ] **Media library filters**: search by id/path/type, referenced-by
+      filter
+- [ ] **Users screen** in the admin (list, create, role change, disable)
+      — CLI stays for bootstrap
+- [ ] **Editorial notes**: a comment trail per entry (author, timestamp)
+
+## Milestone 6 — Extensibility and adoption
+
+- [ ] Extension contract ADR + implementation: custom content types,
+      custom fields on articles, custom validation rules, build steps,
+      CLI subcommands
+- [ ] Explicit menu manager (per-language labels, ordering, external
+      links)
+- [ ] Build-time image derivatives (responsive sizes; crop/focal point)
+- [ ] Redirect map emitted per target (SWA rules, nginx rewrites)
+- [ ] Comments-integration contract for static sites (embed islands,
+      privacy-respecting)
+- [ ] JSON content export target (headless consumption)
+- [ ] Importers for common blog-export formats (`cms import`)
+
+## Milestone 7 — Operations
+
+- [ ] Email/notification subsystem ADR (password reset, review-requested
+      notifications)
+- [ ] TOTP two-factor authentication
+- [ ] On-publish webhook (trigger the host's build)
+- [ ] `cms doctor`: storage, media, config, environment diagnostics
+- [ ] Documented backup/restore and scheduled-build recipes
+
 ## Next steps (priority order)
 
 1. ~~Close Milestone 2 — PoC parity~~ **done** (categories/tags/pagination,
@@ -200,10 +252,16 @@ the theme conformance suite.
 4. ~~Demo ready gate~~ **done** (axe/WCAG + W3C Nu job required in CI, README
    links the live demo; owner still owes the social preview upload and the
    announcement moment).
-5. **Milestone 3 — admin panel (next)**: the detailed plan above — this is
-   the milestone that makes Sardine CMS a full CMS, not a generator.
-6. **First PyPI release** (naming ADR, semver, trusted publishing) and the
-   remaining server backends — see the release plan above.
+5. ~~Milestone 3 — admin panel~~ **done** (accounts/roles, editors, media
+   library, workflow, publishing, hardening; AdminLTE with its behaviors,
+   ADR-0017/0020).
+6. ~~First PyPI release~~ **done** (v0.1.x, `sardine-cms-*`, trusted
+   publishing, per-package environments; all four storage backends
+   shipped, ADR-0018/0019).
+7. **Milestone 5 — editorial completeness (next)**: the checklist above,
+   starting with direct unpublish, scheduling and revisions.
+8. **Milestones 6–7**: extensibility/adoption, then operations — see the
+   checklists above and [ROADMAP.md](ROADMAP.md).
 
 Small pending items: GitHub social preview upload (owner, web UI only);
 reserve the PyPI names (`sardine-cms`; decide `sardine-cms-*` vs `cms-*`

@@ -136,3 +136,31 @@ def test_admin_create_user_provisions_an_account(tmp_path: Path) -> None:
         input="x\nx\n",
     )
     assert duplicate.exit_code == 3
+
+
+def test_preview_serves_the_site_404_page(tmp_path: Path) -> None:
+    """A missing path gets the site's own 404 page with status 404 — never
+    the dev server's bare error page (production targets do the same)."""
+    import http.server
+    import threading
+    import urllib.error
+    import urllib.request
+    from functools import partial
+
+    from cms_cli.app import PreviewHandler
+
+    (tmp_path / "404.html").write_text("<h1>Lost in orbit</h1>", encoding="utf-8")
+    handler = partial(PreviewHandler, directory=str(tmp_path))
+    with http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler) as server:
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            url = f"http://127.0.0.1:{server.server_address[1]}/definitely-missing"
+            try:
+                urllib.request.urlopen(url)
+                raise AssertionError("expected a 404")
+            except urllib.error.HTTPError as error:
+                assert error.code == 404
+                assert "Lost in orbit" in error.read().decode("utf-8")
+        finally:
+            server.shutdown()

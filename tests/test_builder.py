@@ -139,3 +139,17 @@ def test_language_switcher_stays_on_the_current_page() -> None:
     assert 'href="/de/">de</a>' in article_html
     pt_article = artifact.files["pt-pt/blog/primeiro-post/index.html"].decode("utf-8")
     assert 'href="/blog/first-post/">en</a>' in pt_article
+
+
+def test_every_build_ships_the_error_page_contract() -> None:
+    """ADR-0021: 401/403/404/50x pages in every artifact, all through the
+    not_found template, titles from the localized label system."""
+    artifact = build_site(CONFIG, SiteContent())
+    for filename, title in (
+        ("401.html", "Sign-in required"),
+        ("403.html", "Access denied"),
+        ("404.html", "Page not found"),
+        ("50x.html", "Something went wrong"),
+    ):
+        assert filename in artifact.files, filename
+        assert title in artifact.files[filename].decode("utf-8"), filename

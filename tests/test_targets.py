@@ -21,7 +21,9 @@ def test_swa_target_emits_config_with_security_headers() -> None:
     files = create_target("swa").extra_files(CONFIG, Artifact())
     config = json.loads(files["staticwebapp.config.json"])
     assert config["globalHeaders"]["X-Content-Type-Options"] == "nosniff"
-    assert config["responseOverrides"]["404"]["rewrite"] == "/404.html"
+    for code, page in (("401", "/401.html"), ("403", "/403.html"), ("404", "/404.html")):
+        assert config["responseOverrides"][code]["rewrite"] == page  # ADR-0021
+        assert config["responseOverrides"][code]["statusCode"] == int(code)
     assert any(route["route"] == "/assets/*" for route in config["routes"])
 
 
@@ -30,6 +32,13 @@ def test_nginx_target_emits_conf_and_dockerfile() -> None:
     conf = files["nginx.conf"].decode("utf-8")
     assert "add_header X-Frame-Options" in conf
     assert "try_files" in conf
+    for directive in (
+        "error_page 401 /401.html;",
+        "error_page 403 /403.html;",
+        "error_page 404 /404.html;",
+        "error_page 500 502 503 504 /50x.html;",
+    ):
+        assert directive in conf  # ADR-0021: the site pages, not server defaults
     assert files["Dockerfile"].decode("utf-8").startswith("FROM nginx:")
 
 
