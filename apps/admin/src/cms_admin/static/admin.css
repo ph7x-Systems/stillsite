@@ -9,19 +9,6 @@
    forbids inline styles, so the same value lives here. */
 .admin-theme-menu { --bs-dropdown-min-width: 8rem; }
 
-/* The avatar is an inline SVG (the sardine mark), not an <img>: give it the
-   exact sizes AdminLTE gives `.user-image` and `.user-header > img`. */
-.user-menu > .dropdown-menu > li.user-header > svg {
-  width: 90px;
-  height: 90px;
-  border: 3px solid var(--bs-border-color-translucent);
-  border-radius: 50%;
-}
-
-/* Brand mark in the sidebar (the tin rocket keeps its size in check). */
-.sidebar-brand .brand-image { width: 30px; height: 30px; border-radius: 6px; }
-.admin-login-mark { width: 56px; height: 56px; margin-bottom: .5rem; }
-
 /* Skip link */
 .admin-skip {
   position: absolute;

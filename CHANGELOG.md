@@ -5,6 +5,10 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- The sidebar brand and the user avatar are now plain `<img>` elements
+  styled entirely by AdminLTE's own rules (the invented sizing CSS is
+  gone); the admin panel's localization strategy joins the M6 roadmap.
+
 - **Admin chrome 1:1 with the AdminLTE reference pages**: theme-init
   before first paint (external file — the CSP still allows no inline
   scripts), the reference's stylesheet order, fullscreen toggle, the
