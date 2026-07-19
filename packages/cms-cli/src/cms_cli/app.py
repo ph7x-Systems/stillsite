@@ -32,7 +32,10 @@ def _project(directory: Path) -> Project:
 
 def _validate(project: Project) -> Report:
     content = project.load_content()
-    ruleset = RuleSet(rules=default_ruleset())
+    rules = default_ruleset()
+    for extension in project.load_extensions():
+        rules.extend(extension.validation_rules)  # type: ignore[arg-type]
+    ruleset = RuleSet(rules=rules)
     context = ValidationContext(
         required_languages=project.site.languages,
         known_categories=(
@@ -131,14 +134,21 @@ def validate(project_dir: ProjectDir = Path()) -> None:
 
 
 def _build_artifact(project: Project) -> Artifact:
+    extensions = project.load_extensions()
+    content = project.load_content()
     theme = create_theme(project.site.theme, overrides=project.theme_overrides)
-    return build_site(
+    artifact = build_site(
         project.site,
-        project.load_content(),
+        content,
         theme=theme,
         media_files=project.collect_media_files(),
         now=datetime.now(tz=UTC),
     )
+    # ADR-0028: deterministic post-artifact steps, ordered by extension name.
+    for extension in sorted(extensions, key=lambda e: e.name):
+        for step in extension.build_steps:
+            step(project.site, content, artifact)
+    return artifact
 
 
 @app.command()
@@ -279,3 +289,23 @@ def admin_create_user(
 
 def main() -> None:
     app()
+
+
+@app.command(
+    name="x",
+    context_settings={"allow_extra_args": True, "ignore_unknown_options": True},
+)
+def extension_command(
+    ctx: typer.Context,
+    name: Annotated[str, typer.Argument(help="Extension name (see sardine.toml)")],
+    project_dir: ProjectDir = Path(),
+) -> None:
+    """Run a command an activated extension provides (ADR-0028)."""
+    project = _project(project_dir)
+    for extension in project.load_extensions():
+        if extension.name == name and extension.cli is not None:
+            command = typer.main.get_command(extension.cli)  # type: ignore[arg-type]
+            command(ctx.args, standalone_mode=True, prog_name=f"cms x {name}")
+            return
+    typer.echo(f"error: no activated extension named {name!r} provides commands", err=True)
+    raise typer.Exit(code=2)

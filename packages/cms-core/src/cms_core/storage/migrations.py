@@ -142,4 +142,7 @@ MIGRATIONS: tuple[str, ...] = (
         PRIMARY KEY (entity_type, entity_id, seq)
     );
     """,
+    """
+    ALTER TABLE articles ADD COLUMN fields_json TEXT NOT NULL DEFAULT '{}';
+    """,
 )

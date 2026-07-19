@@ -799,3 +799,9 @@ msgstr "Neue Notiz"
 
 msgid "No notes yet — leave the first one for the team."
 msgstr "Noch keine Notizen — hinterlassen Sie die erste für das Team."
+
+msgid "Custom fields"
+msgstr "Benutzerdefinierte Felder"
+
+msgid "Free-form name/value pairs carried to themes and extensions (ADR-0028); clear a value to drop its field."
+msgstr "Freie Name/Wert-Paare für Themes und Erweiterungen (ADR-0028); leeren Sie einen Wert, um das Feld zu entfernen."

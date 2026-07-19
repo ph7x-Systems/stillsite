@@ -4,6 +4,7 @@ from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _dist_version
 
 from cms_core.accounts import AdminSession, Role, User
+from cms_core.extensions import ENTRY_POINT_GROUP, Extension, ExtensionError, load_extensions
 from cms_core.languages import SOURCE_LANGUAGE, TARGET_LANGUAGES, Language
 from cms_core.media import MediaAsset
 from cms_core.models import (
@@ -28,6 +29,7 @@ except PackageNotFoundError:  # running from a source tree without install
     __version__ = "0+unknown"
 
 __all__ = [
+    "ENTRY_POINT_GROUP",
     "SCHEMA_VERSION",
     "SOURCE_LANGUAGE",
     "TARGET_LANGUAGES",
@@ -36,6 +38,8 @@ __all__ = [
     "ArticleContent",
     "ChecksummedContent",
     "ContentStatus",
+    "Extension",
+    "ExtensionError",
     "Language",
     "MediaAsset",
     "Page",
@@ -49,6 +53,7 @@ __all__ = [
     "TranslationState",
     "User",
     "create_storage",
+    "load_extensions",
     "new_article",
     "new_page",
     "worst_state",

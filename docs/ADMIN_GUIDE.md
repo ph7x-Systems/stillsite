@@ -67,7 +67,8 @@ with that entity's errors listed (the publish gate; disable only with
   the admin itself can never be framed.
 - **Articles**: EN source with metadata (per-language slug, category, tags,
   cover, editorial byline, Featured flag — featured articles lead the home
-  highlight), a Markdown editor (EasyMDE, vendored — ADR-0023) with a
+  highlight — and free-form custom fields carried to themes and
+  extensions, ADR-0028), a Markdown editor (EasyMDE, vendored — ADR-0023) with a
   localized formatting toolbar, a preview rendered by the builder's own
   Markdown renderer (raw HTML disabled — the single source of truth for
   what publishes), and a side-by-side editor per translation. Editing the

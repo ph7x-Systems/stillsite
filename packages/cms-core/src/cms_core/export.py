@@ -38,6 +38,7 @@ def article_to_portable(article: Article) -> dict[str, object]:
         "publish_at": article.publish_at.isoformat() if article.publish_at else None,
         "featured": article.featured,
         "author": article.author,
+        "fields": dict(sorted(article.fields.items())),
         "languages": languages,
     }
 

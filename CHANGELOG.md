@@ -5,6 +5,14 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **The extension contract** (ADR-0028): packages plug in through one
+  `sardine.extensions` entry point (or a dotted path) — validation
+  rules, deterministic build steps, deployment targets, storage
+  backends, themes, a `cms x <name>` CLI mount and section-kind hints.
+  Activation is explicit in `sardine.toml`; nothing activates just by
+  being installed. Articles gain free-form custom fields (migration 13)
+  — editable in the panel, exported portably, exposed to themes.
+
 - **M5 closes: editorial notes and list quick actions.** Every article
   and page carries a team-only note trail (never published, never
   exported; the author or an admin removes) — storage migration 12 on

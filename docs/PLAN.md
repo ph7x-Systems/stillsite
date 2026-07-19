@@ -221,9 +221,10 @@ tests, docs and wiki updates, per the standing gates.
 
 ## Milestone 6 — Extensibility and adoption
 
-- [ ] Extension contract ADR + implementation: custom content types,
-      custom fields on articles, custom validation rules, build steps,
-      CLI subcommands
+- [x] Extension contract (ADR-0028): `sardine.extensions` entry-point
+      group + dotted paths, explicit activation, validation rules, build
+      steps, targets/backends/themes, `cms x` CLI, section-kind hints;
+      free-form custom fields on articles (migration 13)
 - [x] **Design-aware editing** (ADR-0027, accepted): themed side-preview
       in the editors via the real preview pipeline; live refresh arrives
       with the autosave layer

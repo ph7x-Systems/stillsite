@@ -4,9 +4,10 @@ import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
-from cms_build import SiteConfig
+from cms_build import SiteConfig, register_target, register_theme
 from cms_core import Language
-from cms_core.storage import StorageBackend, create_storage
+from cms_core.extensions import Extension, load_extensions
+from cms_core.storage import StorageBackend, create_storage, register_backend
 from cms_validation import SiteContent
 
 PROJECT_FILE = "sardine.toml"
@@ -21,6 +22,20 @@ class Project:
     site: SiteConfig
     storage_url: str
     output: Path
+    extension_names: tuple[str, ...] = ()
+
+    def load_extensions(self) -> list[Extension]:
+        """The extensions this project explicitly trusts (ADR-0028); their
+        targets, backends and themes register on load."""
+        extensions = load_extensions(self.extension_names)
+        for extension in extensions:
+            for name, factory in extension.storage_backends.items():
+                register_backend(name, factory)  # type: ignore[arg-type]
+            for name, factory in extension.targets.items():
+                register_target(name, factory)  # type: ignore[arg-type]
+            for name, factory in extension.themes.items():
+                register_theme(name, factory)  # type: ignore[arg-type]
+        return extensions
 
     def open_storage(self) -> StorageBackend:
         return create_storage(self.storage_url)
@@ -84,4 +99,10 @@ def load_project(directory: Path) -> Project:
         storage_url = f"sqlite:///{resolved}"
 
     output = directory / data.get("build", {}).get("output", "_site")
-    return Project(directory=directory, site=site, storage_url=storage_url, output=output)
+    return Project(
+        directory=directory,
+        site=site,
+        storage_url=storage_url,
+        output=output,
+        extension_names=tuple(data.get("extensions", [])),
+    )

@@ -58,6 +58,14 @@ def _project(request: Request) -> Project | None:
         return None
 
 
+def _extension_rules(project: Project | None) -> tuple[object, ...]:
+    if project is None:
+        return ()
+    return tuple(
+        rule for extension in project.load_extensions() for rule in extension.validation_rules
+    )
+
+
 def _write_artifact(files: dict[str, bytes], output: Path) -> int:
     for path, data in files.items():
         target = output / path
@@ -84,7 +92,7 @@ async def publishing_home(
             "csrf_token": session.csrf_token,
             "project": project,
             "project_dir": str(request.app.state.settings.project_dir.resolve()),
-            **report_context(content, tuple(languages)),
+            **report_context(content, tuple(languages), _extension_rules(project)),
             "targets": TARGETS,
             "last_build": getattr(request.app.state, "last_build", None),
         },
@@ -141,7 +149,7 @@ async def run_build(
         _record(request, "build", ok=False, detail=f"unknown target {target!r}")
         return _redirect()
     content = await _site_content(request)
-    report = run_report(content, tuple(project.site.languages))
+    report = run_report(content, tuple(project.site.languages), _extension_rules(project))
     if not report.ok:
         _record(
             request,
@@ -157,6 +165,9 @@ async def run_build(
         media_files=project.collect_media_files(),
         now=datetime.now(UTC),
     )
+    for extension in sorted(project.load_extensions(), key=lambda e: e.name):
+        for step in extension.build_steps:
+            step(project.site, content, artifact)
     extras = create_target(target).extra_files(project.site, artifact)
     files = {**artifact.files, **dict(extras)}
     pages = _write_artifact(files, project.output)

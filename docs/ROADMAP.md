@@ -59,8 +59,8 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | --- | --- | --- |
 | Articles + pages with typed sections | ✅ | — |
 | Categories, tags, listing pages | ✅ incl. validation rule | — |
-| Custom content types | ❌ | 🧭 extension ADR (M6) |
-| Custom fields | 🟡 sections carry typed fields; articles have a fixed schema | 🔜 article custom fields (M6) |
+| Custom content types | ❌ deliberate: pages-with-sections + article custom fields cover known cases | 🧭 own ADR when a real case appears (ADR-0028) |
+| Custom fields | ✅ free-form fields on articles (editable, exported, themed) and sections | — |
 | Navigation menus | 🟡 menus derive from section `menu` fields + published pages | 🔜 explicit menu manager (M6) |
 | Reusable blocks | 🟡 section kinds are the block library | 🔜 grow the kind gallery; document authoring (M6) |
 | Design-aware editing | ✅ themed side-preview in the editors (ADR-0027); live refresh arrives with the autosave layer | — |
@@ -102,7 +102,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 
 | Capability | Today | Gap → where |
 | --- | --- | --- |
-| Plugin system | ❌ | 🧭 extension ADR: content types, rules, build steps, CLI subcommands (M6) |
+| Plugin system | ✅ ADR-0028: `sardine.extensions` contract — rules, build steps, targets, backends, themes, `cms x` CLI, section-kind hints; explicit activation in `sardine.toml` | — |
 | Themes + per-project overrides | ✅ entry-point discovery | — |
 | **Importers** from other CMSs | ❌ | 🔜 `cms import` for the common blog-export formats — the adoption lever (M6) |
 | Export / portability | ✅ JSON/Markdown is the source of truth | — |

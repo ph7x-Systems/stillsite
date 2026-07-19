@@ -43,6 +43,30 @@
         <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Metadata") }}</h2></div>
         <div class="card-body">{{ metadata_fields(form) }}</div>
       </div>
+      <div class="card mb-3">
+        <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Custom fields") }}</h2></div>
+        <div class="card-body">
+          <p class="form-text">{{ _("Free-form name/value pairs carried to themes and extensions (ADR-0028); clear a value to drop its field.") }}</p>
+          <div class="table-responsive admin-table-wrap">
+            <table class="table table-sm mb-0 admin-table">
+              <thead><tr><th scope="col">{{ _("Field") }}</th><th scope="col">{{ _("Value") }}</th></tr></thead>
+              <tbody>
+                {% for row in custom_rows %}
+                <tr>
+                  <td><label class="mb-0 w-100">
+                    <span class="visually-hidden">{{ _("Field name") }}</span>
+                    <input class="form-control form-control-sm admin-input" name="custom_name" value="{{ row.name }}"></label></td>
+                  <td><label class="mb-0 w-100">
+                    <span class="visually-hidden">{{ _("Field value") }}</span>
+                    <input class="form-control form-control-sm admin-input admin-field-value" name="custom_value"
+                           value="{{ row.value }}"></label></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
       <button type="submit" class="btn btn-primary mb-3">{{ _("Save") }}</button>
     </form>
   </div>

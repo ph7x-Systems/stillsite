@@ -304,6 +304,7 @@ class _SiteBuilder:
                 "body_html": _SafeHtml(render_markdown(body.body_markdown)),
                 "author": article.author,
                 "featured": article.featured,
+                "fields": dict(sorted(article.fields.items())),
             }
             self._render("article", path, context)
 

@@ -10,17 +10,23 @@ from cms_core import TARGET_LANGUAGES, Language
 from cms_validation import Report, RuleSet, SiteContent, ValidationContext, default_ruleset
 
 
-def run_report(content: SiteContent, languages: tuple[Language, ...]) -> Report:
-    return RuleSet(rules=default_ruleset()).run(
-        content, ValidationContext(required_languages=languages)
-    )
+def run_report(
+    content: SiteContent,
+    languages: tuple[Language, ...],
+    extra_rules: tuple[object, ...] = (),
+) -> Report:
+    rules = default_ruleset()
+    rules.extend(extra_rules)  # type: ignore[arg-type]  # ADR-0028 extensions
+    return RuleSet(rules=rules).run(content, ValidationContext(required_languages=languages))
 
 
 def report_context(
-    content: SiteContent, languages: tuple[Language, ...] | None = None
+    content: SiteContent,
+    languages: tuple[Language, ...] | None = None,
+    extra_rules: tuple[object, ...] = (),
 ) -> dict[str, object]:
     required = languages or TARGET_LANGUAGES
-    report = run_report(content, tuple(required))
+    report = run_report(content, tuple(required), extra_rules)
     scope = {
         "articles": len(content.articles),
         "pages": len(content.pages),

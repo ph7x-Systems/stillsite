@@ -241,10 +241,20 @@ async def article_create(
     )
 
 
+BLANK_CUSTOM_ROWS = 2
+
+
+def _custom_rows(article: Article) -> list[dict[str, str]]:
+    rows = [{"name": name, "value": value} for name, value in sorted(article.fields.items())]
+    rows.extend({"name": "", "value": ""} for _ in range(BLANK_CUSTOM_ROWS))
+    return rows
+
+
 def _editor_context(
     article: Article, form: dict[str, str] | None = None, role: Role | None = None
 ) -> dict[str, object]:
     return {
+        "custom_rows": _custom_rows(article),
         "article": article,
         "transitions": available_transitions(article.status, role) if role else [],
         "states": article.translation_states(),
@@ -323,6 +333,14 @@ async def article_edit_save(
 ) -> object:
     user, session = user_session
     article = await _load_article(request, article_id)
+    raw = await request.form()
+    names = [str(value) for value in raw.getlist("custom_name")]
+    values = [str(value) for value in raw.getlist("custom_value")]
+    custom_fields = {
+        name.strip(): value
+        for name, value in zip(names, values, strict=False)
+        if name.strip() and value
+    }
     form = {
         "title": title,
         "summary": summary,
@@ -337,6 +355,7 @@ async def article_edit_save(
     }
     try:
         article = _validated_article(article, form)
+        article = article.model_copy(update={"fields": custom_fields})
     except ValueError as error:
         return _page(
             request,

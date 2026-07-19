@@ -147,6 +147,7 @@ class DbApiBackend(StorageBackend):
                     "deleted_at": article.deleted_at.isoformat() if article.deleted_at else None,
                     "featured": 1 if article.featured else 0,
                     "author": article.author,
+                    "fields_json": json.dumps(article.fields, sort_keys=True),
                 },
             )
             self._execute("DELETE FROM translations WHERE article_id = %s", (article.id,))
@@ -172,7 +173,7 @@ class DbApiBackend(StorageBackend):
     def load_article(self, article_id: str) -> Article | None:
         row = self._fetchone(
             "SELECT id, status, created_at, updated_at, title, summary, body_markdown, slug,"
-            " category, tags_json, cover, publish_at, deleted_at, featured, author"
+            " category, tags_json, cover, publish_at, deleted_at, featured, author, fields_json"
             " FROM articles WHERE id = %s",
             (article_id,),
         )
@@ -204,6 +205,7 @@ class DbApiBackend(StorageBackend):
             deleted_at=datetime.fromisoformat(row[12]) if row[12] else None,
             featured=bool(row[13]),
             author=row[14],
+            fields=json.loads(row[15]) if row[15] else {},
         )
 
     def delete_article(self, article_id: str) -> bool:

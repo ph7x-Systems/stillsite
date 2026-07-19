@@ -292,3 +292,13 @@ def test_notes_append_list_and_delete(backend: StorageBackend) -> None:
     assert backend.delete_note("article", "post", 1)
     assert not backend.delete_note("article", "post", 1)
     assert len(backend.list_notes("article", "post")) == 1
+
+
+def test_article_custom_fields_round_trip(backend: StorageBackend) -> None:
+    """ADR-0028: free-form custom fields persist on every engine."""
+    article = new_article("fielded", ArticleContent(title="Fielded"))
+    article.fields = {"subtitle": "A tin odyssey", "sponsor": "The canteen"}
+    backend.save_article(article)
+    loaded = backend.load_article("fielded")
+    assert loaded is not None
+    assert loaded.fields == {"sponsor": "The canteen", "subtitle": "A tin odyssey"}

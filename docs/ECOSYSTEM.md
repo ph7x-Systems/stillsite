@@ -56,3 +56,7 @@ Tag your repo with the GitHub topics `sardine-cms` and the kind
 | Package | Kind | License | Maintainer | Conformance |
 | --- | --- | --- | --- | --- |
 | _(empty — be the first: open a PR)_ | | | | |
+
+Extensions plug in through the `sardine.extensions` contract
+(ADR-0028): explicit activation in `sardine.toml`, contributions through
+the public registries, conformance suites as the license to publish.

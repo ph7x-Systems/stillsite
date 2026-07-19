@@ -71,8 +71,9 @@ class SQLiteBackend(StorageBackend):
             connection.execute(
                 "INSERT INTO articles"
                 " (id, status, created_at, updated_at, title, summary, body_markdown, slug,"
-                "  category, tags_json, cover, publish_at, deleted_at, featured, author)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                "  category, tags_json, cover, publish_at, deleted_at, featured, author,"
+                "  fields_json)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                 " ON CONFLICT(id) DO UPDATE SET"
                 " status = excluded.status, updated_at = excluded.updated_at,"
                 " title = excluded.title, summary = excluded.summary,"
@@ -80,7 +81,7 @@ class SQLiteBackend(StorageBackend):
                 " category = excluded.category, tags_json = excluded.tags_json,"
                 " cover = excluded.cover, publish_at = excluded.publish_at,"
                 " deleted_at = excluded.deleted_at, featured = excluded.featured,"
-                " author = excluded.author",
+                " author = excluded.author, fields_json = excluded.fields_json",
                 (
                     article.id,
                     article.status.value,
@@ -97,6 +98,7 @@ class SQLiteBackend(StorageBackend):
                     article.deleted_at.isoformat() if article.deleted_at else None,
                     1 if article.featured else 0,
                     article.author,
+                    json.dumps(article.fields, sort_keys=True),
                 ),
             )
             connection.execute("DELETE FROM translations WHERE article_id = ?", (article.id,))
@@ -123,7 +125,7 @@ class SQLiteBackend(StorageBackend):
     def load_article(self, article_id: str) -> Article | None:
         row = self._connection.execute(
             "SELECT id, status, created_at, updated_at, title, summary, body_markdown, slug,"
-            " category, tags_json, cover, publish_at, deleted_at, featured, author"
+            " category, tags_json, cover, publish_at, deleted_at, featured, author, fields_json"
             " FROM articles WHERE id = ?",
             (article_id,),
         ).fetchone()
@@ -155,6 +157,7 @@ class SQLiteBackend(StorageBackend):
             deleted_at=datetime.fromisoformat(row[12]) if row[12] else None,
             featured=bool(row[13]),
             author=row[14],
+            fields=json.loads(row[15]) if row[15] else {},
         )
 
     def delete_article(self, article_id: str) -> bool:

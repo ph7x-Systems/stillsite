@@ -44,6 +44,9 @@ class Article(TranslatableModel[ArticleContent]):
     tags: tuple[str, ...] = ()
     featured: bool = False
     """Pinned/priority content — themes decide the placement (M5)."""
+    fields: dict[str, str] = Field(default_factory=dict)
+    """Free-form custom fields (ADR-0028): the framework carries them,
+    projects/extensions/themes agree on the keys."""
     author: str | None = None
     """Editorial byline (free text); themes render it when present."""
 
