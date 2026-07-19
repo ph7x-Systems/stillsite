@@ -1,6 +1,7 @@
 """The `cms` command line: thin wiring from project config to services."""
 
 import http.server
+from datetime import UTC, datetime
 from functools import partial
 from pathlib import Path
 from typing import Annotated, ClassVar
@@ -136,6 +137,7 @@ def _build_artifact(project: Project) -> Artifact:
         project.load_content(),
         theme=theme,
         media_files=project.collect_media_files(),
+        now=datetime.now(tz=UTC),
     )
 
 

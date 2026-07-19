@@ -141,6 +141,7 @@ class DbApiBackend(StorageBackend):
                     "category": article.category,
                     "tags_json": json.dumps(list(article.tags)),
                     "cover": article.cover,
+                    "publish_at": article.publish_at.isoformat() if article.publish_at else None,
                 },
             )
             self._execute("DELETE FROM translations WHERE article_id = %s", (article.id,))
@@ -166,7 +167,7 @@ class DbApiBackend(StorageBackend):
     def load_article(self, article_id: str) -> Article | None:
         row = self._fetchone(
             "SELECT id, status, created_at, updated_at, title, summary, body_markdown, slug,"
-            " category, tags_json, cover FROM articles WHERE id = %s",
+            " category, tags_json, cover, publish_at FROM articles WHERE id = %s",
             (article_id,),
         )
         if row is None:
@@ -193,6 +194,7 @@ class DbApiBackend(StorageBackend):
             category=row[8],
             tags=tuple(json.loads(row[9])),
             cover=row[10],
+            publish_at=datetime.fromisoformat(row[11]) if row[11] else None,
         )
 
     def delete_article(self, article_id: str) -> bool:
@@ -218,6 +220,7 @@ class DbApiBackend(StorageBackend):
                     "title": page.source.title,
                     "description": page.source.description,
                     "slug": page.source.slug,
+                    "publish_at": page.publish_at.isoformat() if page.publish_at else None,
                 },
             )
             self._execute("DELETE FROM page_translations WHERE page_id = %s", (page.id,))
@@ -306,7 +309,7 @@ class DbApiBackend(StorageBackend):
 
     def load_page(self, page_id: str) -> Page | None:
         row = self._fetchone(
-            "SELECT id, status, created_at, updated_at, title, description, slug"
+            "SELECT id, status, created_at, updated_at, title, description, slug, publish_at"
             " FROM pages WHERE id = %s",
             (page_id,),
         )
@@ -330,6 +333,7 @@ class DbApiBackend(StorageBackend):
             source=PageContent(title=row[4], description=row[5], slug=row[6]),
             translations=translations,
             sections=self._load_sections(row[0]),
+            publish_at=datetime.fromisoformat(row[7]) if row[7] else None,
         )
 
     def delete_page(self, page_id: str) -> bool:

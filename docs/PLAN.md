@@ -196,9 +196,9 @@ tests, docs and wiki updates, per the standing gates.
 
 - [x] **Direct unpublish**: `published → draft` transition (publisher
       role), one click
-- [ ] **Scheduled publishing**: `publish_at` on articles/pages; the build
-      excludes future content, so the next build after the moment
-      publishes it; documented cron/Actions recipe
+- [x] **Scheduled publishing** (ADR-0024): `publish_at` on articles and
+      pages; the build excludes future content, the next build after the
+      moment publishes it; CI-cron recipe in ADMIN_GUIDE
 - [ ] **Revisions**: a revision log on every save (storage migration),
       diff view against the current version, restore
 - [ ] **Trash**: soft-delete status with restore and explicit purge;

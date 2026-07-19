@@ -613,3 +613,12 @@ msgstr "Lista não ordenada"
 
 msgid "Unpublish"
 msgstr "Despublicar"
+
+msgid "Publish at (UTC)"
+msgstr "Publicar em (UTC)"
+
+msgid "empty publishes immediately once published; a future moment keeps the entry out of builds until a build runs after it"
+msgstr "vazio publica imediatamente depois de publicado; um momento futuro mantém a entrada fora dos builds até correr um build depois dele"
+
+msgid "publish_at: use the picker format (YYYY-MM-DDTHH:MM, UTC)"
+msgstr "publish_at: usa o formato do seletor (YYYY-MM-DDTHH:MM, UTC)"

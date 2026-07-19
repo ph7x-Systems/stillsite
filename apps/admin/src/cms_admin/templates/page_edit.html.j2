@@ -1,5 +1,5 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import text_field, textarea_field, errors_block, state_badge, status_tag with context %}
+{% from "_fields.html.j2" import text_field, textarea_field, datetime_field, errors_block, state_badge, status_tag with context %}
 {% block title %}{{ page.id }} — Sardine CMS admin{% endblock %}
 {% block header %}
 <nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/pages">&larr; {{ _("Pages") }}</a></nav>
@@ -28,6 +28,8 @@
           {{ text_field("title", _("Title"), form.title, required=true) }}
           {{ textarea_field("description", _("Description"), form.description, rows=3) }}
           {{ text_field("slug", _("Slug"), form.slug, required=true) }}
+          {{ datetime_field("publish_at", _("Publish at (UTC)"), form.publish_at,
+                            hint=_("empty publishes immediately once published; a future moment keeps the entry out of builds until a build runs after it")) }}
         </div>
       </div>
       <button type="submit" class="btn btn-primary mb-3">{{ _("Save") }}</button>

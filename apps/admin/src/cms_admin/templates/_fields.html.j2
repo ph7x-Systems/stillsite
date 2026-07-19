@@ -29,10 +29,21 @@
 {{ text_field("slug", _("Slug"), form.slug, hint=_("lowercase-with-dashes; empty falls back to the article id")) }}
 {% endmacro %}
 
+{% macro datetime_field(name, label, value, hint=None) %}
+<div class="mb-1 admin-field">
+  <label class="form-label" for="{{ name }}">{{ label }}</label>
+  <input class="form-control admin-input" id="{{ name }}" name="{{ name }}"
+         type="datetime-local" value="{{ value }}">
+  {% if hint %}<div class="form-text admin-hint">{{ hint }}</div>{% endif %}
+</div>
+{% endmacro %}
+
 {% macro metadata_fields(form) %}
 {{ text_field("category", _("Category"), form.category, hint=_("a category slug, or empty")) }}
 {{ text_field("tags", _("Tags"), form.tags, hint=_("comma-separated slugs")) }}
 {{ text_field("cover", _("Cover"), form.cover, hint=_("a media asset id, or empty")) }}
+{{ datetime_field("publish_at", _("Publish at (UTC)"), form.publish_at,
+                  hint=_("empty publishes immediately once published; a future moment keeps the entry out of builds until a build runs after it")) }}
 {% endmacro %}
 
 {% macro errors_block(errors) %}

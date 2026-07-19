@@ -39,6 +39,12 @@ router = APIRouter(prefix="/articles")
 HTTP_422 = status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
+def _form_error_list(error: ValueError) -> list[str]:
+    if isinstance(error, ValidationError):
+        return form_errors(error)
+    return ["publish_at: use the picker format (YYYY-MM-DDTHH:MM, UTC)"]
+
+
 def form_errors(error: ValidationError) -> list[str]:
     return [
         f"{'.'.join(str(part) for part in item['loc']) or 'form'}: {item['msg']}"
@@ -48,6 +54,19 @@ def form_errors(error: ValidationError) -> list[str]:
 
 def parse_tags(raw: str) -> tuple[str, ...]:
     return tuple(part.strip() for part in raw.split(",") if part.strip())
+
+
+def parse_publish_at(raw: str) -> datetime | None:
+    """The datetime-local input submits YYYY-MM-DDTHH:MM; naive means UTC
+    (ADR-0024 — the panel schedules in UTC, as the field label says)."""
+    if not raw.strip():
+        return None
+    moment = datetime.fromisoformat(raw.strip())
+    return moment if moment.tzinfo else moment.replace(tzinfo=UTC)
+
+
+def publish_at_form(value: datetime | None) -> str:
+    return value.astimezone(UTC).strftime("%Y-%m-%dT%H:%M") if value else ""
 
 
 def content_form(content: ArticleContent | None) -> dict[str, str]:
@@ -137,6 +156,7 @@ def _validated_article(base: Article, form: dict[str, str]) -> Article:
         category=form["category"] or None,
         cover=form["cover"] or None,
         tags=parse_tags(form["tags"]),
+        publish_at=parse_publish_at(form.get("publish_at", "")),
         updated_at=datetime.now(UTC),
     )
     return Article.model_validate(payload)
@@ -154,6 +174,7 @@ async def article_create(
     category: str = Form(""),
     tags: str = Form(""),
     cover: str = Form(""),
+    publish_at: str = Form(""),
 ) -> object:
     user, session = user_session
     db = get_db(request)
@@ -166,12 +187,13 @@ async def article_create(
         "category": category,
         "tags": tags,
         "cover": cover,
+        "publish_at": publish_at,
     }
     try:
         base = new_article(article_id, ArticleContent(title=title or "-"))
         article = _validated_article(base, form)
-    except ValidationError as error:
-        errors = form_errors(error)
+    except ValueError as error:
+        errors = _form_error_list(error)
     else:
         existing = await db.run(lambda storage: storage.load_article(article_id))
         if existing is None:
@@ -203,6 +225,7 @@ def _editor_context(
             "category": article.category or "",
             "tags": ", ".join(article.tags),
             "cover": article.cover or "",
+            "publish_at": publish_at_form(article.publish_at),
         },
     }
 
@@ -239,6 +262,7 @@ async def article_edit_save(
     category: str = Form(""),
     tags: str = Form(""),
     cover: str = Form(""),
+    publish_at: str = Form(""),
 ) -> object:
     user, session = user_session
     article = await _load_article(request, article_id)
@@ -250,17 +274,18 @@ async def article_edit_save(
         "category": category,
         "tags": tags,
         "cover": cover,
+        "publish_at": publish_at,
     }
     try:
         article = _validated_article(article, form)
-    except ValidationError as error:
+    except ValueError as error:
         return _page(
             request,
             "article_edit.html.j2",
             {
                 "user": user,
                 "csrf_token": session.csrf_token,
-                "errors": form_errors(error),
+                "errors": _form_error_list(error),
                 **_editor_context(article, form, role=user.role),
             },
             status_code=HTTP_422,

@@ -30,7 +30,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from pydantic import ValidationError
 
-from cms_admin.articles import form_errors
+from cms_admin.articles import _form_error_list, form_errors, parse_publish_at, publish_at_form
 from cms_admin.auth import current_session, enforce_csrf, get_db
 from cms_admin.workflow import (
     allowed,
@@ -188,6 +188,7 @@ def _editor_context(
             "title": page.source.title,
             "description": page.source.description,
             "slug": page.source.slug,
+            "publish_at": publish_at_form(page.publish_at),
         },
     }
 
@@ -220,20 +221,22 @@ async def page_edit_save(
     title: str = Form(""),
     description: str = Form(""),
     slug: str = Form(""),
+    publish_at: str = Form(""),
 ) -> object:
     user, session = user_session
     page = await _load_page(request, page_id)
-    form = {"title": title, "description": description, "slug": slug}
+    form = {"title": title, "description": description, "slug": slug, "publish_at": publish_at}
     try:
+        page.publish_at = parse_publish_at(publish_at)
         page.source = PageContent(title=title, description=description, slug=slug)
-    except ValidationError as error:
+    except ValueError as error:
         return _page_response(
             request,
             "page_edit.html.j2",
             {
                 "user": user,
                 "csrf_token": session.csrf_token,
-                "errors": form_errors(error),
+                "errors": _form_error_list(error),
                 **_editor_context(page, form),
             },
             status_code=HTTP_422,

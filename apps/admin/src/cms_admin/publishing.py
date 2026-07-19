@@ -107,7 +107,11 @@ async def run_preview(
         return _redirect()
     content = await _site_content(request)
     artifact = await asyncio.to_thread(
-        build_site, project.site, content, media_files=project.collect_media_files()
+        build_site,
+        project.site,
+        content,
+        media_files=project.collect_media_files(),
+        now=datetime.now(UTC),
     )
     preview_dir = Path(request.app.state.preview_dir)
     pages = _write_artifact(artifact.files, preview_dir)
@@ -147,7 +151,11 @@ async def run_build(
         )
         return _redirect()
     artifact = await asyncio.to_thread(
-        build_site, project.site, content, media_files=project.collect_media_files()
+        build_site,
+        project.site,
+        content,
+        media_files=project.collect_media_files(),
+        now=datetime.now(UTC),
     )
     extras = create_target(target).extra_files(project.site, artifact)
     files = {**artifact.files, **dict(extras)}

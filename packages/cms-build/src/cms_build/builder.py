@@ -9,6 +9,7 @@ import hashlib
 import json
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from email.utils import format_datetime
 from xml.sax.saxutils import escape
 
@@ -60,13 +61,21 @@ class _SafeHtml(str):
         return str(self)
 
 
-def _published_articles(content: SiteContent) -> list[Article]:
-    articles = [a for a in content.articles if a.status is ContentStatus.PUBLISHED]
+def _live(entry: Article | Page, now: datetime) -> bool:
+    """Published, and its moment has come (ADR-0024): a future publish_at
+    keeps the entry out of the artifact until a build runs past it."""
+    if entry.status is not ContentStatus.PUBLISHED:
+        return False
+    return entry.publish_at is None or entry.publish_at <= now
+
+
+def _published_articles(content: SiteContent, now: datetime) -> list[Article]:
+    articles = [a for a in content.articles if _live(a, now)]
     return sorted(articles, key=lambda a: (a.created_at.isoformat(), a.id), reverse=True)
 
 
-def _published_pages(content: SiteContent) -> list[Page]:
-    pages = [p for p in content.pages if p.status is ContentStatus.PUBLISHED]
+def _published_pages(content: SiteContent, now: datetime) -> list[Page]:
+    pages = [p for p in content.pages if _live(p, now)]
     return sorted(pages, key=lambda p: p.id)
 
 
@@ -104,13 +113,14 @@ class _SiteBuilder:
         content: SiteContent,
         theme: Theme,
         media_files: Mapping[str, bytes],
+        now: datetime,
     ) -> None:
         self.config = config
         self.theme = theme
         self.artifact = Artifact()
         self.sitemap_urls: list[str] = []
-        self.articles = _published_articles(content)
-        self.pages = _published_pages(content)
+        self.articles = _published_articles(content, now)
+        self.pages = _published_pages(content, now)
         self.media_by_id = {asset.id: asset for asset in content.media}
         self.theme_assets = dict(theme.assets())
         self.asset_urls = _asset_urls(self.theme_assets)
@@ -551,9 +561,16 @@ def build_site(
     *,
     theme: Theme | None = None,
     media_files: Mapping[str, bytes] | None = None,
+    now: datetime | None = None,
 ) -> Artifact:
+    """Build the site. ``now`` is the scheduling clock (ADR-0024): the
+    build stays deterministic for the same content and the same ``now``.
+    Callers at the boundary (CLI, admin) pass the wall clock; tests pass
+    fixed values. None falls back to the wall clock, consulted only when
+    an entry actually carries ``publish_at``."""
     active_theme = theme or create_theme(config.theme)
-    return _SiteBuilder(config, content, active_theme, media_files or {}).build()
+    moment = now or datetime.now(tz=UTC)
+    return _SiteBuilder(config, content, active_theme, media_files or {}, moment).build()
 
 
 def _reading_minutes(markdown: str) -> int:

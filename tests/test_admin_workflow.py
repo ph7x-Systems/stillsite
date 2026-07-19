@@ -126,7 +126,9 @@ def test_editor_submits_for_review_but_cannot_publish(tmp_path: Path) -> None:
         csrf = _sign_in(client)
         editor_page = client.get("/articles/piece").text
         assert "Submit for review" in editor_page
-        assert "Publish" not in editor_page.replace("Publishing", "")
+        # the editor role gets no Publish button ("Publish at" field and the
+        # Publishing nav entry are not transitions)
+        assert ">Publish</button>" not in editor_page
         ok = client.post(
             "/articles/piece/status",
             data={"csrf_token": csrf, "to": "review"},

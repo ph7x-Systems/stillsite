@@ -33,6 +33,9 @@ class Article(TranslatableModel[ArticleContent]):
     status: ContentStatus = ContentStatus.DRAFT
     created_at: datetime
     updated_at: datetime
+    publish_at: datetime | None = None
+    """UTC moment before which a published entry stays out of builds
+    (ADR-0024); None publishes immediately once published."""
     category: str | None = Field(default=None, pattern=SLUG_PATTERN)
     cover: str | None = Field(default=None, pattern=SLUG_PATTERN)
     tags: tuple[str, ...] = ()

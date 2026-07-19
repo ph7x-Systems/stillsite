@@ -5,6 +5,14 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Scheduled publishing** (M5, ADR-0024): articles and pages gain an
+  optional `publish_at` (UTC) — published content with a future moment
+  stays out of every build until a build runs after it; the build is the
+  clock and stays deterministic for the same content and clock. Editors
+  set it with a native date-time field (localized); storage migration 8
+  covers all four engines; the portable export carries the field; the
+  scheduled-builds CI recipe is documented in the admin guide.
+
 - **Responsive lists**: the per-language columns collapse into one
   compact Translations cell of state-colored badges (linked to the
   translation editors; state also in the title and hidden text, never

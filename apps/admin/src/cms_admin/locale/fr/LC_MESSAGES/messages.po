@@ -613,3 +613,12 @@ msgstr "Liste à puces"
 
 msgid "Unpublish"
 msgstr "Dépublier"
+
+msgid "Publish at (UTC)"
+msgstr "Publier le (UTC)"
+
+msgid "empty publishes immediately once published; a future moment keeps the entry out of builds until a build runs after it"
+msgstr "vide publie immédiatement une fois publié ; un moment futur garde l'entrée hors des builds jusqu'à ce qu'un build s'exécute après"
+
+msgid "publish_at: use the picker format (YYYY-MM-DDTHH:MM, UTC)"
+msgstr "publish_at : utilisez le format du sélecteur (YYYY-MM-DDTHH:MM, UTC)"

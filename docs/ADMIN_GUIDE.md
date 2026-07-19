@@ -101,6 +101,33 @@ The seeded example project intentionally keeps one article in review with a
 missing DE translation, so a fresh project (and the public demo) shows the
 gate holding a real warning instead of an empty all-green report.
 
+## Scheduled publishing
+
+Articles and pages carry an optional **Publish at (UTC)** moment
+(ADR-0024). Scheduling composes with the workflow: an entry is live when
+it is `published` **and** its moment has passed — a future `publish_at`
+keeps it out of every build (pages, listings, feeds, sitemap, search)
+until a build runs after that moment. **The build is the clock**: on a
+static host nothing changes until something builds, so schedule builds at
+the cadence the editorial calendar needs, e.g. a scheduled CI job:
+
+```yaml
+on:
+  schedule:
+    - cron: "0 * * * *"   # hourly: scheduled content goes live within the hour
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install sardine-cms-cli sardine-cms-theme-ph7x-reference
+      - run: cms export -p . --target swa
+      # deploy the output directory with your host's action
+```
+
+Validation and the publish gate apply to scheduled content exactly as to
+anything published — scheduling never bypasses them.
+
 ## Panel language (i18n)
 
 The panel speaks the editor's language (ADR-0022). Resolution order per

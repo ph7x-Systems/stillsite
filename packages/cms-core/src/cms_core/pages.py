@@ -45,6 +45,9 @@ class Page(TranslatableModel[PageContent]):
     status: ContentStatus = ContentStatus.DRAFT
     created_at: datetime
     updated_at: datetime
+    publish_at: datetime | None = None
+    """UTC moment before which a published page stays out of builds
+    (ADR-0024); None publishes immediately once published."""
     sections: list[Section] = Field(default_factory=list)
 
     def translation_state(self, language: Language) -> TranslationState:

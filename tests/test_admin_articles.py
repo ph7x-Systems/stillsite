@@ -279,3 +279,43 @@ def test_markdown_bodies_carry_the_editor_marker(tmp_path: Path) -> None:
     assert "data-markdown-editor" in page
     assert "data-markdown-labels" in page
     assert page.count("data-markdown-editor") == 1  # summary stays plain
+
+
+def _form_payload() -> dict[str, str]:
+    return {
+        "title": "Piece",
+        "summary": "",
+        "body_markdown": "Body.",
+        "slug": "",
+        "category": "",
+        "tags": "",
+        "cover": "",
+    }
+
+
+def test_publish_at_is_set_and_cleared_from_the_editor(tmp_path: Path) -> None:
+    """ADR-0024: the scheduling moment round-trips through the form."""
+    with _client(_app(tmp_path, _article("piece"))) as client:
+        csrf = _sign_in(client)
+        page = client.get("/articles/piece").text
+        assert 'name="publish_at"' in page
+        saved = client.post(
+            "/articles/piece",
+            data={**_form_payload(), "csrf_token": csrf, "publish_at": "2027-06-01T09:00"},
+            follow_redirects=False,
+        )
+        assert saved.status_code == 303
+        edited = client.get("/articles/piece").text
+        assert 'value="2027-06-01T09:00"' in edited
+        cleared = client.post(
+            "/articles/piece",
+            data={**_form_payload(), "csrf_token": csrf, "publish_at": ""},
+            follow_redirects=False,
+        )
+        assert cleared.status_code == 303
+        bad = client.post(
+            "/articles/piece",
+            data={**_form_payload(), "csrf_token": csrf, "publish_at": "not-a-moment"},
+        )
+        assert bad.status_code == 422
+        assert "publish_at" in bad.text

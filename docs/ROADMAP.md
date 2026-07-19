@@ -43,7 +43,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Draft / review / publish / archive, role-gated | ✅ | — |
 | Markdown editor with toolbar | ✅ EasyMDE vendored, localized toolbar (ADR-0023); builder preview stays the truth | — |
 | **Unpublish** (published straight back to draft) | ✅ one click, publisher role; the next build drops the entry | — |
-| Scheduled publishing | ❌ | 🔜 `publish_at` + build-time gate; static-first = the scheduled build publishes it (M5) |
+| Scheduled publishing | ✅ `publish_at` on articles/pages (ADR-0024): the build is the clock; documented CI-cron recipe | — |
 | Revisions + restore | ❌ last write wins | 🔜 revision log on save, diff view, restore (M5) |
 | Trash / restore | ❌ delete is final (admin refuses only referenced media) | 🔜 soft-delete status + restore + purge (M5) |
 | Duplicate content | ❌ | 🔜 "Duplicate as draft" (M5) |
@@ -109,7 +109,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Webhooks (publish → host build) | ❌ | 🔜 on-publish webhook (M7) |
 | Health check | 🟡 `cms validate` covers content | 🔜 `cms doctor` (storage, media, config) (M7) |
 | Backups | ✅ export is the backup; the DB is disposable | — (document the restore path, M7) |
-| Scheduled builds | ❌ | 🔜 documented cron/Actions recipe + `publish_at` awareness (M5/M7) |
+| Scheduled builds | ✅ recipe in ADMIN_GUIDE (CI `schedule:` + `cms export`); `publish_at`-aware by construction | — |
 
 ## Milestones ahead
 

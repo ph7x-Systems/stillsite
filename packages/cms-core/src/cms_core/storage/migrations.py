@@ -108,4 +108,8 @@ MIGRATIONS: tuple[str, ...] = (
     """
     ALTER TABLE users ADD COLUMN language TEXT;
     """,
+    """
+    ALTER TABLE articles ADD COLUMN publish_at TEXT;
+    ALTER TABLE pages ADD COLUMN publish_at TEXT;
+    """,
 )

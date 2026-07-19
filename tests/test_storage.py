@@ -4,7 +4,7 @@ The `backend` fixture (tests/conftest.py) parameterizes these tests over all
 implemented engines — SQLite always, PostgreSQL when a server is available.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from cms_core import (
     AdminSession,
@@ -159,6 +159,25 @@ def test_user_round_trip_and_upsert(backend: StorageBackend) -> None:
     assert loaded.role is Role.ADMIN
     assert loaded.language is None  # unset preference follows the browser
     assert backend.list_usernames() == ["ana"]
+
+
+def test_publish_at_round_trips_on_articles_and_pages(backend: StorageBackend) -> None:
+    """ADR-0024: the scheduling moment persists (and clears) on every engine."""
+    moment = datetime(2027, 1, 1, 9, 0, tzinfo=UTC)
+    article = new_article("scheduled-post", ArticleContent(title="Later"))
+    article.publish_at = moment
+    backend.save_article(article)
+    loaded = backend.load_article("scheduled-post")
+    assert loaded is not None and loaded.publish_at == moment
+    article.publish_at = None
+    backend.save_article(article)
+    reloaded = backend.load_article("scheduled-post")
+    assert reloaded is not None and reloaded.publish_at is None
+    page = new_page("scheduled-page", PageContent(title="Later", slug="later"))
+    page.publish_at = moment
+    backend.save_page(page)
+    stored = backend.load_page("scheduled-page")
+    assert stored is not None and stored.publish_at == moment
 
 
 def test_user_language_preference_round_trips(backend: StorageBackend) -> None:

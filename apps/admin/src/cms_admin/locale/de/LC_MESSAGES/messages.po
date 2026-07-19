@@ -613,3 +613,12 @@ msgstr "Ungeordnete Liste"
 
 msgid "Unpublish"
 msgstr "Veröffentlichung aufheben"
+
+msgid "Publish at (UTC)"
+msgstr "Veröffentlichen am (UTC)"
+
+msgid "empty publishes immediately once published; a future moment keeps the entry out of builds until a build runs after it"
+msgstr "leer veröffentlicht sofort nach der Veröffentlichung; ein zukünftiger Zeitpunkt hält den Eintrag aus den Builds heraus, bis ein Build danach läuft"
+
+msgid "publish_at: use the picker format (YYYY-MM-DDTHH:MM, UTC)"
+msgstr "publish_at: verwenden Sie das Format der Auswahl (YYYY-MM-DDTHH:MM, UTC)"

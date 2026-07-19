@@ -35,6 +35,7 @@ def article_to_portable(article: Article) -> dict[str, object]:
         "status": article.status.value,
         "created_at": article.created_at.isoformat(),
         "updated_at": article.updated_at.isoformat(),
+        "publish_at": article.publish_at.isoformat() if article.publish_at else None,
         "languages": languages,
     }
 
@@ -81,6 +82,7 @@ def page_to_portable(page: Page) -> dict[str, object]:
         "status": page.status.value,
         "created_at": page.created_at.isoformat(),
         "updated_at": page.updated_at.isoformat(),
+        "publish_at": page.publish_at.isoformat() if page.publish_at else None,
         "languages": languages,
         "sections": [section_to_portable(section) for section in page.sections],
     }

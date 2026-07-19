@@ -71,14 +71,14 @@ class SQLiteBackend(StorageBackend):
             connection.execute(
                 "INSERT INTO articles"
                 " (id, status, created_at, updated_at, title, summary, body_markdown, slug,"
-                "  category, tags_json, cover)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                "  category, tags_json, cover, publish_at)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                 " ON CONFLICT(id) DO UPDATE SET"
                 " status = excluded.status, updated_at = excluded.updated_at,"
                 " title = excluded.title, summary = excluded.summary,"
                 " body_markdown = excluded.body_markdown, slug = excluded.slug,"
                 " category = excluded.category, tags_json = excluded.tags_json,"
-                " cover = excluded.cover",
+                " cover = excluded.cover, publish_at = excluded.publish_at",
                 (
                     article.id,
                     article.status.value,
@@ -91,6 +91,7 @@ class SQLiteBackend(StorageBackend):
                     article.category,
                     json.dumps(list(article.tags)),
                     article.cover,
+                    article.publish_at.isoformat() if article.publish_at else None,
                 ),
             )
             connection.execute("DELETE FROM translations WHERE article_id = ?", (article.id,))
@@ -117,7 +118,7 @@ class SQLiteBackend(StorageBackend):
     def load_article(self, article_id: str) -> Article | None:
         row = self._connection.execute(
             "SELECT id, status, created_at, updated_at, title, summary, body_markdown, slug,"
-            " category, tags_json, cover"
+            " category, tags_json, cover, publish_at"
             " FROM articles WHERE id = ?",
             (article_id,),
         ).fetchone()
@@ -145,6 +146,7 @@ class SQLiteBackend(StorageBackend):
             category=row[8],
             tags=tuple(json.loads(row[9])),
             cover=row[10],
+            publish_at=datetime.fromisoformat(row[11]) if row[11] else None,
         )
 
     def delete_article(self, article_id: str) -> bool:
@@ -161,12 +163,13 @@ class SQLiteBackend(StorageBackend):
     def save_page(self, page: Page) -> None:
         with self._connection as connection:
             connection.execute(
-                "INSERT INTO pages (id, status, created_at, updated_at, title, description, slug)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?)"
+                "INSERT INTO pages"
+                " (id, status, created_at, updated_at, title, description, slug, publish_at)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
                 " ON CONFLICT(id) DO UPDATE SET"
                 " status = excluded.status, updated_at = excluded.updated_at,"
                 " title = excluded.title, description = excluded.description,"
-                " slug = excluded.slug",
+                " slug = excluded.slug, publish_at = excluded.publish_at",
                 (
                     page.id,
                     page.status.value,
@@ -175,6 +178,7 @@ class SQLiteBackend(StorageBackend):
                     page.source.title,
                     page.source.description,
                     page.source.slug,
+                    page.publish_at.isoformat() if page.publish_at else None,
                 ),
             )
             connection.execute("DELETE FROM page_translations WHERE page_id = ?", (page.id,))
@@ -259,7 +263,7 @@ class SQLiteBackend(StorageBackend):
 
     def load_page(self, page_id: str) -> Page | None:
         row = self._connection.execute(
-            "SELECT id, status, created_at, updated_at, title, description, slug"
+            "SELECT id, status, created_at, updated_at, title, description, slug, publish_at"
             " FROM pages WHERE id = ?",
             (page_id,),
         ).fetchone()
@@ -283,6 +287,7 @@ class SQLiteBackend(StorageBackend):
             source=PageContent(title=row[4], description=row[5], slug=row[6]),
             translations=translations,
             sections=self._load_sections(page_id),
+            publish_at=datetime.fromisoformat(row[7]) if row[7] else None,
         )
 
     def delete_page(self, page_id: str) -> bool:

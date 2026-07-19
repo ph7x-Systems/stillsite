@@ -153,3 +153,23 @@ def test_every_build_ships_the_error_page_contract() -> None:
     ):
         assert filename in artifact.files, filename
         assert title in artifact.files[filename].decode("utf-8"), filename
+
+
+def test_publish_at_gates_the_artifact_until_the_moment_passes() -> None:
+    """ADR-0024: the build is the clock — a future publish_at keeps the
+    published entry out entirely; the first build after it publishes it.
+    Same content + same now = byte-identical output."""
+    article = new_article(
+        "scheduled", ArticleContent(title="Later", body_markdown="Soon."), now=NOW
+    )
+    article.status = ContentStatus.PUBLISHED
+    article.publish_at = datetime(2027, 6, 1, 9, 0, tzinfo=UTC)
+    content = SiteContent(articles=[article])
+    before = build_site(CONFIG, content, now=datetime(2027, 5, 31, tzinfo=UTC))
+    after = build_site(CONFIG, content, now=datetime(2027, 6, 1, 9, 0, tzinfo=UTC))
+    assert not any("scheduled" in path for path in before.paths())
+    assert any("scheduled" in path for path in after.paths())
+    assert "scheduled" not in before.files["sitemap.xml"].decode("utf-8")
+    assert "scheduled" in after.files["sitemap.xml"].decode("utf-8")
+    again = build_site(CONFIG, content, now=datetime(2027, 5, 31, tzinfo=UTC))
+    assert again.digest() == before.digest()  # deterministic for the same clock

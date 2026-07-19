@@ -60,6 +60,8 @@ RUNTIME_MSGIDS: tuple[str, ...] = (
     "translation is missing",
     "translation is outdated",
     "missing alt text",
+    # scheduling form error (ADR-0024)
+    "publish_at: use the picker format (YYYY-MM-DDTHH:MM, UTC)",
     # media upload static errors
     "file: choose a file to upload",
     "file: could not read the image dimensions",
