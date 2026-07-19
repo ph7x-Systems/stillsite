@@ -1,25 +1,27 @@
 {% extends "shell.html.j2" %}
 {% from "_fields.html.j2" import text_field, errors_block %}
 {% block title %}Upload media — Sardine CMS admin{% endblock %}
+{% block header %}
+<nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/media">&larr; Media</a></nav>
+<h1 class="h3 mb-0">Upload media</h1>
+{% endblock %}
 {% block content %}
-<nav class="admin-breadcrumb" aria-label="Breadcrumb"><a href="/media">&larr; Media</a></nav>
-<h1>Upload media</h1>
 {{ errors_block(errors) }}
 <form method="post" action="/media" enctype="multipart/form-data" class="admin-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  {{ text_field("id", "Asset ID", form.id, required=true, hint="permanent, lowercase-with-dashes") }}
-  <div class="admin-field">
-    <label for="upload">File</label>
-    <input class="admin-input" id="upload" name="upload" type="file"
-           accept=".png,.jpg,.jpeg,.gif,.webp,.svg" required>
-    <span class="admin-hint">png, jpeg, gif, webp or svg — the type is verified from the
-      bytes, never from the name.</span>
-  </div>
-  {{ text_field("alt", "Alt text (EN)", form.alt, required=true,
-                hint="mandatory — translations are added after the upload") }}
-  <div>
-    <button type="submit" class="admin-btn admin-btn-primary">Upload</button>
-    <a class="admin-btn" href="/media">Cancel</a>
-  </div>
+  <div class="card mb-3"><div class="card-body">
+    {{ text_field("id", "Asset ID", form.id, required=true, hint="permanent, lowercase-with-dashes") }}
+    <div class="mb-1 admin-field">
+      <label class="form-label" for="upload">File</label>
+      <input class="form-control admin-input" id="upload" name="upload" type="file"
+             accept=".png,.jpg,.jpeg,.gif,.webp,.svg" required>
+      <div class="form-text admin-hint">png, jpeg, gif, webp or svg — the type is verified from the
+        bytes, never from the name.</div>
+    </div>
+    {{ text_field("alt", "Alt text (EN)", form.alt, required=true,
+                  hint="mandatory — translations are added after the upload") }}
+  </div></div>
+  <button type="submit" class="btn btn-primary">Upload</button>
+  <a class="btn btn-outline-secondary" href="/media">Cancel</a>
 </form>
 {% endblock %}

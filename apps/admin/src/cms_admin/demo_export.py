@@ -50,7 +50,7 @@ def neutralize(html: str) -> str:
     html = re.sub(r'<input type="hidden" name="csrf_token" value="[^"]*">', "", html)
     html = html.replace('<button type="submit"', '<button type="button" disabled')
     html = html.replace("</head>", f"{BANNER_CSS}</head>")
-    html = html.replace("<body>", f"<body>{BANNER}")
+    html = re.sub(r"(<body[^>]*>)", lambda m: m.group(1) + BANNER, html, count=1)
     return html
 
 

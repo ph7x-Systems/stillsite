@@ -1,6 +1,7 @@
 # ADR-0015 — Admin UI design: the ph7x design system natively, hTWOo removed
 
-- **Status:** accepted (supersedes the component-library choice of ADR-0013)
+- **Status:** superseded by [ADR-0017](0017-admin-adminlte.md) — the admin now
+  uses vendored AdminLTE; this ADR's removal of hTWOo stands
 - **Date:** 2026-07-18
 
 ## Context

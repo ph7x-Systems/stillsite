@@ -49,22 +49,22 @@ URI and scroll-driven animations behind `@supports`, all disabled under
 ## Admin panel (Milestone 3 — in progress)
 
 Server-rendered Jinja inside the FastAPI process
-([ADR-0013](adr/0013-admin-ui-architecture.md)), styled **natively with the
-ph7x design system** ([ADR-0015](adr/0015-admin-ph7x-design.md)): the same
-tokens, local Inter/Newsreader subsets (OFL) and button/badge idioms as the
-reference theme, in one self-served stylesheet (`static/admin.css`) — no
-component library, no CDN, islands per ADR-0010. Surfaces:
+([ADR-0013](adr/0013-admin-ui-architecture.md)), built on **AdminLTE 4**
+(MIT, vendored verbatim with its license at `static/vendor/adminlte/`,
+Bootstrap 5 bundled — [ADR-0017](adr/0017-admin-adminlte.md)). CSS only:
+the admin ships zero JavaScript, so no collapsible widgets are used and the
+CSP allows no script source. `static/admin.css` overlays the brand (local
+Inter/Newsreader, OFL), state helpers and no-JS fallbacks. Surfaces:
 
-| Admin surface | Building blocks (`admin-*` classes) |
+| Admin surface | AdminLTE/Bootstrap building blocks |
 | --- | --- |
-| Shell chrome (all authenticated pages) | navy top bar, side navigation, role tag, skip link |
-| Dashboard | stat cards (serif numerals), coverage table + progress, validation table |
-| Content lists | tables with per-language state badges (`admin-state-*`) |
-| Side-by-side editors | two-column grid (`admin-sbs`), fieldsets, Markdown preview panel |
-| Forms | `admin-field` / `admin-input` (+ mono textarea), inline hints, alert block |
-| Actions | `admin-btn` / `admin-btn-primary` / `admin-btn-small` (the site's `.btn` idiom) |
-| Workflow (status transitions) | role-filtered button group (`admin-workflow`), per-status tag colors |
-| Publishing panel | project summary, gate report, preview/build forms, last-run record |
+| Shell chrome (all authenticated pages) | app-header navbar, dark app-sidebar with the tin-rocket brand, skip link |
+| Dashboard | small-box stat tiles per status, cards, striped coverage table + progress |
+| Content lists | cards with striped/hover tables, per-language state badges (`admin-state-*`) |
+| Side-by-side editors | Bootstrap grid (`row`/`col`, `admin-sbs`), cards, Markdown preview panel |
+| Forms | `form-control`/`form-label` (+ mono textarea), form-text hints, alert block |
+| Workflow (status transitions) | role-filtered button group (`admin-workflow`), per-status badge colors |
+| Publishing panel | cards for gate/run/last-run, target select, buttons |
 
 The admin remains an application (not a theme); sites theming the public
 output do not affect the admin's look.

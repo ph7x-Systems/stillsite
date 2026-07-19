@@ -1,54 +1,62 @@
 {% extends "shell.html.j2" %}
 {% from "_fields.html.j2" import errors_block %}
 {% block title %}{{ asset.id }} — Sardine CMS admin{% endblock %}
+{% block header %}
+<nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/media">&larr; Media</a></nav>
+<h1 class="h3 mb-0">{{ asset.id }} <span class="badge text-bg-light border admin-tag">{{ asset.mime_type }}</span></h1>
+{% endblock %}
 {% block content %}
-<nav class="admin-breadcrumb" aria-label="Breadcrumb"><a href="/media">&larr; Media</a></nav>
-<h1>{{ asset.id }} <span class="admin-tag">{{ asset.mime_type }}</span></h1>
 {{ errors_block(errors) }}
-<div class="admin-sbs">
-  <section aria-labelledby="preview-heading">
-    <h2 id="preview-heading">Preview</h2>
-    {% if asset.is_image %}
-    <div class="admin-preview admin-media-preview">
-      <img src="/media-files/{{ asset.path }}" alt="{{ asset.alt.values() | list | first }}"
-           width="{{ asset.width }}" height="{{ asset.height }}">
+<div class="row admin-sbs">
+  <div class="col-lg-6">
+    <div class="card mb-3">
+      <div class="card-header"><h2 class="card-title h6 mb-0">Preview</h2></div>
+      <div class="card-body">
+        {% if asset.is_image %}
+        <div class="admin-preview admin-media-preview mb-3">
+          <img src="/media-files/{{ asset.path }}" alt="{{ asset.alt.values() | list | first }}"
+               width="{{ asset.width }}" height="{{ asset.height }}" class="img-fluid rounded border">
+        </div>
+        {% endif %}
+        <dl class="admin-source">
+          <dt>Path</dt><dd><code>{{ asset.path }}</code></dd>
+          {% if asset.width %}<dt>Dimensions</dt><dd>{{ asset.width }}×{{ asset.height }}</dd>{% endif %}
+        </dl>
+        <h3 class="h6">Used by</h3>
+        {% if references %}
+        <ul>{% for reference in references %}<li><code>{{ reference }}</code></li>{% endfor %}</ul>
+        <p class="form-text">Referenced assets cannot be deleted.</p>
+        {% else %}
+        <p class="admin-empty">Nothing references this asset.</p>
+        <form method="post" action="/media/{{ asset.id }}/delete" class="mb-0">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button type="submit" class="btn btn-outline-danger">Delete asset</button>
+        </form>
+        {% endif %}
+      </div>
     </div>
-    {% endif %}
-    <dl class="admin-source">
-      <dt>Path</dt><dd><code>{{ asset.path }}</code></dd>
-      {% if asset.width %}<dt>Dimensions</dt><dd>{{ asset.width }}×{{ asset.height }}</dd>{% endif %}
-    </dl>
-    <h3>Used by</h3>
-    {% if references %}
-    <ul>{% for reference in references %}<li><code>{{ reference }}</code></li>{% endfor %}</ul>
-    <p class="admin-hint">Referenced assets cannot be deleted.</p>
-    {% else %}
-    <p class="admin-empty">Nothing references this asset.</p>
-    <form method="post" action="/media/{{ asset.id }}/delete">
+  </div>
+  <div class="col-lg-6">
+    <form method="post" action="/media/{{ asset.id }}" class="admin-form">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-      <button type="submit" class="admin-btn">Delete asset</button>
+      <div class="card mb-3">
+        <div class="card-header"><h2 class="card-title h6 mb-0">Alt text</h2></div>
+        <div class="card-body">
+          <div class="mb-1 admin-field">
+            <label class="form-label" for="alt_en">EN (mandatory)</label>
+            <input class="form-control admin-input" id="alt_en" name="alt_en" value="{{ form.alt_en }}" required>
+          </div>
+          {% for language in target_languages %}
+          <div class="mb-1 admin-field">
+            <label class="form-label" for="alt_{{ language.value }}">{{ language.value | upper }}</label>
+            <input class="form-control admin-input" id="alt_{{ language.value }}"
+                   name="alt_{{ language.value }}" value="{{ form["alt_" + language.value] }}">
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Save alt text</button>
     </form>
-    {% endif %}
-  </section>
-  <form method="post" action="/media/{{ asset.id }}" class="admin-form">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <fieldset>
-      <legend>Alt text</legend>
-      <div class="admin-field">
-        <label for="alt_en">EN (mandatory)</label>
-        <input class="admin-input" id="alt_en" name="alt_en" value="{{ form.alt_en }}" required>
-      </div>
-      {% for language in target_languages %}
-      <div class="admin-field">
-        <label for="alt_{{ language.value }}">{{ language.value | upper }}</label>
-        <input class="admin-input" id="alt_{{ language.value }}"
-               name="alt_{{ language.value }}" value="{{ form["alt_" + language.value] }}">
-      </div>
-      {% endfor %}
-    </fieldset>
-    <div>
-      <button type="submit" class="admin-btn admin-btn-primary">Save alt text</button>
-    </div>
-  </form>
+  </div>
 </div>
 {% endblock %}

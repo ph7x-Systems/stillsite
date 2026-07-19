@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>{% block title %}Sardine CMS admin{% endblock %}</title>
+<link rel="stylesheet" href="/static/vendor/adminlte/adminlte.min.css">
 <link rel="stylesheet" href="/static/admin.css">
 </head>
-<body>
+<body class="{% block bodyclass %}layout-fixed sidebar-expand-lg bg-body-tertiary{% endblock %}">
 {% block body %}
 <main id="main">
 {% block content %}{% endblock %}

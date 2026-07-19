@@ -1,37 +1,42 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import state_badge %}
+{% from "_fields.html.j2" import state_badge, status_tag %}
 {% block title %}Articles — Sardine CMS admin{% endblock %}
+{% block header %}
+<div class="d-flex justify-content-between align-items-center">
+  <h1 class="h3 mb-0">Articles</h1>
+  <a class="btn btn-primary" href="/articles/new">New article</a>
+</div>
+{% endblock %}
 {% block content %}
-<span class="admin-kick">Content</span>
-<h1>Articles</h1>
-<p><a class="admin-btn admin-btn-primary" href="/articles/new">New article</a></p>
 {% if articles %}
-<div class="admin-table-wrap">
-  <table class="admin-table">
-    <thead>
-      <tr>
-        <th scope="col">ID</th>
-        <th scope="col">Title (EN)</th>
-        <th scope="col">Status</th>
-        {% for language in target_languages %}<th scope="col">{{ language.value | upper }}</th>{% endfor %}
-        <th scope="col">Updated</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for article in articles %}
-      <tr>
-        <th scope="row"><a href="/articles/{{ article.id }}">{{ article.id }}</a></th>
-        <td>{{ article.source.title }}</td>
-        <td><span class="admin-tag admin-tag-{{ article.status.value }}">{{ article.status.value }}</span></td>
-        {% for language in target_languages %}
-        <td><a href="/articles/{{ article.id }}/translations/{{ language.value }}">
-          {{ state_badge(article.translation_state(language)) }}</a></td>
+<div class="card">
+  <div class="card-body p-0 admin-table-wrap">
+    <table class="table table-striped table-hover mb-0 admin-table">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Title (EN)</th>
+          <th scope="col">Status</th>
+          {% for language in target_languages %}<th scope="col">{{ language.value | upper }}</th>{% endfor %}
+          <th scope="col">Updated</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for article in articles %}
+        <tr>
+          <th scope="row"><a href="/articles/{{ article.id }}">{{ article.id }}</a></th>
+          <td>{{ article.source.title }}</td>
+          <td>{{ status_tag(article.status) }}</td>
+          {% for language in target_languages %}
+          <td><a href="/articles/{{ article.id }}/translations/{{ language.value }}" class="text-decoration-none">
+            {{ state_badge(article.translation_state(language)) }}</a></td>
+          {% endfor %}
+          <td>{{ article.updated_at.strftime("%Y-%m-%d") }}</td>
+        </tr>
         {% endfor %}
-        <td>{{ article.updated_at.strftime("%Y-%m-%d") }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      </tbody>
+    </table>
+  </div>
 </div>
 {% else %}
 <p class="admin-empty">No articles yet — create the first one.</p>

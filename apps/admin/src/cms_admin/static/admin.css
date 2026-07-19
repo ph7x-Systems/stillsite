@@ -1,478 +1,93 @@
-/* Sardine CMS admin — the ph7x design system, natively (ADR-0015).
-   Same tokens, fonts and voice as the reference theme: editorial dark,
-   Inter for the interface, Newsreader for display. No component library. */
+/* Sardine CMS admin — overlay on top of vendored AdminLTE 4 (ADR-0017).
+   AdminLTE (MIT, ColorlibHQ) ships verbatim in vendor/adminlte with its
+   license; this file only adds the brand (local Inter/Newsreader, OFL),
+   the state helpers and the no-JavaScript fallbacks. --navy is the brand
+   anchor shared with the reference theme. */
 
 @font-face{font-family:'Inter';font-style:normal;font-weight:300 600;font-display:swap;src:url(fonts/inter-normal-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 @font-face{font-family:'Inter';font-style:normal;font-weight:300 600;font-display:swap;src:url(fonts/inter-normal-latinext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:'Newsreader';font-style:normal;font-weight:200 800;font-display:swap;src:url(fonts/newsreader-normal-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:'Newsreader';font-style:normal;font-weight:200 800;font-display:swap;src:url(fonts/newsreader-normal-latinext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:'Newsreader';font-style:italic;font-weight:200 800;font-display:swap;src:url(fonts/newsreader-italic-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 
 :root {
-  --bg: #080809;
-  --panel: #101115;
   --navy: #0e1626;
-  --line: #1a1b20;
-  --line-2: #282a31;
-  --head: #f2f3f6;
-  --ink: #c4c6cd;
-  --muted: #8b909c; /* one AA shade up from the site's #7b7e88 */
-  --faint: #474a53;
-  --accent: #d8cfc0;
-  --green: #7ec8a2;
-  --amber: #e0b15e;
-  --red: #e08b8b;
-  --sans: "Inter", system-ui, -apple-system, sans-serif;
-  --serif: "Newsreader", "Times New Roman", serif;
+  --bs-body-font-family: 'Inter', system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: var(--sans);
-  font-weight: 400;
-  font-size: .95rem;
-  line-height: 1.6;
-  color: var(--ink);
-  background: var(--bg);
+/* Brand */
+.admin-brand { font-weight: 600; }
+.admin-brand-sub {
+  font-size: .64rem;
+  font-weight: 600;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color);
+  margin-left: .5rem;
+  vertical-align: middle;
 }
+.sidebar-brand .brand-image { width: 30px; height: 30px; border-radius: 6px; }
+.sidebar-brand .brand-text { font-family: 'Newsreader', serif; font-size: 1.15rem; }
+.admin-login-mark { width: 56px; height: 56px; margin-bottom: .5rem; }
 
-h1, h2, h3 {
-  font-family: var(--serif);
-  font-weight: 300;
-  color: var(--head);
-  line-height: 1.15;
-  margin: 0 0 .6em;
-}
-
-h1 { font-size: 2.3rem; }
-h2 { font-size: 1.45rem; }
-h3 { font-size: 1.15rem; }
-
-a { color: var(--head); text-decoration: none; transition: color .3s; }
-a:hover { color: var(--accent); }
-code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .85em; color: var(--head); }
-
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
+/* Skip link */
 .admin-skip {
   position: absolute;
   left: -100vw;
   top: 0;
-  padding: .6rem 1.2rem;
-  background: var(--panel);
-  color: var(--head);
-  z-index: 10;
+  z-index: 2000;
+  padding: .5rem 1rem;
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
 }
-
 .admin-skip:focus { left: 0; }
 
-/* Shell: navy top bar, dark side navigation, editorial main column. */
+/* Nav icons (inline SVG, no icon font) */
+.sidebar-menu .nav-icon { width: 1.1rem; height: 1.1rem; }
 
-.admin-topbar {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  height: 64px;
-  padding: 0 1.6rem;
-  background: var(--navy);
-  border-bottom: 1px solid var(--line-2);
-}
-
-.admin-brand {
-  font-weight: 600;
-  font-size: 1.02rem;
-  color: var(--head);
-  letter-spacing: .01em;
-  white-space: nowrap;
-}
-
-.admin-brand .adm-sub {
-  font-family: var(--sans);
-  font-size: .68rem;
-  font-weight: 500;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-left: .9rem;
-}
-
-.admin-topbar-spacer { flex: 1; }
-
-.admin-user {
-  display: flex;
-  align-items: center;
-  gap: .7rem;
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-.admin-shell {
-  display: grid;
-  grid-template-columns: 16rem minmax(0, 1fr);
-  min-height: calc(100vh - 64px);
-}
-
-.admin-nav {
-  background: var(--panel);
-  border-right: 1px solid var(--line);
-  padding: 1.6rem 0;
-}
-
-.admin-nav-label {
-  display: block;
-  font-size: .66rem;
-  font-weight: 500;
-  letter-spacing: .24em;
-  text-transform: uppercase;
-  color: var(--muted); /* AA on the panel — --faint fails the axe gate */
-  padding: 0 1.6rem;
-  margin-bottom: .7rem;
-}
-
-.admin-nav ul { list-style: none; margin: 0; padding: 0; }
-
-.admin-nav a {
-  display: block;
-  padding: .55rem 1.6rem;
-  color: var(--muted);
-  border-left: 2px solid transparent;
-  font-size: .92rem;
-}
-
-.admin-nav a:hover { color: var(--head); }
-
-.admin-nav a[aria-current="page"] {
-  color: var(--head);
-  border-left-color: var(--accent);
-  background: rgba(216, 207, 192, .04);
-}
-
-.admin-main {
-  padding: 2.4rem 3rem 4rem;
-  max-width: 80rem;
-  width: 100%;
-  margin-inline: auto; /* centered in the free column — wide screens breathe */
-}
-
-@media (max-width: 820px) {
-  .admin-shell { grid-template-columns: minmax(0, 1fr); }
-  .admin-nav { border-right: none; border-bottom: 1px solid var(--line); padding: .8rem 0; }
-  .admin-main { padding: 1.6rem 1.2rem 3rem; }
-}
-
-/* Type accents */
-
-.admin-kick {
-  font-size: .68rem;
-  font-weight: 500;
-  letter-spacing: .24em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.admin-tag {
-  display: inline-block;
-  font-family: var(--sans);
-  font-size: .66rem;
-  font-weight: 500;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: var(--muted);
-  border: 1px solid var(--line-2);
-  border-radius: 2px;
-  padding: .2rem .55rem;
-  vertical-align: middle;
-}
-
-/* Buttons — the site's .btn / .btn-p, verbatim in spirit. */
-
-.admin-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: .6em;
-  font-family: var(--sans);
-  font-size: .88rem;
-  font-weight: 500;
-  padding: .7em 1.5em;
-  border-radius: 2px;
-  border: 1px solid var(--line-2);
-  color: var(--head);
-  background: transparent;
-  cursor: pointer;
-  transition: border-color .3s, color .3s, background .3s;
-}
-
-.admin-btn:hover { border-color: var(--faint); color: var(--accent); }
-
-.admin-btn-primary {
-  background: var(--head);
-  color: var(--navy);
-  border-color: var(--head);
-  font-weight: 600;
-}
-
-.admin-btn-primary:hover { background: var(--accent); border-color: var(--accent); color: var(--navy); }
-
-.admin-btn-small { padding: .35em .8em; font-size: .8rem; }
-
-.admin-btn[disabled] { opacity: .45; cursor: not-allowed; }
-
-/* Panels, stats, tables */
-
-.admin-section { margin-top: 2.6rem; }
-
-.admin-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  gap: 1rem;
-  margin: 0;
-}
-
-.admin-stat {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 1.1rem 1.3rem;
-  margin: 0;
-}
-
-.admin-stat dt {
-  font-size: .68rem;
-  font-weight: 500;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.admin-stat dd {
-  margin: .35rem 0 0;
-  font-family: var(--serif);
-  font-size: 2.1rem;
-  font-weight: 300;
-  color: var(--head);
-  line-height: 1;
-}
-
-.admin-table-wrap {
-  overflow-x: auto;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-}
-
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: .92rem;
-}
-
-.admin-table th, .admin-table td {
-  text-align: left;
-  padding: .7rem 1.1rem;
-  border-bottom: 1px solid var(--line);
-  vertical-align: middle;
-}
-
-.admin-table thead th {
-  font-family: var(--sans);
-  font-size: .66rem;
-  font-weight: 500;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.admin-table tbody th { font-weight: 500; color: var(--head); }
-.admin-table tbody tr:last-child th, .admin-table tbody tr:last-child td { border-bottom: none; }
-.admin-table tbody tr:hover { background: rgba(216, 207, 192, .03); }
-
-.align-right { text-align: right !important; }
-
-/* Translation state badges */
-
-.admin-state {
-  display: inline-block;
-  font-size: .66rem;
-  font-weight: 500;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  padding: .22rem .6rem;
-  border-radius: 2px;
-  border: 1px solid transparent;
-}
-
-.admin-state-complete { color: var(--green); background: rgba(126, 200, 162, .08); border-color: rgba(126, 200, 162, .35); }
-.admin-state-outdated { color: var(--amber); background: rgba(224, 177, 94, .08); border-color: rgba(224, 177, 94, .35); }
-.admin-state-missing  { color: var(--red);   background: rgba(224, 139, 139, .08); border-color: rgba(224, 139, 139, .35); }
-
-.admin-coverage { display: flex; align-items: center; gap: .6rem; color: var(--ink); }
-.admin-coverage progress { accent-color: var(--accent); }
-
-.admin-empty { color: var(--muted); }
-.admin-ok { color: var(--green); }
-
-/* Forms */
-
-.admin-form { display: grid; gap: 1.1rem; align-content: start; }
-
-.admin-form fieldset {
-  display: grid;
-  gap: 1.1rem;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 1.3rem;
-  background: var(--panel);
-  margin: 0;
-}
-
-.admin-form legend {
-  font-family: var(--sans);
-  font-size: .68rem;
-  font-weight: 500;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 0 .5rem;
-}
-
-.admin-field { display: grid; gap: .35rem; }
-
-.admin-field > label {
-  font-size: .8rem;
-  font-weight: 500;
-  color: var(--head);
-}
-
-.admin-input {
-  width: 100%;
-  font-family: var(--sans);
-  font-size: .92rem;
-  color: var(--head);
-  background: var(--bg);
-  border: 1px solid var(--line-2);
-  border-radius: 2px;
-  padding: .55rem .8rem;
-  transition: border-color .3s;
-}
-
-.admin-input:focus { border-color: var(--accent); outline: none; }
-.admin-input::placeholder { color: var(--faint); }
-
-.admin-hint { font-size: .78rem; color: var(--muted); }
-
-.admin-textarea {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: .85rem;
-  line-height: 1.55;
-  resize: vertical;
-}
-
-.admin-field-value { width: 100%; min-width: 14rem; }
-
-.admin-row-actions { display: flex; gap: .3rem; align-items: center; }
-.admin-row-actions form { display: inline; }
-
-.admin-visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-/* Editors */
-
-.admin-sbs {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr));
-  gap: 2rem;
-  align-items: start;
-  margin-top: 1.2rem;
-}
-
+/* Editors and helpers */
 .admin-preview {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: .8rem 1.3rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  background: var(--bs-body-bg);
+  padding: .5rem 1rem;
   overflow-x: auto;
 }
-
-.admin-preview h1, .admin-preview h2, .admin-preview h3 { font-weight: 400; }
-.admin-preview a { color: var(--accent); }
-
+.admin-textarea { font-family: var(--bs-font-monospace); font-size: .85rem; }
+.admin-thumb { object-fit: cover; }
+.admin-media-preview img { max-width: 100%; height: auto; }
+.admin-coverage { display: inline-flex; align-items: center; gap: .5rem; }
+.admin-coverage progress { accent-color: var(--bs-primary); }
+.admin-empty { color: var(--bs-secondary-color); }
 .admin-source dt {
   font-size: .68rem;
-  font-weight: 500;
-  letter-spacing: .2em;
+  font-weight: 600;
+  letter-spacing: .12em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--bs-secondary-color);
 }
-
-.admin-source dd { margin: .15rem 0 .9rem; color: var(--ink); }
-
-.admin-thumb {
-  display: block;
-  object-fit: cover;
-  border-radius: 2px;
-  border: 1px solid var(--line-2);
-  background: var(--bg);
-}
-
-.admin-media-preview img { max-width: 100%; height: auto; display: block; margin: .4rem 0; }
-
-.admin-breadcrumb { margin-bottom: 1.2rem; }
-.admin-breadcrumb a { color: var(--muted); font-size: .88rem; }
-.admin-breadcrumb a:hover { color: var(--accent); }
-
-/* Alerts */
-
-.admin-alert {
-  background: rgba(224, 139, 139, .07);
-  border: 1px solid rgba(224, 139, 139, .35);
-  border-radius: 4px;
-  padding: .8rem 1.2rem;
-  color: var(--red);
-}
-
-.admin-alert ul { margin: .4rem 0 0; padding-left: 1.2rem; }
-
-/* Login */
-
-.admin-login {
-  max-width: 23rem;
-  margin: 14vh auto 0;
-  padding: 2.4rem;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-}
-
-.admin-login h1 { font-size: 1.9rem; }
-.admin-login form { display: grid; gap: 1.1rem; }
-
-
-/* Workflow, publishing and nav polish */
-
-.admin-workflow { display: flex; gap: .5rem; margin: 0 0 1.4rem; }
-.admin-workflow form { display: inline; }
-
-.admin-tag-published { color: var(--green); border-color: rgba(126, 200, 162, .4); }
-.admin-tag-review { color: var(--amber); border-color: rgba(224, 177, 94, .4); }
-.admin-tag-archived { color: var(--faint); }
-
-.admin-nav a { display: flex; align-items: center; gap: .6rem; }
-.admin-nav a svg { width: 15px; height: 15px; flex: none; opacity: .8; }
-.admin-nav > .admin-nav-label:not(:first-child) { margin-top: 1.4rem; }
-
-.admin-runrow { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.admin-source dd { margin-bottom: .6rem; }
+.admin-field-value { min-width: 12rem; }
 .admin-target-pick { min-width: 8rem; }
+.admin-breadcrumb a { color: var(--bs-secondary-color); text-decoration: none; }
+.admin-breadcrumb a:hover { text-decoration: underline; }
 
-.admin-login-mark { width: 64px; height: 64px; display: block; margin-bottom: 1.2rem; }
+/* Small-box numerals keep a hint of the editorial serif */
+.small-box .inner h3 { font-family: 'Newsreader', serif; font-weight: 500; }
 
+/* Links inside prose must not rely on color alone (axe link-in-text-block) */
+.card-body p a, .form-text a { text-decoration: underline; text-underline-offset: 2px; }
 
-/* Links inside prose must not rely on color alone (axe link-in-text-block). */
-.admin-main p a, .admin-hint a { text-decoration: underline; text-underline-offset: 2px; }
+/* The admin ships zero JavaScript: below the desktop breakpoint AdminLTE
+   would hide the sidebar behind a JS toggle, so render it statically. */
+@media (max-width: 991.98px) {
+  .app-wrapper { display: block; }
+  .app-sidebar {
+    position: static !important;
+    transform: none !important;
+    height: auto;
+    width: 100%;
+    box-shadow: none !important;
+  }
+}
+
+/* Bootstrap's default code pink is 4.27:1 on white — one shade darker for AA. */
+code { color: #a02766; }

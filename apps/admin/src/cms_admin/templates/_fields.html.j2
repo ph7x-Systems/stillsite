@@ -1,18 +1,18 @@
-{# Shared form building blocks for the editorial pages. #}
+{# Shared form building blocks for the editorial pages (Bootstrap idiom). #}
 
 {% macro text_field(name, label, value, required=false, hint=None) %}
-<div class="admin-field">
-  <label for="{{ name }}">{{ label }}</label>
-  <input class="admin-input" id="{{ name }}" name="{{ name }}" type="text"
+<div class="mb-1 admin-field">
+  <label class="form-label" for="{{ name }}">{{ label }}</label>
+  <input class="form-control admin-input" id="{{ name }}" name="{{ name }}" type="text"
          value="{{ value }}"{% if required %} required{% endif %}>
-  {% if hint %}<span class="admin-hint">{{ hint }}</span>{% endif %}
+  {% if hint %}<div class="form-text admin-hint">{{ hint }}</div>{% endif %}
 </div>
 {% endmacro %}
 
 {% macro textarea_field(name, label, value, rows=12) %}
-<div class="admin-field">
-  <label for="{{ name }}">{{ label }}</label>
-  <textarea class="admin-input admin-textarea" id="{{ name }}" name="{{ name }}"
+<div class="mb-1 admin-field">
+  <label class="form-label" for="{{ name }}">{{ label }}</label>
+  <textarea class="form-control admin-input admin-textarea" id="{{ name }}" name="{{ name }}"
             rows="{{ rows }}">{{ value }}</textarea>
 </div>
 {% endmacro %}
@@ -32,13 +32,19 @@
 
 {% macro errors_block(errors) %}
 {% if errors %}
-<div class="admin-alert" role="alert">
-  <p>The form was not saved:</p>
-  <ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+<div class="alert alert-danger admin-alert" role="alert">
+  <p class="mb-1">The form was not saved:</p>
+  <ul class="mb-0">{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
 </div>
 {% endif %}
 {% endmacro %}
 
 {% macro state_badge(state) %}
-<span class="admin-state admin-state-{{ state.value }}">{{ state.value }}</span>
+{% set tone = {"complete": "text-bg-success", "outdated": "text-bg-warning", "missing": "text-bg-danger"}[state.value] %}
+<span class="badge {{ tone }} admin-state admin-state-{{ state.value }}">{{ state.value }}</span>
+{% endmacro %}
+
+{% macro status_tag(status) %}
+{% set tone = {"draft": "text-bg-secondary", "review": "text-bg-warning", "published": "text-bg-success", "archived": "text-bg-dark"}[status.value] %}
+<span class="badge {{ tone }} admin-tag admin-tag-{{ status.value }}">{{ status.value }}</span>
 {% endmacro %}

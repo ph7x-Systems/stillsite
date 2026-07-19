@@ -1,36 +1,42 @@
 {% extends "shell.html.j2" %}
 {% from "_fields.html.j2" import content_fields, errors_block, state_badge %}
 {% block title %}{{ article.id }} · {{ language.value | upper }} — Sardine CMS admin{% endblock %}
+{% block header %}
+<nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/articles/{{ article.id }}">&larr; {{ article.id }}</a></nav>
+<h1 class="h3 mb-0">{{ article.id }} — {{ language.value | upper }} {{ state_badge(state) }}</h1>
+{% endblock %}
 {% block content %}
-<nav class="admin-breadcrumb" aria-label="Breadcrumb"><a href="/articles/{{ article.id }}">&larr; {{ article.id }}</a></nav>
-<h1>{{ article.id }} — {{ language.value | upper }} {{ state_badge(state) }}</h1>
 {{ errors_block(errors) }}
-<div class="admin-sbs">
-  <section aria-labelledby="source-heading">
-    <h2 id="source-heading">Source (EN)</h2>
-    <dl class="admin-source">
-      <dt>Title</dt><dd>{{ article.source.title }}</dd>
-      <dt>Summary</dt><dd>{{ article.source.summary }}</dd>
-      <dt>Slug</dt><dd>{{ article.source.slug or article.id }}</dd>
-    </dl>
-    <div class="admin-preview">{{ source_preview_html | safe }}</div>
-  </section>
-  <form method="post" action="/articles/{{ article.id }}/translations/{{ language.value }}"
-        class="admin-form">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <fieldset>
-      <legend>Translation ({{ language.value | upper }})</legend>
-      {{ content_fields(form) }}
-    </fieldset>
-    <div>
-      <button type="submit" class="admin-btn admin-btn-primary">Save translation</button>
+<div class="row admin-sbs">
+  <div class="col-lg-6">
+    <div class="card mb-3">
+      <div class="card-header"><h2 class="card-title h6 mb-0">Source (EN)</h2></div>
+      <div class="card-body">
+        <dl class="admin-source">
+          <dt>Title</dt><dd>{{ article.source.title }}</dd>
+          <dt>Summary</dt><dd>{{ article.source.summary }}</dd>
+          <dt>Slug</dt><dd>{{ article.source.slug or article.id }}</dd>
+        </dl>
+        <div class="admin-preview">{{ source_preview_html | safe }}</div>
+      </div>
     </div>
-  </form>
+  </div>
+  <div class="col-lg-6">
+    <form method="post" action="/articles/{{ article.id }}/translations/{{ language.value }}"
+          class="admin-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="card mb-3">
+        <div class="card-header"><h2 class="card-title h6 mb-0">Translation ({{ language.value | upper }})</h2></div>
+        <div class="card-body">{{ content_fields(form) }}</div>
+      </div>
+      <button type="submit" class="btn btn-primary mb-3">Save translation</button>
+    </form>
+  </div>
 </div>
 {% if preview_html %}
-<section class="admin-section" aria-labelledby="translation-preview-heading">
-  <h2 id="translation-preview-heading">Translation preview</h2>
-  <div class="admin-preview">{{ preview_html | safe }}</div>
-</section>
+<div class="card">
+  <div class="card-header"><h2 class="card-title h6 mb-0">Translation preview</h2></div>
+  <div class="card-body"><div class="admin-preview">{{ preview_html | safe }}</div></div>
+</div>
 {% endif %}
 {% endblock %}

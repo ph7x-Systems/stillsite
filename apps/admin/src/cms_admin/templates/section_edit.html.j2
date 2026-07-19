@@ -1,46 +1,49 @@
 {% extends "shell.html.j2" %}
 {% from "_fields.html.j2" import textarea_field, errors_block, state_badge %}
 {% block title %}{{ page.id }} · {{ section.key }} — Sardine CMS admin{% endblock %}
+{% block header %}
+<nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/pages/{{ page.id }}">&larr; {{ page.id }}</a></nav>
+<h1 class="h3 mb-0">{{ section.key }} <span class="badge text-bg-light border admin-tag">{{ section.kind }}</span></h1>
+{% endblock %}
 {% block content %}
-<nav class="admin-breadcrumb" aria-label="Breadcrumb"><a href="/pages/{{ page.id }}">&larr; {{ page.id }}</a></nav>
-<h1>{{ section.key }} <span class="admin-tag">{{ section.kind }}</span></h1>
 {{ errors_block(errors) }}
 <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}" class="admin-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <fieldset>
-    <legend>Fields (EN)</legend>
-    <p class="admin-hint">Free-form name/value pairs the theme's
-      <code>{{ section.kind }}</code> template consumes. Clear a value to drop its
-      field; use the blank rows to add more.</p>
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead><tr><th scope="col">Field</th><th scope="col">Value</th></tr></thead>
-        <tbody>
-          {% for row in rows %}
-          <tr>
-            <td><label>
-              <span class="admin-visually-hidden">Field name</span>
-              <input class="admin-input" name="field_name" value="{{ row.name }}"></label></td>
-            <td><label>
-              <span class="admin-visually-hidden">Field value</span>
-              <input class="admin-input admin-field-value" name="field_value"
-                     value="{{ row.value }}"></label></td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+  <div class="card mb-3">
+    <div class="card-header"><h2 class="card-title h6 mb-0">Fields (EN)</h2></div>
+    <div class="card-body">
+      <p class="form-text">Free-form name/value pairs the theme's
+        <code>{{ section.kind }}</code> template consumes. Clear a value to drop its
+        field; use the blank rows to add more.</p>
+      <div class="admin-table-wrap">
+        <table class="table table-sm mb-0 admin-table">
+          <thead><tr><th scope="col">Field</th><th scope="col">Value</th></tr></thead>
+          <tbody>
+            {% for row in rows %}
+            <tr>
+              <td><label class="mb-0 w-100">
+                <span class="visually-hidden admin-visually-hidden">Field name</span>
+                <input class="form-control form-control-sm admin-input" name="field_name" value="{{ row.name }}"></label></td>
+              <td><label class="mb-0 w-100">
+                <span class="visually-hidden admin-visually-hidden">Field value</span>
+                <input class="form-control form-control-sm admin-input admin-field-value" name="field_value"
+                       value="{{ row.value }}"></label></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-  </fieldset>
-  {{ textarea_field("media", "Media asset IDs (one per line)", media_text, rows=3) }}
-  <div>
-    <button type="submit" class="admin-btn admin-btn-primary">Save section</button>
   </div>
+  <div class="card mb-3"><div class="card-body">
+    {{ textarea_field("media", "Media asset IDs (one per line)", media_text, rows=3) }}
+  </div></div>
+  <button type="submit" class="btn btn-primary mb-3">Save section</button>
 </form>
-
-<section class="admin-section" aria-labelledby="section-translations-heading">
-  <h2 id="section-translations-heading">Translations</h2>
-  <div class="admin-table-wrap">
-    <table class="admin-table">
+<div class="card">
+  <div class="card-header"><h2 class="card-title h6 mb-0">Translations</h2></div>
+  <div class="card-body p-0 admin-table-wrap">
+    <table class="table table-striped mb-0 admin-table">
       <thead><tr><th scope="col">Language</th><th scope="col">State</th><th scope="col"></th></tr></thead>
       <tbody>
         {% for language in target_languages %}
@@ -54,5 +57,5 @@
       </tbody>
     </table>
   </div>
-</section>
+</div>
 {% endblock %}

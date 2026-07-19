@@ -2,7 +2,7 @@
 
 The Sardine CMS admin (`apps/admin`, package `cms-admin`) runs the whole
 editorial cycle from the browser. One FastAPI process serves the API and the
-server-rendered UI; it drives `cms-core`, `cms-validation` and `cms-build`
+server-rendered UI (AdminLTE 4, vendored, CSS-only — ADR-0017); it drives `cms-core`, `cms-validation` and `cms-build`
 through their public APIs and never bypasses them (ADR-0013, ADR-0015).
 Facts in this guide are checked against the code by the anti-drift suite
 (`tests/test_docs.py`).

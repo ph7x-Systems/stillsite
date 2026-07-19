@@ -1,50 +1,53 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import content_fields, metadata_fields, errors_block, state_badge %}
+{% from "_fields.html.j2" import content_fields, metadata_fields, errors_block, state_badge, status_tag %}
 {% block title %}{{ article.id }} — Sardine CMS admin{% endblock %}
+{% block header %}
+<nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/articles">&larr; Articles</a></nav>
+<h1 class="h3 mb-0">{{ article.id }} {{ status_tag(article.status) }}</h1>
+{% endblock %}
 {% block content %}
-<nav class="admin-breadcrumb" aria-label="Breadcrumb"><a href="/articles">&larr; Articles</a></nav>
-<h1>{{ article.id }} <span class="admin-tag admin-tag-{{ article.status.value }}">{{ article.status.value }}</span></h1>
 {{ errors_block(errors) }}
 {% if transitions %}
-<div class="admin-workflow" role="group" aria-label="Workflow">
+<div class="mb-3 d-flex gap-2 admin-workflow" role="group" aria-label="Workflow">
   {% for t in transitions %}
-  <form method="post" action="/articles/{{ article.id }}/status">
+  <form method="post" action="/articles/{{ article.id }}/status" class="mb-0">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <input type="hidden" name="to" value="{{ t.to }}">
-    <button type="submit"
-            class="admin-btn{% if t.to == "published" %} admin-btn-primary{% endif %}">{{ t.label }}</button>
+    <button type="submit" class="btn {{ 'btn-success' if t.to == 'published' else 'btn-outline-secondary' }}">{{ t.label }}</button>
   </form>
   {% endfor %}
 </div>
 {% endif %}
-
-<div class="admin-sbs">
-  <form method="post" action="/articles/{{ article.id }}" class="admin-form">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <fieldset>
-      <legend>Source (EN)</legend>
-      {{ content_fields(form) }}
-    </fieldset>
-    <fieldset>
-      <legend>Metadata</legend>
-      {{ metadata_fields(form) }}
-    </fieldset>
-    <div>
-      <button type="submit" class="admin-btn admin-btn-primary">Save</button>
+<div class="row admin-sbs">
+  <div class="col-lg-6">
+    <form method="post" action="/articles/{{ article.id }}" class="admin-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="card mb-3">
+        <div class="card-header"><h2 class="card-title h6 mb-0">Source (EN)</h2></div>
+        <div class="card-body">{{ content_fields(form) }}</div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header"><h2 class="card-title h6 mb-0">Metadata</h2></div>
+        <div class="card-body">{{ metadata_fields(form) }}</div>
+      </div>
+      <button type="submit" class="btn btn-primary mb-3">Save</button>
+    </form>
+  </div>
+  <div class="col-lg-6">
+    <div class="card mb-3">
+      <div class="card-header"><h2 class="card-title h6 mb-0">Preview</h2></div>
+      <div class="card-body">
+        <p class="form-text">Rendered with the builder's Markdown renderer (raw HTML disabled);
+          shows the last saved body.</p>
+        <div class="admin-preview">{{ preview_html | safe }}</div>
+      </div>
     </div>
-  </form>
-  <section aria-labelledby="preview-heading">
-    <h2 id="preview-heading">Preview</h2>
-    <p class="admin-hint">Rendered with the builder's Markdown renderer (raw HTML disabled);
-      shows the last saved body.</p>
-    <div class="admin-preview">{{ preview_html | safe }}</div>
-  </section>
+  </div>
 </div>
-
-<section class="admin-section" aria-labelledby="translations-heading">
-  <h2 id="translations-heading">Translations</h2>
-  <div class="admin-table-wrap">
-    <table class="admin-table">
+<div class="card">
+  <div class="card-header"><h2 class="card-title h6 mb-0">Translations</h2></div>
+  <div class="card-body p-0 admin-table-wrap">
+    <table class="table table-striped mb-0 admin-table">
       <thead>
         <tr><th scope="col">Language</th><th scope="col">State</th><th scope="col">Title</th><th scope="col"></th></tr>
       </thead>
@@ -61,5 +64,5 @@
       </tbody>
     </table>
   </div>
-</section>
+</div>
 {% endblock %}

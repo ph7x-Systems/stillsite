@@ -1,62 +1,65 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import text_field, textarea_field, errors_block, state_badge %}
+{% from "_fields.html.j2" import text_field, textarea_field, errors_block, state_badge, status_tag %}
 {% block title %}{{ page.id }} — Sardine CMS admin{% endblock %}
+{% block header %}
+<nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/pages">&larr; Pages</a></nav>
+<h1 class="h3 mb-0">{{ page.id }} {{ status_tag(page.status) }}</h1>
+{% endblock %}
 {% block content %}
-<nav class="admin-breadcrumb" aria-label="Breadcrumb"><a href="/pages">&larr; Pages</a></nav>
-<h1>{{ page.id }} <span class="admin-tag admin-tag-{{ page.status.value }}">{{ page.status.value }}</span></h1>
 {{ errors_block(errors) }}
 {% if transitions %}
-<div class="admin-workflow" role="group" aria-label="Workflow">
+<div class="mb-3 d-flex gap-2 admin-workflow" role="group" aria-label="Workflow">
   {% for t in transitions %}
-  <form method="post" action="/pages/{{ page.id }}/status">
+  <form method="post" action="/pages/{{ page.id }}/status" class="mb-0">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <input type="hidden" name="to" value="{{ t.to }}">
-    <button type="submit"
-            class="admin-btn{% if t.to == "published" %} admin-btn-primary{% endif %}">{{ t.label }}</button>
+    <button type="submit" class="btn {{ 'btn-success' if t.to == 'published' else 'btn-outline-secondary' }}">{{ t.label }}</button>
   </form>
   {% endfor %}
 </div>
 {% endif %}
-
-<div class="admin-sbs">
-  <form method="post" action="/pages/{{ page.id }}" class="admin-form">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <fieldset>
-      <legend>Content (EN)</legend>
-      {{ text_field("title", "Title", form.title, required=true) }}
-      {{ textarea_field("description", "Description", form.description, rows=3) }}
-      {{ text_field("slug", "Slug", form.slug, required=true) }}
-    </fieldset>
-    <div>
-      <button type="submit" class="admin-btn admin-btn-primary">Save</button>
+<div class="row admin-sbs">
+  <div class="col-lg-6">
+    <form method="post" action="/pages/{{ page.id }}" class="admin-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="card mb-3">
+        <div class="card-header"><h2 class="card-title h6 mb-0">Content (EN)</h2></div>
+        <div class="card-body">
+          {{ text_field("title", "Title", form.title, required=true) }}
+          {{ textarea_field("description", "Description", form.description, rows=3) }}
+          {{ text_field("slug", "Slug", form.slug, required=true) }}
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary mb-3">Save</button>
+    </form>
+  </div>
+  <div class="col-lg-6">
+    <div class="card mb-3">
+      <div class="card-header"><h2 class="card-title h6 mb-0">Page translations</h2></div>
+      <div class="card-body p-0 admin-table-wrap">
+        <table class="table table-striped mb-0 admin-table">
+          <thead><tr><th scope="col">Language</th><th scope="col">State</th><th scope="col"></th></tr></thead>
+          <tbody>
+            {% for language in target_languages %}
+            <tr>
+              <th scope="row">{{ language.value | upper }}</th>
+              <td>{{ state_badge(own_states[language]) }}</td>
+              <td><a href="/pages/{{ page.id }}/translations/{{ language.value }}">Edit translation</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer form-text">The page's own title/description/slug — section
+        content is translated on each section.</div>
     </div>
-  </form>
-  <section aria-labelledby="page-translations-heading">
-    <h2 id="page-translations-heading">Page translations</h2>
-    <p class="admin-hint">The page's own title/description/slug — section content is
-      translated on each section.</p>
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead><tr><th scope="col">Language</th><th scope="col">State</th><th scope="col"></th></tr></thead>
-        <tbody>
-          {% for language in target_languages %}
-          <tr>
-            <th scope="row">{{ language.value | upper }}</th>
-            <td>{{ state_badge(own_states[language]) }}</td>
-            <td><a href="/pages/{{ page.id }}/translations/{{ language.value }}">Edit translation</a></td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </section>
+  </div>
 </div>
-
-<section class="admin-section" aria-labelledby="sections-heading">
-  <h2 id="sections-heading">Sections</h2>
+<div class="card mb-3">
+  <div class="card-header"><h2 class="card-title h6 mb-0">Sections</h2></div>
   {% if page.sections %}
-  <div class="admin-table-wrap">
-    <table class="admin-table">
+  <div class="card-body p-0 admin-table-wrap">
+    <table class="table table-striped mb-0 admin-table">
       <thead>
         <tr>
           <th scope="col">#</th>
@@ -69,29 +72,29 @@
       <tbody>
         {% for section in page.sections %}
         <tr>
-          <td class="align-right">{{ loop.index }}</td>
+          <td class="text-end">{{ loop.index }}</td>
           <th scope="row"><a href="/pages/{{ page.id }}/sections/{{ section.key }}">{{ section.key }}</a></th>
           <td>{{ section.kind }}</td>
           {% for language in target_languages %}
-          <td><a href="/pages/{{ page.id }}/sections/{{ section.key }}/translations/{{ language.value }}">
+          <td><a href="/pages/{{ page.id }}/sections/{{ section.key }}/translations/{{ language.value }}" class="text-decoration-none">
             {{ state_badge(section.translation_state(language)) }}</a></td>
           {% endfor %}
-          <td class="admin-row-actions">
-            <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}/move">
+          <td class="admin-row-actions d-flex gap-1">
+            <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}/move" class="mb-0">
               <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
               <input type="hidden" name="direction" value="up">
-              <button type="submit" class="admin-btn admin-btn-small" {% if loop.first %}disabled{% endif %}
+              <button type="submit" class="btn btn-outline-secondary btn-sm" {% if loop.first %}disabled{% endif %}
                       aria-label="Move {{ section.key }} up">&uarr;</button>
             </form>
-            <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}/move">
+            <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}/move" class="mb-0">
               <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
               <input type="hidden" name="direction" value="down">
-              <button type="submit" class="admin-btn admin-btn-small" {% if loop.last %}disabled{% endif %}
+              <button type="submit" class="btn btn-outline-secondary btn-sm" {% if loop.last %}disabled{% endif %}
                       aria-label="Move {{ section.key }} down">&darr;</button>
             </form>
-            <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}/delete">
+            <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}/delete" class="mb-0">
               <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-              <button type="submit" class="admin-btn admin-btn-small"
+              <button type="submit" class="btn btn-outline-danger btn-sm"
                       aria-label="Remove section {{ section.key }}">Remove</button>
             </form>
           </td>
@@ -101,18 +104,19 @@
     </table>
   </div>
   {% else %}
-  <p class="admin-empty">No sections yet.</p>
+  <div class="card-body"><p class="admin-empty mb-0">No sections yet.</p></div>
   {% endif %}
-
-  <h3>Add a section</h3>
-  <form method="post" action="/pages/{{ page.id }}/sections" class="admin-form">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    {{ text_field("key", "Key", "", required=true, hint="unique on this page, lowercase-with-dashes") }}
-    {{ text_field("kind", "Kind", "", required=true,
-                  hint="the theme template that renders it — reference theme kinds: " + kind_hints | join(", ")) }}
-    <div>
-      <button type="submit" class="admin-btn admin-btn-primary">Add section</button>
-    </div>
-  </form>
-</section>
+</div>
+<div class="card">
+  <div class="card-header"><h2 class="card-title h6 mb-0">Add a section</h2></div>
+  <div class="card-body">
+    <form method="post" action="/pages/{{ page.id }}/sections" class="admin-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      {{ text_field("key", "Key", "", required=true, hint="unique on this page, lowercase-with-dashes") }}
+      {{ text_field("kind", "Kind", "", required=true,
+                    hint="the theme template that renders it — reference theme kinds: " + kind_hints | join(", ")) }}
+      <button type="submit" class="btn btn-primary">Add section</button>
+    </form>
+  </div>
+</div>
 {% endblock %}

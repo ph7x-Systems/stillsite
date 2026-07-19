@@ -1,20 +1,22 @@
 {% extends "shell.html.j2" %}
 {% from "_fields.html.j2" import textarea_field, errors_block, state_badge %}
 {% block title %}{{ page.id }} · {{ section.key }} · {{ language.value | upper }} — Sardine CMS admin{% endblock %}
-{% block content %}
-<nav class="admin-breadcrumb" aria-label="Breadcrumb">
+{% block header %}
+<nav aria-label="Breadcrumb" class="admin-breadcrumb">
   <a href="/pages/{{ page.id }}/sections/{{ section.key }}">&larr; {{ section.key }}</a></nav>
-<h1>{{ section.key }} — {{ language.value | upper }} {{ state_badge(state) }}</h1>
+<h1 class="h3 mb-0">{{ section.key }} — {{ language.value | upper }} {{ state_badge(state) }}</h1>
+{% endblock %}
+{% block content %}
 {{ errors_block(errors) }}
 {% if source_fields %}
 <form method="post"
       action="/pages/{{ page.id }}/sections/{{ section.key }}/translations/{{ language.value }}"
       class="admin-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <fieldset>
-    <legend>Fields — source next to translation</legend>
-    <div class="admin-table-wrap">
-      <table class="admin-table">
+  <div class="card mb-3">
+    <div class="card-header"><h2 class="card-title h6 mb-0">Fields — source next to translation</h2></div>
+    <div class="card-body p-0 admin-table-wrap">
+      <table class="table table-striped mb-0 admin-table">
         <thead>
           <tr>
             <th scope="col">Field</th>
@@ -27,20 +29,20 @@
           <tr>
             <th scope="row">{{ name }}</th>
             <td>{{ value }}</td>
-            <td><label>
-              <span class="admin-visually-hidden">{{ name }} translation</span>
-              <input class="admin-input admin-field-value" name="field__{{ name }}"
+            <td><label class="mb-0 w-100">
+              <span class="visually-hidden admin-visually-hidden">{{ name }} translation</span>
+              <input class="form-control form-control-sm admin-input admin-field-value" name="field__{{ name }}"
                      value="{{ form[name] }}"></label></td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-  </fieldset>
-  {{ textarea_field("media", "Media asset IDs (one per line)", media_text, rows=3) }}
-  <div>
-    <button type="submit" class="admin-btn admin-btn-primary">Save translation</button>
   </div>
+  <div class="card mb-3"><div class="card-body">
+    {{ textarea_field("media", "Media asset IDs (one per line)", media_text, rows=3) }}
+  </div></div>
+  <button type="submit" class="btn btn-primary">Save translation</button>
 </form>
 {% else %}
 <p class="admin-empty">The source section has no fields yet — add them on the

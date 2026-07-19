@@ -17,9 +17,10 @@ then sign in at `/login`:
 cms admin create-user editor-in-chief -p my-project --role admin
 ```
 
-The UI speaks the ph7x design system natively (ADR-0015): the same tokens
-and local Inter/Newsreader font subsets as the reference theme, one
-self-served stylesheet, no component library, no CDN. The dashboard shows
+The UI is built on AdminLTE 4 (MIT, vendored verbatim with its license —
+ADR-0017), used CSS-only: the admin ships zero JavaScript and serves
+everything itself, no CDN. A small overlay adds the brand (local
+Inter/Newsreader) and accessibility fixes. The dashboard shows
 content by workflow status, the translation coverage matrix and a live
 validation report. Articles and pages are edited in the browser: EN source
 plus a side-by-side editor per translation, with state indicators from the

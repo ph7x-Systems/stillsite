@@ -1,37 +1,75 @@
-{# The authenticated chrome (ADR-0015): the ph7x design system natively —
-   navy top bar, dark side navigation, editorial main column. Pages set
-   `active_section` so the navigation marks the current page. #}
+{# The authenticated chrome (ADR-0017): AdminLTE 4, vendored, CSS-only — the
+   admin still ships zero JavaScript, so no collapsible widgets are used.
+   Pages set `active_section` so the sidebar marks the current page. #}
 {% extends "base.html.j2" %}
+{% set nav_items = [
+  ("dashboard", "/", "Dashboard", "M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"),
+  ("articles", "/articles", "Articles", "M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM9 8h6M9 12h6M9 16h4"),
+  ("pages", "/pages", "Pages", "M3 3h18v18H3zM3 9h18M9 9v12"),
+  ("media", "/media", "Media", "M3 5h18v14H3zM21 15l-5-5-9 9"),
+] %}
 {% block body %}
 <a class="admin-skip" href="#main">Skip to content</a>
-<header class="admin-topbar">
-  <span class="admin-brand">Sardine CMS<span class="adm-sub">Admin</span></span>
-  <span class="admin-topbar-spacer"></span>
-  <span class="admin-user">
-    <span>{{ user.username }}</span>
-    <span class="admin-tag">{{ user.role.value }}</span>
-  </span>
-  <form method="post" action="/logout">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <button type="submit" class="admin-btn admin-btn-small">Sign out</button>
-  </form>
-</header>
-<div class="admin-shell">
-  <nav class="admin-nav" aria-label="Admin sections">
-    <span class="admin-nav-label">Content</span>
-    <ul>
-      <li><a href="/" {% if active_section == "dashboard" %}aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a></li>
-      <li><a href="/articles" {% if active_section == "articles" %}aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Articles</a></li>
-      <li><a href="/pages" {% if active_section == "pages" %}aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12"/></svg>Pages</a></li>
-      <li><a href="/media" {% if active_section == "media" %}aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 15l-5-5-9 9"/></svg>Media</a></li>
-    </ul>
-    <span class="admin-nav-label">Pipeline</span>
-    <ul>
-      <li><a href="/publishing" {% if active_section == "publishing" %}aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Publishing</a></li>
-    </ul>
+<div class="app-wrapper">
+  <nav class="app-header navbar navbar-expand bg-body admin-topbar">
+    <div class="container-fluid">
+      <span class="navbar-brand admin-brand mb-0 h1">Sardine CMS
+        <span class="admin-brand-sub">Admin</span></span>
+      <div class="ms-auto d-flex align-items-center gap-3 admin-user">
+        <span>{{ user.username }}</span>
+        <span class="badge text-bg-light border admin-tag">{{ user.role.value }}</span>
+        <form method="post" action="/logout" class="mb-0">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button type="submit" class="btn btn-outline-secondary btn-sm">Sign out</button>
+        </form>
+      </div>
+    </div>
   </nav>
-  <main id="main" class="admin-main">
-    {% block content %}{% endblock %}
+  <aside class="app-sidebar bg-body-secondary shadow admin-nav" data-bs-theme="dark">
+    <div class="sidebar-brand">
+      <span class="brand-link">
+        <svg class="brand-image" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0e1626"/><g transform="translate(32 32) rotate(-38)"><ellipse rx="17" ry="7" fill="none" stroke="#d8cfc0" stroke-width="2.5"/><path fill="#d8cfc0" d="M-17 0 Q-21 -3.5 -24 -5 Q-22 -1.8 -22 0 Q-22 1.8 -24 5 Q-21 3.5 -17 0Z"/><circle cx="12" cy="-1.5" r="1.6" fill="#0e1626" stroke="#d8cfc0" stroke-width="1.4"/></g></svg>
+        <span class="brand-text fw-light">Sardine CMS</span>
+      </span>
+    </div>
+    <div class="sidebar-wrapper">
+      <nav aria-label="Admin sections">
+        <ul class="nav sidebar-menu flex-column">
+          {% for section, url, label, icon in nav_items %}
+          <li class="nav-item">
+            <a href="{{ url }}" class="nav-link{% if active_section == section %} active{% endif %}"
+               {% if active_section == section %}aria-current="page"{% endif %}>
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="{{ icon }}"/></svg>
+              <p>{{ label }}</p>
+            </a>
+          </li>
+          {% endfor %}
+          <li class="nav-header">PIPELINE</li>
+          <li class="nav-item">
+            <a href="/publishing" class="nav-link{% if active_section == "publishing" %} active{% endif %}"
+               {% if active_section == "publishing" %}aria-current="page"{% endif %}>
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+              <p>Publishing</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </aside>
+  <main class="app-main" id="main">
+    <div class="app-content-header">
+      <div class="container-fluid">
+        {% block header %}{% endblock %}
+      </div>
+    </div>
+    <div class="app-content">
+      <div class="container-fluid">
+        {% block content %}{% endblock %}
+      </div>
+    </div>
   </main>
+  <footer class="app-footer">
+    <strong>Sardine CMS</strong> — multilingual, static-first.
+  </footer>
 </div>
 {% endblock %}
