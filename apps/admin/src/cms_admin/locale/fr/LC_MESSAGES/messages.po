@@ -670,3 +670,9 @@ msgstr "Mis à la corbeille"
 
 msgid "Trashed content is invisible to builds, validation, export and the lists; restore brings it back exactly as it was. Delete forever is the only permanent removal and needs the admin role."
 msgstr "Le contenu à la corbeille est invisible pour les builds, la validation, l'export et les listes ; restaurer le ramène exactement tel quel. Supprimer définitivement est la seule suppression permanente et requiert le rôle admin."
+
+msgid "Duplicate as draft"
+msgstr "Dupliquer en brouillon"
+
+msgid "View in preview"
+msgstr "Voir dans l'aperçu"

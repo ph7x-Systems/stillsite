@@ -11,7 +11,9 @@ source read-only next to the translation, one field at a time.
 import difflib
 from datetime import UTC, datetime
 
+from cms_build import urls
 from cms_core import (
+    SOURCE_LANGUAGE,
     AdminSession,
     ContentStatus,
     Language,
@@ -25,15 +27,22 @@ from cms_core import (
     User,
     new_page,
 )
-from cms_core.languages import SOURCE_LANGUAGE, TARGET_LANGUAGES
+from cms_core.languages import TARGET_LANGUAGES
 from cms_core.translatable import TranslatableModel
 from cms_validation import SiteContent
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from pydantic import ValidationError
 
-from cms_admin.articles import _form_error_list, form_errors, parse_publish_at, publish_at_form
+from cms_admin.articles import (
+    _copy_id,
+    _form_error_list,
+    form_errors,
+    parse_publish_at,
+    publish_at_form,
+)
 from cms_admin.auth import current_session, enforce_csrf, get_db
+from cms_admin.publishing import _project
 from cms_admin.workflow import (
     allowed,
     available_transitions,
@@ -215,6 +224,8 @@ async def page_edit_form(
     user, session = user_session
     page = await _load_page(request, page_id)
     revisions = await get_db(request).run(lambda storage: storage.list_revisions("page", page_id))
+    project = _project(request)
+    preview_path = "/preview" + urls.page_path(page, SOURCE_LANGUAGE) if project else None
     return _page_response(
         request,
         "page_edit.html.j2",
@@ -223,6 +234,7 @@ async def page_edit_form(
             "csrf_token": session.csrf_token,
             "errors": [],
             "revisions": revisions,
+            "preview_path": preview_path,
             **_editor_context(page, role=user.role),
         },
     )
@@ -648,3 +660,29 @@ async def page_revision_restore(
     restored = restored.model_copy(update={"id": page_id})
     await _save_page(request, restored, user.username)
     return RedirectResponse(f"/pages/{page_id}", status_code=status.HTTP_303_SEE_OTHER)
+
+
+@router.post("/{page_id}/duplicate")
+async def page_duplicate(
+    request: Request,
+    page_id: str,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+) -> RedirectResponse:
+    """Duplicate as draft (M5): content, metadata and sections copied,
+    fresh identity, no schedule, no trash flag."""
+    user, _ = user_session
+    page = await _load_page(request, page_id)
+    taken = set(await get_db(request).run(lambda storage: storage.list_page_ids()))
+    now = datetime.now(UTC)
+    copy = page.model_copy(
+        update={
+            "id": _copy_id(page_id, taken),
+            "status": ContentStatus.DRAFT,
+            "publish_at": None,
+            "deleted_at": None,
+            "created_at": now,
+            "updated_at": now,
+        }
+    )
+    await _save_page(request, copy, user.username)
+    return RedirectResponse(f"/pages/{copy.id}", status_code=status.HTTP_303_SEE_OTHER)

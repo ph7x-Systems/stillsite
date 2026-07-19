@@ -407,3 +407,21 @@ def test_purge_needs_the_admin_role_and_is_final(tmp_path: Path) -> None:
         assert purged.status_code == 303
         assert client.get("/articles/bin-me").status_code == 404
         assert "bin-me" not in client.get("/trash").text
+
+
+def test_duplicate_as_draft_resets_state_and_resolves_id(tmp_path: Path) -> None:
+    """M5: a copy keeps content, drops schedule/trash, and never collides."""
+    article = _article("origin")
+    article.status = ContentStatus.PUBLISHED
+    with _client(_app(tmp_path, article)) as client:
+        csrf = _sign_in(client)
+        first = client.post(
+            "/articles/origin/duplicate", data={"csrf_token": csrf}, follow_redirects=False
+        )
+        assert first.headers["location"] == "/articles/origin-copy"
+        second = client.post(
+            "/articles/origin/duplicate", data={"csrf_token": csrf}, follow_redirects=False
+        )
+        assert second.headers["location"] == "/articles/origin-copy-2"
+        editor = client.get("/articles/origin-copy").text
+        assert "draft" in editor  # the copy starts over in the workflow

@@ -10,8 +10,9 @@ the published site will render — raw HTML stays disabled.
 import difflib
 from datetime import UTC, datetime
 
-from cms_build import render_markdown
+from cms_build import render_markdown, urls
 from cms_core import (
+    SOURCE_LANGUAGE,
     AdminSession,
     Article,
     ArticleContent,
@@ -22,13 +23,14 @@ from cms_core import (
     User,
     new_article,
 )
-from cms_core.languages import SOURCE_LANGUAGE, TARGET_LANGUAGES
+from cms_core.languages import TARGET_LANGUAGES
 from cms_validation import SiteContent
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from pydantic import ValidationError
 
 from cms_admin.auth import current_session, enforce_csrf, get_db
+from cms_admin.publishing import _project
 from cms_admin.workflow import (
     allowed,
     available_transitions,
@@ -259,6 +261,10 @@ async def article_edit_form(
     revisions = await get_db(request).run(
         lambda storage: storage.list_revisions("article", article_id)
     )
+    project = _project(request)
+    preview_path = (
+        "/preview" + urls.article_path(project.site, article, SOURCE_LANGUAGE) if project else None
+    )
     return _page(
         request,
         "article_edit.html.j2",
@@ -267,6 +273,7 @@ async def article_edit_form(
             "csrf_token": session.csrf_token,
             "errors": [],
             "revisions": revisions,
+            "preview_path": preview_path,
             **_editor_context(article, role=user.role),
         },
     )
@@ -503,3 +510,38 @@ async def article_revision_restore(
     restored = restored.model_copy(update={"id": article_id, "updated_at": datetime.now(UTC)})
     await _save_article(request, restored, user.username)
     return RedirectResponse(f"/articles/{article_id}", status_code=status.HTTP_303_SEE_OTHER)
+
+
+def _copy_id(base_id: str, taken: set[str]) -> str:
+    candidate = f"{base_id}-copy"
+    counter = 2
+    while candidate in taken:
+        candidate = f"{base_id}-copy-{counter}"
+        counter += 1
+    return candidate
+
+
+@router.post("/{article_id}/duplicate")
+async def article_duplicate(
+    request: Request,
+    article_id: str,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+) -> RedirectResponse:
+    """Duplicate as draft (M5): same content and metadata, fresh identity,
+    no schedule, no trash flag — ready to edit."""
+    user, _ = user_session
+    article = await _load_article(request, article_id)
+    taken = set(await get_db(request).run(lambda storage: storage.list_article_ids()))
+    now = datetime.now(UTC)
+    copy = article.model_copy(
+        update={
+            "id": _copy_id(article_id, taken),
+            "status": ContentStatus.DRAFT,
+            "publish_at": None,
+            "deleted_at": None,
+            "created_at": now,
+            "updated_at": now,
+        }
+    )
+    await _save_article(request, copy, user.username)
+    return RedirectResponse(f"/articles/{copy.id}", status_code=status.HTTP_303_SEE_OTHER)

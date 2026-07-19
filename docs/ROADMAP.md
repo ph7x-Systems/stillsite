@@ -46,8 +46,8 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Scheduled publishing | ✅ `publish_at` on articles/pages (ADR-0024): the build is the clock; documented CI-cron recipe | — |
 | Revisions + restore | ✅ bounded history on every save (ADR-0025), diff view, undoable restore | — |
 | Trash / restore | ✅ reversible deletion (ADR-0026): trash view, exact restore, admin-only purge | — |
-| Duplicate content | ❌ | 🔜 "Duplicate as draft" (M5) |
-| Per-entry preview | 🟡 whole-site preview at `/preview/` | 🔜 jump from editor to the entry's preview URL (M5) |
+| Duplicate content | ✅ Duplicate as draft on articles and pages, collision-safe ids | — |
+| Per-entry preview | ✅ editors link straight to the entry's URL inside `/preview/` | — |
 | Quick edit (slug/status from the list) | ❌ | 🔜 list-row actions (M5) |
 | Featured / pinned content | ❌ | 🔜 featured flag consumed by themes (M5) |
 | Editorial notes on entries | ❌ | 🔜 note trail per entry (M5) |
