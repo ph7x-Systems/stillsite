@@ -1,4 +1,4 @@
-# cms-admin
+# sardine-cms-admin
 
 The Sardine CMS admin panel: an authenticated FastAPI application serving both
 the admin API and the server-rendered UI (ADR-0013). It drives `cms-core`,
@@ -6,7 +6,7 @@ the admin API and the server-rendered UI (ADR-0013). It drives `cms-core`,
 from `create_storage(url)`, so every supported engine works unchanged.
 
 ```bash
-pip install -e apps/admin
+pip install sardine-cms-admin
 SARDINE_STORAGE_URL="sqlite:///content.db" uvicorn --factory cms_admin.app:create_app
 ```
 
@@ -47,6 +47,13 @@ Configuration is environment-only (no config files with secrets):
 | `SARDINE_ADMIN_PUBLISH_GATE`    | Set `0` to publish despite validation errors | `1`                   |
 
 The full admin guide — configuration, roles, workflow, publishing,
-security model — is [docs/ADMIN_GUIDE.md](../../docs/ADMIN_GUIDE.md)
+security model — is [docs/ADMIN_GUIDE.md](https://github.com/ph7x-Systems/sardine-cms/blob/main/docs/ADMIN_GUIDE.md)
 (anti-drift-checked). Milestone 3 status and the phased plan live in
-[docs/PLAN.md](../../docs/PLAN.md).
+[docs/PLAN.md](https://github.com/ph7x-Systems/sardine-cms/blob/main/docs/PLAN.md).
+
+## Sardine CMS
+
+- Live demo: <https://sardine.ph7x.com> (admin demo at [/admin/](https://sardine.ph7x.com/admin/))
+- Repository: <https://github.com/ph7x-Systems/sardine-cms>
+- Documentation: <https://github.com/ph7x-Systems/sardine-cms/wiki>
+- License: Apache-2.0
