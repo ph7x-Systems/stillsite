@@ -52,9 +52,17 @@ Server-rendered Jinja inside the FastAPI process
 ([ADR-0013](adr/0013-admin-ui-architecture.md)), built on **AdminLTE 4**
 (MIT, vendored verbatim with its license at `static/vendor/adminlte/`,
 Bootstrap 5 bundled — [ADR-0017](adr/0017-admin-adminlte.md)). CSS only:
-the admin ships zero JavaScript, so no collapsible widgets are used and the
-CSP allows no script source. `static/admin.css` overlays the brand (local
-Inter/Newsreader, OFL), state helpers and no-JS fallbacks. Surfaces:
+the admin ships zero JavaScript, so JS-only widgets (sidebar toggle,
+dropdowns, treeview) are simply not used and the CSP allows no script
+source. The design is AdminLTE's, implemented as its reference pages do:
+**Source Sans 3** (the font AdminLTE's own `--bs-font-sans-serif` asks
+for; OFL, local variable-font files at `static/vendor/source-sans/`) and
+**Bootstrap Icons** (MIT, vendored at `static/vendor/bootstrap-icons/`)
+for nav/navbar/small-box icons — `static/admin.css` never restyles the
+theme, it only adds the font-face, accessibility fixes and no-JS
+fallbacks. Chrome per the reference: navbar with icon links and the user
+menu, dark sidebar (`sidebar-brand` + `sidebar-menu` with `nav-icon bi`),
+content header with `breadcrumb`, `app-footer` with copyright. Surfaces:
 
 | Admin surface | AdminLTE/Bootstrap building blocks |
 | --- | --- |

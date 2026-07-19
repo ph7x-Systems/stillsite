@@ -3,6 +3,7 @@
 {% block header %}<h1 class="h3 mb-0">Dashboard</h1>{% endblock %}
 {% block content %}
 {% set tones = {"draft": "text-bg-secondary", "review": "text-bg-warning", "published": "text-bg-success", "archived": "text-bg-dark"} %}
+{% set icons = {"draft": "bi-pencil", "review": "bi-hourglass-split", "published": "bi-check2-circle", "archived": "bi-archive"} %}
 <section aria-labelledby="content-status">
   <h2 id="content-status" class="visually-hidden">Content by status</h2>
   <div class="row">
@@ -13,6 +14,12 @@
           <h3>{{ counts[status] }}</h3>
           <p class="text-uppercase">{{ status.value }}</p>
         </div>
+        <i class="small-box-icon bi {{ icons[status.value] }}" aria-hidden="true"></i>
+        {# The warning tone has dark text, so its footer link is dark too —
+           same split the AdminLTE reference page makes. #}
+        <a href="/articles" class="small-box-footer {{ 'link-dark' if status.value == 'review' else 'link-light' }} link-underline-opacity-0 link-underline-opacity-50-hover">
+          Articles <i class="bi bi-link-45deg" aria-hidden="true"></i>
+        </a>
       </div>
     </div>
     {% endfor %}
