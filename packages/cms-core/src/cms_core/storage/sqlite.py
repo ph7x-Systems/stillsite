@@ -347,16 +347,24 @@ class SQLiteBackend(StorageBackend):
     def save_user(self, user: User) -> None:
         with self._connection as connection:
             connection.execute(
-                "INSERT INTO users (username, password_hash, role, created_at)"
-                " VALUES (?, ?, ?, ?)"
+                "INSERT INTO users (username, password_hash, role, created_at, language)"
+                " VALUES (?, ?, ?, ?, ?)"
                 " ON CONFLICT(username) DO UPDATE SET"
-                " password_hash = excluded.password_hash, role = excluded.role",
-                (user.username, user.password_hash, user.role.value, user.created_at.isoformat()),
+                " password_hash = excluded.password_hash, role = excluded.role,"
+                " language = excluded.language",
+                (
+                    user.username,
+                    user.password_hash,
+                    user.role.value,
+                    user.created_at.isoformat(),
+                    user.language.value if user.language else None,
+                ),
             )
 
     def load_user(self, username: str) -> User | None:
         row = self._connection.execute(
-            "SELECT username, password_hash, role, created_at FROM users WHERE username = ?",
+            "SELECT username, password_hash, role, created_at, language"
+            " FROM users WHERE username = ?",
             (username,),
         ).fetchone()
         if row is None:
@@ -366,6 +374,7 @@ class SQLiteBackend(StorageBackend):
             password_hash=row[1],
             role=Role(row[2]),
             created_at=datetime.fromisoformat(row[3]),
+            language=Language(row[4]) if row[4] else None,
         )
 
     def delete_user(self, username: str) -> bool:

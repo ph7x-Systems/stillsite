@@ -1,27 +1,26 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import text_field, errors_block %}
-{% block title %}Upload media — Sardine CMS admin{% endblock %}
+{% from "_fields.html.j2" import text_field, errors_block with context %}
+{% block title %}{{ _("Upload media") }} — Sardine CMS admin{% endblock %}
 {% block header %}
-<nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/media">&larr; Media</a></nav>
-<h1 class="h3 mb-0">Upload media</h1>
+<nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/media">&larr; {{ _("Media") }}</a></nav>
+<h1 class="h3 mb-0">{{ _("Upload media") }}</h1>
 {% endblock %}
 {% block content %}
 {{ errors_block(errors) }}
 <form method="post" action="/media" enctype="multipart/form-data" class="admin-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   <div class="card mb-3"><div class="card-body">
-    {{ text_field("id", "Asset ID", form.id, required=true, hint="permanent, lowercase-with-dashes") }}
+    {{ text_field("id", _("Asset ID"), form.id, required=true, hint=_("permanent, lowercase-with-dashes")) }}
     <div class="mb-1 admin-field">
-      <label class="form-label" for="upload">File</label>
+      <label class="form-label" for="upload">{{ _("File") }}</label>
       <input class="form-control admin-input" id="upload" name="upload" type="file"
              accept=".png,.jpg,.jpeg,.gif,.webp,.svg" required>
-      <div class="form-text admin-hint">png, jpeg, gif, webp or svg — the type is verified from the
-        bytes, never from the name.</div>
+      <div class="form-text admin-hint">{{ _("png, jpeg, gif, webp or svg — the type is verified from the bytes, never from the name.") }}</div>
     </div>
-    {{ text_field("alt", "Alt text (EN)", form.alt, required=true,
-                  hint="mandatory — translations are added after the upload") }}
+    {{ text_field("alt", _("Alt text (EN)"), form.alt, required=true,
+                  hint=_("mandatory — translations are added after the upload")) }}
   </div></div>
-  <button type="submit" class="btn btn-primary">Upload</button>
-  <a class="btn btn-outline-secondary" href="/media">Cancel</a>
+  <button type="submit" class="btn btn-primary">{{ _("Upload") }}</button>
+  <a class="btn btn-outline-secondary" href="/media">{{ _("Cancel") }}</a>
 </form>
 {% endblock %}

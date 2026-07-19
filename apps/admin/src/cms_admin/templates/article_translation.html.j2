@@ -1,5 +1,5 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import content_fields, errors_block, state_badge %}
+{% from "_fields.html.j2" import content_fields, errors_block, state_badge with context %}
 {% block title %}{{ article.id }} · {{ language.value | upper }} — Sardine CMS admin{% endblock %}
 {% block header %}
 <nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/articles/{{ article.id }}">&larr; {{ article.id }}</a></nav>
@@ -10,12 +10,12 @@
 <div class="row admin-sbs">
   <div class="col-lg-6">
     <div class="card mb-3">
-      <div class="card-header"><h2 class="card-title h6 mb-0">Source (EN)</h2></div>
+      <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Source (EN)") }}</h2></div>
       <div class="card-body">
         <dl class="admin-source">
-          <dt>Title</dt><dd>{{ article.source.title }}</dd>
-          <dt>Summary</dt><dd>{{ article.source.summary }}</dd>
-          <dt>Slug</dt><dd>{{ article.source.slug or article.id }}</dd>
+          <dt>{{ _("Title") }}</dt><dd>{{ article.source.title }}</dd>
+          <dt>{{ _("Summary") }}</dt><dd>{{ article.source.summary }}</dd>
+          <dt>{{ _("Slug") }}</dt><dd>{{ article.source.slug or article.id }}</dd>
         </dl>
         <div class="admin-preview">{{ source_preview_html | safe }}</div>
       </div>
@@ -26,16 +26,16 @@
           class="admin-form">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
       <div class="card mb-3">
-        <div class="card-header"><h2 class="card-title h6 mb-0">Translation ({{ language.value | upper }})</h2></div>
+        <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Translation") }} ({{ language.value | upper }})</h2></div>
         <div class="card-body">{{ content_fields(form) }}</div>
       </div>
-      <button type="submit" class="btn btn-primary mb-3">Save translation</button>
+      <button type="submit" class="btn btn-primary mb-3">{{ _("Save translation") }}</button>
     </form>
   </div>
 </div>
 {% if preview_html %}
 <div class="card">
-  <div class="card-header"><h2 class="card-title h6 mb-0">Translation preview</h2></div>
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Translation preview") }}</h2></div>
   <div class="card-body"><div class="admin-preview">{{ preview_html | safe }}</div></div>
 </div>
 {% endif %}

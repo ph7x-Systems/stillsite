@@ -1,10 +1,10 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import state_badge, status_tag %}
-{% block title %}Pages — Sardine CMS admin{% endblock %}
+{% from "_fields.html.j2" import state_badge, status_tag with context %}
+{% block title %}{{ _("Pages") }} — Sardine CMS admin{% endblock %}
 {% block header %}
 <div class="d-flex justify-content-between align-items-center">
-  <h1 class="h3 mb-0">Pages</h1>
-  <a class="btn btn-primary" href="/pages/new">New page</a>
+  <h1 class="h3 mb-0">{{ _("Pages") }}</h1>
+  <a class="btn btn-primary" href="/pages/new">{{ _("New page") }}</a>
 </div>
 {% endblock %}
 {% block content %}
@@ -14,12 +14,12 @@
     <table class="table table-striped table-hover mb-0 admin-table">
       <thead>
         <tr>
-          <th scope="col">ID</th>
-          <th scope="col">Title (EN)</th>
-          <th scope="col">Status</th>
-          <th scope="col">Sections</th>
+          <th scope="col">{{ _("ID") }}</th>
+          <th scope="col">{{ _("Title (EN)") }}</th>
+          <th scope="col">{{ _("Status") }}</th>
+          <th scope="col">{{ _("Sections") }}</th>
           {% for language in target_languages %}<th scope="col">{{ language.value | upper }}</th>{% endfor %}
-          <th scope="col">Updated</th>
+          <th scope="col">{{ _("Updated") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -38,10 +38,9 @@
       </tbody>
     </table>
   </div>
-  <div class="card-footer form-text">Language states aggregate the page and all its
-    sections — the least-complete state wins.</div>
+  <div class="card-footer form-text">{{ _("Language states aggregate the page and all its sections — the least-complete state wins.") }}</div>
 </div>
 {% else %}
-<p class="admin-empty">No pages yet — create the first one.</p>
+<p class="admin-empty">{{ _("No pages yet — create the first one.") }}</p>
 {% endif %}
 {% endblock %}

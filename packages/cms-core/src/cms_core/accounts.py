@@ -12,6 +12,8 @@ from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from cms_core.languages import Language
+
 USERNAME_PATTERN = r"^[a-z0-9][a-z0-9._-]{0,63}$"
 
 
@@ -35,6 +37,8 @@ class User(BaseModel):
     password_hash: str = Field(min_length=1)
     role: Role
     created_at: datetime
+    language: Language | None = None
+    """Preferred admin-panel language; None follows the browser."""
 
 
 class AdminSession(BaseModel):

@@ -3,37 +3,32 @@
    subject_links (subject prefix -> edit URL). #}
 {% if report.ok %}
 <div class="callout callout-success admin-gate admin-gate-open">
-  <h3 class="h6 mb-1">Publish gate open</h3>
-  <p class="mb-0">{{ report.results | length }} rules ran over
-    {{ scope.articles }} article{{ "s" if scope.articles != 1 }},
-    {{ scope.pages }} page{{ "s" if scope.pages != 1 }} and
-    {{ scope.media }} media asset{{ "s" if scope.media != 1 }}
-    in {{ scope.languages }} languages — no errors{% if report.warnings %},
-    {{ report.warnings | length }} warning{{ "s" if report.warnings | length != 1 }}{% endif %}.</p>
+  <h3 class="h6 mb-1">{{ _("Publish gate open") }}</h3>
+  <p class="mb-0">{{ _("%(rules)s rules ran over %(articles)s article(s), %(pages)s page(s) and %(media)s media asset(s) in %(languages)s languages") | format(rules=report.results | length, articles=scope.articles, pages=scope.pages, media=scope.media, languages=scope.languages) }} — {{ _("no errors") }}{% if report.warnings %}, {{ ngettext("%(count)s warning", "%(count)s warnings", report.warnings | length) | format(count=report.warnings | length) }}{% endif %}.</p>
 </div>
 {% else %}
 <div class="callout callout-danger admin-gate admin-gate-blocked">
-  <h3 class="h6 mb-1">Publish gate blocked</h3>
-  <p class="mb-0">{{ report.errors | length }} error{{ "s" if report.errors | length != 1 }}
-    ({{ report.warnings | length }} warning{{ "s" if report.warnings | length != 1 }}) across
-    {{ report.results | length }} rules — publishing stays blocked until the errors are fixed.</p>
+  <h3 class="h6 mb-1">{{ _("Publish gate blocked") }}</h3>
+  <p class="mb-0">{{ ngettext("%(count)s error", "%(count)s errors", report.errors | length) | format(count=report.errors | length) }}
+    ({{ ngettext("%(count)s warning", "%(count)s warnings", report.warnings | length) | format(count=report.warnings | length) }})
+    {{ _("across %(rules)s rules — publishing stays blocked until the errors are fixed.") | format(rules=report.results | length) }}</p>
 </div>
 {% endif %}
 <div class="card mb-3">
-  <div class="card-header"><h2 class="card-title h6 mb-0">Rules</h2></div>
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Rules") }}</h2></div>
   <div class="card-body p-0 admin-table-wrap">
     <table class="table table-sm table-striped mb-0 admin-table admin-rules-table">
-      <thead><tr><th scope="col">Rule</th><th scope="col">Checks that</th><th scope="col">Result</th></tr></thead>
+      <thead><tr><th scope="col">{{ _("Rule") }}</th><th scope="col">{{ _("Checks that") }}</th><th scope="col">{{ _("Result") }}</th></tr></thead>
       <tbody>
         {% for result in report.results %}
         <tr>
           <td><code>{{ result.rule }}</code></td>
-          <td>{{ result.description }}</td>
+          <td>{{ _(result.description) }}</td>
           <td>
-            {% if result.ok %}<span class="badge text-bg-success admin-state admin-state-complete">pass</span>
-            {% elif result.errors %}<span class="badge text-bg-danger admin-state admin-state-missing">{{ result.errors | length }} error{{ "s" if result.errors | length != 1 }}</span>
-              {% if result.warnings %}<span class="badge text-bg-warning admin-state admin-state-outdated">{{ result.warnings | length }} warning{{ "s" if result.warnings | length != 1 }}</span>{% endif %}
-            {% else %}<span class="badge text-bg-warning admin-state admin-state-outdated">{{ result.warnings | length }} warning{{ "s" if result.warnings | length != 1 }}</span>{% endif %}
+            {% if result.ok %}<span class="badge text-bg-success admin-state admin-state-complete">{{ _("pass") }}</span>
+            {% elif result.errors %}<span class="badge text-bg-danger admin-state admin-state-missing">{{ ngettext("%(count)s error", "%(count)s errors", result.errors | length) | format(count=result.errors | length) }}</span>
+              {% if result.warnings %}<span class="badge text-bg-warning admin-state admin-state-outdated">{{ ngettext("%(count)s warning", "%(count)s warnings", result.warnings | length) | format(count=result.warnings | length) }}</span>{% endif %}
+            {% else %}<span class="badge text-bg-warning admin-state admin-state-outdated">{{ ngettext("%(count)s warning", "%(count)s warnings", result.warnings | length) | format(count=result.warnings | length) }}</span>{% endif %}
           </td>
         </tr>
         {% endfor %}
@@ -43,21 +38,21 @@
 </div>
 {% if report.issues %}
 <div class="card mb-3">
-  <div class="card-header"><h2 class="card-title h6 mb-0">Issues</h2></div>
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Issues") }}</h2></div>
   <div class="card-body p-0 admin-table-wrap">
     <table class="table table-sm mb-0 admin-table admin-issues-table">
-      <thead><tr><th scope="col">Severity</th><th scope="col">Rule</th><th scope="col">Subject</th><th scope="col">Message</th></tr></thead>
+      <thead><tr><th scope="col">{{ _("Severity") }}</th><th scope="col">{{ _("Rule") }}</th><th scope="col">{{ _("Subject") }}</th><th scope="col">{{ _("Message") }}</th></tr></thead>
       <tbody>
         {% for issue in report.issues %}
         <tr>
-          <td><span class="badge {{ 'text-bg-danger admin-state-missing' if issue.severity.value == 'error' else 'text-bg-warning admin-state-outdated' }} admin-state">{{ issue.severity.value }}</span></td>
+          <td><span class="badge {{ 'text-bg-danger admin-state-missing' if issue.severity.value == 'error' else 'text-bg-warning admin-state-outdated' }} admin-state">{{ _(issue.severity.value) }}</span></td>
           <td><code>{{ issue.code }}</code></td>
           <td>
             {% set link = subject_links.get(issue.subject) %}
             {% if link %}<a href="{{ link }}">{{ issue.subject }}</a>{% else %}{{ issue.subject }}{% endif %}
             {% if issue.language %} <span class="text-body-secondary">[{{ issue.language.value }}]</span>{% endif %}
           </td>
-          <td>{{ issue.message }}</td>
+          <td>{{ _(issue.message) }}</td>
         </tr>
         {% endfor %}
       </tbody>

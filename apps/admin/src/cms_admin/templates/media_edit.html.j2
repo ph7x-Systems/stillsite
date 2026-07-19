@@ -1,8 +1,8 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import errors_block %}
+{% from "_fields.html.j2" import errors_block with context %}
 {% block title %}{{ asset.id }} — Sardine CMS admin{% endblock %}
 {% block header %}
-<nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/media">&larr; Media</a></nav>
+<nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/media">&larr; {{ _("Media") }}</a></nav>
 <h1 class="h3 mb-0">{{ asset.id }} <span class="badge text-bg-light border admin-tag">{{ asset.mime_type }}</span></h1>
 {% endblock %}
 {% block content %}
@@ -10,7 +10,7 @@
 <div class="row admin-sbs">
   <div class="col-lg-6">
     <div class="card mb-3">
-      <div class="card-header"><h2 class="card-title h6 mb-0">Preview</h2></div>
+      <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Preview") }}</h2></div>
       <div class="card-body">
         {% if asset.is_image %}
         <div class="admin-preview admin-media-preview mb-3">
@@ -19,18 +19,18 @@
         </div>
         {% endif %}
         <dl class="admin-source">
-          <dt>Path</dt><dd><code>{{ asset.path }}</code></dd>
-          {% if asset.width %}<dt>Dimensions</dt><dd>{{ asset.width }}×{{ asset.height }}</dd>{% endif %}
+          <dt>{{ _("Path") }}</dt><dd><code>{{ asset.path }}</code></dd>
+          {% if asset.width %}<dt>{{ _("Dimensions") }}</dt><dd>{{ asset.width }}×{{ asset.height }}</dd>{% endif %}
         </dl>
-        <h3 class="h6">Used by</h3>
+        <h3 class="h6">{{ _("Used by") }}</h3>
         {% if references %}
         <ul>{% for reference in references %}<li><code>{{ reference }}</code></li>{% endfor %}</ul>
-        <p class="form-text">Referenced assets cannot be deleted.</p>
+        <p class="form-text">{{ _("Referenced assets cannot be deleted.") }}</p>
         {% else %}
-        <p class="admin-empty">Nothing references this asset.</p>
+        <p class="admin-empty">{{ _("Nothing references this asset.") }}</p>
         <form method="post" action="/media/{{ asset.id }}/delete" class="mb-0">
           <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-          <button type="submit" class="btn btn-outline-danger">Delete asset</button>
+          <button type="submit" class="btn btn-outline-danger">{{ _("Delete asset") }}</button>
         </form>
         {% endif %}
       </div>
@@ -40,10 +40,10 @@
     <form method="post" action="/media/{{ asset.id }}" class="admin-form">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
       <div class="card mb-3">
-        <div class="card-header"><h2 class="card-title h6 mb-0">Alt text</h2></div>
+        <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Alt text") }}</h2></div>
         <div class="card-body">
           <div class="mb-1 admin-field">
-            <label class="form-label" for="alt_en">EN (mandatory)</label>
+            <label class="form-label" for="alt_en">{{ _("EN (mandatory)") }}</label>
             <input class="form-control admin-input" id="alt_en" name="alt_en" value="{{ form.alt_en }}" required>
           </div>
           {% for language in target_languages %}
@@ -55,7 +55,7 @@
           {% endfor %}
         </div>
       </div>
-      <button type="submit" class="btn btn-primary">Save alt text</button>
+      <button type="submit" class="btn btn-primary">{{ _("Save alt text") }}</button>
     </form>
   </div>
 </div>

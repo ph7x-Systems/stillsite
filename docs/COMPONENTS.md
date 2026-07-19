@@ -76,6 +76,7 @@ content header with `breadcrumb`, `app-footer` with copyright. Surfaces:
 | Forms | `form-control`/`form-label` (+ mono textarea), form-text hints, alert block |
 | Workflow (status transitions) | role-filtered button group (`admin-workflow`), per-status badge colors |
 | Publishing panel | gate `callout` (success/danger), rules + issues tables in cards, target select, buttons |
+| Language selector (user menu) | `form-select` in the AdminLTE `user-body`, POST + CSRF like every form |
 | Validation report (shared partial) | `callout callout-success/-danger` verdict, `.table` per-rule outcomes with `text-bg-*` badges, issue subjects linked to edit screens |
 
 The admin remains an application (not a theme); sites theming the public

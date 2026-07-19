@@ -1,26 +1,26 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import text_field, textarea_field, errors_block %}
-{% block title %}New page — Sardine CMS admin{% endblock %}
+{% from "_fields.html.j2" import text_field, textarea_field, errors_block with context %}
+{% block title %}{{ _("New page") }} — Sardine CMS admin{% endblock %}
 {% block header %}
-<nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/pages">&larr; Pages</a></nav>
-<h1 class="h3 mb-0">New page</h1>
+<nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/pages">&larr; {{ _("Pages") }}</a></nav>
+<h1 class="h3 mb-0">{{ _("New page") }}</h1>
 {% endblock %}
 {% block content %}
 {{ errors_block(errors) }}
 <form method="post" action="/pages" class="admin-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   <div class="card mb-3"><div class="card-body">
-    {{ text_field("id", "Page ID", form.id, required=true, hint="permanent, lowercase-with-dashes") }}
+    {{ text_field("id", _("Page ID"), form.id, required=true, hint=_("permanent, lowercase-with-dashes")) }}
   </div></div>
   <div class="card mb-3">
-    <div class="card-header"><h2 class="card-title h6 mb-0">Content (EN)</h2></div>
+    <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Content (EN)") }}</h2></div>
     <div class="card-body">
-      {{ text_field("title", "Title", form.title, required=true) }}
-      {{ textarea_field("description", "Description", form.description, rows=3) }}
-      {{ text_field("slug", "Slug", form.slug, required=true, hint="lowercase-with-dashes") }}
+      {{ text_field("title", _("Title"), form.title, required=true) }}
+      {{ textarea_field("description", _("Description"), form.description, rows=3) }}
+      {{ text_field("slug", _("Slug"), form.slug, required=true, hint=_("lowercase-with-dashes")) }}
     </div>
   </div>
-  <button type="submit" class="btn btn-primary">Create page</button>
-  <a class="btn btn-outline-secondary" href="/pages">Cancel</a>
+  <button type="submit" class="btn btn-primary">{{ _("Create page") }}</button>
+  <a class="btn btn-outline-secondary" href="/pages">{{ _("Cancel") }}</a>
 </form>
 {% endblock %}

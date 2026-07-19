@@ -18,33 +18,33 @@
 {% endmacro %}
 
 {% macro content_fields(form) %}
-{{ text_field("title", "Title", form.title, required=true) }}
-{{ textarea_field("summary", "Summary", form.summary, rows=3) }}
-{{ textarea_field("body_markdown", "Body (Markdown)", form.body_markdown, rows=16) }}
-{{ text_field("slug", "Slug", form.slug, hint="lowercase-with-dashes; empty falls back to the article id") }}
+{{ text_field("title", _("Title"), form.title, required=true) }}
+{{ textarea_field("summary", _("Summary"), form.summary, rows=3) }}
+{{ textarea_field("body_markdown", _("Body (Markdown)"), form.body_markdown, rows=16) }}
+{{ text_field("slug", _("Slug"), form.slug, hint=_("lowercase-with-dashes; empty falls back to the article id")) }}
 {% endmacro %}
 
 {% macro metadata_fields(form) %}
-{{ text_field("category", "Category", form.category, hint="a category slug, or empty") }}
-{{ text_field("tags", "Tags", form.tags, hint="comma-separated slugs") }}
-{{ text_field("cover", "Cover", form.cover, hint="a media asset id, or empty") }}
+{{ text_field("category", _("Category"), form.category, hint=_("a category slug, or empty")) }}
+{{ text_field("tags", _("Tags"), form.tags, hint=_("comma-separated slugs")) }}
+{{ text_field("cover", _("Cover"), form.cover, hint=_("a media asset id, or empty")) }}
 {% endmacro %}
 
 {% macro errors_block(errors) %}
 {% if errors %}
 <div class="alert alert-danger admin-alert" role="alert">
-  <p class="mb-1">The form was not saved:</p>
-  <ul class="mb-0">{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+  <p class="mb-1">{{ _("The form was not saved:") }}</p>
+  <ul class="mb-0">{% for error in errors %}<li>{{ _(error) }}</li>{% endfor %}</ul>
 </div>
 {% endif %}
 {% endmacro %}
 
 {% macro state_badge(state) %}
 {% set tone = {"complete": "text-bg-success", "outdated": "text-bg-warning", "missing": "text-bg-danger"}[state.value] %}
-<span class="badge {{ tone }} admin-state admin-state-{{ state.value }}">{{ state.value }}</span>
+<span class="badge {{ tone }} admin-state admin-state-{{ state.value }}">{{ _(state.value) }}</span>
 {% endmacro %}
 
 {% macro status_tag(status) %}
 {% set tone = {"draft": "text-bg-secondary", "review": "text-bg-warning", "published": "text-bg-success", "archived": "text-bg-dark"}[status.value] %}
-<span class="badge {{ tone }} admin-tag admin-tag-{{ status.value }}">{{ status.value }}</span>
+<span class="badge {{ tone }} admin-tag admin-tag-{{ status.value }}">{{ _(status.value) }}</span>
 {% endmacro %}

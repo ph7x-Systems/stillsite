@@ -98,6 +98,19 @@ The seeded example project intentionally keeps one article in review with a
 missing DE translation, so a fresh project (and the public demo) shows the
 gate holding a real warning instead of an empty all-green report.
 
+## Panel language (i18n)
+
+The panel speaks the editor's language (ADR-0022). Resolution order per
+request: the signed-in user's stored preference (the **Language** selector
+in the navbar user menu) → the browser's `Accept-Language` → English.
+`cms admin create-user --language pt-pt` seeds the preference. Catalogs
+are gettext `.po` files under `cms_admin/locale/` (EN msgids; PT-PT, ES,
+FR and DE shipped), compiled in memory at startup — no binary files, no
+build step. Adding a language = one new `.po` plus one entry in
+`cms_admin.i18n.LOCALES`; an anti-drift test fails if any msgid is
+missing or untranslated in any shipped catalog. Editorial content is
+never touched by panel i18n.
+
 ## Security model
 
 - Argon2id password hashes; server-side sessions storing only the token

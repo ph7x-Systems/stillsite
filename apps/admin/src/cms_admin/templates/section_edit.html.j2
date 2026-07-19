@@ -1,5 +1,5 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import textarea_field, errors_block, state_badge %}
+{% from "_fields.html.j2" import textarea_field, errors_block, state_badge with context %}
 {% block title %}{{ page.id }} · {{ section.key }} — Sardine CMS admin{% endblock %}
 {% block header %}
 <nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/pages/{{ page.id }}">&larr; {{ page.id }}</a></nav>
@@ -10,22 +10,21 @@
 <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}" class="admin-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   <div class="card mb-3">
-    <div class="card-header"><h2 class="card-title h6 mb-0">Fields (EN)</h2></div>
+    <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Fields (EN)") }}</h2></div>
     <div class="card-body">
-      <p class="form-text">Free-form name/value pairs the theme's
-        <code>{{ section.kind }}</code> template consumes. Clear a value to drop its
-        field; use the blank rows to add more.</p>
+      <p class="form-text">{{ _("Free-form name/value pairs the theme's") }}
+        <code>{{ section.kind }}</code> {{ _("template consumes. Clear a value to drop its field; use the blank rows to add more.") }}</p>
       <div class="admin-table-wrap">
         <table class="table table-sm mb-0 admin-table">
-          <thead><tr><th scope="col">Field</th><th scope="col">Value</th></tr></thead>
+          <thead><tr><th scope="col">{{ _("Field") }}</th><th scope="col">{{ _("Value") }}</th></tr></thead>
           <tbody>
             {% for row in rows %}
             <tr>
               <td><label class="mb-0 w-100">
-                <span class="visually-hidden admin-visually-hidden">Field name</span>
+                <span class="visually-hidden admin-visually-hidden">{{ _("Field name") }}</span>
                 <input class="form-control form-control-sm admin-input" name="field_name" value="{{ row.name }}"></label></td>
               <td><label class="mb-0 w-100">
-                <span class="visually-hidden admin-visually-hidden">Field value</span>
+                <span class="visually-hidden admin-visually-hidden">{{ _("Field value") }}</span>
                 <input class="form-control form-control-sm admin-input admin-field-value" name="field_value"
                        value="{{ row.value }}"></label></td>
             </tr>
@@ -36,22 +35,22 @@
     </div>
   </div>
   <div class="card mb-3"><div class="card-body">
-    {{ textarea_field("media", "Media asset IDs (one per line)", media_text, rows=3) }}
+    {{ textarea_field("media", _("Media asset IDs (one per line)"), media_text, rows=3) }}
   </div></div>
-  <button type="submit" class="btn btn-primary mb-3">Save section</button>
+  <button type="submit" class="btn btn-primary mb-3">{{ _("Save section") }}</button>
 </form>
 <div class="card">
-  <div class="card-header"><h2 class="card-title h6 mb-0">Translations</h2></div>
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Translations") }}</h2></div>
   <div class="card-body p-0 admin-table-wrap">
     <table class="table table-striped mb-0 admin-table">
-      <thead><tr><th scope="col">Language</th><th scope="col">State</th><th scope="col"></th></tr></thead>
+      <thead><tr><th scope="col">{{ _("Language") }}</th><th scope="col">{{ _("State") }}</th><th scope="col"></th></tr></thead>
       <tbody>
         {% for language in target_languages %}
         <tr>
           <th scope="row">{{ language.value | upper }}</th>
           <td>{{ state_badge(states[language]) }}</td>
           <td><a href="/pages/{{ page.id }}/sections/{{ section.key }}/translations/{{ language.value }}">
-            Edit translation</a></td>
+            {{ _("Edit translation") }}</a></td>
         </tr>
         {% endfor %}
       </tbody>

@@ -1,5 +1,5 @@
 {% extends "base.html.j2" %}
-{% block title %}Sign in — Sardine CMS admin{% endblock %}
+{% block title %}{{ _("Sign in") }} — Sardine CMS admin{% endblock %}
 {% block bodyclass %}login-page bg-body-secondary{% endblock %}
 {% block body %}
 <main id="main" class="login-box">
@@ -9,21 +9,21 @@
       <span class="h4 d-block">Sardine CMS <small class="text-body-secondary">admin</small></span>
     </div>
     <div class="card-body">
-      <h1 class="login-box-msg h5">Sign in</h1>
-      {% if error %}<p role="alert" class="alert alert-danger admin-alert">{{ error }}</p>{% endif %}
+      <h1 class="login-box-msg h5">{{ _("Sign in") }}</h1>
+      {% if error %}<p role="alert" class="alert alert-danger admin-alert">{{ _(error) }}</p>{% endif %}
       <form method="post" action="/login">
         <input type="hidden" name="login_csrf" value="{{ login_csrf }}">
         <div class="mb-3 admin-field">
-          <label class="form-label" for="username">Username</label>
+          <label class="form-label" for="username">{{ _("Username") }}</label>
           <input class="form-control admin-input" id="username" name="username" type="text"
                  autocomplete="username" required>
         </div>
         <div class="mb-3 admin-field">
-          <label class="form-label" for="password">Password</label>
+          <label class="form-label" for="password">{{ _("Password") }}</label>
           <input class="form-control admin-input" id="password" name="password" type="password"
                  autocomplete="current-password" required>
         </div>
-        <button type="submit" class="btn btn-primary w-100">Sign in</button>
+        <button type="submit" class="btn btn-primary w-100">{{ _("Sign in") }}</button>
       </form>
     </div>
   </div>

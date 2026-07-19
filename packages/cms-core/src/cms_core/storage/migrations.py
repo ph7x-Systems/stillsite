@@ -105,4 +105,7 @@ MIGRATIONS: tuple[str, ...] = (
         expires_at TEXT NOT NULL
     );
     """,
+    """
+    ALTER TABLE users ADD COLUMN language TEXT;
+    """,
 )

@@ -1,10 +1,10 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import state_badge, status_tag %}
-{% block title %}Articles — Sardine CMS admin{% endblock %}
+{% from "_fields.html.j2" import state_badge, status_tag with context %}
+{% block title %}{{ _("Articles") }} — Sardine CMS admin{% endblock %}
 {% block header %}
 <div class="d-flex justify-content-between align-items-center">
-  <h1 class="h3 mb-0">Articles</h1>
-  <a class="btn btn-primary" href="/articles/new">New article</a>
+  <h1 class="h3 mb-0">{{ _("Articles") }}</h1>
+  <a class="btn btn-primary" href="/articles/new">{{ _("New article") }}</a>
 </div>
 {% endblock %}
 {% block content %}
@@ -14,11 +14,11 @@
     <table class="table table-striped table-hover mb-0 admin-table">
       <thead>
         <tr>
-          <th scope="col">ID</th>
-          <th scope="col">Title (EN)</th>
-          <th scope="col">Status</th>
+          <th scope="col">{{ _("ID") }}</th>
+          <th scope="col">{{ _("Title (EN)") }}</th>
+          <th scope="col">{{ _("Status") }}</th>
           {% for language in target_languages %}<th scope="col">{{ language.value | upper }}</th>{% endfor %}
-          <th scope="col">Updated</th>
+          <th scope="col">{{ _("Updated") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -39,6 +39,6 @@
   </div>
 </div>
 {% else %}
-<p class="admin-empty">No articles yet — create the first one.</p>
+<p class="admin-empty">{{ _("No articles yet — create the first one.") }}</p>
 {% endif %}
 {% endblock %}

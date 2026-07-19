@@ -1,9 +1,9 @@
 {% extends "shell.html.j2" %}
-{% block title %}Media — Sardine CMS admin{% endblock %}
+{% block title %}{{ _("Media") }} — Sardine CMS admin{% endblock %}
 {% block header %}
 <div class="d-flex justify-content-between align-items-center">
-  <h1 class="h3 mb-0">Media</h1>
-  <a class="btn btn-primary" href="/media/new">Upload media</a>
+  <h1 class="h3 mb-0">{{ _("Media") }}</h1>
+  <a class="btn btn-primary" href="/media/new">{{ _("Upload media") }}</a>
 </div>
 {% endblock %}
 {% block content %}
@@ -13,12 +13,12 @@
     <table class="table table-striped table-hover align-middle mb-0 admin-table">
       <thead>
         <tr>
-          <th scope="col">Preview</th>
-          <th scope="col">ID</th>
-          <th scope="col">Type</th>
-          <th scope="col">Size</th>
-          <th scope="col">Alt (EN)</th>
-          <th scope="col">Translated alt</th>
+          <th scope="col">{{ _("Preview") }}</th>
+          <th scope="col">{{ _("ID") }}</th>
+          <th scope="col">{{ _("Type") }}</th>
+          <th scope="col">{{ _("Size") }}</th>
+          <th scope="col">{{ _("Alt (EN)") }}</th>
+          <th scope="col">{{ _("Translated alt") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -35,7 +35,7 @@
             {% if missing %}
             <span class="badge text-bg-danger admin-state admin-state-missing">{{ missing | map(attribute="value") | join(", ") }}</span>
             {% else %}
-            <span class="badge text-bg-success admin-state admin-state-complete">complete</span>
+            <span class="badge text-bg-success admin-state admin-state-complete">{{ _("complete") }}</span>
             {% endif %}
           </td>
         </tr>
@@ -45,6 +45,6 @@
   </div>
 </div>
 {% else %}
-<p class="admin-empty">No media yet — upload the first asset.</p>
+<p class="admin-empty">{{ _("No media yet — upload the first asset.") }}</p>
 {% endif %}
 {% endblock %}

@@ -5,6 +5,13 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **The admin panel speaks the editor's language** (ADR-0022): real
+  gettext i18n — PT-PT, ES, FR and DE catalogs shipped, resolution by
+  stored per-user preference (new language selector in the user menu,
+  `cms admin create-user --language`) then `Accept-Language`, then EN.
+  Storage migration 7 adds the preference column on all four engines. An
+  anti-drift test keeps every catalog complete.
+
 - The sidebar brand and the user avatar are now plain `<img>` elements
   styled entirely by AdminLTE's own rules (the invented sizing CSS is
   gone); the admin panel's localization strategy joins the M6 roadmap.

@@ -230,11 +230,15 @@ def admin_create_user(
     force: Annotated[
         bool, typer.Option("--force", help="Replace the account if it already exists")
     ] = False,
+    language: Annotated[
+        str, typer.Option(help="Preferred admin language (en|pt-pt|es|fr|de); default browser")
+    ] = "",
 ) -> None:
     """Create an admin account (there are no default credentials)."""
     from datetime import UTC, datetime
 
     from cms_core.accounts import Role, User
+    from cms_core.languages import Language
 
     try:
         from cms_admin.security import hash_password
@@ -247,6 +251,13 @@ def admin_create_user(
     except ValueError as error:
         typer.echo(f"error: unknown role {role!r} (editor|reviewer|publisher|admin)", err=True)
         raise typer.Exit(code=2) from error
+    account_language: Language | None = None
+    if language:
+        try:
+            account_language = Language(language)
+        except ValueError as error:
+            typer.echo(f"error: unknown language {language!r} (en|pt-pt|es|fr|de)", err=True)
+            raise typer.Exit(code=2) from error
     project = _project(project_dir)
     with project.open_storage() as storage:
         if storage.load_user(username) is not None and not force:
@@ -258,6 +269,7 @@ def admin_create_user(
                 password_hash=hash_password(password),
                 role=account_role,
                 created_at=datetime.now(UTC),
+                language=account_language,
             )
         )
     typer.echo(f"created user {username!r} with role {account_role.value}")

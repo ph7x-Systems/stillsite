@@ -1,61 +1,59 @@
 {% extends "shell.html.j2" %}
-{% block title %}Publishing — Sardine CMS admin{% endblock %}
-{% block header %}<h1 class="h3 mb-0">Publishing</h1>{% endblock %}
+{% block title %}{{ _("Publishing") }} — Sardine CMS admin{% endblock %}
+{% block header %}<h1 class="h3 mb-0">{{ _("Publishing") }}</h1>{% endblock %}
 {% block content %}
 {% if not project %}
 <div class="alert alert-danger admin-alert" role="alert">
-  No <code>sardine.toml</code> found in <code>{{ project_dir }}</code> — point
-  <code>SARDINE_PROJECT_DIR</code> at the project directory to build from the panel.
+  {{ _("No") }} <code>sardine.toml</code> {{ _("found in") }} <code>{{ project_dir }}</code> — {{ _("point") }}
+  <code>SARDINE_PROJECT_DIR</code> {{ _("at the project directory to build from the panel.") }}
 </div>
 {% else %}
 <p><strong>{{ project.site.name }}</strong> · {{ project.site.base_url }} ·
-  theme <code>{{ project.site.theme }}</code> · output <code>{{ project.output }}</code></p>
+  {{ _("theme") }} <code>{{ project.site.theme }}</code> · {{ _("output") }} <code>{{ project.output }}</code></p>
 {% endif %}
 {% include "_validation_report.html.j2" %}
 <div class="row">
   <div class="col-lg-6">
     <div class="card mb-3">
-      <div class="card-header"><h2 class="card-title h6 mb-0">Run</h2></div>
+      <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Run") }}</h2></div>
       <div class="card-body">
         <div class="d-flex flex-wrap gap-2 align-items-center admin-runrow">
           <form method="post" action="/publishing/preview" class="mb-0">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-            <button type="submit" class="btn btn-outline-secondary">Preview build</button>
+            <button type="submit" class="btn btn-outline-secondary">{{ _("Preview build") }}</button>
           </form>
           <form method="post" action="/publishing/build" class="mb-0 d-flex gap-2 align-items-center">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <label class="mb-0">
-              <span class="visually-hidden admin-visually-hidden">Target</span>
+              <span class="visually-hidden admin-visually-hidden">{{ _("Target") }}</span>
               <select class="form-select admin-input admin-target-pick" name="target">
                 {% for target in targets %}<option value="{{ target }}">{{ target }}</option>{% endfor %}
               </select>
             </label>
-            <button type="submit" class="btn btn-primary">Build &amp; export</button>
+            <button type="submit" class="btn btn-primary">{{ _("Build & export") }}</button>
           </form>
         </div>
-        <p class="form-text mb-0 mt-2">Preview writes to a temporary directory served at
-          <a href="/preview/">/preview/</a> (any role). Build &amp; export validates first, then
-          writes the project's output directory with the target's extras — publisher role
-          and up.</p>
+        <p class="form-text mb-0 mt-2">{{ _("Preview writes to a temporary directory served at") }}
+          <a href="/preview/">/preview/</a> {{ _("(any role). Build & export validates first, then writes the project's output directory with the target's extras — publisher role and up.") }}</p>
       </div>
     </div>
   </div>
   <div class="col-lg-6">
     <div class="card">
-      <div class="card-header"><h2 class="card-title h6 mb-0">Last run</h2></div>
+      <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Last run") }}</h2></div>
       <div class="card-body">
         {% if last_build %}
         <dl class="mb-0 admin-source">
-          <dt>Kind</dt><dd>{{ last_build.kind }}
-            {% if last_build.ok %}<span class="badge text-bg-success admin-state admin-state-complete">ok</span>
-            {% else %}<span class="badge text-bg-danger admin-state admin-state-missing">failed</span>{% endif %}</dd>
-          <dt>When</dt><dd>{{ last_build.when }}</dd>
-          {% if last_build.files %}<dt>Files</dt><dd>{{ last_build.files }}</dd>{% endif %}
-          {% if last_build.digest %}<dt>Digest</dt><dd><code>{{ last_build.digest }}</code></dd>{% endif %}
-          {% if last_build.detail %}<dt>Detail</dt><dd class="mb-0">{{ last_build.detail }}</dd>{% endif %}
+          <dt>{{ _("Kind") }}</dt><dd>{{ last_build.kind }}
+            {% if last_build.ok %}<span class="badge text-bg-success admin-state admin-state-complete">{{ _("ok") }}</span>
+            {% else %}<span class="badge text-bg-danger admin-state admin-state-missing">{{ _("failed") }}</span>{% endif %}</dd>
+          <dt>{{ _("When") }}</dt><dd>{{ last_build.when }}</dd>
+          {% if last_build.files %}<dt>{{ _("Files") }}</dt><dd>{{ last_build.files }}</dd>{% endif %}
+          {% if last_build.digest %}<dt>{{ _("Digest") }}</dt><dd><code>{{ last_build.digest }}</code></dd>{% endif %}
+          {% if last_build.detail %}<dt>{{ _("Detail") }}</dt><dd class="mb-0">{{ last_build.detail }}</dd>{% endif %}
         </dl>
         {% else %}
-        <p class="admin-empty mb-0">Nothing has run from this panel yet.</p>
+        <p class="admin-empty mb-0">{{ _("Nothing has run from this panel yet.") }}</p>
         {% endif %}
       </div>
     </div>

@@ -11,6 +11,7 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 
+from cms_core import Language
 from cms_core.accounts import AdminSession, Role, User
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
@@ -74,6 +75,9 @@ async def current_session(request: Request) -> tuple[User, AdminSession]:
     user = await db.run(lambda storage: storage.load_user(session.username))
     if user is None:
         raise _login_redirect()
+    # ADR-0022: the stored preference wins the language resolution; the
+    # i18n context processor reads it from request.state at render time.
+    request.state.language = user.language
     return user, session
 
 
@@ -172,6 +176,27 @@ async def login_submit(
     )
     response.delete_cookie(LOGIN_CSRF_COOKIE)
     return response
+
+
+@router.post("/profile/language")
+async def set_language(
+    request: Request,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+    language: str = Form(""),
+) -> RedirectResponse:
+    """Store the signed-in user's admin-language preference (ADR-0022)."""
+    user, _ = user_session
+    preference: Language | None = None
+    if language:
+        try:
+            preference = Language(language)
+        except ValueError as error:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="unknown language"
+            ) from error
+    updated = user.model_copy(update={"language": preference})
+    await get_db(request).run(lambda storage: storage.save_user(updated))
+    return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.post("/logout")

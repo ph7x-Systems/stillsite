@@ -230,9 +230,9 @@ tests, docs and wiki updates, per the standing gates.
       privacy-respecting)
 - [ ] JSON content export target (headless consumption)
 - [ ] Importers for common blog-export formats (`cms import`)
-- [ ] **Admin panel localization**: ADR first (label catalog mirroring the
-      site's `[site.labels]` mechanism, per-user language preference,
-      EN/PT-PT/ES/FR/DE shipped); then the chrome, forms and messages
+- [x] **Admin panel localization** — shipped early (ADR-0022): gettext
+      catalogs (EN msgids; PT-PT/ES/FR/DE), per-user preference +
+      `Accept-Language` fallback, anti-drift completeness test
 
 ## Milestone 7 — Operations
 

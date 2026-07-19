@@ -403,12 +403,14 @@ class DbApiBackend(StorageBackend):
                     "password_hash": user.password_hash,
                     "role": user.role.value,
                     "created_at": user.created_at.isoformat(),
+                    "language": user.language.value if user.language else None,
                 },
             )
 
     def load_user(self, username: str) -> User | None:
         row = self._fetchone(
-            "SELECT username, password_hash, role, created_at FROM users WHERE username = %s",
+            "SELECT username, password_hash, role, created_at, language"
+            " FROM users WHERE username = %s",
             (username,),
         )
         if row is None:
@@ -418,6 +420,7 @@ class DbApiBackend(StorageBackend):
             password_hash=row[1],
             role=Role(row[2]),
             created_at=datetime.fromisoformat(row[3]),
+            language=Language(row[4]) if row[4] else None,
         )
 
     def delete_user(self, username: str) -> bool:

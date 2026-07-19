@@ -1,44 +1,44 @@
 {% extends "shell.html.j2" %}
-{% block title %}Dashboard — Sardine CMS admin{% endblock %}
-{% block header %}<h1 class="h3 mb-0">Dashboard</h1>{% endblock %}
+{% block title %}{{ _("Dashboard") }} — Sardine CMS admin{% endblock %}
+{% block header %}<h1 class="h3 mb-0">{{ _("Dashboard") }}</h1>{% endblock %}
 {% block content %}
 {% set tones = {"draft": "text-bg-secondary", "review": "text-bg-warning", "published": "text-bg-success", "archived": "text-bg-dark"} %}
 {% set icons = {"draft": "bi-pencil", "review": "bi-hourglass-split", "published": "bi-check2-circle", "archived": "bi-archive"} %}
 <section aria-labelledby="content-status">
-  <h2 id="content-status" class="visually-hidden">Content by status</h2>
+  <h2 id="content-status" class="visually-hidden">{{ _("Content by status") }}</h2>
   <div class="row">
     {% for status in statuses %}
     <div class="col-6 col-lg-3">
       <div class="small-box {{ tones[status.value] }} admin-stat">
         <div class="inner">
           <h3>{{ counts[status] }}</h3>
-          <p class="text-uppercase">{{ status.value }}</p>
+          <p class="text-uppercase">{{ _(status.value) }}</p>
         </div>
         <i class="small-box-icon bi {{ icons[status.value] }}" aria-hidden="true"></i>
         {# The warning tone has dark text, so its footer link is dark too —
            same split the AdminLTE reference page makes. #}
         <a href="/articles" class="small-box-footer {{ 'link-dark' if status.value == 'review' else 'link-light' }} link-underline-opacity-0 link-underline-opacity-50-hover">
-          Articles <i class="bi bi-link-45deg" aria-hidden="true"></i>
+          {{ _("Articles") }} <i class="bi bi-link-45deg" aria-hidden="true"></i>
         </a>
       </div>
     </div>
     {% endfor %}
   </div>
-  <p class="text-body-secondary">{{ totals.articles }} articles, {{ totals.pages }} pages, {{ totals.media }} media assets.</p>
+  <p class="text-body-secondary">{{ _("%(articles)s articles, %(pages)s pages, %(media)s media assets.") | format(articles=totals.articles, pages=totals.pages, media=totals.media) }}</p>
 </section>
 
 <div class="row">
   <div class="col-lg-7">
     <div class="card mb-4">
-      <div class="card-header"><h2 class="card-title h6 mb-0">Translation coverage</h2></div>
+      <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Translation coverage") }}</h2></div>
       {% if totals.articles + totals.pages > 0 %}
       <div class="card-body p-0 admin-table-wrap">
         <table class="table table-striped mb-0 admin-table">
           <thead>
             <tr>
-              <th scope="col">Language</th>
-              {% for state in states %}<th scope="col" class="text-end">{{ state.value }}</th>{% endfor %}
-              <th scope="col">Coverage</th>
+              <th scope="col">{{ _("Language") }}</th>
+              {% for state in states %}<th scope="col" class="text-end">{{ _(state.value) }}</th>{% endfor %}
+              <th scope="col">{{ _("Coverage") }}</th>
             </tr>
           </thead>
           <tbody>
@@ -49,7 +49,7 @@
               <td>
                 <span class="admin-coverage">
                   <progress max="100" value="{{ coverage[language] }}"
-                            aria-label="{{ language.value | upper }} coverage"></progress>
+                            aria-label="{{ _('%(language)s coverage') | format(language=language.value | upper) }}"></progress>
                   {{ coverage[language] }}%
                 </span>
               </td>
@@ -59,27 +59,27 @@
         </table>
       </div>
       {% else %}
-      <div class="card-body"><p class="admin-empty mb-0">No content yet — the coverage matrix appears once articles or pages exist.</p></div>
+      <div class="card-body"><p class="admin-empty mb-0">{{ _("No content yet — the coverage matrix appears once articles or pages exist.") }}</p></div>
       {% endif %}
     </div>
   </div>
   <div class="col-lg-5">
     {% include "_validation_report.html.j2" %}
     <div class="card mb-4">
-      <div class="card-header"><h2 class="card-title h6 mb-0">Build and export</h2></div>
+      <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Build and export") }}</h2></div>
       <div class="card-body">
         {% if last_build %}
         <dl class="mb-0 admin-source">
-          <dt>Last run</dt>
+          <dt>{{ _("Last run") }}</dt>
           <dd>{{ last_build.kind }} · {{ last_build.when }}
-            {% if last_build.ok %}<span class="badge text-bg-success admin-state admin-state-complete">ok</span>
-            {% else %}<span class="badge text-bg-danger admin-state admin-state-missing">failed</span>{% endif %}</dd>
-          {% if last_build.detail %}<dt>Detail</dt><dd class="mb-0">{{ last_build.detail }}</dd>{% endif %}
+            {% if last_build.ok %}<span class="badge text-bg-success admin-state admin-state-complete">{{ _("ok") }}</span>
+            {% else %}<span class="badge text-bg-danger admin-state admin-state-missing">{{ _("failed") }}</span>{% endif %}</dd>
+          {% if last_build.detail %}<dt>{{ _("Detail") }}</dt><dd class="mb-0">{{ last_build.detail }}</dd>{% endif %}
         </dl>
         {% else %}
-        <p class="admin-empty mb-0">No build or export has run from this panel yet.
-          Use the <a href="/publishing">Publishing</a> panel, or the
-          <code>cms build</code> and <code>cms export</code> commands.</p>
+        <p class="admin-empty mb-0">{{ _("No build or export has run from this panel yet.") }}
+          {{ _("Use the") }} <a href="/publishing">{{ _("Publishing") }}</a> {{ _("panel, or the") }}
+          <code>cms build</code> {{ _("and") }} <code>cms export</code> {{ _("commands.") }}</p>
         {% endif %}
       </div>
     </div>

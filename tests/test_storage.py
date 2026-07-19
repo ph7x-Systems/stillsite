@@ -157,7 +157,19 @@ def test_user_round_trip_and_upsert(backend: StorageBackend) -> None:
     loaded = backend.load_user("ana")
     assert loaded is not None
     assert loaded.role is Role.ADMIN
+    assert loaded.language is None  # unset preference follows the browser
     assert backend.list_usernames() == ["ana"]
+
+
+def test_user_language_preference_round_trips(backend: StorageBackend) -> None:
+    backend.save_user(_user().model_copy(update={"language": Language.PT_PT}))
+    loaded = backend.load_user("ana")
+    assert loaded is not None
+    assert loaded.language is Language.PT_PT
+    backend.save_user(_user())  # upsert back to unset
+    reloaded = backend.load_user("ana")
+    assert reloaded is not None
+    assert reloaded.language is None
 
 
 def test_user_delete_and_missing_user(backend: StorageBackend) -> None:

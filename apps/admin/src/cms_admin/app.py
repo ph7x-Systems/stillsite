@@ -21,6 +21,7 @@ from cms_admin.auth import get_db
 from cms_admin.auth import router as auth_router
 from cms_admin.dashboard import router as dashboard_router
 from cms_admin.db import StorageExecutor
+from cms_admin.i18n import i18n_context, load_catalogs
 from cms_admin.media import router as media_router
 from cms_admin.pages import router as pages_router
 from cms_admin.publishing import router as publishing_router
@@ -73,8 +74,12 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
         env=Environment(
             loader=FileSystemLoader(Path(__file__).parent / "templates"),
             autoescape=select_autoescape(default=True, default_for_string=True),
-        )
+        ),
+        # ADR-0022: gettext callables enter each render's context — never
+        # the shared environment, which serves all languages at once.
+        context_processors=[i18n_context],
     )
+    app.state.translations = load_catalogs()
     app.state.login_limiter = LoginRateLimiter()
     app.include_router(auth_router)
     app.include_router(dashboard_router)

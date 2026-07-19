@@ -10,6 +10,10 @@ pip install sardine-cms-admin
 SARDINE_STORAGE_URL="sqlite:///content.db" uvicorn --factory cms_admin.app:create_app
 ```
 
+The panel itself is multilingual (ADR-0022): each editor picks their
+language in the user menu (PT-PT, ES, FR and DE ship alongside English),
+with the browser's language as the fallback.
+
 There are no default credentials — create the first account with the CLI,
 then sign in at `/login`:
 

@@ -91,7 +91,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | --- | --- | --- |
 | Role ladder | ✅ editor < reviewer < publisher < admin | — |
 | User management UI | 🟡 CLI only (`cms admin create-user`) | 🔜 users screen in the admin (M5) |
-| Admin panel in the editor's language | ❌ the panel is EN-only | 🧭 admin-localization ADR: label catalog like the site's, per-user language preference, PT-PT/ES/FR/DE shipped (M6) |
+| Admin panel in the editor's language | ✅ gettext i18n (ADR-0022): PT-PT/ES/FR/DE shipped, per-user preference + browser fallback, completeness enforced by tests | — |
 | Password reset | ❌ no email subsystem | 🧭 email/notification ADR (M7) |
 | Two-factor authentication | ❌ | 🔜 TOTP (M7) |
 | Notifications (review requested…) | ❌ | 🧭 same email ADR (M7) |
@@ -120,9 +120,8 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 - **M6 — Extensibility and adoption**: the plugin/extension ADR executed
   (custom content types, custom fields, rules, build steps), menu
   manager, image derivatives, redirects, comments-integration contract,
-  JSON content target, the importers so existing sites can walk in — and
-  the **admin panel localized** (label catalog + per-user language,
-  starting with the five site languages).
+  JSON content target, the importers so existing sites can walk in.
+  (Admin localization shipped early — ADR-0022.)
 - **M7 — Operations**: email/notification subsystem (password reset,
   review notifications), TOTP 2FA, webhooks, `cms doctor`, documented
   backup/restore and scheduled-build recipes.

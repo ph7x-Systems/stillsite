@@ -1,0 +1,582 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: sardine-cms-admin\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "%(articles)s articles, %(pages)s pages, %(media)s media assets."
+msgstr "%(articles)s artículos, %(pages)s páginas, %(media)s archivos multimedia."
+
+msgid "%(language)s coverage"
+msgstr "Cobertura %(language)s"
+
+msgid "%(name)s translation"
+msgstr "Traducción de %(name)s"
+
+msgid "%(rules)s rules ran over %(articles)s article(s), %(pages)s page(s) and %(media)s media asset(s) in %(languages)s languages"
+msgstr "%(rules)s reglas se ejecutaron sobre %(articles)s artículo(s), %(pages)s página(s) y %(media)s archivo(s) multimedia en %(languages)s idiomas"
+
+msgid "(any role). Build & export validates first, then writes the project's output directory with the target's extras — publisher role and up."
+msgstr "(cualquier rol). Build & export valida primero y luego escribe el directorio de salida del proyecto con los extras del target — rol publisher o superior."
+
+msgid "Actions"
+msgstr "Acciones"
+
+msgid "Add a section"
+msgstr "Añadir una sección"
+
+msgid "Add section"
+msgstr "Añadir sección"
+
+msgid "Admin"
+msgstr "Administración"
+
+msgid "Admin sections"
+msgstr "Secciones de administración"
+
+msgid "Alt (EN)"
+msgstr "Alt (EN)"
+
+msgid "Alt text"
+msgstr "Texto alternativo"
+
+msgid "Alt text (EN)"
+msgstr "Texto alternativo (EN)"
+
+msgid "Archive"
+msgstr "Archivar"
+
+msgid "Article ID"
+msgstr "ID del artículo"
+
+msgid "Articles"
+msgstr "Artículos"
+
+msgid "Articles only use categories the project declares (skipped when none are declared)"
+msgstr "Los artículos solo usan categorías declaradas por el proyecto (se omite cuando no hay ninguna declarada)"
+
+msgid "Asset ID"
+msgstr "ID del archivo"
+
+msgid "Auto"
+msgstr "Automático"
+
+msgid "Body (Markdown)"
+msgstr "Cuerpo (Markdown)"
+
+msgid "Browser default"
+msgstr "Predeterminado del navegador"
+
+msgid "Build & export"
+msgstr "Build & export"
+
+msgid "Build and export"
+msgstr "Build y export"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Category"
+msgstr "Categoría"
+
+msgid "Checks that"
+msgstr "Comprueba que"
+
+msgid "Content (EN)"
+msgstr "Contenido (EN)"
+
+msgid "Content by status"
+msgstr "Contenido por estado"
+
+msgid "Content in review or published carries every required language; incomplete translations warn in review and block once published"
+msgstr "El contenido en revisión o publicado tiene todos los idiomas obligatorios; las traducciones incompletas avisan en revisión y bloquean una vez publicado"
+
+msgid "Cover"
+msgstr "Portada"
+
+msgid "Coverage"
+msgstr "Cobertura"
+
+msgid "Create article"
+msgstr "Crear artículo"
+
+msgid "Create page"
+msgstr "Crear página"
+
+msgid "Dark"
+msgstr "Oscuro"
+
+msgid "Dashboard"
+msgstr "Panel"
+
+msgid "Delete asset"
+msgstr "Eliminar archivo"
+
+msgid "Description"
+msgstr "Descripción"
+
+msgid "Detail"
+msgstr "Detalle"
+
+msgid "Digest"
+msgstr "Digest"
+
+msgid "Dimensions"
+msgstr "Dimensiones"
+
+msgid "EN (mandatory)"
+msgstr "EN (obligatorio)"
+
+msgid "Edit translation"
+msgstr "Editar traducción"
+
+msgid "Every media asset has alt text in each required language"
+msgstr "Todos los archivos multimedia tienen texto alternativo en cada idioma obligatorio"
+
+msgid "Field"
+msgstr "Campo"
+
+msgid "Field name"
+msgstr "Nombre del campo"
+
+msgid "Field value"
+msgstr "Valor del campo"
+
+msgid "Fields (EN)"
+msgstr "Campos (EN)"
+
+msgid "Fields — source next to translation"
+msgstr "Campos — fuente junto a la traducción"
+
+msgid "File"
+msgstr "Archivo"
+
+msgid "Files"
+msgstr "Archivos"
+
+msgid "Free-form name/value pairs the theme's"
+msgstr "Pares nombre/valor libres que la plantilla"
+
+msgid "Generated URLs never collide within a language, across articles and pages"
+msgstr "Las URL generadas nunca chocan dentro de un idioma, entre artículos y páginas"
+
+msgid "Home"
+msgstr "Inicio"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Issues"
+msgstr "Problemas"
+
+msgid "Key"
+msgstr "Clave"
+
+msgid "Kind"
+msgstr "Tipo"
+
+msgid "Language"
+msgstr "Idioma"
+
+msgid "Language states aggregate the page and all its sections — the least-complete state wins."
+msgstr "Los estados por idioma agregan la página y todas sus secciones — gana el estado menos completo."
+
+msgid "Last run"
+msgstr "Última ejecución"
+
+msgid "Light"
+msgstr "Claro"
+
+msgid "Media"
+msgstr "Multimedia"
+
+msgid "Media asset IDs (one per line)"
+msgstr "IDs de archivos multimedia (uno por línea)"
+
+msgid "Message"
+msgstr "Mensaje"
+
+msgid "Metadata"
+msgstr "Metadatos"
+
+msgid "Move %(key)s down"
+msgstr "Mover %(key)s hacia abajo"
+
+msgid "Move %(key)s up"
+msgstr "Mover %(key)s hacia arriba"
+
+msgid "New article"
+msgstr "Nuevo artículo"
+
+msgid "New page"
+msgstr "Nueva página"
+
+msgid "No"
+msgstr "Ningún"
+
+msgid "No articles yet — create the first one."
+msgstr "Aún no hay artículos — crea el primero."
+
+msgid "No build or export has run from this panel yet."
+msgstr "Aún no se ha ejecutado ningún build o export desde este panel."
+
+msgid "No content yet — the coverage matrix appears once articles or pages exist."
+msgstr "Aún no hay contenido — la matriz de cobertura aparece cuando existan artículos o páginas."
+
+msgid "No media yet — upload the first asset."
+msgstr "Aún no hay multimedia — sube el primer archivo."
+
+msgid "No pages yet — create the first one."
+msgstr "Aún no hay páginas — crea la primera."
+
+msgid "No sections yet."
+msgstr "Aún no hay secciones."
+
+msgid "Nothing has run from this panel yet."
+msgstr "Aún no se ha ejecutado nada desde este panel."
+
+msgid "Nothing references this asset."
+msgstr "Nada hace referencia a este archivo."
+
+msgid "PIPELINE"
+msgstr "PIPELINE"
+
+msgid "Page ID"
+msgstr "ID de la página"
+
+msgid "Page sections only reference media assets that actually exist"
+msgstr "Las secciones de las páginas solo hacen referencia a archivos multimedia que existen"
+
+msgid "Page translations"
+msgstr "Traducciones de la página"
+
+msgid "Pages"
+msgstr "Páginas"
+
+msgid "Password"
+msgstr "Contraseña"
+
+msgid "Path"
+msgstr "Ruta"
+
+msgid "Preview"
+msgstr "Vista previa"
+
+msgid "Preview build"
+msgstr "Build de vista previa"
+
+msgid "Preview writes to a temporary directory served at"
+msgstr "La vista previa escribe en un directorio temporal servido en"
+
+msgid "Publish"
+msgstr "Publicar"
+
+msgid "Publish gate blocked"
+msgstr "Publicación bloqueada"
+
+msgid "Publish gate open"
+msgstr "Publicación abierta"
+
+msgid "Publishing"
+msgstr "Publicación"
+
+msgid "Referenced assets cannot be deleted."
+msgstr "Los archivos referenciados no se pueden eliminar."
+
+msgid "Remove"
+msgstr "Quitar"
+
+msgid "Remove section %(key)s"
+msgstr "Quitar la sección %(key)s"
+
+msgid "Rendered with the builder's Markdown renderer (raw HTML disabled); shows the last saved body."
+msgstr "Renderizado con el renderizador de Markdown del builder (HTML sin procesar desactivado); muestra el último cuerpo guardado."
+
+msgid "Restore to draft"
+msgstr "Restaurar a borrador"
+
+msgid "Result"
+msgstr "Resultado"
+
+msgid "Rule"
+msgstr "Regla"
+
+msgid "Rules"
+msgstr "Reglas"
+
+msgid "Run"
+msgstr "Ejecutar"
+
+msgid "Sardine CMS admin"
+msgstr "Administración de Sardine CMS"
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Save alt text"
+msgstr "Guardar texto alternativo"
+
+msgid "Save section"
+msgstr "Guardar sección"
+
+msgid "Save translation"
+msgstr "Guardar traducción"
+
+msgid "Sections"
+msgstr "Secciones"
+
+msgid "Send back to draft"
+msgstr "Devolver a borrador"
+
+msgid "Severity"
+msgstr "Gravedad"
+
+msgid "Sign in"
+msgstr "Iniciar sesión"
+
+msgid "Sign out"
+msgstr "Cerrar sesión"
+
+msgid "Size"
+msgstr "Tamaño"
+
+msgid "Skip to content"
+msgstr "Saltar al contenido"
+
+msgid "Slug"
+msgstr "Slug"
+
+msgid "Source (EN)"
+msgstr "Fuente (EN)"
+
+msgid "State"
+msgstr "Estado"
+
+msgid "Static-first, multilingual"
+msgstr "Static-first, multilingüe"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "Subject"
+msgstr "Asunto"
+
+msgid "Submit for review"
+msgstr "Enviar a revisión"
+
+msgid "Summary"
+msgstr "Resumen"
+
+msgid "Tags"
+msgstr "Etiquetas"
+
+msgid "Target"
+msgstr "Target"
+
+msgid "The form was not saved:"
+msgstr "El formulario no se guardó:"
+
+msgid "The page's own title/description/slug — section content is translated on each section."
+msgstr "El título/descripción/slug de la propia página — el contenido de las secciones se traduce en cada sección."
+
+msgid "The source section has no fields yet — add them on the"
+msgstr "La sección fuente aún no tiene campos — añádelos en el"
+
+msgid "Title"
+msgstr "Título"
+
+msgid "Title (EN)"
+msgstr "Título (EN)"
+
+msgid "Toggle color scheme"
+msgstr "Alternar esquema de color"
+
+msgid "Toggle fullscreen"
+msgstr "Alternar pantalla completa"
+
+msgid "Toggle sidebar"
+msgstr "Alternar barra lateral"
+
+msgid "Translated alt"
+msgstr "Alt traducido"
+
+msgid "Translation"
+msgstr "Traducción"
+
+msgid "Translation coverage"
+msgstr "Cobertura de traducciones"
+
+msgid "Translation preview"
+msgstr "Vista previa de la traducción"
+
+msgid "Translations"
+msgstr "Traducciones"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Updated"
+msgstr "Actualizado"
+
+msgid "Upload"
+msgstr "Subir"
+
+msgid "Upload media"
+msgstr "Subir multimedia"
+
+msgid "Use the"
+msgstr "Usa el panel"
+
+msgid "Used by"
+msgstr "Usado por"
+
+msgid "Username"
+msgstr "Nombre de usuario"
+
+msgid "Value"
+msgstr "Valor"
+
+msgid "When"
+msgstr "Cuándo"
+
+msgid "Workflow"
+msgstr "Flujo de trabajo"
+
+msgid "Wrong username or password."
+msgstr "Nombre de usuario o contraseña incorrectos."
+
+msgid "a category slug, or empty"
+msgstr "un slug de categoría, o vacío"
+
+msgid "a media asset id, or empty"
+msgstr "un ID de archivo multimedia, o vacío"
+
+msgid "across %(rules)s rules — publishing stays blocked until the errors are fixed."
+msgstr "en %(rules)s reglas — la publicación queda bloqueada hasta corregir los errores."
+
+msgid "and"
+msgstr "y"
+
+msgid "archived"
+msgstr "archivado"
+
+msgid "at the project directory to build from the panel."
+msgstr "al directorio del proyecto para hacer builds desde el panel."
+
+msgid "comma-separated slugs"
+msgstr "slugs separados por comas"
+
+msgid "commands."
+msgstr "comandos."
+
+msgid "complete"
+msgstr "completo"
+
+msgid "draft"
+msgstr "borrador"
+
+msgid "error"
+msgstr "error"
+
+msgid "failed"
+msgstr "falló"
+
+msgid "file: choose a file to upload"
+msgstr "archivo: elige un archivo para subir"
+
+msgid "file: could not read the image dimensions"
+msgstr "archivo: no se pudieron leer las dimensiones de la imagen"
+
+msgid "file: unsupported type — png, jpeg, gif, webp or svg"
+msgstr "archivo: tipo no admitido — png, jpeg, gif, webp o svg"
+
+msgid "first."
+msgstr "primero."
+
+msgid "found in"
+msgstr "encontrado en"
+
+msgid "lowercase-with-dashes"
+msgstr "minúsculas-con-guiones"
+
+msgid "lowercase-with-dashes; empty falls back to the article id"
+msgstr "minúsculas-con-guiones; vacío usa el ID del artículo"
+
+msgid "mandatory — translations are added after the upload"
+msgstr "obligatorio — las traducciones se añaden después de subir"
+
+msgid "missing"
+msgstr "falta"
+
+msgid "missing alt text"
+msgstr "falta el texto alternativo"
+
+msgid "no errors"
+msgstr "sin errores"
+
+msgid "ok"
+msgstr "ok"
+
+msgid "outdated"
+msgstr "desactualizado"
+
+msgid "output"
+msgstr "salida"
+
+msgid "panel, or the"
+msgstr "de Publicación, o los comandos"
+
+msgid "pass"
+msgstr "pasa"
+
+msgid "permanent, lowercase-with-dashes"
+msgstr "permanente, minúsculas-con-guiones"
+
+msgid "png, jpeg, gif, webp or svg — the type is verified from the bytes, never from the name."
+msgstr "png, jpeg, gif, webp o svg — el tipo se verifica a partir de los bytes, nunca del nombre."
+
+msgid "point"
+msgstr "apunta"
+
+msgid "published"
+msgstr "publicado"
+
+msgid "review"
+msgstr "revisión"
+
+msgid "section editor"
+msgstr "editor de secciones"
+
+msgid "template consumes. Clear a value to drop its field; use the blank rows to add more."
+msgstr "consume. Borra un valor para quitar su campo; usa las filas en blanco para añadir más."
+
+msgid "the theme template that renders it — reference theme kinds:"
+msgstr "la plantilla del tema que la renderiza — tipos del tema de referencia:"
+
+msgid "theme"
+msgstr "tema"
+
+msgid "translation is missing"
+msgstr "falta la traducción"
+
+msgid "translation is outdated"
+msgstr "la traducción está desactualizada"
+
+msgid "unique on this page, lowercase-with-dashes"
+msgstr "única en esta página, minúsculas-con-guiones"
+
+msgid "warning"
+msgstr "aviso"
+
+msgid "%(count)s error"
+msgid_plural "%(count)s errors"
+msgstr[0] "%(count)s error"
+msgstr[1] "%(count)s errores"
+
+msgid "%(count)s warning"
+msgid_plural "%(count)s warnings"
+msgstr[0] "%(count)s aviso"
+msgstr[1] "%(count)s avisos"

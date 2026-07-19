@@ -1,5 +1,5 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import text_field, textarea_field, errors_block, state_badge %}
+{% from "_fields.html.j2" import text_field, textarea_field, errors_block, state_badge with context %}
 {% block title %}{{ page.id }} · {{ language.value | upper }} — Sardine CMS admin{% endblock %}
 {% block header %}
 <nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/pages/{{ page.id }}">&larr; {{ page.id }}</a></nav>
@@ -10,12 +10,12 @@
 <div class="row admin-sbs">
   <div class="col-lg-6">
     <div class="card mb-3">
-      <div class="card-header"><h2 class="card-title h6 mb-0">Source (EN)</h2></div>
+      <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Source (EN)") }}</h2></div>
       <div class="card-body">
         <dl class="mb-0 admin-source">
-          <dt>Title</dt><dd>{{ page.source.title }}</dd>
-          <dt>Description</dt><dd>{{ page.source.description }}</dd>
-          <dt>Slug</dt><dd class="mb-0">{{ page.source.slug }}</dd>
+          <dt>{{ _("Title") }}</dt><dd>{{ page.source.title }}</dd>
+          <dt>{{ _("Description") }}</dt><dd>{{ page.source.description }}</dd>
+          <dt>{{ _("Slug") }}</dt><dd class="mb-0">{{ page.source.slug }}</dd>
         </dl>
       </div>
     </div>
@@ -25,14 +25,14 @@
           class="admin-form">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
       <div class="card mb-3">
-        <div class="card-header"><h2 class="card-title h6 mb-0">Translation ({{ language.value | upper }})</h2></div>
+        <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Translation") }} ({{ language.value | upper }})</h2></div>
         <div class="card-body">
-          {{ text_field("title", "Title", form.title, required=true) }}
-          {{ textarea_field("description", "Description", form.description, rows=3) }}
-          {{ text_field("slug", "Slug", form.slug, required=true) }}
+          {{ text_field("title", _("Title"), form.title, required=true) }}
+          {{ textarea_field("description", _("Description"), form.description, rows=3) }}
+          {{ text_field("slug", _("Slug"), form.slug, required=true) }}
         </div>
       </div>
-      <button type="submit" class="btn btn-primary">Save translation</button>
+      <button type="submit" class="btn btn-primary">{{ _("Save translation") }}</button>
     </form>
   </div>
 </div>

@@ -1,26 +1,26 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import text_field, content_fields, metadata_fields, errors_block %}
-{% block title %}New article — Sardine CMS admin{% endblock %}
+{% from "_fields.html.j2" import text_field, content_fields, metadata_fields, errors_block with context %}
+{% block title %}{{ _("New article") }} — Sardine CMS admin{% endblock %}
 {% block header %}
-<nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/articles">&larr; Articles</a></nav>
-<h1 class="h3 mb-0">New article</h1>
+<nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/articles">&larr; {{ _("Articles") }}</a></nav>
+<h1 class="h3 mb-0">{{ _("New article") }}</h1>
 {% endblock %}
 {% block content %}
 {{ errors_block(errors) }}
 <form method="post" action="/articles" class="admin-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   <div class="card mb-3"><div class="card-body">
-    {{ text_field("id", "Article ID", form.id, required=true, hint="permanent, lowercase-with-dashes") }}
+    {{ text_field("id", _("Article ID"), form.id, required=true, hint=_("permanent, lowercase-with-dashes")) }}
   </div></div>
   <div class="card mb-3">
-    <div class="card-header"><h2 class="card-title h6 mb-0">Source (EN)</h2></div>
+    <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Source (EN)") }}</h2></div>
     <div class="card-body">{{ content_fields(form) }}</div>
   </div>
   <div class="card mb-3">
-    <div class="card-header"><h2 class="card-title h6 mb-0">Metadata</h2></div>
+    <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Metadata") }}</h2></div>
     <div class="card-body">{{ metadata_fields(form) }}</div>
   </div>
-  <button type="submit" class="btn btn-primary">Create article</button>
-  <a class="btn btn-outline-secondary" href="/articles">Cancel</a>
+  <button type="submit" class="btn btn-primary">{{ _("Create article") }}</button>
+  <a class="btn btn-outline-secondary" href="/articles">{{ _("Cancel") }}</a>
 </form>
 {% endblock %}
