@@ -5,6 +5,7 @@
 # Sardine CMS
 
 [![CI](https://github.com/ph7x-Systems/sardine-cms/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ph7x-Systems/sardine-cms/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/sardine-cms-cli.svg?label=pypi)](https://pypi.org/project/sardine-cms-cli/)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](pyproject.toml)
 [![Checked with mypy (strict)](https://img.shields.io/badge/mypy-strict-blue.svg)](pyproject.toml)
@@ -45,7 +46,29 @@ tests/                          # unit and integration tests
 
 ## Status
 
-In development, in the open. The content core (models, translation states, multi-engine storage, deterministic export), the validator, the deterministic builder, the theme system and the `cms` CLI are implemented and tested — the live demo is built with them on every merge. In progress: the admin panel (Milestone 3 — the full editorial cycle in the browser). See [docs/PLAN.md](docs/PLAN.md) for the execution plan, [docs/POC_PLAN.md](docs/POC_PLAN.md) for the proof-of-concept target and [docs/BRIEF.md](docs/BRIEF.md) for the full brief. No secrets, personal data or client content live in this repository.
+Developed in the open, released on PyPI (v0.1.0). The content core (models, translation states, four storage engines, deterministic export), the validator, the deterministic builder, the theme system, the `cms` CLI and the browser admin (the full editorial cycle, hardened and accessibility-gated) are implemented and tested — the live demo is built with them on every merge. See [docs/PLAN.md](docs/PLAN.md) for the execution plan, [docs/POC_PLAN.md](docs/POC_PLAN.md) for the proof-of-concept target and [docs/BRIEF.md](docs/BRIEF.md) for the full brief. No secrets, personal data or client content live in this repository.
+
+## Install
+
+Requires Python 3.12+. The packages are on PyPI (`sardine-cms-*`,
+[ADR-0014](docs/adr/0014-distribution-naming.md)):
+
+```bash
+pip install sardine-cms-cli                  # the cms command (pulls core, validation, build)
+pip install sardine-cms-theme-ph7x-reference # the reference theme used by the demo
+pip install sardine-cms-admin                # the browser admin (optional)
+```
+
+Database engines beyond SQLite are extras of the core package:
+`pip install "sardine-cms-core[postgres]"` (psycopg 3), `[mysql]` (PyMySQL)
+or `[mssql]` (pymssql).
+
+Then start a site:
+
+```bash
+cms init my-site --name "My Site" --base-url "https://my-site.example"
+cd my-site && cms seed && cms build && cms preview
+```
 
 ## Local development
 

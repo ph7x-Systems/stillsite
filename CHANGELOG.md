@@ -3,7 +3,7 @@
 All notable changes to Sardine CMS. The project follows semantic versioning
 from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
-## Unreleased — 0.1.0
+## 0.1.0 — 2026-07-19
 
 The first release: a multilingual, static-first CMS framework.
 
