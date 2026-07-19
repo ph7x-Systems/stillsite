@@ -14,6 +14,7 @@
 {% set section_labels = {
   "dashboard": _("Dashboard"), "articles": _("Articles"), "pages": _("Pages"),
   "media": _("Media"), "publishing": _("Publishing"), "trash": _("Trash"),
+  "users": _("Users"),
 } %}
 {% block body %}
 <a class="admin-skip" href="#main">{{ _("Skip to content") }}</a>
@@ -139,6 +140,15 @@
               <p>{{ _("Trash") }}</p>
             </a>
           </li>
+          {% if user.role.value == "admin" %}
+          <li class="nav-item">
+            <a href="/users" class="nav-link{% if active_section == "users" %} active{% endif %}"
+               {% if active_section == "users" %}aria-current="page"{% endif %}>
+              <i class="nav-icon bi bi-people" aria-hidden="true"></i>
+              <p>{{ _("Users") }}</p>
+            </a>
+          </li>
+          {% endif %}
           <li class="nav-header">{{ _("PIPELINE") }}</li>
           <li class="nav-item">
             <a href="/publishing" class="nav-link{% if active_section == "publishing" %} active{% endif %}"

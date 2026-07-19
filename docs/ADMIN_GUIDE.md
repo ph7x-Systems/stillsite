@@ -157,6 +157,15 @@ jobs:
 Validation and the publish gate apply to scheduled content exactly as to
 anything published — scheduling never bypasses them.
 
+## Users
+
+Admins manage accounts at **Users**: create (username, password ≥ 12
+characters, role, panel language), change roles inline, delete. Two
+safeguards are enforced server-side: you cannot delete your own account,
+and the last admin can neither be deleted nor demoted. The first account
+still comes from `cms admin create-user` — there are never default
+credentials.
+
 ## Panel language (i18n)
 
 The panel speaks the editor's language (ADR-0022). Resolution order per

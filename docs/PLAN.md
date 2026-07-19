@@ -213,8 +213,8 @@ tests, docs and wiki updates, per the standing gates.
 - [ ] **Authorship**: author fields on content, theme credit line
 - [ ] **Media library filters**: search by id/path/type, referenced-by
       filter
-- [ ] **Users screen** in the admin (list, create, role change, disable)
-      — CLI stays for bootstrap
+- [x] **Users screen** in the admin (list, create, role change, delete
+      with self/last-admin safeguards) — CLI stays for bootstrap
 - [ ] **Editorial notes**: a comment trail per entry (author, timestamp)
 
 ## Milestone 6 — Extensibility and adoption

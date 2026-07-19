@@ -62,6 +62,15 @@ RUNTIME_MSGIDS: tuple[str, ...] = (
     "missing alt text",
     # scheduling form error (ADR-0024)
     "publish_at: use the picker format (YYYY-MM-DDTHH:MM, UTC)",
+    # users screen route errors
+    "username: lowercase letters, digits and dashes only",
+    "password: at least 12 characters",
+    "role: unknown role",
+    "language: unknown language",
+    "username: already taken",
+    "role: the last admin cannot be demoted",
+    "delete: you cannot delete your own account",
+    "delete: the last admin cannot be deleted",
     # media upload static errors
     "file: choose a file to upload",
     "file: could not read the image dimensions",
