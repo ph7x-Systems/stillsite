@@ -58,3 +58,6 @@ jobs:
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/
+          # Publishers may come online in rounds (PyPI caps pending
+          # publishers per account); re-runs skip what already shipped.
+          skip-existing: true
