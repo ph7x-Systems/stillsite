@@ -44,6 +44,7 @@ from cms_admin.articles import (
 )
 from cms_admin.auth import current_session, enforce_csrf, get_db
 from cms_admin.publishing import _project, refresh_entry_preview
+from cms_admin.security import admin_path
 from cms_admin.workflow import (
     allowed,
     available_transitions,
@@ -189,7 +190,9 @@ async def page_create(
         existing = await db.run(lambda storage: storage.load_page(page_id))
         if existing is None:
             await db.run(lambda storage: storage.save_page(page))
-            return RedirectResponse(f"/pages/{page.id}", status_code=status.HTTP_303_SEE_OTHER)
+            return RedirectResponse(
+                admin_path("pages", page.id), status_code=status.HTTP_303_SEE_OTHER
+            )
         errors = [f"id: a page with id {page_id!r} already exists"]
     return _page_response(
         request,
@@ -283,7 +286,7 @@ async def page_edit_save(
             status_code=HTTP_422,
         )
     await _save_page(request, page, user.username)
-    return RedirectResponse(f"/pages/{page.id}", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(admin_path("pages", page.id), status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.post("/{page_id}/autosave")
@@ -341,7 +344,8 @@ async def section_add(
         )
     await _save_page(request, page, user.username)
     return RedirectResponse(
-        f"/pages/{page.id}/sections/{key}", status_code=status.HTTP_303_SEE_OTHER
+        admin_path("pages", page.id, "sections", key),
+        status_code=status.HTTP_303_SEE_OTHER,
     )
 
 
@@ -361,7 +365,7 @@ async def section_move(
     if 0 <= swap < len(page.sections):
         page.sections[index], page.sections[swap] = page.sections[swap], page.sections[index]
         await _save_page(request, page, user.username)
-    return RedirectResponse(f"/pages/{page.id}", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(admin_path("pages", page.id), status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.post("/{page_id}/sections/{key}/delete")
@@ -376,7 +380,7 @@ async def section_delete(
     _section_or_404(page, key)
     page.sections = [section for section in page.sections if section.key != key]
     await _save_page(request, page, user.username)
-    return RedirectResponse(f"/pages/{page.id}", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(admin_path("pages", page.id), status_code=status.HTTP_303_SEE_OTHER)
 
 
 def _field_rows(section: Section) -> list[dict[str, str]]:
@@ -442,7 +446,8 @@ async def section_edit_save(
     section.source = SectionContent(fields=fields, media=parse_media(str(form.get("media", ""))))
     await _save_page(request, page, user.username)
     return RedirectResponse(
-        f"/pages/{page.id}/sections/{key}", status_code=status.HTTP_303_SEE_OTHER
+        admin_path("pages", page.id, "sections", key),
+        status_code=status.HTTP_303_SEE_OTHER,
     )
 
 
@@ -517,7 +522,7 @@ async def page_translation_save(
     page.set_translation(language, content)
     await _save_page(request, page, user.username)
     return RedirectResponse(
-        f"/pages/{page.id}/translations/{language.value}",
+        admin_path("pages", page.id, "translations", language.value),
         status_code=status.HTTP_303_SEE_OTHER,
     )
 
@@ -585,7 +590,7 @@ async def section_translation_save(
     section.set_translation(language, content)
     await _save_page(request, page, user.username)
     return RedirectResponse(
-        f"/pages/{page.id}/sections/{key}/translations/{language.value}",
+        admin_path("pages", page.id, "sections", key, "translations", language.value),
         status_code=status.HTTP_303_SEE_OTHER,
     )
 
@@ -635,7 +640,7 @@ async def page_status(
             )
     page.status = target
     await _save_page(request, page, user.username)
-    return RedirectResponse(f"/pages/{page.id}", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(admin_path("pages", page.id), status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.get("/{page_id}/revisions/{revision}")
@@ -696,7 +701,7 @@ async def page_revision_restore(
     restored = Page.model_validate_json(payload)
     restored = restored.model_copy(update={"id": page_id})
     await _save_page(request, restored, user.username)
-    return RedirectResponse(f"/pages/{page_id}", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(admin_path("pages", restored.id), status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.post("/{page_id}/duplicate")
@@ -722,4 +727,4 @@ async def page_duplicate(
         }
     )
     await _save_page(request, copy, user.username)
-    return RedirectResponse(f"/pages/{copy.id}", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(admin_path("pages", copy.id), status_code=status.HTTP_303_SEE_OTHER)

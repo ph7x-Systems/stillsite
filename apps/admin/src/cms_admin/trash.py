@@ -17,6 +17,7 @@ from fastapi.responses import RedirectResponse
 from cms_admin.articles import _save_article
 from cms_admin.auth import current_session, enforce_csrf, get_db, require_at_least
 from cms_admin.pages import _save_page
+from cms_admin.security import admin_path
 
 router = APIRouter(prefix="/trash")
 
@@ -94,7 +95,7 @@ async def restore_from_trash(
     entity = await _load_entity(request, kind, entity_id)
     entity.deleted_at = None
     await _save_entity(request, kind, entity, user.username)
-    destination = f"/{kind}s/{entity_id}"
+    destination = admin_path(f"{kind}s", entity.id)
     return RedirectResponse(destination, status_code=status.HTTP_303_SEE_OTHER)
 
 

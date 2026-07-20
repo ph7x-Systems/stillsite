@@ -85,12 +85,13 @@ brute-force control.
 
 | Threat | Control (status) |
 | --- | --- |
-| Leaked secrets in history | A digest-pinned trufflehog image scans the full git history on every push/PR (**done**) |
+| Leaked secrets in history | A digest-pinned trufflehog image scans full history on every push/PR; platform scanning adds push protection, validity checks, non-provider patterns and assisted detection (**done**) |
 | Compromised dependency | `pip-audit` and Bandit gate every PR; workflow actions are SHA-pinned and updated by Dependabot; reproducible Python lock files remain an open improvement (**partial**) |
 | CI token abuse | Workflow `permissions: contents: read`; no write tokens in CI (**done**) |
 | Deploy-secret exfiltration | Untrusted package execution is confined to an artifact-build job; only pinned download/deploy actions run in the environment that receives the Azure token (**done**) |
 | Remote artifact substitution | The downloaded axe bundle is version-pinned and SHA-256 verified before extraction; release/deploy actions are pinned to full commits (**done**) |
-| Force-push/history rewrite on `main` | Branch protection blocks force-pushes/deletions and requires nine established checks; promote `Security audit` after its first green `main` run (**rollout pending**) |
+| Vulnerable code patterns | Bandit gates Python changes; CodeQL scans Actions, Python and bundled JavaScript on its managed schedule (**done**) |
+| Force-push/history rewrite on `main` | Branch protection blocks force-pushes/deletions and requires all ten CI checks, including `Security audit` (**done**) |
 | Malicious PR changing CI | Required status checks on PRs; workflow changes reviewed like code (**done**) |
 
 ## 3. Data protection

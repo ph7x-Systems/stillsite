@@ -15,8 +15,9 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 - **Supply-chain hardening**: workflow actions are pinned to full commits,
   downloaded axe assets are checksum-verified, secret scanning uses a pinned
   container digest, and Azure deployment consumes an isolated build artifact.
-  A `pip-audit` + Bandit security gate now runs on every PR and is promoted
-  to branch protection after its first stable green run on `main`.
+  A required `pip-audit` + Bandit security gate now runs on every PR. Managed
+  CodeQL and enhanced secret scanning are enabled, and dynamic admin redirect
+  paths encode every route segment.
 
 - **Live themed refresh + autosave** (M6, ADR-0027 phase 2): valid
   article/page source edits persist after a short debounce and refresh a

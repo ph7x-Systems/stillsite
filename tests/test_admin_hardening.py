@@ -7,13 +7,13 @@ sources are scanned to keep it that way, and the ADMIN_GUIDE env-var table
 is checked against the settings code by the docs suite.
 """
 
-import re
 from datetime import UTC, datetime
+from html.parser import HTMLParser
 from pathlib import Path
 
 from cms_admin import AdminSettings, create_app
 from cms_admin.app import SECURITY_HEADERS
-from cms_admin.security import hash_password
+from cms_admin.security import admin_path, hash_password
 from cms_core import Role, User, create_storage
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -22,6 +22,29 @@ PASSWORD = "correct horse battery staple"
 NOW = datetime(2026, 7, 18, tzinfo=UTC)
 
 TEMPLATES = Path("apps/admin/src/cms_admin/templates")
+
+
+class _ScriptCollector(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.scripts: list[tuple[dict[str, str | None], str]] = []
+        self._attrs: dict[str, str | None] | None = None
+        self._body: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag.lower() == "script":
+            self._attrs = dict(attrs)
+            self._body = []
+
+    def handle_data(self, data: str) -> None:
+        if self._attrs is not None:
+            self._body.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() == "script" and self._attrs is not None:
+            self.scripts.append((self._attrs, "".join(self._body)))
+            self._attrs = None
+            self._body = []
 
 
 def _app(tmp_path: Path) -> FastAPI:
@@ -66,12 +89,22 @@ def test_admin_templates_ship_no_inline_scripts_or_styles() -> None:
     """Script tags must load local files and carry no inline body."""
     for template in TEMPLATES.glob("*.j2"):
         text = template.read_text(encoding="utf-8")
-        for tag in re.finditer(r"<script([^>]*)>(.*?)</script>", text, re.DOTALL):
-            attrs, body = tag.groups()
-            assert re.search(r'src="/static/', attrs), template.name
+        parser = _ScriptCollector()
+        parser.feed(text)
+        for attrs, body in parser.scripts:
+            assert (attrs.get("src") or "").startswith("/static/"), template.name
             assert body.strip() == "", template.name
         assert "style=" not in text, template.name
         assert "onclick" not in text, template.name
+
+
+def test_admin_path_encodes_every_dynamic_segment() -> None:
+    assert admin_path("pages", "//evil.example?x=1#fragment") == (
+        "/pages/%2F%2Fevil.example%3Fx%3D1%23fragment"
+    )
+    assert admin_path("pages", "../admin", "translations", "pt-PT") == (
+        "/pages/..%2Fadmin/translations/pt-PT"
+    )
 
 
 def test_login_page_renders_under_the_policy(tmp_path: Path) -> None:
