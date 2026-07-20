@@ -4,9 +4,9 @@ What gets tested, at which layer, with which gate. Rule of thumb: **every
 guarantee the docs promise has a test that fails when it stops being true.**
 The suite size is intentionally not fixed here; it grows with every shipped
 guarantee. Mypy strict, ruff and the test suites run on every push/PR, with
-CI defining ten checks. Branch protection currently enforces the nine
-established contexts; `Security audit` becomes required after its first green
-run on `main`.
+CI defining ten checks, all enforced by branch protection. GitHub code
+scanning runs in addition to those PR gates for Actions, Python and bundled
+JavaScript.
 
 ## 1. Layers
 

@@ -13,15 +13,16 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 
 from cms_admin.auth import enforce_csrf, get_db
+from cms_admin.security import admin_path
 
 router = APIRouter(prefix="/notes")
 
-_KINDS = {"article": "/articles", "page": "/pages"}
+_KINDS = {"article": "articles", "page": "pages"}
 
 
 def _back_url(kind: str, entity_id: str) -> str:
     try:
-        return f"{_KINDS[kind]}/{entity_id}"
+        return admin_path(_KINDS[kind], entity_id)
     except KeyError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="unknown kind") from None
 

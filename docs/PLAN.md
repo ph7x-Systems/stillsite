@@ -16,11 +16,11 @@ ADRs.
       backend conformance, example build, accessibility/markup, docs links
       secret scanning and dependency/static security audit
 - [x] ADR-0001: base architecture (Python core + FastAPI admin)
-- [x] Branch protection on `main`: force-pushes and deletions blocked; nine
-      established CI checks required (strict, up-to-date branches) for pull
-      requests
-- [ ] Promote the new `Security audit` context to required after its first
-      green run on `main`, bringing branch protection to all ten CI checks
+- [x] Branch protection on `main`: force-pushes and deletions blocked; all ten
+      CI checks required (strict, up-to-date branches) for pull requests
+- [x] GitHub code scanning configured for Actions, Python and the bundled
+      JavaScript; secret scanning uses push protection, validity checks,
+      non-provider patterns and assisted detection
 
 ## Milestone 1 — Content core
 
@@ -270,16 +270,13 @@ tests, docs and wiki updates, per the standing gates.
 
 ## Current execution queue
 
-1. **Security-hardening rollout** — merge the adversarial fixes and CI
-   controls, synchronize repository documentation and the public wiki, then
-   require the new `Security audit` context in branch protection.
-2. **Reusable-block authoring** — document and demonstrate how section kinds
+1. **Reusable-block authoring** — document and demonstrate how section kinds
    become a reusable editorial gallery.
-3. **Comments integration ADR** — define privacy, consent, theme-island and
+2. **Comments integration ADR** — define privacy, consent, theme-island and
    static-build boundaries before choosing adapters.
-4. **JSON content target** — export a stable, versioned contract for headless
+3. **JSON content target** — export a stable, versioned contract for headless
    consumers without weakening the HTML build.
-5. **Milestone 7 operations** — email/notifications, TOTP, on-publish
+4. **Milestone 7 operations** — email/notifications, TOTP, on-publish
    webhooks and `cms doctor`, in that order.
 
 Acceptance criteria and capability gaps are maintained in

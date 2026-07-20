@@ -19,6 +19,7 @@ from pydantic import ValidationError
 
 from cms_admin.articles import form_errors
 from cms_admin.auth import current_session, enforce_csrf, get_db
+from cms_admin.security import admin_path
 
 router = APIRouter(prefix="/media")
 
@@ -261,7 +262,7 @@ async def media_upload(
     except BaseException:
         file_path.unlink(missing_ok=True)
         raise
-    return RedirectResponse(f"/media/{asset.id}", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(admin_path("media", asset.id), status_code=status.HTTP_303_SEE_OTHER)
 
 
 async def _asset_context(request: Request, asset_id: str) -> dict[str, object]:
@@ -329,7 +330,7 @@ async def media_alt_save(
             status_code=HTTP_422,
         )
     await db.run(lambda storage: storage.save_media_asset(updated))
-    return RedirectResponse(f"/media/{asset_id}", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(admin_path("media", updated.id), status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.post("/{asset_id}/delete")

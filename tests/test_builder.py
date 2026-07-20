@@ -240,7 +240,7 @@ def test_explicit_menu_items_replace_the_derived_menu() -> None:
     artifact = build_site(CONFIG, SiteContent(pages=[home], menu=menu), now=NOW)
     html = artifact.files["index.html"].decode("utf-8")
     assert html.index(">Start<") < html.index(">Docs<")  # position order
-    assert "https://docs.example" in html
+    assert 'href="https://docs.example"' in html
     assert "/blog/" not in html.split("<nav")[1].split("</nav>")[0]  # derived menu replaced
 
 

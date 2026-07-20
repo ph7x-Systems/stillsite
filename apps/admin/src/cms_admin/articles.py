@@ -32,6 +32,7 @@ from pydantic import ValidationError
 
 from cms_admin.auth import current_session, enforce_csrf, get_db
 from cms_admin.publishing import _project, refresh_entry_preview
+from cms_admin.security import admin_path
 from cms_admin.workflow import (
     allowed,
     available_transitions,
@@ -233,7 +234,7 @@ async def article_create(
         if existing is None:
             await _save_article(request, article, user.username)
             return RedirectResponse(
-                f"/articles/{article.id}", status_code=status.HTTP_303_SEE_OTHER
+                admin_path("articles", article.id), status_code=status.HTTP_303_SEE_OTHER
             )
         errors = [f"id: an article with id {article_id!r} already exists"]
     return _page(
@@ -372,7 +373,9 @@ async def article_edit_save(
             status_code=HTTP_422,
         )
     await _save_article(request, article, user.username)
-    return RedirectResponse(f"/articles/{article.id}", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(
+        admin_path("articles", article.id), status_code=status.HTTP_303_SEE_OTHER
+    )
 
 
 @router.post("/{article_id}/autosave")
@@ -496,7 +499,7 @@ async def translation_save(
     article.updated_at = datetime.now(UTC)
     await _save_article(request, article, user.username)
     return RedirectResponse(
-        f"/articles/{article.id}/translations/{language.value}",
+        admin_path("articles", article.id, "translations", language.value),
         status_code=status.HTTP_303_SEE_OTHER,
     )
 
@@ -547,7 +550,9 @@ async def article_status(
     article.status = target
     article.updated_at = datetime.now(UTC)
     await _save_article(request, article, user.username)
-    return RedirectResponse(f"/articles/{article.id}", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(
+        admin_path("articles", article.id), status_code=status.HTTP_303_SEE_OTHER
+    )
 
 
 @router.get("/{article_id}/revisions/{revision}")
@@ -610,7 +615,9 @@ async def article_revision_restore(
     restored = Article.model_validate_json(payload)
     restored = restored.model_copy(update={"id": article_id, "updated_at": datetime.now(UTC)})
     await _save_article(request, restored, user.username)
-    return RedirectResponse(f"/articles/{article_id}", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(
+        admin_path("articles", restored.id), status_code=status.HTTP_303_SEE_OTHER
+    )
 
 
 def _copy_id(base_id: str, taken: set[str]) -> str:
@@ -645,4 +652,4 @@ async def article_duplicate(
         }
     )
     await _save_article(request, copy, user.username)
-    return RedirectResponse(f"/articles/{copy.id}", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(admin_path("articles", copy.id), status_code=status.HTTP_303_SEE_OTHER)

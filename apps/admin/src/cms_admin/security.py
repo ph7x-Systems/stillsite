@@ -7,6 +7,7 @@ SHA-256 digest is stored, so a database leak does not leak usable tokens.
 
 import hashlib
 import secrets
+from urllib.parse import quote
 
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerificationError
@@ -15,6 +16,16 @@ _hasher = PasswordHasher()
 _dummy_password_hash = _hasher.hash(secrets.token_urlsafe(32))
 MIN_PASSWORD_LENGTH = 12
 MAX_PASSWORD_LENGTH = 1024
+
+
+def admin_path(*segments: str | int) -> str:
+    """Build an origin-relative admin URL from opaque path segments.
+
+    Percent-encoding every dynamic segment prevents a route value from
+    becoming a scheme-relative redirect, injecting a query/fragment, or
+    changing the intended path hierarchy.
+    """
+    return "/" + "/".join(quote(str(segment), safe="") for segment in segments)
 
 
 def hash_password(password: str) -> str:

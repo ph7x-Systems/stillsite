@@ -39,9 +39,8 @@ Product direction has three pillars:
   admin), auto-deployed from `main`.
 - **Guardrails**: 10 CI checks (including accessibility, markup, dependency
   audit and static security analysis), docs anti-drift suite, secret
-  scanning, PR-only workflow and mypy strict. Nine established contexts are
-  currently required by branch protection; `Security audit` is promoted to
-  required after its first green run on `main`.
+  scanning, CodeQL, PR-only workflow and mypy strict. All ten contexts are
+  required by branch protection.
 
 ## Capability inventory
 
@@ -133,24 +132,20 @@ portable round-trip → external blog adapter → live refresh + autosave`
 
 Current queue:
 
-1. **Close the security-hardening rollout** — keep the code, repository docs
-   and public wiki aligned; run all ten CI checks; then add `Security audit`
-   to branch protection. This is a release gate, not a product capability.
-2. **Reusable-block authoring** — expand the section-kind gallery and make
+1. **Reusable-block authoring** — expand the section-kind gallery and make
    its authoring contract practical in the Theme Guide.
-3. **Comments-integration ADR** — define a provider-neutral,
+2. **Comments-integration ADR** — define a provider-neutral,
    privacy-respecting embed island that leaves every page complete without
    JavaScript.
-4. **JSON content target** — deterministic, versioned headless output using
+3. **JSON content target** — deterministic, versioned headless output using
    the same publication and language rules as HTML builds.
-5. **M7 operations** — email/notifications ADR → TOTP 2FA → on-publish
+4. **M7 operations** — email/notifications ADR → TOTP 2FA → on-publish
    webhooks → `cms doctor`.
 
 ## Definition of done for the current queue
 
 | Item | Done means |
 | --- | --- |
-| Security-hardening rollout | Adversarial regressions, dependency and static-analysis gates are green; repository docs and wiki describe the shipped controls; branch protection requires `Security audit`. |
 | Reusable-block authoring | Bundled section kinds have documented fields, examples and graceful fallback; extension hints and theme contexts agree; conformance tests cover the contract. |
 | Comments integration | An ADR fixes consent, privacy, CSP and no-JS behavior; the theme contract is provider-neutral; one fictional example passes accessibility and security gates. |
 | JSON content target | Output is deterministic and versioned; only build-eligible content appears; all configured languages, slugs, relationships and media metadata are represented; target tests are public. |
