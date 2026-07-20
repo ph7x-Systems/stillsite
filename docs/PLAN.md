@@ -269,8 +269,12 @@ tests, docs and wiki updates, per the standing gates.
 
 ## Milestone 7 — Operations
 
-- [ ] Email/notification subsystem ADR (password reset, review-requested
-      notifications)
+- [x] Email/notification ADR written
+      ([ADR-0032](adr/0032-email-and-notifications.md), proposed):
+      SMTP-only transport, optional by construction, enumeration-safe
+      reset, two explicit notification events
+- [ ] ADR-0032 implemented: users.email + password_resets migrations,
+      reset flow, review/published notifications
 - [ ] TOTP two-factor authentication
 - [ ] On-publish webhook (trigger the host's build)
 - [ ] `cms doctor`: storage, media, config, environment diagnostics
