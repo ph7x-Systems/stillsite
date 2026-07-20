@@ -5,6 +5,18 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Comments, as a contract** (M6, ADR-0031): a `[comments]` table in
+  `sardine.toml` selects a provider an activated extension registers
+  (`Extension.comments_providers`) — the core ships no provider and no
+  third-party endpoint. Every article gains a localized "Join the
+  discussion" link (the page stays complete without JavaScript) wrapped
+  in a `<site-comments>` island whose script ships same-origin from the
+  artifact; nothing may reach the provider before an explicit reader
+  action. A configured provider no activated extension offers fails the
+  build loudly; without the table, builds are byte-identical to before.
+  Conformance-tested in both bundled themes; the fictional example
+  passes the accessibility gate.
+
 - **Reference theme stylesheets cleaned to contract**: the four CSS files
   inherited from the original site import now speak English only (repo
   language rule), lose every rule for components this theme never renders

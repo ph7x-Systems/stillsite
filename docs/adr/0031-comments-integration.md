@@ -1,6 +1,6 @@
 # ADR-0031 — Comments: a provider-neutral, consent-first embed contract
 
-- **Status:** proposed
+- **Status:** accepted
 - **Date:** 2026-07-20
 
 ## Context

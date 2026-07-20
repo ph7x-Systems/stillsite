@@ -29,5 +29,15 @@
     {% for tag in article.tags %}<a href="{{ tag.url }}">#{{ tag.slug }}</a>{% endfor %}
   </nav>
   {% endif %}
+  {% if comments %}
+  {# ADR-0031: the link is the no-JS surface; the island upgrades it and
+     contacts nothing before the reader acts. #}
+  <section class="b-comments">
+    <site-comments data-thread-url="{{ comments.thread_url }}">
+      <a href="{{ comments.thread_url }}" rel="external nofollow">{{ comments.label }} <span class="ar">&rarr;</span></a>
+    </site-comments>
+  </section>
+  <script type="module" src="{{ comments.island_url }}"></script>
+  {% endif %}
 </article>
 {% endblock %}

@@ -16,6 +16,7 @@ from cms_build import build_entry_preview, build_site, create_target, urls
 from cms_cli.project import Project, load_project
 from cms_core import SOURCE_LANGUAGE, Article, Page, Role, StorageBackend, User
 from cms_core.accounts import AdminSession
+from cms_core.extensions import ExtensionError
 from cms_core.languages import TARGET_LANGUAGES
 from cms_validation import SiteContent
 from fastapi import APIRouter, Depends, Form, Request, status
@@ -105,6 +106,7 @@ async def refresh_entry_preview(request: Request, entry: Article | Page) -> str 
             preview_entry,
             media_files=project.collect_media_files(),
             now=datetime.now(UTC),
+            comments_provider=project.resolve_comments_provider(),
         )
         _write_artifact(artifact.files, Path(request.app.state.preview_dir))
         return preview_path
@@ -151,12 +153,18 @@ async def run_preview(
         return _redirect()
     async with request.app.state.preview_lock:
         content = await _site_content(request)
+        try:
+            comments_provider = project.resolve_comments_provider()
+        except ExtensionError as error:
+            _record(request, "preview", ok=False, detail=str(error))
+            return _redirect()
         artifact = await asyncio.to_thread(
             build_site,
             project.site,
             content,
             media_files=project.collect_media_files(),
             now=datetime.now(UTC),
+            comments_provider=comments_provider,
         )
         preview_dir = Path(request.app.state.preview_dir)
         pages = _write_artifact(artifact.files, preview_dir)
@@ -195,12 +203,18 @@ async def run_build(
             detail=f"validation blocked the build: {len(report.errors)} error(s)",
         )
         return _redirect()
+    try:
+        comments_provider = project.resolve_comments_provider()
+    except ExtensionError as error:
+        _record(request, "build", ok=False, detail=str(error))
+        return _redirect()
     artifact = await asyncio.to_thread(
         build_site,
         project.site,
         content,
         media_files=project.collect_media_files(),
         now=datetime.now(UTC),
+        comments_provider=comments_provider,
     )
     for extension in sorted(project.load_extensions(), key=lambda e: e.name):
         for step in extension.build_steps:

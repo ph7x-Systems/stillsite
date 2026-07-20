@@ -255,8 +255,10 @@ tests, docs and wiki updates, per the standing gates.
       contract (nine bundled kinds incl. new quote/faq/cta/gallery, both
       themes, admin suggestions, extension merge, THEME_GUIDE table,
       conformance-tested incl. unknown-kind fallback)
-- [ ] Comments-integration contract for static sites (embed islands,
-      privacy-respecting)
+- [x] Comments-integration contract ([ADR-0031](adr/0031-comments-integration.md)):
+      `[comments]` + extension-registered providers, consent-first
+      same-origin island, localized no-JS link, loud unknown-provider
+      failure, byte-identical builds without the table
 - [ ] JSON content export target (headless consumption)
 - [x] **Admin panel localization** — shipped early (ADR-0022): gettext
       catalogs (EN msgids; PT-PT/ES/FR/DE), per-user preference +
@@ -273,11 +275,9 @@ tests, docs and wiki updates, per the standing gates.
 
 ## Current execution queue
 
-1. **Comments integration ADR** — define privacy, consent, theme-island and
-   static-build boundaries before choosing adapters.
-2. **JSON content target** — export a stable, versioned contract for headless
+1. **JSON content target** — export a stable, versioned contract for headless
    consumers without weakening the HTML build.
-3. **Milestone 7 operations** — email/notifications, TOTP, on-publish
+2. **Milestone 7 operations** — email/notifications, TOTP, on-publish
    webhooks and `cms doctor`, in that order.
 
 Acceptance criteria and capability gaps are maintained in

@@ -4,7 +4,13 @@ from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _dist_version
 
 from cms_core.accounts import AdminSession, Role, User
-from cms_core.extensions import ENTRY_POINT_GROUP, Extension, ExtensionError, load_extensions
+from cms_core.extensions import (
+    ENTRY_POINT_GROUP,
+    CommentsProvider,
+    Extension,
+    ExtensionError,
+    load_extensions,
+)
 from cms_core.foreign import WordPressImport, import_wordpress_wxr
 from cms_core.languages import SOURCE_LANGUAGE, TARGET_LANGUAGES, Language
 from cms_core.media import MediaAsset
@@ -40,6 +46,7 @@ __all__ = [
     "Article",
     "ArticleContent",
     "ChecksummedContent",
+    "CommentsProvider",
     "ContentStatus",
     "Extension",
     "ExtensionError",

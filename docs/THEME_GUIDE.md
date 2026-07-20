@@ -143,3 +143,11 @@ Image contexts (`image`, `entry.thumb`) carry an optional `srcset`
 string when the project configures `[build] image_widths` (ADR-0029) —
 render it with an appropriate `sizes` attribute; ignoring it keeps
 working.
+
+Article contexts carry an optional top-level `comments` object
+(ADR-0031) when the project configures a `[comments]` provider:
+`{label, thread_url, island_url}`. Render it as a plain localized link
+to `thread_url` (the no-JS surface) wrapped in a `<site-comments>`
+element, plus a module script for the same-origin `island_url` — the
+island must contact nothing before an explicit reader action. Ignoring
+the key keeps working, like `srcset`.

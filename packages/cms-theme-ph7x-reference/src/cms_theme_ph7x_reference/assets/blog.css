@@ -116,6 +116,11 @@
 .b-cta{display:inline-block;margin-top:20px;font-size:.85rem;color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(216,207,192,.32);padding-bottom:2px}
 .b-cta:hover{border-color:var(--accent)}
 
+/* comments (ADR-0031): a quiet closing block — link first, island second */
+.b-comments{margin-top:48px;padding-top:34px;border-top:1px solid var(--line)}
+.b-comments a{color:var(--head);font-size:.95rem;border-bottom:1px solid var(--line-2);padding-bottom:3px;transition:color .3s,border-color .3s}
+.b-comments a:hover{color:var(--accent);border-color:var(--accent)}
+
 .b-more{max-width:var(--bw);margin:0 auto;padding:110px 0 0}
 .b-more h2{max-width:var(--bw);margin:0 auto 30px;padding:0 28px;font-family:var(--serif);font-size:1.6rem;font-weight:300;color:var(--head)}
 

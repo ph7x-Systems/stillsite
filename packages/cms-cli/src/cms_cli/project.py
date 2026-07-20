@@ -4,9 +4,9 @@ import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
-from cms_build import SiteConfig, register_target, register_theme
+from cms_build import CommentsSettings, SiteConfig, register_target, register_theme
 from cms_core import Language
-from cms_core.extensions import Extension, load_extensions
+from cms_core.extensions import CommentsProvider, Extension, ExtensionError, load_extensions
 from cms_core.storage import StorageBackend, create_storage, register_backend
 from cms_validation import SiteContent
 
@@ -36,6 +36,21 @@ class Project:
             for name, factory in extension.themes.items():
                 register_theme(name, factory)  # type: ignore[arg-type]
         return extensions
+
+    def resolve_comments_provider(self) -> CommentsProvider | None:
+        """The provider ``[comments]`` names, from an activated extension
+        (ADR-0031). None without the table; loud when the name resolves to
+        nothing — a configured integration must never vanish silently."""
+        settings = self.site.comments
+        if settings is None:
+            return None
+        for extension in sorted(self.load_extensions(), key=lambda e: e.name):
+            provider = extension.comments_providers.get(settings.provider)
+            if provider is not None:
+                return provider
+        raise ExtensionError(
+            f"comments provider {settings.provider!r} is not offered by any activated extension"
+        )
 
     def open_storage(self) -> StorageBackend:
         return create_storage(self.storage_url)
@@ -91,6 +106,7 @@ def load_project(directory: Path) -> Project:
         footer_text=site_data.get("footer_text"),
         admin_url=site_data.get("admin_url"),
         redirects=data.get("redirects", {}),
+        comments=CommentsSettings(**data["comments"]) if data.get("comments") else None,
     )
 
     storage_url = data.get("storage", {}).get("url", "sqlite:///content.sqlite3")

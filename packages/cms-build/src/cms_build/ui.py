@@ -31,6 +31,13 @@ DEFAULT_LABELS: dict[str, dict[Language, str]] = {
         Language.FR: "Admin",
         Language.DE: "Admin",
     },
+    "comments": {
+        Language.EN: "Join the discussion",
+        Language.PT_PT: "Participar na discussão",
+        Language.ES: "Únete a la conversación",
+        Language.FR: "Rejoindre la discussion",
+        Language.DE: "An der Diskussion teilnehmen",
+    },
     "view-cards": {
         Language.EN: "Cards",
         Language.PT_PT: "Cartões",

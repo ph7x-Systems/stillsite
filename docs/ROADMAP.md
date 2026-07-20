@@ -93,7 +93,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | --- | --- | --- |
 | SEO: canonical, hreflang, Open Graph, JSON-LD, sitemap, RSS | ✅ in every build | — |
 | Search | ✅ client-side index island | — |
-| Comments | ❌ | 🔜 contract fixed by [ADR-0031](adr/0031-comments-integration.md) (proposed): provider-neutral, consent-first embed island; implementation next (M6) |
+| Comments | ✅ contract shipped ([ADR-0031](adr/0031-comments-integration.md)): `[comments]` + extension-registered providers, consent-first island, no-JS link, byte-identical builds without it | Real provider packages live outside the core |
 | Redirects | ✅ `[redirects]` map: real 301s on SWA/nginx + meta-refresh fallback pages for any host | — |
 | Localized 404 / error pages | ✅ | — |
 | Multiple sites per install | ❌ one project = one site | out of scope before 1.0 |
@@ -129,23 +129,19 @@ Completed M6 foundation:
 
 `extension contract → menu manager → image derivatives → redirects →
 portable round-trip → external blog adapter → live refresh + autosave →
-reusable-block gallery`
+reusable-block gallery → comments contract (ADR-0031)`
 
 Current queue:
 
-1. **Comments-integration ADR** — define a provider-neutral,
-   privacy-respecting embed island that leaves every page complete without
-   JavaScript.
-2. **JSON content target** — deterministic, versioned headless output using
+1. **JSON content target** — deterministic, versioned headless output using
    the same publication and language rules as HTML builds.
-3. **M7 operations** — email/notifications ADR → TOTP 2FA → on-publish
+2. **M7 operations** — email/notifications ADR → TOTP 2FA → on-publish
    webhooks → `cms doctor`.
 
 ## Definition of done for the current queue
 
 | Item | Done means |
 | --- | --- |
-| Comments integration | An ADR fixes consent, privacy, CSP and no-JS behavior; the theme contract is provider-neutral; one fictional example passes accessibility and security gates. |
 | JSON content target | Output is deterministic and versioned; only build-eligible content appears; all configured languages, slugs, relationships and media metadata are represented; target tests are public. |
 | M7 operations | Recovery and notifications have an explicit delivery contract; 2FA is role-safe; webhooks are signed/retryable; `cms doctor` reports storage, media, configuration and environment health. |
 

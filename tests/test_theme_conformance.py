@@ -167,3 +167,27 @@ def test_unknown_section_kinds_degrade_gracefully(theme: Theme) -> None:
     html = artifact.files["odd/index.html"].decode("utf-8")
     assert "XKmysterynoteQZ" in html, theme.name
     assert "section-mystery-widget" in html, theme.name
+
+
+def test_comments_contract_renders_in_both_themes(theme: Theme) -> None:
+    """ADR-0031: with a provider configured, every article gets the no-JS
+    link plus the same-origin island — and nothing references a third
+    party at load time."""
+    from cms_build import CommentsSettings, build_site
+    from cms_build.builder import COMMENTS_ISLAND_PATH
+    from cms_core import CommentsProvider
+
+    config = CONFIG.model_copy(
+        update={"comments": CommentsSettings(provider="fishbowl", url="https://discuss.example")}
+    )
+    provider = CommentsProvider(
+        island_js=b"customElements.define('site-comments', class extends HTMLElement {});\n",
+        thread_url=lambda base, page: f"{base.rstrip('/')}/threads?page={page}",
+    )
+    artifact = build_site(config, make_content(), theme=theme, comments_provider=provider)
+    assert artifact.files[COMMENTS_ISLAND_PATH] == provider.island_js
+    article = artifact.files["blog/alpha/index.html"].decode("utf-8")
+    assert "https://discuss.example/threads?page=" in article
+    assert "<site-comments" in article
+    assert f'type="module" src="/{COMMENTS_ISLAND_PATH}?v=' in article
+    assert 'script type="module" src="https://' not in article

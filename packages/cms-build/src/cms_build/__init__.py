@@ -4,7 +4,7 @@ from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _dist_version
 
 from cms_build.builder import Artifact, build_entry_preview, build_site
-from cms_build.config import SiteConfig
+from cms_build.config import CommentsSettings, SiteConfig
 from cms_build.head import Head, build_head
 from cms_build.markdown import render_markdown
 from cms_build.targets import Target, available_targets, create_target, register_target
@@ -17,6 +17,7 @@ except PackageNotFoundError:  # running from a source tree without install
 
 __all__ = [
     "Artifact",
+    "CommentsSettings",
     "Head",
     "SiteConfig",
     "Target",

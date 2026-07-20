@@ -20,5 +20,15 @@
     {% endfor %}
   </ul>
   {% endif %}
+  {% if comments %}
+  {# ADR-0031: the link is the no-JS surface; the island upgrades it and
+     contacts nothing before the reader acts. #}
+  <section class="comments">
+    <site-comments data-thread-url="{{ comments.thread_url }}">
+      <a href="{{ comments.thread_url }}" rel="external nofollow">{{ comments.label }}</a>
+    </site-comments>
+  </section>
+  <script type="module" src="{{ comments.island_url }}"></script>
+  {% endif %}
 </article>
 {% endblock %}

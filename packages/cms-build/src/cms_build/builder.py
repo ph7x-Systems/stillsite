@@ -17,6 +17,7 @@ from cms_core import (
     SOURCE_LANGUAGE,
     Article,
     ArticleContent,
+    CommentsProvider,
     ContentStatus,
     Language,
     Page,
@@ -108,6 +109,10 @@ def _chunk[T](items: list[T], size: int) -> list[list[T]]:
     return [items[start : start + size] for start in range(0, len(items), size)] or [[]]
 
 
+COMMENTS_ISLAND_PATH = "assets/comments-island.js"
+"""ADR-0031: where the provider's vendored island ships in the artifact."""
+
+
 class _SiteBuilder:
     def __init__(
         self,
@@ -116,6 +121,7 @@ class _SiteBuilder:
         theme: Theme,
         media_files: Mapping[str, bytes],
         now: datetime,
+        comments_provider: CommentsProvider | None = None,
     ) -> None:
         self.config = config
         self.theme = theme
@@ -126,6 +132,12 @@ class _SiteBuilder:
         self.menu_items = sorted(content.menu, key=lambda item: (item.position, item.id))
         self.media_by_id = {asset.id: asset for asset in content.media}
         self.theme_assets = dict(theme.assets())
+        # ADR-0031: the provider's island is a same-origin artifact asset,
+        # hashed and shipped like any theme asset — no CDN, no third-party
+        # request on page load.
+        self.comments_provider = comments_provider if config.comments is not None else None
+        if self.comments_provider is not None:
+            self.theme_assets[COMMENTS_ISLAND_PATH] = self.comments_provider.island_js
         self.asset_urls = _asset_urls(self.theme_assets)
         self.media_files = dict(media_files)
         # ADR-0029: opt-in responsive derivatives extend the media set.
@@ -326,6 +338,16 @@ class _SiteBuilder:
             "featured": article.featured,
             "fields": dict(sorted(article.fields.items())),
         }
+        if self.comments_provider is not None and self.config.comments is not None:
+            # ADR-0031: a plain localized link is the no-JS surface; the
+            # island upgrades it and contacts nothing before the reader acts.
+            context["comments"] = {
+                "label": ui_label(self.config, "comments", language),
+                "thread_url": self.comments_provider.thread_url(
+                    str(self.config.comments.url), urls.absolute(self.config, path)
+                ),
+                "island_url": self.asset_urls[COMMENTS_ISLAND_PATH],
+            }
         self._render("article", path, context)
 
     def _category_context(self, article: Article, language: Language) -> dict[str, str] | None:
@@ -614,6 +636,7 @@ def build_site(
     theme: Theme | None = None,
     media_files: Mapping[str, bytes] | None = None,
     now: datetime | None = None,
+    comments_provider: CommentsProvider | None = None,
 ) -> Artifact:
     """Build the site. ``now`` is the scheduling clock (ADR-0024): the
     build stays deterministic for the same content and the same ``now``.
@@ -622,7 +645,9 @@ def build_site(
     an entry actually carries ``publish_at``."""
     active_theme = theme or create_theme(config.theme)
     moment = now or datetime.now(tz=UTC)
-    return _SiteBuilder(config, content, active_theme, media_files or {}, moment).build()
+    return _SiteBuilder(
+        config, content, active_theme, media_files or {}, moment, comments_provider
+    ).build()
 
 
 def build_entry_preview(
@@ -634,6 +659,7 @@ def build_entry_preview(
     theme: Theme | None = None,
     media_files: Mapping[str, bytes] | None = None,
     now: datetime | None = None,
+    comments_provider: CommentsProvider | None = None,
 ) -> Artifact:
     """Render one saved or unsaved entry through the active real theme.
 
@@ -643,9 +669,9 @@ def build_entry_preview(
     """
     active_theme = theme or create_theme(config.theme)
     moment = now or datetime.now(tz=UTC)
-    return _SiteBuilder(config, content, active_theme, media_files or {}, moment).preview_entry(
-        entry, language
-    )
+    return _SiteBuilder(
+        config, content, active_theme, media_files or {}, moment, comments_provider
+    ).preview_entry(entry, language)
 
 
 def _reading_minutes(markdown: str) -> int:

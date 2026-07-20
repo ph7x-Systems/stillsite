@@ -15,6 +15,22 @@ from pydantic import BaseModel, Field, HttpUrl, JsonValue, field_validator
 SLUG = r"^[a-z0-9]+(?:-[a-z0-9]+)*$"
 
 
+class CommentsSettings(BaseModel):
+    """The ``[comments]`` table (ADR-0031): which extension-registered
+    provider carries the discussions, and where they live. HTTPS only —
+    a comments endpoint is third-party code territory."""
+
+    provider: str = Field(min_length=1)
+    url: HttpUrl
+
+    @field_validator("url")
+    @classmethod
+    def _https_only(cls, value: HttpUrl) -> HttpUrl:
+        if value.scheme != "https":
+            raise ValueError("the comments URL must use https")
+        return value
+
+
 class SiteConfig(BaseModel):
     name: str = Field(min_length=1)
     base_url: HttpUrl
@@ -33,6 +49,9 @@ class SiteConfig(BaseModel):
     redirects: dict[str, str] = Field(default_factory=dict)
     """Old path -> new URL (M6): targets emit real 301s, the builder
     ships meta-refresh fallback pages so every host redirects."""
+    comments: CommentsSettings | None = None
+    """ADR-0031: absent means no comments anywhere — builds are
+    byte-identical to a comments-less configuration."""
     """When set, the footer links to the admin panel (dimmed, nofollow)."""
 
     def category_label(self, slug: str, language: Language) -> str:

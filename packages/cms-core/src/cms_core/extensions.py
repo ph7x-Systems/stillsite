@@ -24,6 +24,19 @@ BuildStep = Callable[..., None]
 
 
 @dataclass(frozen=True)
+class CommentsProvider:
+    """A consent-first comments integration an extension offers (ADR-0031).
+
+    The island script is vendored bytes served same-origin from the built
+    artifact — never a CDN reference — and must make no request before an
+    explicit reader action. ``thread_url`` maps ``(configured base URL,
+    page URL)`` to the entry's discussion URL, deterministically."""
+
+    island_js: bytes
+    thread_url: Callable[[str, str], str]
+
+
+@dataclass(frozen=True)
 class Extension:
     """Everything a package may contribute; every field optional."""
 
@@ -37,6 +50,9 @@ class Extension:
     """A ``typer.Typer`` mounted as ``cms x <name>``."""
     section_kinds: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
     """kind -> suggested field names, advertised in the admin editor."""
+    comments_providers: Mapping[str, CommentsProvider] = field(default_factory=dict)
+    """name -> provider (ADR-0031); selected by ``[comments]`` in
+    ``sardine.toml``, never active by mere installation."""
 
 
 class ExtensionError(RuntimeError):

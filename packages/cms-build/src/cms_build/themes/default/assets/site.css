@@ -58,6 +58,13 @@ img { max-width: 100%; height: auto; }
 .entries { list-style: none; padding: 0; }
 .entries li { padding-block: 1rem; border-bottom: 1px solid var(--line); }
 
+/* comments (ADR-0031) */
+.comments {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
 /* Section-kind gallery (THEME_GUIDE) */
 .kicker {
   text-transform: uppercase;

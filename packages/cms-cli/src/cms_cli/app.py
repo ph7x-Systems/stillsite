@@ -9,6 +9,7 @@ from typing import Annotated, ClassVar
 import typer
 from cms_build import build_site, create_target, create_theme
 from cms_build.builder import Artifact
+from cms_core.extensions import ExtensionError
 from cms_validation import Report, RuleSet, ValidationContext, default_ruleset
 
 from cms_cli.project import PROJECT_FILE, Project, load_project
@@ -137,12 +138,18 @@ def _build_artifact(project: Project) -> Artifact:
     extensions = project.load_extensions()
     content = project.load_content()
     theme = create_theme(project.site.theme, overrides=project.theme_overrides)
+    try:
+        comments_provider = project.resolve_comments_provider()
+    except ExtensionError as error:
+        typer.echo(f"error: {error}", err=True)
+        raise typer.Exit(code=2) from error
     artifact = build_site(
         project.site,
         content,
         theme=theme,
         media_files=project.collect_media_files(),
         now=datetime.now(tz=UTC),
+        comments_provider=comments_provider,
     )
     # ADR-0028: deterministic post-artifact steps, ordered by extension name.
     for extension in sorted(extensions, key=lambda e: e.name):
