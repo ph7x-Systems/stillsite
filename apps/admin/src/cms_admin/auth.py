@@ -7,6 +7,9 @@ requests, a double-submit token on the login form itself, and per-process
 rate limiting on failed logins.
 """
 
+import asyncio
+import secrets
+from collections import OrderedDict
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
@@ -17,10 +20,21 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 
 from cms_admin.db import StorageExecutor
-from cms_admin.security import new_token, token_digest, verify_password
+from cms_admin.security import (
+    MAX_PASSWORD_LENGTH,
+    dummy_password_hash,
+    hash_password,
+    new_token,
+    password_needs_rehash,
+    token_digest,
+    verify_password,
+)
 
-SESSION_COOKIE = "sardine_session"
-LOGIN_CSRF_COOKIE = "sardine_login_csrf"
+SESSION_COOKIE = "__Host-sardine_session"
+LOGIN_CSRF_COOKIE = "__Host-sardine_login_csrf"
+LOCAL_SESSION_COOKIE = "sardine_session"
+LOCAL_LOGIN_CSRF_COOKIE = "sardine_login_csrf"
+LOGIN_CSRF_TTL_SECONDS = 600
 
 # Least-privilege ladder (cms_core.accounts.Role docstring).
 ROLE_ORDER = (Role.EDITOR, Role.REVIEWER, Role.PUBLISHER, Role.ADMIN)
@@ -28,24 +42,39 @@ ROLE_ORDER = (Role.EDITOR, Role.REVIEWER, Role.PUBLISHER, Role.ADMIN)
 router = APIRouter()
 
 
+def session_cookie_name(request: Request) -> str:
+    return SESSION_COOKIE if request.app.state.settings.cookie_secure else LOCAL_SESSION_COOKIE
+
+
+def login_csrf_cookie_name(request: Request) -> str:
+    return (
+        LOGIN_CSRF_COOKIE if request.app.state.settings.cookie_secure else LOCAL_LOGIN_CSRF_COOKIE
+    )
+
+
 @dataclass
 class LoginRateLimiter:
-    """Per-process failed-login limiter, keyed by username and client host."""
+    """Bounded per-process limiter for both client and account keys."""
 
     max_failures: int = 5
+    max_keys: int = 10_000
     window: timedelta = timedelta(minutes=15)
-    _failures: dict[str, list[datetime]] = field(default_factory=dict)
+    _failures: OrderedDict[str, list[datetime]] = field(default_factory=OrderedDict)
 
     def is_blocked(self, key: str, now: datetime) -> bool:
         recent = [moment for moment in self._failures.get(key, []) if now - moment < self.window]
         if recent:
             self._failures[key] = recent
+            self._failures.move_to_end(key)
         else:
             self._failures.pop(key, None)
         return len(recent) >= self.max_failures
 
     def record_failure(self, key: str, now: datetime) -> None:
+        if key not in self._failures and len(self._failures) >= self.max_keys:
+            self._failures.popitem(last=False)
         self._failures.setdefault(key, []).append(now)
+        self._failures.move_to_end(key)
 
     def reset(self, key: str) -> None:
         self._failures.pop(key, None)
@@ -63,7 +92,7 @@ def _login_redirect() -> HTTPException:
 
 
 async def current_session(request: Request) -> tuple[User, AdminSession]:
-    token = request.cookies.get(SESSION_COOKIE)
+    token = request.cookies.get(session_cookie_name(request))
     if not token:
         raise _login_redirect()
     digest = token_digest(token)
@@ -100,14 +129,18 @@ async def enforce_csrf(
     form = await request.form()
     token = form.get("csrf_token")
     _, session = user_session
-    if not isinstance(token, str) or token != session.csrf_token:
+    if not isinstance(token, str) or not secrets.compare_digest(token, session.csrf_token):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="invalid CSRF token")
     return user_session
 
 
-def _client_key(request: Request, username: str) -> str:
+def _client_key(request: Request) -> str:
     host = request.client.host if request.client else "unknown"
-    return f"{username.lower()}|{host}"
+    return f"client:{host}"
+
+
+def _account_key(username: str) -> str:
+    return f"account:{username.strip().lower()}"
 
 
 @router.get("/login")
@@ -117,11 +150,13 @@ async def login_form(request: Request) -> object:
         request, "login.html.j2", {"error": None, "login_csrf": csrf}
     )
     response.set_cookie(
-        LOGIN_CSRF_COOKIE,
+        login_csrf_cookie_name(request),
         csrf,
         httponly=True,
         samesite="strict",
         secure=request.app.state.settings.cookie_secure,
+        max_age=LOGIN_CSRF_TTL_SECONDS,
+        path="/",
     )
     return response
 
@@ -134,20 +169,14 @@ async def login_submit(
     login_csrf: str = Form(...),
 ) -> object:
     settings = request.app.state.settings
-    if request.cookies.get(LOGIN_CSRF_COOKIE) != login_csrf:
+    login_cookie = request.cookies.get(login_csrf_cookie_name(request))
+    if not login_cookie or not secrets.compare_digest(login_cookie, login_csrf):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="invalid CSRF token")
     now = datetime.now(UTC)
     limiter: LoginRateLimiter = request.app.state.login_limiter
-    key = _client_key(request, username)
-    if limiter.is_blocked(key, now):
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="too many failed attempts; try again later",
-        )
-    db = get_db(request)
-    user = await db.run(lambda storage: storage.load_user(username))
-    if user is None or not verify_password(user.password_hash, password):
-        limiter.record_failure(key, now)
+    client_key = _client_key(request)
+    if len(username) > 64 or len(password) > MAX_PASSWORD_LENGTH:
+        limiter.record_failure(client_key, now)
         response = request.app.state.templates.TemplateResponse(
             request,
             "login.html.j2",
@@ -155,7 +184,41 @@ async def login_submit(
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
         return response
-    limiter.reset(key)
+    account_key = _account_key(username)
+    if limiter.is_blocked(client_key, now) or limiter.is_blocked(account_key, now):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="too many failed attempts; try again later",
+        )
+    db = get_db(request)
+    user = await db.run(lambda storage: storage.load_user(username))
+    candidate_hash = user.password_hash if user is not None else dummy_password_hash()
+    password_slots: asyncio.Semaphore = request.app.state.password_slots
+    if password_slots.locked():
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="too many concurrent sign-in attempts; try again later",
+        )
+    async with password_slots:
+        password_valid = await asyncio.to_thread(verify_password, candidate_hash, password)
+    if user is None or not password_valid:
+        limiter.record_failure(client_key, now)
+        limiter.record_failure(account_key, now)
+        response = request.app.state.templates.TemplateResponse(
+            request,
+            "login.html.j2",
+            {"error": "Wrong username or password.", "login_csrf": login_csrf},
+            status_code=status.HTTP_401_UNAUTHORIZED,
+        )
+        return response
+    # A valid account clears its own failures, but not the client-wide
+    # history: otherwise any known low-privilege account could reset the
+    # limiter between guesses against a privileged account.
+    limiter.reset(account_key)
+    if password_needs_rehash(user.password_hash):
+        updated_hash = await asyncio.to_thread(hash_password, password)
+        user = user.model_copy(update={"password_hash": updated_hash})
+        await db.run(lambda storage: storage.save_user(user))
     token = new_token()
     session = AdminSession(
         token_hash=token_digest(token),
@@ -167,14 +230,21 @@ async def login_submit(
     await db.run(lambda storage: storage.delete_expired_sessions(now))
     response = RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(
-        SESSION_COOKIE,
+        session_cookie_name(request),
         token,
         max_age=int(settings.session_ttl.total_seconds()),
         httponly=True,
         samesite="strict",
         secure=settings.cookie_secure,
+        path="/",
     )
-    response.delete_cookie(LOGIN_CSRF_COOKIE)
+    response.delete_cookie(
+        login_csrf_cookie_name(request),
+        path="/",
+        secure=settings.cookie_secure,
+        httponly=True,
+        samesite="strict",
+    )
     return response
 
 
@@ -207,5 +277,11 @@ async def logout(
     _, session = user_session
     await get_db(request).run(lambda storage: storage.delete_session(session.token_hash))
     response = RedirectResponse("/login", status_code=status.HTTP_303_SEE_OTHER)
-    response.delete_cookie(SESSION_COOKIE)
+    response.delete_cookie(
+        session_cookie_name(request),
+        path="/",
+        secure=request.app.state.settings.cookie_secure,
+        httponly=True,
+        samesite="strict",
+    )
     return response

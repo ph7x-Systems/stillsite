@@ -85,10 +85,22 @@ def test_login_page_renders_under_the_policy(tmp_path: Path) -> None:
 
 def test_preview_mount_allows_same_origin_framing_only(tmp_path: Path) -> None:
     """ADR-0027: the editor frames /preview/; the admin itself never frames."""
+    (tmp_path / "media").mkdir()
     with TestClient(_app(tmp_path), base_url="https://testserver") as client:
         admin = client.get("/login")
+        anonymous = client.get("/preview/anything/", follow_redirects=False)
+        csrf = admin.cookies["__Host-sardine_login_csrf"]
+        client.post(
+            "/login",
+            data={"username": "ana", "password": PASSWORD, "login_csrf": csrf},
+        )
         preview = client.get("/preview/anything/", follow_redirects=False)
+        media = client.get("/media-files/private.png", follow_redirects=False)
     assert "frame-ancestors 'none'" in admin.headers["Content-Security-Policy"]
     assert admin.headers["X-Frame-Options"] == "DENY"
+    assert anonymous.status_code == 303
+    assert anonymous.headers["location"] == "/login"
+    assert preview.status_code == 404
+    assert media.status_code == 404
     assert "frame-ancestors 'self'" in preview.headers["Content-Security-Policy"]
     assert preview.headers["X-Frame-Options"] == "SAMEORIGIN"

@@ -65,6 +65,12 @@ def test_wordpress_wxr_rejects_dtds_and_entities() -> None:
     with pytest.raises(ValueError, match="DTD or entity"):
         import_wordpress_wxr(payload)
 
+    encoded = (
+        payload.decode("utf-8").replace('encoding="UTF-8"', 'encoding="UTF-16"').encode("utf-16")
+    )
+    with pytest.raises(ValueError, match="DTD or entity"):
+        import_wordpress_wxr(encoded)
+
 
 def test_wordpress_wxr_collision_and_missing_date_fallback_are_deterministic() -> None:
     payload = WXR.replace(

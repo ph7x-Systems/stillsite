@@ -4,9 +4,45 @@ import json
 
 import pytest
 from cms_build import Artifact, SiteConfig, available_targets, create_target, register_target
-from cms_core import Language
+from cms_core import Language, MenuItem
 
 CONFIG = SiteConfig(name="Aurora", base_url="https://example.com", languages=(Language.PT_PT,))
+
+
+@pytest.mark.parametrize(
+    "url",
+    (
+        "javascript:alert(1)",
+        "data:text/html,<script>alert(1)</script>",
+        "//attacker.example/path",
+        "/../outside",
+        "https://safe.example/line\nbreak",
+    ),
+)
+def test_navigation_urls_reject_active_or_ambiguous_values(url: str) -> None:
+    with pytest.raises(ValueError):
+        MenuItem(id="unsafe", url=url)
+    with pytest.raises(ValueError):
+        SiteConfig(name="Unsafe", base_url="https://example.com", admin_url=url)
+
+
+@pytest.mark.parametrize(
+    ("source", "destination"),
+    (
+        ("/../../nginx.conf", "/safe/"),
+        ("/safe/;", "/safe/"),
+        ("/old/", "javascript:alert(1)"),
+        ("/old/", "/safe/; add_header X-Owned yes"),
+        ("/old/", "https://safe.example/$request_uri"),
+    ),
+)
+def test_redirects_reject_path_and_nginx_directive_injection(source: str, destination: str) -> None:
+    with pytest.raises(ValueError):
+        SiteConfig(
+            name="Unsafe",
+            base_url="https://example.com",
+            redirects={source: destination},
+        )
 
 
 def test_builtin_targets_registered() -> None:

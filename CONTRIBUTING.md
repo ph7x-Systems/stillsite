@@ -7,8 +7,10 @@
 3. Before opening a PR: lint, type checking and tests must pass locally.
 4. `main` is fully protected, **admins included**: no direct pushes, no
    force-pushes, no deletion. Every change lands via pull request with all
-   six CI checks green, linear history (squash or rebase merge) and resolved
-   conversations. Branches are deleted on merge.
+   applicable CI checks green, linear history (squash or rebase merge) and resolved
+   conversations. Branches are deleted on merge. The suite currently defines
+   ten checks; branch protection promotes a new context only after a green
+   `main` run proves its stable name.
 
 ## Project rules
 
@@ -19,10 +21,13 @@
 - Architecture decisions recorded in `docs/adr/`.
 - WCAG 2.2 AA accessibility as the baseline for the admin panel and reference theme.
 - **Docs move with the code**: any change that affects behavior, structure or
-  plans updates README/PLAN/ADRs in the same commit. `tests/test_docs.py`
+  plans updates README/PLAN/ADRs and the public wiki in the same delivery
+  chain. `tests/test_docs.py`
   compares the docs against the code in CI, so drift fails the build — when
   adding a documented fact worth guarding, add its check there too. Keep each
   fact in one authoritative document and link to it instead of repeating it.
+  If the wiki cannot be synchronized before the PR opens, record it explicitly
+  as a blocking rollout item; do not silently omit it.
 
 ## Sharing themes, targets, backends and plugins
 

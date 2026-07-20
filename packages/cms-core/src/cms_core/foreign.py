@@ -9,11 +9,14 @@ from __future__ import annotations
 
 import re
 import unicodedata
-import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from html.parser import HTMLParser
+from typing import Any
+
+from defusedxml import ElementTree as ET
+from defusedxml.common import DefusedXmlException
 
 from cms_core.models import Article, ArticleContent, new_article
 from cms_core.states import ContentStatus
@@ -109,7 +112,7 @@ def _slug(value: str, fallback: str) -> str:
     return slug or fallback
 
 
-def _date(item: ET.Element) -> datetime:
+def _date(item: Any) -> datetime:
     wordpress_date = (item.findtext(f"{{{WP_NS}}}post_date_gmt") or "").strip()
     if wordpress_date and wordpress_date != "0000-00-00 00:00:00":
         try:
@@ -150,6 +153,8 @@ def import_wordpress_wxr(payload: bytes | str) -> WordPressImport:
         raise ValueError("WXR must not contain DTD or entity declarations")
     try:
         root = ET.fromstring(raw)
+    except DefusedXmlException as error:
+        raise ValueError("WXR must not contain DTD or entity declarations") from error
     except ET.ParseError as error:
         raise ValueError(f"invalid WXR XML: {error}") from error
 

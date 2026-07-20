@@ -12,12 +12,15 @@ ADRs.
 - [x] Repository published to GitHub (`ph7x-Systems/sardine-cms`, public)
 - [x] License: Apache-2.0 (`LICENSE`, `NOTICE`, ADR-0002)
 - [x] Python toolchain: `pyproject.toml`, lint (ruff), type checking (mypy), pytest
-- [x] GitHub Actions CI: nine required checks covering lint, types, tests,
+- [x] GitHub Actions CI: ten checks covering lint, types, tests,
       backend conformance, example build, accessibility/markup, docs links
-      and secret scanning
+      secret scanning and dependency/static security audit
 - [x] ADR-0001: base architecture (Python core + FastAPI admin)
-- [x] Branch protection on `main`: force-pushes and deletions blocked; all nine
-      CI checks required (strict, up-to-date branches) for pull requests
+- [x] Branch protection on `main`: force-pushes and deletions blocked; nine
+      established CI checks required (strict, up-to-date branches) for pull
+      requests
+- [ ] Promote the new `Security audit` context to required after its first
+      green run on `main`, bringing branch protection to all ten CI checks
 
 ## Milestone 1 — Content core
 
@@ -267,13 +270,16 @@ tests, docs and wiki updates, per the standing gates.
 
 ## Current execution queue
 
-1. **Reusable-block authoring** — document and demonstrate how section kinds
+1. **Security-hardening rollout** — merge the adversarial fixes and CI
+   controls, synchronize repository documentation and the public wiki, then
+   require the new `Security audit` context in branch protection.
+2. **Reusable-block authoring** — document and demonstrate how section kinds
    become a reusable editorial gallery.
-2. **Comments integration ADR** — define privacy, consent, theme-island and
+3. **Comments integration ADR** — define privacy, consent, theme-island and
    static-build boundaries before choosing adapters.
-3. **JSON content target** — export a stable, versioned contract for headless
+4. **JSON content target** — export a stable, versioned contract for headless
    consumers without weakening the HTML build.
-4. **Milestone 7 operations** — email/notifications, TOTP, on-publish
+5. **Milestone 7 operations** — email/notifications, TOTP, on-publish
    webhooks and `cms doctor`, in that order.
 
 Acceptance criteria and capability gaps are maintained in
@@ -388,7 +394,9 @@ and themes.
 
 Security is part of each milestone's definition of done — threat model,
 controls in force and per-milestone gates are documented in
-[SECURITY_STRATEGY.md](SECURITY_STRATEGY.md).
+[SECURITY_STRATEGY.md](SECURITY_STRATEGY.md). A capability is not complete
+until hostile-input tests cover its new trust boundaries and the security
+documentation and public wiki describe its operational constraints.
 
 ## Going public — when and how
 

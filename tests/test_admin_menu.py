@@ -29,7 +29,7 @@ def _sign_in(client: TestClient) -> str:
         data={
             "username": "ana",
             "password": PASSWORD,
-            "login_csrf": form.cookies["sardine_login_csrf"],
+            "login_csrf": form.cookies["__Host-sardine_login_csrf"],
         },
     )
     return client.get("/").text.split('name="csrf_token" value="')[1].split('"')[0]

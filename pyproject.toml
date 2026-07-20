@@ -9,6 +9,9 @@ dev = [
     "httpx2>=0.5",  # fastapi.testclient transport (httpx is deprecated there)
     "types-PyMySQL>=1.1",  # stubs for the mysql backend
     "pillow>=10.4",  # image-derivative tests (cms-build[images])
+    "pip-audit>=2.10",
+    "bandit>=1.9",
+    "types-defusedxml>=0.7",
 ]
 
 [tool.ruff]

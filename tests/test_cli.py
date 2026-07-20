@@ -138,6 +138,50 @@ def test_admin_create_user_provisions_an_account(tmp_path: Path) -> None:
     assert duplicate.exit_code == 3
 
 
+def test_admin_force_reset_enforces_password_policy_and_revokes_sessions(tmp_path: Path) -> None:
+    from datetime import UTC, datetime, timedelta
+
+    from cms_admin.security import verify_password
+    from cms_core import AdminSession
+
+    runner.invoke(app, ["init", str(tmp_path), "--name", "Demo"])
+    created = runner.invoke(
+        app,
+        ["admin", "create-user", "chef", "-p", str(tmp_path)],
+        input="tinned-fish-forever\ntinned-fish-forever\n",
+    )
+    assert created.exit_code == 0
+    project = load_project(tmp_path)
+    with project.open_storage() as storage:
+        storage.save_session(
+            AdminSession(
+                token_hash="old-session",
+                username="chef",
+                csrf_token="old-csrf",
+                expires_at=datetime.now(UTC) + timedelta(hours=1),
+            )
+        )
+
+    weak = runner.invoke(
+        app,
+        ["admin", "create-user", "chef", "-p", str(tmp_path), "--force"],
+        input="short\nshort\n",
+    )
+    assert weak.exit_code == 2
+
+    reset = runner.invoke(
+        app,
+        ["admin", "create-user", "chef", "-p", str(tmp_path), "--force"],
+        input="a-new-secure-password\na-new-secure-password\n",
+    )
+    assert reset.exit_code == 0
+    with project.open_storage() as storage:
+        user = storage.load_user("chef")
+        assert user is not None
+        assert verify_password(user.password_hash, "a-new-secure-password")
+        assert storage.load_session("old-session") is None
+
+
 def test_preview_serves_the_site_404_page(tmp_path: Path) -> None:
     """A missing path gets the site's own 404 page with status 404 — never
     the dev server's bare error page (production targets do the same)."""

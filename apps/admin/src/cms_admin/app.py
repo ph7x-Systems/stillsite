@@ -12,13 +12,14 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from cms_admin.articles import router as articles_router
-from cms_admin.auth import get_db
+from cms_admin.auth import current_session, get_db
 from cms_admin.auth import router as auth_router
 from cms_admin.dashboard import router as dashboard_router
 from cms_admin.db import StorageExecutor
@@ -65,7 +66,14 @@ SECURITY_HEADERS = {
     "X-Frame-Options": "DENY",
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+    "Strict-Transport-Security": "max-age=31536000",
+    "Cache-Control": "no-store",
+    "Pragma": "no-cache",
 }
+
+
+def _is_private_file_path(path: str) -> bool:
+    return path == "/preview" or path.startswith(("/preview/", "/media-files/"))
 
 
 def create_app(settings: AdminSettings | None = None) -> FastAPI:
@@ -75,7 +83,14 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
 
     @app.middleware("http")
     async def _security_headers(request: Request, call_next):  # type: ignore[no-untyped-def]
-        response = await call_next(request)
+        response = None
+        if _is_private_file_path(request.url.path):
+            try:
+                await current_session(request)
+            except HTTPException:
+                response = RedirectResponse("/login", status_code=303)
+        if response is None:
+            response = await call_next(request)
         headers = dict(SECURITY_HEADERS)
         if request.url.path.startswith("/preview/"):
             # ADR-0027: the same-origin editor frames the preview; nothing
@@ -85,7 +100,7 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
             )
             headers["X-Frame-Options"] = "SAMEORIGIN"
         for name, value in headers.items():
-            response.headers.setdefault(name, value)
+            response.headers[name] = value
         return response
 
     app.state.settings = settings if settings is not None else AdminSettings.from_env()
@@ -102,6 +117,9 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
     )
     app.state.translations = load_catalogs()
     app.state.login_limiter = LoginRateLimiter()
+    # Argon2 is deliberately expensive. Bound concurrent work so a burst of
+    # login attempts cannot exhaust every worker thread/CPU core.
+    app.state.password_slots = asyncio.Semaphore(4)
     app.include_router(auth_router)
     app.include_router(dashboard_router)
     app.include_router(articles_router)

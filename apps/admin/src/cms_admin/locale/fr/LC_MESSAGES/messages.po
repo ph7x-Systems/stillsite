@@ -490,8 +490,14 @@ msgstr "fichier : choisissez un fichier à téléverser"
 msgid "file: could not read the image dimensions"
 msgstr "fichier : impossible de lire les dimensions de l'image"
 
-msgid "file: unsupported type — png, jpeg, gif, webp or svg"
-msgstr "fichier : type non pris en charge — png, jpeg, gif, webp ou svg"
+msgid "file: unsupported type — png, jpeg, gif or webp"
+msgstr "fichier : type non pris en charge — png, jpeg, gif ou webp"
+
+msgid "file: image dimensions exceed the pixel limit"
+msgstr "fichier : les dimensions de l’image dépassent la limite de pixels"
+
+msgid "file: a file already exists at the generated path"
+msgstr "fichier : un fichier existe déjà au chemin généré"
 
 msgid "first."
 msgstr "d'abord."
@@ -701,8 +707,8 @@ msgstr "Utilisateurs"
 msgid "You cannot delete your own account, and the last admin can neither be deleted nor demoted."
 msgstr "Vous ne pouvez pas supprimer votre propre compte, et le dernier admin ne peut être ni supprimé ni rétrogradé."
 
-msgid "at least 12 characters"
-msgstr "au moins 12 caractères"
+msgid "between 12 and 1024 characters"
+msgstr "entre 12 et 1024 caractères"
 
 msgid "delete: the last admin cannot be deleted"
 msgstr "delete : le dernier admin ne peut pas être supprimé"
@@ -713,8 +719,8 @@ msgstr "delete : vous ne pouvez pas supprimer votre propre compte"
 msgid "language: unknown language"
 msgstr "language : langue inconnue"
 
-msgid "password: at least 12 characters"
-msgstr "password : au moins 12 caractères"
+msgid "password: between 12 and 1024 characters"
+msgstr "password : entre 12 et 1024 caractères"
 
 msgid "role: the last admin cannot be demoted"
 msgstr "role : le dernier admin ne peut pas être rétrogradé"

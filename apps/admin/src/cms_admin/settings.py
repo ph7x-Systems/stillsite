@@ -12,6 +12,7 @@ from pathlib import Path
 DEFAULT_STORAGE_URL = "sqlite:///content.db"
 DEFAULT_SESSION_HOURS = 12
 DEFAULT_UPLOAD_MAX_MB = 10
+DEFAULT_UPLOAD_MAX_PIXELS = 40_000_000
 
 
 @dataclass(frozen=True, slots=True)
@@ -25,11 +26,20 @@ class AdminSettings:
     # same one `cms build` collects.
     media_dir: Path = field(default_factory=lambda: Path("media"))
     upload_max_bytes: int = DEFAULT_UPLOAD_MAX_MB * 1024 * 1024
+    upload_max_pixels: int = DEFAULT_UPLOAD_MAX_PIXELS
     # The project directory (sardine.toml) — publishing builds read it.
     project_dir: Path = field(default_factory=lambda: Path("."))
     # The publish gate: block the review→published transition on validation
     # errors for the entity. Set SARDINE_ADMIN_PUBLISH_GATE=0 to disable.
     publish_gate: bool = True
+
+    def __post_init__(self) -> None:
+        if self.session_ttl <= timedelta(0):
+            raise ValueError("session_ttl must be positive")
+        if self.upload_max_bytes <= 0:
+            raise ValueError("upload_max_bytes must be positive")
+        if self.upload_max_pixels <= 0:
+            raise ValueError("upload_max_pixels must be positive")
 
     @classmethod
     def from_env(cls) -> "AdminSettings":
@@ -46,6 +56,9 @@ class AdminSettings:
                 float(os.environ.get("SARDINE_ADMIN_UPLOAD_MAX_MB", str(DEFAULT_UPLOAD_MAX_MB)))
                 * 1024
                 * 1024
+            ),
+            upload_max_pixels=int(
+                os.environ.get("SARDINE_ADMIN_UPLOAD_MAX_PIXELS", str(DEFAULT_UPLOAD_MAX_PIXELS))
             ),
             project_dir=Path(os.environ.get("SARDINE_PROJECT_DIR", ".")),
             publish_gate=os.environ.get("SARDINE_ADMIN_PUBLISH_GATE", "1") != "0",

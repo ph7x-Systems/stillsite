@@ -15,7 +15,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 
 from cms_admin.auth import ROLE_ORDER, current_session, enforce_csrf, get_db, require_at_least
-from cms_admin.security import hash_password
+from cms_admin.security import MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH, hash_password
 
 router = APIRouter(prefix="/users")
 
@@ -74,8 +74,8 @@ async def user_create(
     name = username.strip().lower()
     if not re.fullmatch(USERNAME_PATTERN, name):
         errors.append("username: lowercase letters, digits and dashes only")
-    if len(password) < 12:
-        errors.append("password: at least 12 characters")
+    if not MIN_PASSWORD_LENGTH <= len(password) <= MAX_PASSWORD_LENGTH:
+        errors.append("password: between 12 and 1024 characters")
     try:
         account_role = Role(role)
     except ValueError:

@@ -490,8 +490,14 @@ msgstr "archivo: elige un archivo para subir"
 msgid "file: could not read the image dimensions"
 msgstr "archivo: no se pudieron leer las dimensiones de la imagen"
 
-msgid "file: unsupported type — png, jpeg, gif, webp or svg"
-msgstr "archivo: tipo no admitido — png, jpeg, gif, webp o svg"
+msgid "file: unsupported type — png, jpeg, gif or webp"
+msgstr "archivo: tipo no admitido — png, jpeg, gif o webp"
+
+msgid "file: image dimensions exceed the pixel limit"
+msgstr "archivo: las dimensiones de la imagen superan el límite de píxeles"
+
+msgid "file: a file already exists at the generated path"
+msgstr "archivo: ya existe un archivo en la ruta generada"
 
 msgid "first."
 msgstr "primero."
@@ -701,8 +707,8 @@ msgstr "Usuarios"
 msgid "You cannot delete your own account, and the last admin can neither be deleted nor demoted."
 msgstr "No puedes eliminar tu propia cuenta, y el último admin no puede ser eliminado ni degradado."
 
-msgid "at least 12 characters"
-msgstr "al menos 12 caracteres"
+msgid "between 12 and 1024 characters"
+msgstr "entre 12 y 1024 caracteres"
 
 msgid "delete: the last admin cannot be deleted"
 msgstr "delete: el último admin no puede ser eliminado"
@@ -713,8 +719,8 @@ msgstr "delete: no puedes eliminar tu propia cuenta"
 msgid "language: unknown language"
 msgstr "language: idioma desconocido"
 
-msgid "password: at least 12 characters"
-msgstr "password: al menos 12 caracteres"
+msgid "password: between 12 and 1024 characters"
+msgstr "password: entre 12 y 1024 caracteres"
 
 msgid "role: the last admin cannot be demoted"
 msgstr "role: el último admin no puede ser degradado"

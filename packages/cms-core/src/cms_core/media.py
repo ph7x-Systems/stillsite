@@ -4,6 +4,8 @@ Editorial rules from the brief are enforced at the model level: images must
 declare their dimensions, and alt text in the source language is mandatory.
 """
 
+from pathlib import PurePosixPath, PureWindowsPath
+
 from pydantic import BaseModel, Field, model_validator
 
 from cms_core.languages import SOURCE_LANGUAGE, TARGET_LANGUAGES, Language
@@ -24,7 +26,16 @@ class MediaAsset(BaseModel):
 
     @model_validator(mode="after")
     def _enforce_editorial_rules(self) -> "MediaAsset":
-        if self.path.startswith("/") or ".." in self.path.split("/"):
+        posix_path = PurePosixPath(self.path)
+        windows_path = PureWindowsPath(self.path)
+        if (
+            posix_path.is_absolute()
+            or windows_path.is_absolute()
+            or windows_path.drive
+            or "\\" in self.path
+            or ".." in posix_path.parts
+            or any(ord(char) < 0x20 or ord(char) == 0x7F for char in self.path)
+        ):
             raise ValueError("media path must be relative and must not traverse upwards")
         if self.is_image and (self.width is None or self.height is None):
             raise ValueError("images must declare width and height")

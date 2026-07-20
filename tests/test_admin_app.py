@@ -1,5 +1,6 @@
 """Admin application skeleton: factory, settings, storage wiring."""
 
+from datetime import timedelta
 from pathlib import Path
 
 import pytest
@@ -33,6 +34,15 @@ def test_settings_come_from_the_environment(monkeypatch: pytest.MonkeyPatch) -> 
     assert AdminSettings.from_env().storage_url == DEFAULT_STORAGE_URL
     monkeypatch.setenv("SARDINE_STORAGE_URL", "sqlite:///elsewhere.db")
     assert AdminSettings.from_env().storage_url == "sqlite:///elsewhere.db"
+
+
+def test_security_limits_must_be_positive() -> None:
+    with pytest.raises(ValueError, match="session_ttl"):
+        AdminSettings(session_ttl=timedelta(0))
+    with pytest.raises(ValueError, match="upload_max_bytes"):
+        AdminSettings(upload_max_bytes=0)
+    with pytest.raises(ValueError, match="upload_max_pixels"):
+        AdminSettings(upload_max_pixels=0)
 
 
 def test_api_docs_pages_are_disabled(tmp_path: Path) -> None:

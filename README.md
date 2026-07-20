@@ -95,8 +95,10 @@ mypy                                         # type checking (strict)
 pytest                                       # tests
 ```
 
-CI (GitHub Actions) runs the same checks plus a docs link check, a secret
-scan and an end-to-end example build on every push and pull request.
+CI (GitHub Actions) runs the same checks plus dependency/static security
+analysis, a docs link check, a full-history secret scan, accessibility and
+markup checks, backend conformance and an end-to-end example build on every
+push and pull request.
 
 ## Quickstart
 

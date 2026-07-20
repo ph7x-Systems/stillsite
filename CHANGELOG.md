@@ -5,6 +5,19 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **System security hardening**: hostile XML now goes through `defusedxml`;
+  preview/media files require authentication; uploads are bounded before
+  allocation, reject active SVG and excessive pixel counts, and never replace
+  an existing path. Login CSRF comparisons are constant-time, password work
+  is equalized for unknown users, and username rotation cannot evade the
+  bounded client limiter. CLI credential replacement enforces the password
+  policy and revokes every existing session.
+- **Supply-chain hardening**: workflow actions are pinned to full commits,
+  downloaded axe assets are checksum-verified, secret scanning uses a pinned
+  container digest, and Azure deployment consumes an isolated build artifact.
+  A `pip-audit` + Bandit security gate now runs on every PR and is promoted
+  to branch protection after its first stable green run on `main`.
+
 - **Live themed refresh + autosave** (M6, ADR-0027 phase 2): valid
   article/page source edits persist after a short debounce and refresh a
   scoped entry artifact through the real builder and theme, drafts included.

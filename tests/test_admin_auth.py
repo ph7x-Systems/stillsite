@@ -41,7 +41,7 @@ def _client(app: FastAPI) -> TestClient:
 def _login(client: TestClient, username: str = "ana", password: str = PASSWORD) -> object:
     form = client.get("/login")
     csrf = form.cookies[  # the double-submit value equals the cookie by construction
-        "sardine_login_csrf"
+        "__Host-sardine_login_csrf"
     ]
     return client.post(
         "/login",
@@ -62,12 +62,21 @@ def test_login_sets_a_session_and_opens_the_dashboard(tmp_path: Path) -> None:
         response = _login(client)
         assert response.status_code == 303  # type: ignore[attr-defined]
         cookie = response.headers["set-cookie"]  # type: ignore[attr-defined]
-        assert "HttpOnly" in cookie and "SameSite=strict" in cookie.lower().replace(
-            "samesite=strict", "SameSite=strict"
-        )
+        assert "__Host-sardine_session=" in cookie
+        assert "HttpOnly" in cookie and "Secure" in cookie and "Path=/" in cookie
+        assert "SameSite=strict" in cookie.lower().replace("samesite=strict", "SameSite=strict")
         dashboard = client.get("/")
         assert dashboard.status_code == 200
         assert "ana" in dashboard.text
+
+
+def test_login_csrf_cookie_is_host_bound_and_short_lived(tmp_path: Path) -> None:
+    with _client(_app(tmp_path, ana=Role.EDITOR)) as client:
+        response = client.get("/login")
+    cookie = response.headers["set-cookie"]
+    assert "__Host-sardine_login_csrf=" in cookie
+    assert "Max-Age=600" in cookie
+    assert "HttpOnly" in cookie and "Secure" in cookie and "Path=/" in cookie
 
 
 def test_wrong_password_fails_and_rate_limits_after_five_attempts(tmp_path: Path) -> None:
@@ -81,6 +90,23 @@ def test_wrong_password_fails_and_rate_limits_after_five_attempts(tmp_path: Path
         assert _login(client).status_code == 429  # type: ignore[attr-defined]
 
 
+def test_rotating_usernames_does_not_bypass_the_client_limit(tmp_path: Path) -> None:
+    with _client(_app(tmp_path, ana=Role.EDITOR)) as client:
+        for attempt in range(5):
+            response = _login(client, username=f"unknown-{attempt}", password="wrong")
+            assert response.status_code == 401  # type: ignore[attr-defined]
+        assert _login(client).status_code == 429  # type: ignore[attr-defined]
+
+
+def test_successful_low_privilege_login_does_not_reset_client_failures(tmp_path: Path) -> None:
+    with _client(_app(tmp_path, ana=Role.EDITOR, root=Role.ADMIN)) as client:
+        for _ in range(4):
+            assert _login(client, username="root", password="wrong").status_code == 401  # type: ignore[attr-defined]
+        assert _login(client, username="ana").status_code == 303  # type: ignore[attr-defined]
+        assert _login(client, username="root", password="wrong").status_code == 401  # type: ignore[attr-defined]
+        assert _login(client, username="root").status_code == 429  # type: ignore[attr-defined]
+
+
 def test_login_without_matching_csrf_cookie_is_rejected(tmp_path: Path) -> None:
     with _client(_app(tmp_path, ana=Role.EDITOR)) as client:
         client.get("/login")
@@ -90,6 +116,25 @@ def test_login_without_matching_csrf_cookie_is_rejected(tmp_path: Path) -> None:
             follow_redirects=False,
         )
     assert response.status_code == 403
+
+
+def test_saturated_password_workers_fail_closed(tmp_path: Path) -> None:
+    class Saturated:
+        @staticmethod
+        def locked() -> bool:
+            return True
+
+    app = _app(tmp_path, ana=Role.EDITOR)
+    app.state.password_slots = Saturated()
+    with _client(app) as client:
+        response = _login(client)
+    assert response.status_code == 429  # type: ignore[attr-defined]
+
+
+def test_oversized_login_fields_are_rejected_before_password_hashing(tmp_path: Path) -> None:
+    with _client(_app(tmp_path, ana=Role.EDITOR)) as client:
+        assert _login(client, username="x" * 65).status_code == 401  # type: ignore[attr-defined]
+        assert _login(client, password="x" * 1025).status_code == 401  # type: ignore[attr-defined]
 
 
 def test_logout_requires_the_session_csrf_token(tmp_path: Path) -> None:
@@ -107,7 +152,7 @@ def test_expired_sessions_are_rejected(tmp_path: Path) -> None:
     app = _app(tmp_path, ana=Role.EDITOR)
     with _client(app) as client:
         _login(client)
-        token = client.cookies["sardine_session"]
+        token = client.cookies["__Host-sardine_session"]
         settings: AdminSettings = app.state.settings
         with create_storage(settings.storage_url) as storage:
             session = storage.load_session(token_digest(token))

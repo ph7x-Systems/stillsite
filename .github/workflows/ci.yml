@@ -22,8 +22,10 @@ jobs:
     name: Lint (ruff)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - run: python -m pip install --upgrade pip
@@ -35,8 +37,10 @@ jobs:
     name: Types (mypy)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - run: python -m pip install --upgrade pip
@@ -54,8 +58,10 @@ jobs:
       matrix:
         python-version: ["3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install --upgrade pip
@@ -113,8 +119,10 @@ jobs:
       SARDINE_MYSQL_URL: mysql://sardine:ci-only@127.0.0.1:3306/sardine
       SARDINE_MSSQL_URL: mssql://sa:CiOnly%21Passw0rd@127.0.0.1:1433/sardine
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - run: python -m pip install --upgrade pip
@@ -130,8 +138,10 @@ jobs:
     name: Example build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - run: python -m pip install --upgrade pip
@@ -160,8 +170,10 @@ jobs:
     name: Accessibility (axe)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - run: python -m pip install --upgrade pip
@@ -171,7 +183,12 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Fetch pinned axe-core bundle
         run: |
-          curl -sL https://registry.npmjs.org/axe-core/-/axe-core-4.12.1.tgz | tar -xz package/axe.min.js
+          curl --fail --silent --show-error --location \
+            https://registry.npmjs.org/axe-core/-/axe-core-4.12.1.tgz \
+            --output /tmp/axe-core.tgz
+          echo "4341a01268b5ecbea826f3c7a7d1d69280a2cab3484c93e1bf4c9554460c6ca0  /tmp/axe-core.tgz" \
+            | sha256sum --check --strict
+          tar -xzf /tmp/axe-core.tgz package/axe.min.js
       - name: Build the example and run the accessibility gate
         run: |
           cms seed  -p examples/multilingual-company-site
@@ -202,8 +219,10 @@ jobs:
     name: Docs internal links
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: lycheeverse/lychee-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
           args: --offline --no-progress "**/*.md"
           fail: true
@@ -212,13 +231,34 @@ jobs:
     name: Secret scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
-      - name: Install trufflehog
-        run: curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+          persist-credentials: false
       - name: Scan repository history
-        run: trufflehog git file://. --fail --no-update
+        run: |
+          docker run --rm --volume "$PWD:/repo:ro" --workdir /repo \
+            ghcr.io/trufflesecurity/trufflehog@sha256:977f8eb3c0172ece02bd41875656ed67b955ed595c472a42f819cc8ce9eec3ff \
+            git file:///repo --fail --no-update
+
+  security-audit:
+    name: Security audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      - run: |
+          python -m pip install --group dev
+          for pkg in $PACKAGES; do python -m pip install -e "$pkg"; done
+      - name: Audit installed dependencies
+        run: pip-audit --local --progress-spinner off
+      - name: Scan Python security patterns
+        run: bandit -q -r apps packages scripts -x '*/static/*,*/assets/*' -ll -ii
 
   # Content validation and example-site build jobs are added in Milestone 2,
   # once cms-validation and cms-build produce runnable CLIs.

@@ -5,7 +5,11 @@ from here. Loaded from `sardine.toml` by the CLI, or constructed directly
 in tests.
 """
 
+import re
+from urllib.parse import urlsplit
+
 from cms_core import SOURCE_LANGUAGE, TARGET_LANGUAGES, Language
+from cms_core.menus import validate_navigation_url
 from pydantic import BaseModel, Field, HttpUrl, JsonValue, field_validator
 
 SLUG = r"^[a-z0-9]+(?:-[a-z0-9]+)*$"
@@ -39,6 +43,32 @@ class SiteConfig(BaseModel):
     @classmethod
     def _source_language_not_required(cls, value: tuple[Language, ...]) -> tuple[Language, ...]:
         return tuple(language for language in value if language is not SOURCE_LANGUAGE)
+
+    @field_validator("admin_url")
+    @classmethod
+    def _safe_admin_url(cls, value: str | None) -> str | None:
+        return validate_navigation_url(value) if value is not None else None
+
+    @field_validator("redirects")
+    @classmethod
+    def _safe_redirects(cls, value: dict[str, str]) -> dict[str, str]:
+        safe_source = re.compile(r"^/[A-Za-z0-9._~!()*+,=:@%/-]*$")
+        unsafe_destination = re.compile(r"[\s\\;{}\"'$]")
+        for source, destination in value.items():
+            source_path = urlsplit(source).path
+            if (
+                not safe_source.fullmatch(source)
+                or source.startswith("//")
+                or ".." in source_path.split("/")
+            ):
+                raise ValueError(f"unsafe redirect source {source!r}")
+            validate_navigation_url(destination)
+            parsed = urlsplit(destination)
+            if parsed.scheme not in {"", "http", "https"} or destination.startswith("#"):
+                raise ValueError(f"unsafe redirect destination {destination!r}")
+            if unsafe_destination.search(destination):
+                raise ValueError(f"unsafe redirect destination {destination!r}")
+        return value
 
     @property
     def all_languages(self) -> tuple[Language, ...]:

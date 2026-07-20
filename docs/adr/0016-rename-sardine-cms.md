@@ -21,7 +21,10 @@ name people remember. The owner decided the product follows the brand:
   `SARDINE_ADMIN_SESSION_HOURS`, `SARDINE_ADMIN_COOKIE_SECURE`,
   `SARDINE_POSTGRES_URL`).
 - Theme entry-point group: `sardine.themes`.
-- Session cookies: `sardine_session`, `sardine_login_csrf`.
+- Session cookies were initially `sardine_session`, `sardine_login_csrf`;
+  secure deployments now use the host-bound `__Host-sardine_session` and
+  `__Host-sardine_login_csrf` names (plain-HTTP local development retains
+  the unprefixed pair because browsers require `Secure` on `__Host-`).
 - Python package names (`cms-core`, `cms-validation`, `cms-build`,
   `cms-cli`, `cms-admin`) and import names are unchanged; distribution
   naming on PyPI remains an ADR-0014 decision at first release, now with

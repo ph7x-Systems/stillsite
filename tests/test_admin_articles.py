@@ -63,7 +63,7 @@ def _sign_in(client: TestClient) -> str:
         data={
             "username": "ana",
             "password": PASSWORD,
-            "login_csrf": form.cookies["sardine_login_csrf"],
+            "login_csrf": form.cookies["__Host-sardine_login_csrf"],
         },
     )
     dashboard: str = client.get("/").text
@@ -396,7 +396,7 @@ def test_purge_needs_the_admin_role_and_is_final(tmp_path: Path) -> None:
             data={
                 "username": "root",
                 "password": PASSWORD,
-                "login_csrf": form.cookies["sardine_login_csrf"],
+                "login_csrf": form.cookies["__Host-sardine_login_csrf"],
             },
         )
         csrf = client.get("/").text.split('name="csrf_token" value="')[1].split('"')[0]

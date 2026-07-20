@@ -253,7 +253,7 @@ def admin_create_user(
     from cms_core.languages import Language
 
     try:
-        from cms_admin.security import hash_password
+        from cms_admin.security import MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH, hash_password
     except ImportError as error:
         typer.echo("error: the admin package is not installed (pip install cms-admin)", err=True)
         raise typer.Exit(code=2) from error
@@ -272,18 +272,25 @@ def admin_create_user(
             raise typer.Exit(code=2) from error
     project = _project(project_dir)
     with project.open_storage() as storage:
-        if storage.load_user(username) is not None and not force:
+        existing = storage.load_user(username)
+        if existing is not None and not force:
             typer.echo(f"error: user {username!r} already exists (use --force)", err=True)
             raise typer.Exit(code=3)
-        storage.save_user(
-            User(
-                username=username,
-                password_hash=hash_password(password),
-                role=account_role,
-                created_at=datetime.now(UTC),
-                language=account_language,
-            )
+        if not MIN_PASSWORD_LENGTH <= len(password) <= MAX_PASSWORD_LENGTH:
+            typer.echo("error: password must contain between 12 and 1024 characters", err=True)
+            raise typer.Exit(code=2)
+        replacement = User(
+            username=username,
+            password_hash=hash_password(password),
+            role=account_role,
+            created_at=datetime.now(UTC),
+            language=account_language,
         )
+        if existing is not None:
+            # Replacing credentials is a security boundary: deleting first
+            # revokes every existing session through the database cascade.
+            storage.delete_user(username)
+        storage.save_user(replacement)
     typer.echo(f"created user {username!r} with role {account_role.value}")
 
 

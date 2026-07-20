@@ -50,6 +50,12 @@ def test_media_path_must_be_relative_and_safe() -> None:
         make_image(path="/etc/passwd")
     with pytest.raises(ValueError, match="relative"):
         make_image(path="images/../../secret.png")
+    with pytest.raises(ValueError, match="relative"):
+        make_image(path=r"images\..\secret.png")
+    with pytest.raises(ValueError, match="relative"):
+        make_image(path=r"C:\Windows\system.ini")
+    with pytest.raises(ValueError, match="relative"):
+        make_image(path="images/control\n.png")
 
 
 def test_translated_alt_counts_only_when_non_blank() -> None:

@@ -81,7 +81,7 @@ def _sign_in(client: TestClient) -> str:
         data={
             "username": "ana",
             "password": PASSWORD,
-            "login_csrf": form.cookies["sardine_login_csrf"],
+            "login_csrf": form.cookies["__Host-sardine_login_csrf"],
         },
     )
     dashboard: str = client.get("/").text
@@ -95,17 +95,15 @@ def _client(app: FastAPI) -> TestClient:
 def test_sniffing_reads_magic_numbers_not_names() -> None:
     assert sniff_mime(_png()) == "image/png"
     assert sniff_mime(b"GIF89a" + b"\x00" * 10) == "image/gif"
-    assert sniff_mime(b'<svg xmlns="http://www.w3.org/2000/svg"></svg>') == "image/svg+xml"
+    assert sniff_mime(b'<svg xmlns="http://www.w3.org/2000/svg"></svg>') is None
     assert sniff_mime(b"#!/bin/sh\nrm -rf /") is None
     assert sniff_mime(b"MZ\x90\x00") is None
 
 
-def test_image_size_parses_png_gif_svg() -> None:
+def test_image_size_parses_png_and_gif() -> None:
     assert image_size(_png(7, 5), "image/png") == (7, 5)
     gif = b"GIF89a" + struct.pack("<HH", 12, 34) + b"\x00" * 10
     assert image_size(gif, "image/gif") == (12, 34)
-    svg = b'<svg xmlns="x" width="640" height="480"></svg>'
-    assert image_size(svg, "image/svg+xml") == (640, 480)
 
 
 def test_upload_persists_the_asset_and_the_file(tmp_path: Path) -> None:
@@ -176,6 +174,46 @@ def test_upload_enforces_the_size_limit(tmp_path: Path) -> None:
         )
     assert response.status_code == 422
     assert "limit" in response.text
+
+
+def test_upload_rejects_active_svg_and_excessive_dimensions(tmp_path: Path) -> None:
+    app = _app(tmp_path)
+    oversized = bytearray(_png())
+    oversized[16:24] = struct.pack(">II", 100_000, 100_000)
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        svg = client.post(
+            "/media",
+            data={"csrf_token": csrf, "id": "active", "alt": "active"},
+            files={"upload": ("active.svg", b"<svg><script>alert(1)</script></svg>")},
+        )
+        huge = client.post(
+            "/media",
+            data={"csrf_token": csrf, "id": "huge-pixels", "alt": "huge"},
+            files={"upload": ("huge.png", bytes(oversized))},
+        )
+    assert svg.status_code == 422
+    assert "unsupported type" in svg.text
+    assert huge.status_code == 422
+    assert "pixel limit" in huge.text
+
+
+def test_upload_never_replaces_an_existing_file(tmp_path: Path) -> None:
+    media_dir = tmp_path / "media"
+    media_dir.mkdir()
+    existing = media_dir / "collision.png"
+    existing.write_bytes(b"owner-data")
+    app = _app(tmp_path)
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        response = client.post(
+            "/media",
+            data={"csrf_token": csrf, "id": "collision", "alt": "collision"},
+            files={"upload": ("collision.png", _png())},
+        )
+    assert response.status_code == 422
+    assert "already exists" in response.text
+    assert existing.read_bytes() == b"owner-data"
 
 
 def test_alt_translations_save_and_report_completeness(tmp_path: Path) -> None:
@@ -252,7 +290,7 @@ def test_media_filters_search_and_views(tmp_path: Path) -> None:
             client.post(
                 "/media",
                 data={"csrf_token": csrf, "id": asset_id, "alt": alt},
-                files={"upload": (f"{asset_id}.svg", b'<svg xmlns="x" width="4" height="4"/>')},
+                files={"upload": (f"{asset_id}.png", _png(4, 4))},
             )
         everything = client.get("/media").text
         assert "tin-rocket" in everything and "sea-chart" in everything

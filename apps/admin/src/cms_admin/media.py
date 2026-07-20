@@ -7,7 +7,7 @@ applies. EN alt text is mandatory at the model level. Deleting checks usage
 first: an asset referenced by an article cover or a section stays.
 """
 
-import re
+import os
 import struct
 
 from cms_core import Article, Language, MediaAsset, Page, StorageBackend, User
@@ -29,7 +29,6 @@ EXTENSIONS = {
     "image/jpeg": ".jpg",
     "image/gif": ".gif",
     "image/webp": ".webp",
-    "image/svg+xml": ".svg",
 }
 
 
@@ -43,9 +42,6 @@ def sniff_mime(data: bytes) -> str | None:
         return "image/gif"
     if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
         return "image/webp"
-    head = data[:512].lstrip()
-    if head.startswith((b"<?xml", b"<svg")) and b"<svg" in data[:2048]:
-        return "image/svg+xml"
     return None
 
 
@@ -80,14 +76,6 @@ def image_size(data: bytes, mime: str) -> tuple[int, int] | None:
             if data[12:16] == b"VP8 ":
                 width, height = struct.unpack("<HH", data[26:30])
                 return (width & 0x3FFF), (height & 0x3FFF)
-        if mime == "image/svg+xml":
-            text = data[:4096].decode("utf-8", "ignore")
-            found = re.search(r'<svg[^>]*\bwidth="(\d+)[a-z]*"[^>]*\bheight="(\d+)[a-z]*"', text)
-            if found:
-                return int(found.group(1)), int(found.group(2))
-            box = re.search(r'viewBox="[\d.\s-]*?([\d.]+)\s+([\d.]+)"', text)
-            if box:
-                return round(float(box.group(1))), round(float(box.group(2)))
     except (struct.error, IndexError):
         return None
     return None
@@ -122,6 +110,16 @@ def _page(
 def _alt_form(asset: MediaAsset | None) -> dict[str, str]:
     alts = asset.alt if asset else {}
     return {f"alt_{language.value}": alts.get(language, "") for language in Language}
+
+
+def _write_new_file(path: os.PathLike[str], data: bytes) -> None:
+    """Create one upload without following or replacing an existing path."""
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    descriptor = os.open(path, flags, 0o600)
+    with os.fdopen(descriptor, "wb") as handle:
+        handle.write(data)
 
 
 @router.get("")
@@ -198,20 +196,27 @@ async def media_upload(
     db = get_db(request)
     form = {"id": asset_id, "alt": alt}
     errors: list[str] = []
-    data = await upload.read() if upload is not None else b""
-    mime = sniff_mime(data) if data else None
+    data = b""
+    if upload is not None:
+        try:
+            data = await upload.read(settings.upload_max_bytes + 1)
+        finally:
+            await upload.close()
+    mime = sniff_mime(data) if data and len(data) <= settings.upload_max_bytes else None
     if not data:
         errors.append("file: choose a file to upload")
     elif len(data) > settings.upload_max_bytes:
         limit_mb = settings.upload_max_bytes // (1024 * 1024)
         errors.append(f"file: larger than the {limit_mb} MB limit")
     elif mime is None:
-        errors.append("file: unsupported type — png, jpeg, gif, webp or svg")
+        errors.append("file: unsupported type — png, jpeg, gif or webp")
     asset: MediaAsset | None = None
     if not errors and mime is not None:
         size = image_size(data, mime)
         if size is None:
             errors.append("file: could not read the image dimensions")
+        elif size[0] * size[1] > settings.upload_max_pixels:
+            errors.append("file: image dimensions exceed the pixel limit")
         else:
             try:
                 asset = MediaAsset(
@@ -236,8 +241,26 @@ async def media_upload(
             status_code=HTTP_422,
         )
     settings.media_dir.mkdir(parents=True, exist_ok=True)
-    (settings.media_dir / asset.path).write_bytes(data)
-    await db.run(lambda storage: storage.save_media_asset(asset))
+    file_path = settings.media_dir / asset.path
+    try:
+        _write_new_file(file_path, data)
+    except FileExistsError:
+        return _page(
+            request,
+            "media_new.html.j2",
+            {
+                "user": user,
+                "csrf_token": session.csrf_token,
+                "errors": ["file: a file already exists at the generated path"],
+                "form": form,
+            },
+            status_code=HTTP_422,
+        )
+    try:
+        await db.run(lambda storage: storage.save_media_asset(asset))
+    except BaseException:
+        file_path.unlink(missing_ok=True)
+        raise
     return RedirectResponse(f"/media/{asset.id}", status_code=status.HTTP_303_SEE_OTHER)
 
 

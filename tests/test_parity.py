@@ -98,6 +98,20 @@ def test_json_ld_on_home_and_articles() -> None:
     assert '"datePublished": "2026-01-15"' in article
 
 
+def test_json_ld_cannot_close_its_script_element() -> None:
+    config = CONFIG.model_copy(
+        update={
+            "organization": {
+                "@type": "Organization",
+                "name": "</script><script>alert(1)</script>",
+            }
+        }
+    )
+    home = build_site(config, make_content()).files["index.html"].decode("utf-8")
+    assert "</script><script>alert(1)</script>" not in home
+    assert "<\\/script><script>alert(1)<\\/script>" in home
+
+
 def test_media_files_are_copied_and_referenced() -> None:
     asset = MediaAsset(
         id="hero-image",

@@ -19,7 +19,9 @@ SARDINE_ADMIN_COOKIE_SECURE=0 \
 ```
 
 Sign in at `/login`. **There are no default credentials** — the first
-account always comes from the CLI.
+account always comes from the CLI. Passwords must contain between 12 and
+1024 characters. Replacing an account with `cms admin create-user --force`
+revokes all of its existing sessions before storing the new credentials.
 
 ## Configuration (environment only)
 
@@ -30,11 +32,16 @@ account always comes from the CLI.
 | `SARDINE_ADMIN_COOKIE_SECURE` | `1` | Set `0` only for plain-http local development |
 | `SARDINE_MEDIA_DIR` | `media` | Media upload directory (the project's `media/`) |
 | `SARDINE_ADMIN_UPLOAD_MAX_MB` | `10` | Upload size limit in MB |
+| `SARDINE_ADMIN_UPLOAD_MAX_PIXELS` | `40000000` | Maximum image dimensions (`width × height`) |
 | `SARDINE_PROJECT_DIR` | `.` | Project directory holding `sardine.toml` (panel builds) |
 | `SARDINE_ADMIN_PUBLISH_GATE` | `1` | Set `0` to allow publishing despite validation errors |
 
 The admin never reads configuration files — secrets cannot end up in a
-project directory that gets committed or exported.
+project directory that gets committed or exported. Preview artifacts and
+uploaded media are served only to an authenticated session. Responses are
+non-cacheable and carry HSTS; keep secure cookies enabled behind HTTPS in
+every non-local deployment. Secure deployments use `__Host-` cookies, which
+cannot be scoped by a parent domain or overwritten by a sibling subdomain.
 
 ## Roles
 
@@ -83,7 +90,9 @@ with that entity's errors listed (the publish gate; disable only with
 - **Media**: the library filters server-side — text search over id,
   path, type and alt texts, plus quick views (images only, missing
   translated alt). Uploads validated server-side — the MIME type is sniffed from
-  the bytes (png, jpeg, gif, webp, svg), dimensions parsed, size limited.
+  raster bytes (png, jpeg, gif, webp), dimensions parsed, byte and pixel
+  limits enforced. Active SVG is rejected and an existing filesystem path is
+  never replaced.
   EN alt text is mandatory; alt is translatable per language. Assets
   referenced by covers or sections refuse deletion.
 
@@ -241,7 +250,10 @@ never touched by panel i18n.
 - Argon2id password hashes; server-side sessions storing only the token
   digest; cookies `HttpOnly` + `Secure` + `SameSite=Strict`.
 - Synchronizer CSRF tokens on every authenticated state-changing request,
-  plus a double-submit token on the login form; failed-login rate limiting.
+  plus a double-submit token on the login form; failed-login rate limiting is
+  keyed by both client and account. Password verification has bounded
+  concurrency and unknown accounts receive equivalent Argon2 work. For more
+  than one admin process, also rate-limit `/login` at the shared ingress.
 - Security headers on every response, including a Content-Security-Policy
   allowing only same-origin scripts — the vendored AdminLTE behaviors, no
   inline scripts, no CDN (ADR-0020) — and frame denial.

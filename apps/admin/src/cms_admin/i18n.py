@@ -64,7 +64,7 @@ RUNTIME_MSGIDS: tuple[str, ...] = (
     "publish_at: use the picker format (YYYY-MM-DDTHH:MM, UTC)",
     # users screen route errors
     "username: lowercase letters, digits and dashes only",
-    "password: at least 12 characters",
+    "password: between 12 and 1024 characters",
     "role: unknown role",
     "language: unknown language",
     "username: already taken",
@@ -76,7 +76,9 @@ RUNTIME_MSGIDS: tuple[str, ...] = (
     # media upload static errors
     "file: choose a file to upload",
     "file: could not read the image dimensions",
-    "file: unsupported type — png, jpeg, gif, webp or svg",
+    "file: unsupported type — png, jpeg, gif or webp",
+    "file: image dimensions exceed the pixel limit",
+    "file: a file already exists at the generated path",
 )
 
 

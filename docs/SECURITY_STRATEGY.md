@@ -33,6 +33,7 @@ deliver. The public-facing policy (how to report vulnerabilities) lives in
 | SQL injection through content fields | Parameterized queries only; no string-built SQL (**done**) |
 | Path traversal via media paths | Model validator rejects absolute paths and `..` segments (**done**) |
 | Malformed content reaching the store | Strict pydantic validation: slug patterns, required fields, typed enums (**done**) |
+| Active navigation URLs | Menu/admin links allow only explicit safe schemes or site-relative paths; redirects additionally reject filesystem traversal and server-directive metacharacters (**done**) |
 | Silent fallback to the wrong database | Factory raises on unknown/unimplemented schemes (**done**) |
 | Tampered translation freshness | States derived from source checksums, not editable flags (**done**) |
 
@@ -42,25 +43,35 @@ deliver. The public-facing policy (how to report vulnerabilities) lives in
 | --- | --- |
 | XSS in generated sites | Autoescaping templates (Jinja2) everywhere; editors never inject raw HTML — rich content only via reviewed shortcodes/custom blocks |
 | Malicious content in Markdown | Markdown rendered with a safe renderer; raw HTML blocks disabled by default, allowlist configurable per project |
+| Script breakout through structured metadata | JSON-LD escapes every HTML closing sequence before entering its script element; adversarial regression test in force |
 | Output outside the export directory | Export paths derived from validated slugs only; writes confined to the target directory |
 | Non-reproducible builds hiding injected content | Deterministic builds (same input → same output) make any diff reviewable |
 
 ### Admin panel (`apps/admin`, M3)
 
 Access control is **in force** since M3 phase 3 (argon2id hashes, server-side
-sessions with expiry, session cookies `HttpOnly`/`Secure`/`SameSite=Strict`,
+sessions with expiry, `__Host-` session cookies
+`HttpOnly`/`Secure`/`SameSite=Strict`,
 synchronizer + double-submit CSRF tokens, login rate limiting, roles enforced
 server-side, first account only via `cms admin create-user`) — exercised by
-`tests/test_admin_auth.py`. Media-library upload controls are also in force.
+`tests/test_admin_auth.py`. Preview artifacts and uploaded media require a
+valid session; sensitive responses carry HSTS and `Cache-Control: no-store`.
+Unknown accounts perform equivalent password work, Argon2 verification runs
+outside the event loop with bounded concurrency, and the in-process limiter
+is bounded and keyed by both client and account. Media-library upload controls
+are also in force. Multi-process deployments must additionally rate-limit
+`/login` at the shared ingress because process-local state is not a distributed
+brute-force control.
 
 | Threat | Control |
 | --- | --- |
 | Unauthorized access | Explicit authentication; sessions/tokens with expiry; no default credentials; rate limiting on login |
 | Privilege escalation | Role-based authorization (editor / reviewer / publisher at minimum), enforced server-side per endpoint |
 | CSRF | Anti-CSRF tokens on state-changing requests (server-rendered UI) or token-based auth with same-site cookies |
-| Malicious uploads | Media library validates type, size and dimensions server-side; uploads stored outside the web root; no SVG scripting (sanitize or restrict) |
+| Malicious uploads | Media library validates raster type, byte size, pixel count and dimensions server-side; active SVG is rejected; writes cannot replace existing paths |
 | Injection via API | All input through pydantic schemas; parameterized queries via the storage interface |
 | Secrets in config | Configuration via environment only; startup fails if required secrets are missing rather than using defaults |
+| Hostile XML import | `defusedxml` rejects DTDs and entities independent of source encoding; imports perform no network access |
 
 ### Storage backends (M1/M2)
 
@@ -74,10 +85,12 @@ server-side, first account only via `cms admin create-user`) — exercised by
 
 | Threat | Control (status) |
 | --- | --- |
-| Leaked secrets in history | trufflehog scans the full git history on every push/PR (**done**) |
-| Compromised dependency | Minimal dependency surface, version floors in `pyproject.toml` and dependency review; reproducible lock/update automation remains an open supply-chain improvement (**partial**) |
+| Leaked secrets in history | A digest-pinned trufflehog image scans the full git history on every push/PR (**done**) |
+| Compromised dependency | `pip-audit` and Bandit gate every PR; workflow actions are SHA-pinned and updated by Dependabot; reproducible Python lock files remain an open improvement (**partial**) |
 | CI token abuse | Workflow `permissions: contents: read`; no write tokens in CI (**done**) |
-| Force-push/history rewrite on `main` | Branch protection: force-pushes and deletions blocked; nine required checks (**done**) |
+| Deploy-secret exfiltration | Untrusted package execution is confined to an artifact-build job; only pinned download/deploy actions run in the environment that receives the Azure token (**done**) |
+| Remote artifact substitution | The downloaded axe bundle is version-pinned and SHA-256 verified before extraction; release/deploy actions are pinned to full commits (**done**) |
+| Force-push/history rewrite on `main` | Branch protection blocks force-pushes/deletions and requires nine established checks; promote `Security audit` after its first green `main` run (**rollout pending**) |
 | Malicious PR changing CI | Required status checks on PRs; workflow changes reviewed like code (**done**) |
 
 ## 3. Data protection
@@ -115,6 +128,10 @@ launch gate.
 ## 6. Milestone gates
 
 Security work is part of each milestone's definition of done:
+
+- **Every milestone:** identify new trust boundaries; add hostile-input or
+  abuse-path regressions; run dependency/static analysis; update repository
+  documentation and the public wiki in the same delivery chain.
 
 - **M2 (build/CLI):** autoescaping verified by tests; safe Markdown rendering;
   dependency review and version floors; export path confinement tests.

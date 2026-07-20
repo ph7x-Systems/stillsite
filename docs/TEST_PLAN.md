@@ -4,7 +4,9 @@ What gets tested, at which layer, with which gate. Rule of thumb: **every
 guarantee the docs promise has a test that fails when it stops being true.**
 The suite size is intentionally not fixed here; it grows with every shipped
 guarantee. Mypy strict, ruff and the test suites run on every push/PR, with
-branch protection enforcing nine required CI checks.
+CI defining ten checks. Branch protection currently enforces the nine
+established contexts; `Security audit` becomes required after its first green
+run on `main`.
 
 ## 1. Layers
 
@@ -106,6 +108,7 @@ README promises. Grows one check per new guarded fact.
 | Unit/storage/docs tests, py3.12+3.13 | jobs `Tests (pytest, …)` | in force |
 | Internal docs links | job `Docs internal links` (lychee) | in force |
 | Secret scan (full history) | job `Secret scan` (trufflehog) | in force |
+| Dependency vulnerabilities + Python security patterns | job `Security audit` (pip-audit + bandit) | in force |
 | Example build (seed→validate→build→export via the CLI) | job `Example build` | in force |
 | Head contract + determinism + URL tree | `tests/test_builder.py`, `tests/test_cli.py` | in force |
 | Full PoC structural parity (categories, pagination, JSON-LD) | `tests/test_builder.py`, `tests/test_cli.py` | in force |
