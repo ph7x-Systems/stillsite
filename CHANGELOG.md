@@ -5,6 +5,15 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Reference theme stylesheets cleaned to contract**: the four CSS files
+  inherited from the original site import now speak English only (repo
+  language rule), lose every rule for components this theme never renders
+  (consent banner, client carousel, case studies, certifications, process
+  rail, canvas backdrop, contact form) and keep the load-bearing comments
+  as documentation. Also adds the missing `-webkit-backdrop-filter`
+  fallback. No visual change — the removed selectors matched no element
+  any template emits.
+
 - **The section-kind gallery becomes a contract** (M6): reusable blocks
   now have one source of truth — `SECTION_KIND_GALLERY` maps each bundled
   kind to the fields it consumes, and four new kinds join the nine-strong

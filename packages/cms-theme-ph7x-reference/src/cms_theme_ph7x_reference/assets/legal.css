@@ -1,15 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   [hidden] TEM DE ESCONDER. Ponto.
+   legal.css — long-form document pages (articles, listings, error pages).
 
-   O [hidden]{display:none} do browser tem especificidade ZERO. QUALQUER regra
-   nossa com 'display' (grid, flex, block, inline-flex...) derrota-o em silencio,
-   e o elemento que devia estar escondido APARECE.
-
-   Ja mordeu duas vezes neste projeto:
-     - o aviso de privacidade nao desaparecia;
-     - o formulario de contacto aparecia ANTES de o visitante aceitar o reCAPTCHA.
-
-   Esta linha mata a classe de bug inteira. NAO A APAGUES.
+   [hidden] MUST hide. Period. The browser's own [hidden]{display:none} has
+   ZERO specificity: any rule of ours that sets 'display' silently defeats
+   it. This line kills that entire class of bug (DESIGN_RULES requires it
+   to come first). DO NOT REMOVE IT.
    ═══════════════════════════════════════════════════════════════════════════ */
 [hidden]{display:none!important}
 
@@ -33,7 +28,7 @@ a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 ::selection{background:var(--accent);color:#0e1626}
 
-/* Cabeçalho IDÊNTICO ao da home: mesma altura, mesmo logo, mesma wordmark. */
+/* Header IDENTICAL to the home page: same height, same brand, same wordmark. */
 header{position:fixed;inset:0 0 auto 0;z-index:50;background:var(--navy);border-bottom:1px solid #1c2a42}
 .nav{max-width:1220px;margin:0 auto;padding:0 40px;height:92px;display:flex;align-items:center;justify-content:space-between}
 .brand{display:flex;align-items:center;gap:13px}
@@ -41,8 +36,6 @@ header{position:fixed;inset:0 0 auto 0;z-index:50;background:var(--navy);border-
 .brand .wm{font-family:var(--sans);font-weight:600;font-size:1.24rem;color:var(--head);letter-spacing:-.01em;line-height:1;display:inline-flex;align-items:baseline}
 .brand .reg{font-family:var(--sans);font-size:.5em;font-weight:500;line-height:1;transform:translateY(-.75em);margin-left:2px;color:var(--muted)}
 @media(max-width:420px){.nav{height:76px;padding:0 18px}.brand{gap:9px}.brand img{width:30px;height:30px}.brand .wm{font-size:1.02rem}}
-.back{font-size:.9rem;color:var(--muted);transition:color .3s;display:inline-flex;gap:8px;align-items:center}
-.back:hover{color:var(--head)}
 
 .hero{max-width:var(--maxw);margin:0 auto;padding:140px 40px 34px}
 
@@ -51,9 +44,6 @@ header{position:fixed;inset:0 0 auto 0;z-index:50;background:var(--navy);border-
 .hero .sub{color:var(--muted);margin-top:18px;font-size:1.05rem;max-width:62ch}
 
 .meta{max-width:var(--maxw);margin:0 auto;padding:0 40px}
-.meta .badges{display:flex;flex-wrap:wrap;gap:10px;padding:24px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.badge{border:1px solid var(--line-2);border-radius:100px;padding:.4rem .9rem;font-size:.74rem;color:var(--muted)}
-.badge strong{color:var(--head);font-weight:500}
 
 article{max-width:var(--maxw);margin:0 auto;padding:48px 40px 30px}
 article h2{font-family:var(--serif);font-weight:400;color:var(--head);font-size:1.5rem;margin:44px 0 14px;letter-spacing:-.01em}
@@ -65,14 +55,6 @@ article li{margin:0 0 9px}
 article strong{color:var(--head);font-weight:500}
 article a{color:var(--head);border-bottom:1px solid var(--line-2);transition:.3s}
 article a:hover{color:var(--accent);border-color:var(--accent)}
-.callout{background:var(--panel);border:1px solid var(--line-2);border-radius:8px;padding:22px 24px;margin:24px 0}
-.callout p:last-child{margin-bottom:0}
-.contact-block{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:22px 24px;margin:18px 0}
-.contact-block p{margin:0;line-height:1.95}
-.legal-nav{display:flex;gap:22px;flex-wrap:wrap;margin-top:34px;padding-top:26px;border-top:1px solid var(--line);font-size:.9rem}
-.legal-nav a{color:var(--muted);transition:color .3s}
-.legal-nav a:hover{color:var(--head)}
-.legal-nav a.cur{color:var(--head)}
 
 footer{border-top:1px solid var(--line);margin-top:36px}
 .fg{max-width:1220px;margin:0 auto;padding:40px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;color:var(--muted);font-size:.85rem}
@@ -87,193 +69,79 @@ footer{border-top:1px solid var(--line);margin-top:36px}
 @media(max-width:640px){.lang{gap:8px;font-size:.68rem}}
 @media(max-width:380px){.lang{gap:6px;font-size:.62rem}}
 
-/* Nav idêntico ao da home (links, underline, hambúrguer, menu mobile). */
+/* Nav identical to the home page (links + underline hover). */
 .nav .lk{display:flex;gap:40px;align-items:center;font-size:.9rem;margin-left:auto}
 .nav .lk a{color:var(--muted);transition:color .3s;position:relative;padding:4px 0}
 .nav .lk a:hover{color:var(--head)}
 .nav .lk a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--accent);transition:width .35s cubic-bezier(.16,1,.3,1)}
 .nav .lk a:hover::after{width:100%}
 .lang{margin-left:34px}
-.nav-t{display:none;background:none;border:0;color:var(--head);cursor:pointer;width:42px;height:42px;padding:0;place-items:center;margin-right:-8px;flex:0 0 auto}
-.nav-t span{display:block;width:22px;height:1.5px;background:currentColor;margin:5px 0;transition:transform .38s cubic-bezier(.16,1,.3,1),opacity .25s}
-.nav-t.on span:nth-child(1){transform:translateY(11.5px) rotate(45deg)}
-.nav-t.on span:nth-child(2){opacity:0}
-.nav-t.on span:nth-child(3){transform:translateY(-11.5px) rotate(-45deg)}
-.mm{display:none;position:fixed;inset:92px 0 auto 0;background:var(--panel);border-bottom:1px solid var(--line);flex-direction:column;padding:20px 26px;z-index:49}
-.mm a{padding:14px 0;border-bottom:1px solid var(--line);color:var(--ink)}
-.mm .lang{display:none}
 @media(max-width:980px){
   .nav .lk{display:none}
-  .nav-t{display:grid}
   .lang{margin-left:auto;margin-right:16px}
-  .mm.open{display:flex}
 }
 @media(max-width:600px){.lang{font-size:.64rem;gap:8px;margin-right:10px}}
-@media(max-width:420px){.mm{inset:76px 0 auto 0}}
-@media(max-width:380px){
-  .nav .lang{display:none}
-  .mm .lang{display:flex;gap:18px;margin:0;padding:20px 0 6px;border-top:1px solid var(--line);font-size:.8rem}
-  .mm .lang a{padding:6px 0}
-}
+@media(max-width:380px){.nav .lang{display:none}}
 
-
-/* Aviso de privacidade, ao estilo da APA: uma pastilha discreta que abre um
-   cartão. NAO e um banner de consentimento, porque nao ha nada a consentir
-   fora do formulario. Diz o contrario do habitual: "nao o rastreamos".
-
-   A dispensa fica em localStorage, NAO num cookie. Um aviso de privacidade que
-   pusesse um cookie para se lembrar de que foi fechado seria uma piada. */
-
-/* Tabelas. O legal.css nunca teve regras para <table>, e a tabela de cookies
-   saía esparramada, sem linhas nem alinhamento. */
-/* UMA tabela para o site inteiro: as legais e os artigos do blog. Estava
-   definida duas vezes (aqui e no blog.css) e as duas divergiam. */
+/* ONE table style for the whole site: long-form pages and blog articles.
+   The first column is the row label — kept solid and highlighted so the
+   table can be scanned diagonally. */
 article table,.b-body table{width:100%;border-collapse:collapse;margin:26px 0 20px;font-size:.9rem;line-height:1.6}
 article thead th,.b-body thead th{text-align:left;font-weight:500;color:var(--head);font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;padding:0 18px 12px 0;border-bottom:1px solid var(--line-2)}
 article tbody td,.b-body tbody td{padding:16px 18px 16px 0;border-bottom:1px solid var(--line);color:var(--muted);vertical-align:top}
 article tbody tr:last-child td,.b-body tbody tr:last-child td{border-bottom:0}
-/* a 1.ª coluna é o rótulo: fixa e destacada, para a tabela se ler na diagonal */
 article tbody td:first-child,.b-body tbody td:first-child{color:var(--head);font-weight:500;white-space:nowrap;padding-right:28px}
 article td code,.b-body td code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;color:var(--head);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:.14em .45em;white-space:nowrap}
 article td strong,.b-body td strong{color:var(--head)}
-/* uma tabela de 2 colunas não tem cabeçalho: esconde-se a linha vazia */
+/* a two-column table has no header: hide the empty row */
 article thead:empty,.b-body thead th:empty{display:none}
 @media(max-width:760px){
-  /* numa tabela de 5 colunas o telemóvel corta. Empilha-se, com o rótulo à frente. */
+  /* a wide table gets cut off on a phone: stack it, label first */
   article thead,.b-body thead{display:none}
   article tbody tr,.b-body tbody tr{display:block;border-bottom:1px solid var(--line-2);padding:14px 0}
   article tbody td,.b-body tbody td{display:block;padding:4px 0;border:0}
   article tbody td:first-child,.b-body tbody td:first-child{white-space:normal;padding-right:0}
   article tbody td[data-l]::before{content:attr(data-l);display:block;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:2px}
 }
-/* na tabela de cookies, quem fornece identifica-se: nome, morada na UE, e a
-   ligação para a sua própria política. Quem lê não tem de ir procurar. */
-article td .tp-addr{color:var(--faint);font-size:.82em;line-height:1.5}
-article td a{font-size:.86em}
 
-/* Rodapé colado ao fundo quando o conteúdo é curto (a página de contacto, um
-   artigo pequeno, uma lista vazia). Sem isto, o rodapé sobe e fica um buraco
-   preto por baixo dele. */
+/* Footer pinned to the bottom when the content is short (a small article,
+   an empty listing). Without this the footer rises and leaves a dark gap
+   below it. */
 body{min-height:100dvh;display:flex;flex-direction:column}
 main{flex:1 0 auto}
 footer{flex-shrink:0;margin-top:auto}
 
-/* CONSENTIMENTO. Aceitar e Recusar TEM DE TER O MESMO PESO VISUAL.
-   Um "Aceitar" garrido ao lado de um "Recusar" apagado nao e consentimento
-   livre: e um dark pattern, e ja custou coimas a quem o fez. Se alguem "der
-   destaque ao Aceitar", esta a criar um problema legal, nao a melhorar o design. */
-.cb-card{background:var(--panel);border:1px solid var(--line-2);border-radius:10px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
-.cb-card h2{font-family:var(--serif);font-size:1.28rem;font-weight:400;color:var(--head);margin:0 0 10px}
-.cb-card p{color:var(--muted);font-size:.88rem;line-height:1.7;margin:0 0 16px}
-.cb-btn{flex:1;background:transparent;color:var(--head);border:1px solid var(--faint);border-radius:3px;padding:.72em 1em;font-family:var(--sans);font-size:.86rem;font-weight:600;cursor:pointer;transition:background .25s,border-color .25s}
-.cb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--head)}
-.cb-link{display:inline-block;margin-top:16px;color:var(--accent);font-size:.82rem;border-bottom:1px solid rgba(216,207,192,.32);padding-bottom:2px}
-/* O botao de reabrir, no rodape. A lei exige que RETIRAR o consentimento seja
-   tao facil como da-lo: sem isto, o consentimento nao e valido. */
-.fl-btn{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;text-align:left}
-.fl-btn:hover{color:var(--head)}
-
-/* Categorias. Nada de caixas pre-marcadas: por omissao, tudo desligado. */
-.cb-cats{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:12px}
-.cb-cats li{border-top:1px solid var(--line-2);padding-top:12px}
-.cb-cat{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer}
-.cb-cat strong{color:var(--head);font-size:.88rem;font-weight:600}
-.cb-cat input{width:16px;height:16px;flex:none;accent-color:var(--accent);cursor:pointer}
-.cb-fix{color:var(--accent);font-size:.9rem}
-.cb-d{display:block;color:var(--muted);font-size:.79rem;line-height:1.6;margin-top:4px}
-.cb-acts{display:flex;gap:8px;flex-wrap:wrap}
-.cb-btn{flex:1 1 auto;min-width:104px}
-
-/* O formulario so aparece com consentimento. Este aviso ocupa o lugar dele. */
-.ct-need{border:1px solid var(--line-2);border-radius:10px;padding:28px;background:var(--panel)}
-.ct-need h2{font-family:var(--serif);font-size:1.35rem;font-weight:400;color:var(--head);margin:0 0 10px}
-.ct-need p{color:var(--muted);line-height:1.75;margin:0 0 20px}
-
-/* A PASTILHA. Fica SEMPRE visivel: e por ela que se REABRE o cartao e se retira
-   o consentimento. Um consentimento que nao se pode retirar nao e valido.
-   Ja foi apagada uma vez. NAO A APAGUES OUTRA. */
-.cb{position:fixed;left:24px;bottom:24px;z-index:80;font-family:var(--sans)}
-.cb-pill{display:inline-flex;align-items:center;gap:9px;background:rgba(16,17,21,.9);backdrop-filter:blur(10px);border:1px solid var(--line-2);border-radius:100px;padding:.62em 1.1em;color:var(--muted);font-family:var(--sans);font-size:.8rem;font-weight:500;cursor:pointer;transition:color .3s,border-color .3s}
-.cb-pill:hover{color:var(--head);border-color:var(--faint)}
-.cb-pill svg{width:15px;height:15px;flex:none}
-.cb-card{position:absolute;left:0;bottom:calc(100% + 12px);width:min(400px,calc(100vw - 48px))}
-@media(max-width:620px){.cb{left:12px;right:12px;bottom:12px}.cb-card{width:auto;right:0}}
-
-/* A tabela de cookies por CATEGORIAS. As mesmas do banner, com os mesmos nomes
-   (vem das mesmas chaves do content.json). A coluna "Consentimento" saiu: era
-   ruido repetido linha a linha, e era por la que a tabela contradizia o banner. */
-.ck-cat th{background:rgba(255,255,255,.04);color:var(--head);font-size:.86rem;font-weight:600;text-align:left;padding:.8em 1em}
-.ck-cat th span{color:var(--muted);font-weight:400}
-
-/* ARMADILHA DO STICKY FOOTER, e ja custou caro.
-   O body e um flex container (para o rodape ficar sempre em baixo). Num flex
-   container, um filho com margin:0 auto ENCOLHE AO CONTEUDO e centra-se: o
-   max-width deixa de esticar. O .hero e o .meta sao filhos diretos do body e
-   ficaram a 685px em vez de 1220px, com o titulo a flutuar ao centro enquanto
-   o texto do artigo continuava a esquerda.
-   O width:100% devolve-lhes a largura, e o max-width volta a mandar.
-   NAO APAGUES ISTO. */
+/* STICKY-FOOTER TRAP — this has bitten before. The body is a flex
+   container (for the pinned footer). Inside a flex container a child with
+   margin:0 auto SHRINKS TO ITS CONTENT and centers: max-width stops
+   stretching. .hero and .meta are direct children of body and would sit
+   at content width instead of 1220px. width:100% gives the width back so
+   max-width rules again. DO NOT REMOVE. */
 body > .hero, body > .meta{width:100%}
 
-/* O fundo. Vinha do blog.css e do home.css; as legais eram as unicas paginas
-   do site sem ele. O JS vive em /assets/fx.js, um so ficheiro. */
+/* Ambient aurora — larger radii than the home page, tuned for long-form
+   reading. Fixed, behind everything, never intercepting clicks. */
 .aurora span{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:drift 20s ease-in-out infinite}
 .aurora .a1{width:900px;height:900px;background:radial-gradient(circle,#12213c,transparent 65%);top:-160px;right:-60px}
 .aurora .a2{width:760px;height:760px;background:radial-gradient(circle,rgba(216,207,192,.06),transparent 60%);bottom:-180px;left:-80px;animation-delay:-8s}
 @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,26px)}}
-
-/* O FUNDO, EM TELEMÓVEL.
-   O efeito foi desenhado para um ecrã largo, onde ocupa uma fatia. Num
-   telemóvel ocupa o ecrã INTEIRO, e o que era ambiente passa a ser ruído por
-   cima do texto. Não se apaga: suaviza-se, e a rede de nós deixa de animar
-   (também poupa bateria, que num telemóvel não é detalhe). */
+.aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
 @media(max-width:760px){
-  /* A aurora fica difusa e parada: num ecrã pequeno, uma mancha a mexer atrás
-     do texto é ruído, e animá-la gasta bateria. A rede corre, mas mais discreta:
-     agora vive só no cabeçalho, acaba antes do primeiro parágrafo, e por isso
-     já não compete com a leitura. */
+  /* On a small screen an animated blur behind the text is noise, and
+     animating it costs battery: the aurora goes diffuse and still. */
   .aurora span{opacity:.22;filter:blur(70px);animation:none}
-  .net{opacity:.55}
 }
 
-/* Voltar ao topo. Estava só no home.css, e por isso o botão não existia nas
-   páginas compridas: artigos, blog, legais. É lá que faz falta. */
-.top{position:fixed;right:24px;bottom:24px;z-index:60;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:rgba(16,17,21,.82);backdrop-filter:blur(8px);border:1px solid var(--line-2);color:var(--muted);cursor:pointer;opacity:0;visibility:hidden;transform:translateY(12px);transition:opacity .45s,transform .45s cubic-bezier(.16,1,.3,1),color .3s,border-color .3s,background .3s}
+/* Back to top (progressively enhanced; inert without a script). */
+.top{position:fixed;right:24px;bottom:24px;z-index:60;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:rgba(16,17,21,.82);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--line-2);color:var(--muted);cursor:pointer;opacity:0;visibility:hidden;transform:translateY(12px);transition:opacity .45s,transform .45s cubic-bezier(.16,1,.3,1),color .3s,border-color .3s,background .3s}
 .top.show{opacity:1;visibility:visible;transform:none}
 .top:hover{color:var(--head);border-color:var(--accent);background:var(--panel)}
 .top svg{width:16px;height:16px;display:block}
 
-/* O FUNDO VIVE NO CABEÇALHO, não na página toda.
-   Era position:fixed;inset:0 e acompanhava o scroll: a meio de um artigo
-   continuavam a passar linhas por trás do texto. Passa a ser uma faixa
-   ancorada ao topo, à largura toda do ecrã, com a altura do cabeçalho REAL
-   desta página (o fx.js mede-o e escreve o --fxh). O mask esbate o fim, para
-   não haver um corte a direito onde a faixa acaba.
-   O fallback de 520px serve só enquanto o JS não corre. */
-/* A AURORA fica: é ambiente, é difusa, e não compete com o texto.
-   A REDE não. Era ela que passava linhas por trás do texto durante a leitura
-   inteira, e em tablet e telemóvel tornava-se ruído. Fica presa ao cabeçalho.
-
-   A altura NÃO é um número escrito à mão: um valor fixo acerta num breakpoint
-   e falha nos outros (o mesmo cabeçalho tem 951px no desktop e 699px no
-   telemóvel). O fx.js mede o cabeçalho real e escreve o --fxh. */
-.aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
-/* z-index:-1 e pointer-events:none NAO SAO DECORACAO.
-   Quando prendi a rede ao cabeçalho reescrevi esta regra e deixei cair as duas.
-   O canvas ficou POR CIMA do hero: comeu todos os cliques (o botão "Ver os
-   projetos" deixou de funcionar) e o botão direito passou a oferecer "Guardar
-   imagem", porque quem estava por baixo do rato era o canvas, não o site.
-   Um fundo que intercepta cliques não é um fundo. NAO AS TIRES. */
-.net{position:absolute;top:0;left:0;width:100%;height:var(--fxh,520px);
-  z-index:-1;pointer-events:none;
-  -webkit-mask-image:linear-gradient(to bottom,#000 66%,transparent);
-  mask-image:linear-gradient(to bottom,#000 66%,transparent)}
-
-/* O link de admin no rodapé. DISCRETO de propósito: quem não é admin não tem
-   nada a fazer ali (leva ao SSO da Microsoft e, sem o papel, a um 404). Não é
-   um login no site: é uma porta com a fechadura do lado do Azure. */
+/* The footer's admin link. Discreet on purpose: it is a door for editors,
+   not a site feature. */
 .fl-adm{opacity:.45;font-size:.86em}
 .fl-adm:hover{opacity:1}
 
-/* Sardine CMS addition: reduced-motion kill-switch (theme conformance). */
+/* Reduced-motion kill-switch (theme conformance). */
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}

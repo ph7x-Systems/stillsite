@@ -1,9 +1,7 @@
-/* site.css — utilitários da homepage que substituem estilos inline.
+/* utils.css — named utilities that replace inline styles.
  *
- * Existe para uma regra só: ZERO style="" no HTML (ver DESIGN-SOT.md). O
- * home.css é o design system e não se toca por causa disto; o que era inline
- * no template passou a viver aqui, com nome, reutilizando os tokens do :root.
+ * One rule justifies this file: ZERO style="" in the HTML (DESIGN_RULES).
+ * What would be inline in a template lives here instead, named, reusing
+ * the :root tokens.
  */
-.stat-note{color:var(--faint);font-size:.78rem;margin-top:30px}
 .kick-center{justify-content:center;margin-bottom:34px}
-.ct-formtop{margin-top:52px}
