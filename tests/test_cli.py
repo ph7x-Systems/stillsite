@@ -164,3 +164,31 @@ def test_preview_serves_the_site_404_page(tmp_path: Path) -> None:
                 assert "Lost in orbit" in error.read().decode("utf-8")
         finally:
             server.shutdown()
+
+
+def test_portable_round_trip_is_lossless(tmp_path: Path) -> None:
+    """M6: dump -> import into a fresh project -> dump again produces
+    byte-identical portable output — the portable pair really is the
+    source of truth."""
+    (tmp_path / "origin").mkdir()
+    (tmp_path / "clone").mkdir()
+    origin = make_project(tmp_path / "origin")
+    runner.invoke(app, ["seed", "-p", str(origin)])
+    dumped = runner.invoke(app, ["dump", "-p", str(origin)])
+    assert dumped.exit_code == 0, dumped.output
+    first = (origin / "portable" / "content.json").read_text(encoding="utf-8")
+
+    clone = make_project(tmp_path / "clone")
+    imported = runner.invoke(app, ["import", str(origin / "portable"), "-p", str(clone)])
+    assert imported.exit_code == 0, imported.output
+    redumped = runner.invoke(app, ["dump", "-p", str(clone)])
+    assert redumped.exit_code == 0, redumped.output
+    second = (clone / "portable" / "content.json").read_text(encoding="utf-8")
+    assert first == second
+    for path in sorted((origin / "portable" / "markdown").rglob("*.md")):
+        relative = path.relative_to(origin / "portable")
+        assert (clone / "portable" / relative).read_text(encoding="utf-8") == path.read_text(
+            encoding="utf-8"
+        ), relative
+    blocked = runner.invoke(app, ["import", str(origin / "portable"), "-p", str(clone)])
+    assert blocked.exit_code == 3  # refuses to overwrite without --replace

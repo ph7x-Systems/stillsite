@@ -309,3 +309,80 @@ def extension_command(
             return
     typer.echo(f"error: no activated extension named {name!r} provides commands", err=True)
     raise typer.Exit(code=2)
+
+
+@app.command()
+def dump(
+    project_dir: ProjectDir = Path(),
+    out: Annotated[Path, typer.Option(help="Output directory for the portable dump")] = Path(
+        "portable"
+    ),
+) -> None:
+    """Write the portable source of truth: content.json + Markdown tree.
+
+    This is the backup and the migration path — `cms import` reads it
+    back losslessly (round-trip verified by the test suite).
+    """
+    from cms_core.export import export_content_json, export_markdown_files
+
+    project = _project(project_dir)
+    content = project.load_content()
+    destination = out if out.is_absolute() else project.directory / out
+    destination.mkdir(parents=True, exist_ok=True)
+    (destination / "content.json").write_text(
+        export_content_json(content.articles, content.pages, content.media, content.menu),
+        encoding="utf-8",
+    )
+    for path, body in export_markdown_files(list(content.articles)).items():
+        target = destination / "markdown" / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(body, encoding="utf-8")
+    typer.echo(f"dumped {len(content.articles)} article(s) into {destination}")
+
+
+@app.command(name="import")
+def import_command(
+    source: Annotated[Path, typer.Argument(help="Directory written by `cms dump`")],
+    project_dir: ProjectDir = Path(),
+    replace: Annotated[
+        bool, typer.Option("--replace", help="Import even if the storage already has content")
+    ] = False,
+) -> None:
+    """Read a portable dump back into the project storage (upserts)."""
+    from cms_core import import_content_json
+
+    project = _project(project_dir)
+    payload_path = source / "content.json"
+    if not payload_path.is_file():
+        typer.echo(f"error: {payload_path} not found", err=True)
+        raise typer.Exit(code=2)
+    markdown_files = (
+        {
+            str(path.relative_to(source / "markdown")): path.read_text(encoding="utf-8")
+            for path in sorted((source / "markdown").rglob("*.md"))
+        }
+        if (source / "markdown").is_dir()
+        else {}
+    )
+    articles, pages, media, menu = import_content_json(
+        payload_path.read_text(encoding="utf-8"), markdown_files
+    )
+    with project.open_storage() as storage:
+        if storage.has_content() and not replace:
+            typer.echo(
+                "error: the project storage already has content (use --replace to upsert)",
+                err=True,
+            )
+            raise typer.Exit(code=3)
+        for article in articles:
+            storage.save_article(article)
+        for page in pages:
+            storage.save_page(page)
+        for asset in media:
+            storage.save_media_asset(asset)
+        for item in menu:
+            storage.save_menu_item(item)
+    typer.echo(
+        f"imported {len(articles)} article(s), {len(pages)} page(s), "
+        f"{len(media)} media asset(s), {len(menu)} menu item(s)"
+    )

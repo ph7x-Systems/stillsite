@@ -5,6 +5,13 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Portable round-trip** (M6): the portable format is now complete
+  (slugs, category, tags, cover, trash flag included) and gains its
+  commands — `cms dump` writes `content.json` + the Markdown tree,
+  `cms import` reads it back losslessly into any project (byte-verified
+  round-trip test). This is the backup, the restore path and the
+  instance-migration story in one pair.
+
 - **Redirects** (M6): a `[redirects]` map in `sardine.toml` becomes
   real 301s on the SWA and nginx targets, and the builder ships
   meta-refresh fallback pages (canonical set, noindex) so redirects

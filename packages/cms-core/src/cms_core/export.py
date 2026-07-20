@@ -15,11 +15,12 @@ from cms_core.pages import Page, Section
 
 
 def article_to_portable(article: Article) -> dict[str, object]:
-    languages: dict[str, dict[str, str]] = {
+    languages: dict[str, dict[str, str | None]] = {
         SOURCE_LANGUAGE.value: {
             "state": "complete",
             "title": article.source.title,
             "summary": article.source.summary,
+            "slug": article.source.slug,
         }
     }
     for language, translation in sorted(
@@ -29,6 +30,7 @@ def article_to_portable(article: Article) -> dict[str, object]:
             "state": article.translation_state(language).value,
             "title": translation.content.title,
             "summary": translation.content.summary,
+            "slug": translation.content.slug,
             "source_checksum": translation.source_checksum,
         }
     return {
@@ -40,6 +42,10 @@ def article_to_portable(article: Article) -> dict[str, object]:
         "featured": article.featured,
         "author": article.author,
         "fields": dict(sorted(article.fields.items())),
+        "category": article.category,
+        "tags": list(article.tags),
+        "cover": article.cover,
+        "deleted_at": article.deleted_at.isoformat() if article.deleted_at else None,
         "languages": languages,
     }
 
@@ -87,6 +93,7 @@ def page_to_portable(page: Page) -> dict[str, object]:
         "created_at": page.created_at.isoformat(),
         "updated_at": page.updated_at.isoformat(),
         "publish_at": page.publish_at.isoformat() if page.publish_at else None,
+        "deleted_at": page.deleted_at.isoformat() if page.deleted_at else None,
         "languages": languages,
         "sections": [section_to_portable(section) for section in page.sections],
     }

@@ -104,12 +104,12 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | --- | --- | --- |
 | Plugin system | ✅ ADR-0028: `sardine.extensions` contract — rules, build steps, targets, backends, themes, `cms x` CLI, section-kind hints; explicit activation in `sardine.toml` | — |
 | Themes + per-project overrides | ✅ entry-point discovery | — |
-| **Importers** from other CMSs | ❌ | 🔜 `cms import` for the common blog-export formats — the adoption lever (M6) |
+| Import / restore | ✅ `cms dump` + `cms import`: the portable JSON/Markdown pair round-trips losslessly (byte-verified) — backup, restore and instance migration | 🧭 third-party blog-export importer needs an owner call (the parser must reference the foreign format's XML namespaces in code) |
 | Export / portability | ✅ JSON/Markdown is the source of truth | — |
 | Content API | ❌ builds are the API | 🔜 optional JSON content export target (M6) |
 | Webhooks (publish → host build) | ❌ | 🔜 on-publish webhook (M7) |
 | Health check | 🟡 `cms validate` covers content | 🔜 `cms doctor` (storage, media, config) (M7) |
-| Backups | ✅ export is the backup; the DB is disposable | — (document the restore path, M7) |
+| Backups | ✅ `cms dump` writes the portable pair, `cms import` restores it — the DB stays disposable | — |
 | Scheduled builds | ✅ recipe in ADMIN_GUIDE (CI `schedule:` + `cms export`); `publish_at`-aware by construction | — |
 
 ## Execution order (ADR-driven)

@@ -238,7 +238,9 @@ tests, docs and wiki updates, per the standing gates.
 - [ ] Comments-integration contract for static sites (embed islands,
       privacy-respecting)
 - [ ] JSON content export target (headless consumption)
-- [ ] Importers for common blog-export formats (`cms import`)
+- [x] Portable round-trip: `cms dump` + `cms import`, lossless
+      (byte-verified); third-party blog importer awaits the owner's call
+      on foreign-format namespace references in code
 - [x] **Admin panel localization** — shipped early (ADR-0022): gettext
       catalogs (EN msgids; PT-PT/ES/FR/DE), per-user preference +
       `Accept-Language` fallback, anti-drift completeness test
