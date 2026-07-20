@@ -5,6 +5,15 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **The content API closes M6**: `content_api = true` under `[build]`
+  makes every build also emit versioned JSON under `api/v1/` —
+  `site.json` plus one `content.json` per language with articles
+  (slugs, rendered bodies, categories, tags, cover metadata incl.
+  `srcset`, custom fields) and pages with their typed sections. Exactly
+  the HTML build's publication, scheduling, trash and language-parity
+  gates; deterministic; the contract tests are public
+  ([CONTENT_API.md](docs/CONTENT_API.md)). Enabled on the live demo.
+
 - **Comments, as a contract** (M6, ADR-0031): a `[comments]` table in
   `sardine.toml` selects a provider an activated extension registers
   (`Extension.comments_providers`) — the core ships no provider and no

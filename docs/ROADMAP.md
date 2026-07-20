@@ -117,7 +117,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Themes + per-project overrides | ✅ entry-point discovery | — |
 | Import / restore | ✅ portable JSON/Markdown round-trip plus an offline WXR 1.2 blog adapter ([ADR-0030](adr/0030-foreign-blog-import.md)) | More foreign formats only when a concrete migration requires one |
 | Export / portability | ✅ JSON/Markdown is the source of truth | — |
-| Content API | ❌ builds are the API | 🔜 optional JSON content export target (M6) |
+| Content API | ✅ opt-in `api/v1/` JSON in every build ([CONTENT_API.md](CONTENT_API.md)): versioned, deterministic, same publication/language gates as the HTML | — |
 | Webhooks (publish → host build) | ❌ | 🔜 on-publish webhook (M7) |
 | Health check | 🟡 `cms validate` covers content | 🔜 `cms doctor` (storage, media, config) (M7) |
 | Backups | ✅ `cms dump` writes the portable pair, `cms import` restores it — the DB stays disposable | — |
@@ -129,20 +129,18 @@ Completed M6 foundation:
 
 `extension contract → menu manager → image derivatives → redirects →
 portable round-trip → external blog adapter → live refresh + autosave →
-reusable-block gallery → comments contract (ADR-0031)`
+reusable-block gallery → comments contract (ADR-0031) → JSON content
+target`
 
 Current queue:
 
-1. **JSON content target** — deterministic, versioned headless output using
-   the same publication and language rules as HTML builds.
-2. **M7 operations** — email/notifications ADR → TOTP 2FA → on-publish
+1. **M7 operations** — email/notifications ADR → TOTP 2FA → on-publish
    webhooks → `cms doctor`.
 
 ## Definition of done for the current queue
 
 | Item | Done means |
 | --- | --- |
-| JSON content target | Output is deterministic and versioned; only build-eligible content appears; all configured languages, slugs, relationships and media metadata are represented; target tests are public. |
 | M7 operations | Recovery and notifications have an explicit delivery contract; 2FA is role-safe; webhooks are signed/retryable; `cms doctor` reports storage, media, configuration and environment health. |
 
 ## Milestones ahead
@@ -153,11 +151,12 @@ Current queue:
   filters, users screen, editorial notes — all shipped, all live on the
   demo. Autosave and live themed refresh shipped immediately after closure
   as ADR-0027 phase 2.
-- **M6 — Extensibility and adoption**: the plugin/extension ADR executed
-  (custom fields, rules, build steps), menu manager, image derivatives,
-  redirects, portable and external blog import, live refresh/autosave,
-  reusable-block authoring, comments-integration contract and JSON content
-  target. (Admin localization shipped early — ADR-0022.)
+- **M6 — Extensibility and adoption: CLOSED.** The extension contract
+  executed (ADR-0028), menu manager, image derivatives, redirects,
+  portable round-trip and external blog import, live refresh/autosave,
+  reusable-block gallery, comments contract (ADR-0031) and the JSON
+  content target — all shipped. (Admin localization shipped early —
+  ADR-0022.)
 - **M7 — Operations**: email/notification subsystem (password reset,
   review notifications), TOTP 2FA, webhooks and `cms doctor`.
 - **1.0** — criteria: M5–M7 shipped, admin stable, two production

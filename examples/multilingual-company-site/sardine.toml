@@ -67,3 +67,4 @@ url = "sqlite:///content.sqlite3"
 
 [build]
 output = "_site"
+content_api = true

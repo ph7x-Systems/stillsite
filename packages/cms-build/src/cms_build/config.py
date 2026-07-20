@@ -52,6 +52,10 @@ class SiteConfig(BaseModel):
     comments: CommentsSettings | None = None
     """ADR-0031: absent means no comments anywhere — builds are
     byte-identical to a comments-less configuration."""
+    content_api: bool = False
+    """M6 headless output: ``[build] content_api = true`` makes every
+    build also emit versioned JSON under ``api/v1/`` — same publication,
+    scheduling and language rules as the HTML pages, deterministic."""
     """When set, the footer links to the admin panel (dimmed, nofollow)."""
 
     def category_label(self, slug: str, language: Language) -> str:

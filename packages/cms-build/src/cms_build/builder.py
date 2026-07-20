@@ -112,6 +112,11 @@ def _chunk[T](items: list[T], size: int) -> list[list[T]]:
 COMMENTS_ISLAND_PATH = "assets/comments-island.js"
 """ADR-0031: where the provider's vendored island ships in the artifact."""
 
+CONTENT_API_VERSION = 1
+"""The ``api/v1`` envelope version (M6 headless output). Additive fields
+may join within a version; renames or removals bump it — consumers pin
+the path, not this constant."""
+
 
 class _SiteBuilder:
     def __init__(
@@ -163,6 +168,10 @@ class _SiteBuilder:
             self._build_listings(language)
             self._build_category_and_tag_pages(language)
             self._build_feeds(language)
+            if self.config.content_api:
+                self._build_content_api(language)
+        if self.config.content_api:
+            self.artifact.add("api/v1/site.json", self._content_api_site())
 
         self._build_redirects()
         self._build_not_found()
@@ -590,6 +599,84 @@ class _SiteBuilder:
             for a in articles
         ]
         return json.dumps(entries, ensure_ascii=False, sort_keys=True) + "\n"
+
+    # Content API (M6): versioned headless JSON, same rules as the HTML.
+
+    def _content_api_site(self) -> str:
+        payload: dict[str, object] = {
+            "version": CONTENT_API_VERSION,
+            "name": self.config.name,
+            "base_url": str(self.config.base_url),
+            "blog_path": self.config.blog_path,
+            "languages": [language.value for language in self.config.all_languages],
+            "categories": {
+                slug: {code.value: label for code, label in labels.items()}
+                for slug, labels in sorted(self.config.categories.items())
+            },
+        }
+        return json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n"
+
+    def _build_content_api(self, language: Language) -> None:
+        """One file per language: exactly the entries the HTML build ships
+        (published, out of the trash, past their moment, translation
+        complete), with slugs, relationships and media metadata."""
+        payload: dict[str, object] = {
+            "version": CONTENT_API_VERSION,
+            "language": language.value,
+            "articles": [
+                self._content_api_article(article, language)
+                for article in self.articles_by_language[language]
+            ],
+            "pages": [
+                self._content_api_page(page, language)
+                for page in self.pages
+                if _available(page, language)
+            ],
+        }
+        self.artifact.add(
+            f"api/v1/{language.value}/content.json",
+            json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n",
+        )
+
+    def _content_api_article(self, article: Article, language: Language) -> dict[str, object]:
+        body = _article_content(article, language)
+        return {
+            "id": article.id,
+            "slug": body.slug,
+            "url": urls.article_path(self.config, article, language),
+            "title": body.title,
+            "summary": body.summary,
+            "body_html": render_markdown(body.body_markdown),
+            "date": article.created_at.date().isoformat(),
+            "author": article.author,
+            "featured": article.featured,
+            "category": self._category_context(article, language),
+            "tags": [
+                {"slug": tag, "url": urls.tag_path(self.config, tag, language)}
+                for tag in article.tags
+            ],
+            "cover": self._media_image(article.cover, language),
+            "fields": dict(sorted(article.fields.items())),
+        }
+
+    def _content_api_page(self, page: Page, language: Language) -> dict[str, object]:
+        body = page.source if language is SOURCE_LANGUAGE else page.translations[language].content
+        return {
+            "id": page.id,
+            "slug": body.slug,
+            "url": urls.page_path(page, language),
+            "title": body.title,
+            "description": body.description,
+            "sections": [
+                {
+                    "key": section["key"],
+                    "kind": section["kind"],
+                    "fields": section["data"],
+                    "images": section["images"],
+                }
+                for section in self._section_contexts(page, language)
+            ],
+        }
 
     def _build_redirects(self) -> None:
         """Meta-refresh fallback pages for every configured redirect (M6):

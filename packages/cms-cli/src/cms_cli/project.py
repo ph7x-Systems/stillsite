@@ -117,13 +117,12 @@ def load_project(directory: Path) -> Project:
         storage_url = f"sqlite:///{resolved}"
 
     build_data = data.get("build", {})
-    site = (
-        site.model_copy(
-            update={"image_widths": tuple(int(w) for w in build_data.get("image_widths", []))}
-        )
-        if build_data.get("image_widths")
-        else site
-    )
+    build_updates: dict[str, object] = {}
+    if build_data.get("image_widths"):
+        build_updates["image_widths"] = tuple(int(w) for w in build_data["image_widths"])
+    if build_data.get("content_api"):
+        build_updates["content_api"] = bool(build_data["content_api"])
+    site = site.model_copy(update=build_updates) if build_updates else site
     output = directory / build_data.get("output", "_site")
     return Project(
         directory=directory,

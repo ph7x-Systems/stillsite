@@ -259,7 +259,10 @@ tests, docs and wiki updates, per the standing gates.
       `[comments]` + extension-registered providers, consent-first
       same-origin island, localized no-JS link, loud unknown-provider
       failure, byte-identical builds without the table
-- [ ] JSON content export target (headless consumption)
+- [x] JSON content target ([CONTENT_API.md](CONTENT_API.md)): opt-in
+      `[build] content_api`, versioned `api/v1/` envelope, per-language
+      files, same eligibility gates as HTML, deterministic (public
+      contract tests)
 - [x] **Admin panel localization** — shipped early (ADR-0022): gettext
       catalogs (EN msgids; PT-PT/ES/FR/DE), per-user preference +
       `Accept-Language` fallback, anti-drift completeness test
@@ -275,9 +278,7 @@ tests, docs and wiki updates, per the standing gates.
 
 ## Current execution queue
 
-1. **JSON content target** — export a stable, versioned contract for headless
-   consumers without weakening the HTML build.
-2. **Milestone 7 operations** — email/notifications, TOTP, on-publish
+1. **Milestone 7 operations** — email/notifications, TOTP, on-publish
    webhooks and `cms doctor`, in that order.
 
 Acceptance criteria and capability gaps are maintained in
