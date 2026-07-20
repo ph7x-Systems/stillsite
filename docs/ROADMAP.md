@@ -73,7 +73,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Custom content types | ❌ deliberate: pages-with-sections + article custom fields cover known cases | 🧭 own ADR when a real case appears (ADR-0028) |
 | Custom fields | ✅ free-form fields on articles (editable, exported, themed) and sections | — |
 | Navigation menus | ✅ explicit menu manager (per-language labels, ordering, external links) with automatic-menu fallback | — |
-| Reusable blocks | 🟡 section kinds are the block library | 🔜 grow the kind gallery; document authoring (M6) |
+| Reusable blocks | ✅ the section-kind gallery is a tested contract: nine bundled kinds (incl. quote, FAQ, CTA, image gallery), both themes, admin field suggestions, extension-added kinds, THEME_GUIDE authoring table | — |
 | Design-aware editing | ✅ themed side-preview plus debounced live refresh through the scoped real builder (ADR-0027) | — |
 | Multilingual | ✅ **core strength**: EN source + per-language states, parity gates | — |
 | Authors / bylines | ✅ editorial byline on articles, rendered by the themes | — |
@@ -128,25 +128,23 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 Completed M6 foundation:
 
 `extension contract → menu manager → image derivatives → redirects →
-portable round-trip → external blog adapter → live refresh + autosave`
+portable round-trip → external blog adapter → live refresh + autosave →
+reusable-block gallery`
 
 Current queue:
 
-1. **Reusable-block authoring** — expand the section-kind gallery and make
-   its authoring contract practical in the Theme Guide.
-2. **Comments-integration ADR** — define a provider-neutral,
+1. **Comments-integration ADR** — define a provider-neutral,
    privacy-respecting embed island that leaves every page complete without
    JavaScript.
-3. **JSON content target** — deterministic, versioned headless output using
+2. **JSON content target** — deterministic, versioned headless output using
    the same publication and language rules as HTML builds.
-4. **M7 operations** — email/notifications ADR → TOTP 2FA → on-publish
+3. **M7 operations** — email/notifications ADR → TOTP 2FA → on-publish
    webhooks → `cms doctor`.
 
 ## Definition of done for the current queue
 
 | Item | Done means |
 | --- | --- |
-| Reusable-block authoring | Bundled section kinds have documented fields, examples and graceful fallback; extension hints and theme contexts agree; conformance tests cover the contract. |
 | Comments integration | An ADR fixes consent, privacy, CSP and no-JS behavior; the theme contract is provider-neutral; one fictional example passes accessibility and security gates. |
 | JSON content target | Output is deterministic and versioned; only build-eligible content appears; all configured languages, slugs, relationships and media metadata are represented; target tests are public. |
 | M7 operations | Recovery and notifications have an explicit delivery contract; 2FA is role-safe; webhooks are signed/retryable; `cms doctor` reports storage, media, configuration and environment health. |

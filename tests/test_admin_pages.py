@@ -351,3 +351,47 @@ def test_section_field_values_never_render_as_raw_html(tmp_path: Path) -> None:
         translation = client.get("/pages/home/sections/hero-main/translations/es").text
     assert "<img src=x" not in editor
     assert "<img src=x" not in translation
+
+
+def test_editor_kind_hints_are_the_bundled_gallery(tmp_path: Path) -> None:
+    """The editor's kind suggestions come from the one bundled gallery the
+    themes implement — no drift between admin hints and theme contracts."""
+    from cms_build.themes import SECTION_KIND_GALLERY
+
+    app = _app(tmp_path, _page("home", _hero()))
+    with _client(app) as client:
+        _sign_in(client)
+        editor = client.get("/pages/home").text
+    for kind in SECTION_KIND_GALLERY:
+        assert kind in editor, kind
+
+
+def test_extension_section_kinds_join_the_editor_hints(tmp_path: Path) -> None:
+    """ADR-0028: kinds an activated extension advertises appear in the kind
+    suggestions and drive the section editor's suggested field rows."""
+    (tmp_path / "sardine.toml").write_text(
+        'extensions = ["test_extensions:extension"]\n'
+        '[site]\nname = "T"\nbase_url = "https://t.example"\nlanguages = []\n',
+        encoding="utf-8",
+    )
+    url = f"sqlite:///{tmp_path / 'content.db'}"
+    with create_storage(url) as storage:
+        storage.save_user(
+            User(
+                username="ana",
+                password_hash=hash_password(PASSWORD),
+                role=Role.EDITOR,
+                created_at=NOW,
+            )
+        )
+        timeline = Section(key="era-one", kind="timeline", source=SectionContent())
+        storage.save_page(_page("home", timeline))
+    app = create_app(AdminSettings(storage_url=url, project_dir=tmp_path))
+    with _client(app) as client:
+        _sign_in(client)
+        editor = client.get("/pages/home").text
+        section = client.get("/pages/home/sections/era-one").text
+    assert "timeline" in editor  # advertised kind joins the hint list
+    # the extension's advertised fields become suggested empty rows
+    assert 'value="heading"' in section
+    assert 'value="moments"' in section

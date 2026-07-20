@@ -86,7 +86,10 @@ with that entity's errors listed (the publish gate; disable only with
   source marks its translations `outdated` automatically — states derive
   from content checksums, never from flags.
 - **Pages**: metadata plus ordered typed sections; each section is a
-  free-form field map the theme interprets, translated side by side.
+  free-form field map the theme interprets, translated side by side. The
+  editor suggests the fields each bundled kind consumes (the gallery in
+  THEME_GUIDE.md) and merges kinds advertised by activated extensions
+  (ADR-0028) — suggestions only, never validation.
 - **Media**: the library filters server-side — text search over id,
   path, type and alt texts, plus quick views (images only, missing
   translated alt). Uploads validated server-side — the MIME type is sniffed from

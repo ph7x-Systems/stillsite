@@ -559,8 +559,8 @@ msgstr "Abschnittseditor"
 msgid "template consumes. Clear a value to drop its field; use the blank rows to add more."
 msgstr "verarbeitet. Leeren Sie einen Wert, um sein Feld zu entfernen; nutzen Sie die leeren Zeilen für weitere."
 
-msgid "the theme template that renders it — reference theme kinds:"
-msgstr "das Theme-Template, das ihn rendert — Arten des Referenz-Themes:"
+msgid "the theme template that renders it — bundled kinds:"
+msgstr "das Theme-Template, das ihn rendert — mitgelieferte Arten:"
 
 msgid "theme"
 msgstr "Theme"

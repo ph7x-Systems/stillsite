@@ -25,6 +25,7 @@ from cms_core.storage import StorageBackend
 
 from cms_cli.seed_data import (
     ABOUT,
+    ABOUT_QUOTE,
     ABOUT_STORY,
     ARTICLES,
     COVER_ALT,
@@ -33,6 +34,7 @@ from cms_cli.seed_data import (
     HOME_ABOUT,
     HOME_CTA,
     HOME_EXPERTISE,
+    HOME_FAQ,
     HOME_HERO,
     HOME_LATEST,
     MEDIA_ALT,
@@ -90,11 +92,14 @@ def seed(storage: StorageBackend, project_dir: Path | None = None) -> tuple[int,
                 ("about", "story", HOME_ABOUT),
                 ("expertise", "expertise", HOME_EXPERTISE),
                 ("latest", "latest-articles", HOME_LATEST),
+                ("questions", "faq", HOME_FAQ),
                 ("join", "contact", HOME_CTA),
             ],
         )
     )
-    storage.save_page(_page("about", ABOUT, [("story", "story", ABOUT_STORY)]))
+    storage.save_page(
+        _page("about", ABOUT, [("story", "story", ABOUT_STORY), ("voices", "quote", ABOUT_QUOTE)])
+    )
 
     for article_id, (category, tags, days, contents) in ARTICLES.items():
         entry = _article(article_id, category, tags, days, contents)

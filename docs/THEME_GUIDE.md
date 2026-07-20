@@ -77,6 +77,40 @@ Contracts to respect:
 - `article.body_html` is pre-rendered safe Markdown — inject it unescaped
   exactly once (`{{ article.body_html }}` with the builder's safe wrapper).
 
+## The section-kind gallery
+
+`SECTION_KIND_GALLERY` in `cms_build.themes` is the authoring contract for
+reusable blocks: kind → the field names it consumes. Both bundled themes
+implement every kind, the admin's section editor suggests exactly these
+fields, and the conformance suite proves each advertised field reaches the
+rendered page. A section's context offers the same fields twice: `fields`
+(sorted name/value pairs, for generic rendering) and `data` (a mapping, for
+kind-specific markup), plus `images` resolved from the section's media list.
+
+| Kind | Fields | Notes |
+| --- | --- | --- |
+| `hero` | `kicker`, `lead`, `heading`, `accent` | opening statement; `accent` is the emphasized tail of the heading |
+| `story` | `kicker`, `heading`, `body` | narrative block; also renders `meta1k`/`meta1v` … `meta6k`/`meta6v` stat pairs and the section's images |
+| `expertise` | `kicker`, `heading`, `row1no`, `row1t`, `row1d` | numbered capability rows, repeat up to `row8*` |
+| `latest-articles` | `kicker`, `heading` | the builder injects the recent-articles list as `latest` |
+| `quote` | `quote`, `attribution`, `role` | a pull quote needs no heading — the quote is the content |
+| `faq` | `kicker`, `heading`, `q1`, `a1` … | question/answer pairs, repeat up to `q6`/`a6`; rendered as native `<details>` (no JS) |
+| `cta` | `kicker`, `heading`, `body`, `button`, `url` | the button renders only when `button` **and** `url` are both set; `url` is per-language content, so each translation can point at its own path |
+| `gallery` | `kicker`, `heading` | renders the section's media list as an image grid (`srcset`-aware) |
+| `contact` | `kicker`, `heading`, `accent`, `button` | closing call to action; the button links to the last menu entry |
+
+Rules for theme authors:
+
+- Implement the kinds you care about; **everything else must fall through
+  to a generic renderer** (fields as labeled values, images below) — the
+  conformance suite's unknown-kind test enforces this shape.
+- Extensions advertise additional kinds via `Extension.section_kinds`
+  (ADR-0028); the admin merges them into its suggestions. The bundled
+  names win on collision, so pick distinct kind names.
+- Field suggestions are hints, never validation: editors can add any
+  field to any section, and your templates should ignore what they do
+  not know.
+
 ## Interactivity: Web Component islands
 
 Ship interactive behavior as native custom elements in your assets (ES

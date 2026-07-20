@@ -559,8 +559,8 @@ msgstr "editor de secciones"
 msgid "template consumes. Clear a value to drop its field; use the blank rows to add more."
 msgstr "consume. Borra un valor para quitar su campo; usa las filas en blanco para añadir más."
 
-msgid "the theme template that renders it — reference theme kinds:"
-msgstr "la plantilla del tema que la renderiza — tipos del tema de referencia:"
+msgid "the theme template that renders it — bundled kinds:"
+msgstr "la plantilla del tema que la renderiza — tipos incluidos:"
 
 msgid "theme"
 msgstr "tema"

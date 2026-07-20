@@ -107,6 +107,58 @@
     {% endif %}
   </div>
 </section>
+{% elif section.kind == "quote" %}
+<section class="sec" id="{{ section.key }}">
+  <div class="wrap">
+    <figure class="pull-quote">
+      <blockquote><p>{{ section.data.quote }}</p></blockquote>
+      {% if section.data.attribution %}
+      <figcaption>{{ section.data.attribution }}{% if section.data.role %} <span class="pq-role">· {{ section.data.role }}</span>{% endif %}</figcaption>
+      {% endif %}
+    </figure>
+  </div>
+</section>
+{% elif section.kind == "faq" %}
+<section class="sec" id="{{ section.key }}">
+  <div class="wrap">
+    {% if section.data.kicker %}<span class="kick">{{ section.data.kicker }}</span>{% endif %}
+    {% if section.data.heading %}<h2>{{ section.data.heading }}</h2>{% endif %}
+    <div class="faq-list">
+      {% for i in range(1, 7) %}
+      {% set question = section.data.get("q" ~ i) %}
+      {% if question %}
+      <details class="faq-item">
+        <summary>{{ question }}</summary>
+        <p>{{ section.data.get("a" ~ i) }}</p>
+      </details>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% elif section.kind == "cta" %}
+<section class="sec contact" id="{{ section.key }}">
+  <div class="wrap">
+    {% if section.data.kicker %}<span class="kick kick-center">{{ section.data.kicker }}</span>{% endif %}
+    <p class="big">{{ section.data.heading }}</p>
+    {% if section.data.body %}<p class="cta-body">{{ section.data.body }}</p>{% endif %}
+    {% if section.data.button and section.data.url %}
+    <p class="cta-row"><a class="btn btn-lg" href="{{ section.data.url }}">{{ section.data.button }} <span class="ar">&rarr;</span></a></p>
+    {% endif %}
+  </div>
+</section>
+{% elif section.kind == "gallery" %}
+<section class="sec" id="{{ section.key }}">
+  <div class="wrap">
+    {% if section.data.kicker %}<span class="kick">{{ section.data.kicker }}</span>{% endif %}
+    {% if section.data.heading %}<h2>{{ section.data.heading }}</h2>{% endif %}
+    <div class="g-grid">
+      {% for image in section.images %}
+      <figure class="g-item"><img src="{{ image.url }}"{% if image.srcset %} srcset="{{ image.srcset }}" sizes="(max-width: 820px) 100vw, 50vw"{% endif %} alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}" loading="lazy"></figure>
+      {% endfor %}
+    </div>
+  </div>
+</section>
 {% else %}
 <section class="sec section-{{ section.kind }}" id="{{ section.key }}">
   <div class="wrap">
