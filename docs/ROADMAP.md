@@ -105,9 +105,9 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Role ladder | ✅ editor < reviewer < publisher < admin | — |
 | User management UI | ✅ Users screen (admin role): create, role change, delete — self and last-admin safeguards; CLI stays the bootstrap | — |
 | Admin panel in the editor's language | ✅ gettext i18n (ADR-0022): PT-PT/ES/FR/DE shipped, per-user preference + browser fallback, completeness enforced by tests | — |
-| Password reset | ❌ no email subsystem | 🧭 email/notification ADR (M7) |
+| Password reset | ❌ | 🔜 per [ADR-0032](adr/0032-email-and-notifications.md) (proposed): SMTP-only, enumeration-safe, hashed single-use tokens (M7) |
 | Two-factor authentication | ❌ | 🔜 TOTP (M7) |
-| Notifications (review requested…) | ❌ | 🧭 same email ADR (M7) |
+| Notifications (review requested…) | ❌ | 🔜 per [ADR-0032](adr/0032-email-and-notifications.md): review-requested + published, fire-and-forget (M7) |
 
 ### Platform and operations
 
