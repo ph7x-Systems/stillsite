@@ -17,7 +17,7 @@ pip install "sardine-cms-core[mssql]"      # SQL Server (pymssql)
 
 The database is never the source of truth — portable JSON/Markdown export
 is. Admin accounts live in storage but are never exported. Foreign formats
-enter through isolated adapters; WordPress WXR 1.2 blog posts are supported
+enter through isolated adapters; WXR 1.2 blog posts are supported
 without network access or changes to the portable schema (ADR-0030).
 
 ## Sardine CMS

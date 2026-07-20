@@ -5,12 +5,21 @@ means at each horizon. Execution detail lives in [PLAN.md](PLAN.md)
 (milestones, checkboxes) — this page points at it. Live demo:
 <https://sardine.ph7x.com>.
 
-Sardine CMS is a **CMS**: the bar for "complete" is what editors already
-expect from the mature CMSs they come from. The parity table below is the
-honest inventory — the capability, what Sardine CMS does today, and where
-the gap is scheduled. Static-first changes *how* some features work
+Sardine CMS is a **CMS**: the bar for "complete" is the capability set
+editors expect from a mature publishing system. This is a benchmark, not a
+clone target. The inventory below states what works now, what remains and
+which milestone owns each gap. Static-first changes *how* a capability works
 (comments, search and scheduling need no server at request time), never
-whether the editorial capability exists.
+whether editors get the capability.
+
+Product direction has three pillars:
+
+1. **Editorial confidence** — preview, workflow, revisions, scheduling,
+   accessibility and multilingual parity are visible and enforceable.
+2. **Adoption without lock-in** — themes, extensions, portable content and
+   controlled import paths let a site enter, evolve and leave cleanly.
+3. **Operational completeness** — authentication recovery, notifications,
+   webhooks and diagnostics make the system dependable beyond development.
 
 ## Where the project stands
 
@@ -104,7 +113,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | --- | --- | --- |
 | Plugin system | ✅ ADR-0028: `sardine.extensions` contract — rules, build steps, targets, backends, themes, `cms x` CLI, section-kind hints; explicit activation in `sardine.toml` | — |
 | Themes + per-project overrides | ✅ entry-point discovery | — |
-| Import / restore | ✅ portable JSON/Markdown round-trip plus WordPress WXR 1.2 blog import (ADR-0030); namespace identifiers stay confined to the offline adapter | More foreign formats only when a concrete migration requires one |
+| Import / restore | ✅ portable JSON/Markdown round-trip plus an offline WXR 1.2 blog adapter ([ADR-0030](adr/0030-foreign-blog-import.md)) | More foreign formats only when a concrete migration requires one |
 | Export / portability | ✅ JSON/Markdown is the source of truth | — |
 | Content API | ❌ builds are the API | 🔜 optional JSON content export target (M6) |
 | Webhooks (publish → host build) | ❌ | 🔜 on-publish webhook (M7) |
@@ -112,17 +121,33 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Backups | ✅ `cms dump` writes the portable pair, `cms import` restores it — the DB stays disposable | — |
 | Scheduled builds | ✅ recipe in ADMIN_GUIDE (CI `schedule:` + `cms export`); `publish_at`-aware by construction | — |
 
-## Execution order (ADR-driven)
+## Execution order
 
-The queue evolves with the ADRs, in this order:
+Completed M6 foundation:
 
-1. **M6 by ADR** (M5 closed): ADR-0028 extension contract (custom fields,
-   rules, build steps) → menu manager → image derivatives → redirects →
-   portable round-trip → WordPress importer (ADR-0030) → ADR-0027 live
-   refresh with autosave → reusable-block gallery → comments-integration
-   contract → JSON content target.
-2. **M7 by ADR**: email/notifications ADR → TOTP 2FA → webhooks →
-   `cms doctor`.
+`extension contract → menu manager → image derivatives → redirects →
+portable round-trip → external blog adapter → live refresh + autosave`
+
+Current queue:
+
+1. **Reusable-block authoring** — expand the section-kind gallery and make
+   its authoring contract practical in the Theme Guide.
+2. **Comments-integration ADR** — define a provider-neutral,
+   privacy-respecting embed island that leaves every page complete without
+   JavaScript.
+3. **JSON content target** — deterministic, versioned headless output using
+   the same publication and language rules as HTML builds.
+4. **M7 operations** — email/notifications ADR → TOTP 2FA → on-publish
+   webhooks → `cms doctor`.
+
+## Definition of done for the current queue
+
+| Item | Done means |
+| --- | --- |
+| Reusable-block authoring | Bundled section kinds have documented fields, examples and graceful fallback; extension hints and theme contexts agree; conformance tests cover the contract. |
+| Comments integration | An ADR fixes consent, privacy, CSP and no-JS behavior; the theme contract is provider-neutral; one fictional example passes accessibility and security gates. |
+| JSON content target | Output is deterministic and versioned; only build-eligible content appears; all configured languages, slugs, relationships and media metadata are represented; target tests are public. |
+| M7 operations | Recovery and notifications have an explicit delivery contract; 2FA is role-safe; webhooks are signed/retryable; `cms doctor` reports storage, media, configuration and environment health. |
 
 ## Milestones ahead
 
@@ -130,10 +155,11 @@ The queue evolves with the ADRs, in this order:
   revisions with restore, trash, duplicates, per-entry and design-aware
   preview (ADR-0027), quick actions, featured flag, authorship, media
   filters, users screen, editorial notes — all shipped, all live on the
-  demo. (Autosave remains queued with the ADR-0027 live-refresh work.)
+  demo. Autosave and live themed refresh shipped immediately after closure
+  as ADR-0027 phase 2.
 - **M6 — Extensibility and adoption**: the plugin/extension ADR executed
   (custom fields, rules, build steps), menu manager, image derivatives,
-  redirects, portable and WordPress import, live refresh/autosave,
+  redirects, portable and external blog import, live refresh/autosave,
   reusable-block authoring, comments-integration contract and JSON content
   target. (Admin localization shipped early — ADR-0022.)
 - **M7 — Operations**: email/notification subsystem (password reset,

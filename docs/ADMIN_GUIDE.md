@@ -2,7 +2,8 @@
 
 The Sardine CMS admin (`apps/admin`, package `cms-admin`) runs the whole
 editorial cycle from the browser. One FastAPI process serves the API and the
-server-rendered UI (AdminLTE 4, vendored, CSS-only — ADR-0017); it drives `cms-core`, `cms-validation` and `cms-build`
+server-rendered UI (AdminLTE 4, vendored, with same-origin behaviors —
+ADR-0017/0020); it drives `cms-core`, `cms-validation` and `cms-build`
 through their public APIs and never bypasses them (ADR-0013, ADR-0015).
 Facts in this guide are checked against the code by the anti-drift suite
 (`tests/test_docs.py`).
@@ -108,13 +109,14 @@ cms import portable -p .
 Importing into storage that already contains content is blocked unless
 `--replace` is supplied; replacement is an upsert, not an implicit purge.
 
-An existing WordPress blog can enter through its WXR 1.2 export:
+An existing blog can enter through a supported external export adapter. List
+the available format selectors with:
 
 ```bash
-cms import wordpress-export.xml --format wordpress -p .
+cms import --help
 ```
 
-The importer reads the local file only, rejects DTD/entity declarations and
+The WXR 1.2 adapter reads the local file only, rejects DTD/entity declarations and
 converts posts and common HTML structure to Sardine articles and Markdown.
 It preserves status, dates, author, first category and tags. Pages,
 attachments, menu items and comments are reported as skipped because their

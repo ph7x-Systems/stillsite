@@ -34,16 +34,19 @@ configuration, never imported directly by name in application code.
 
 | Contract | Registry | Ships with |
 | --- | --- | --- |
-| `StorageBackend` | `register_backend(scheme, factory)` | sqlite (postgresql/mssql/mysql planned) |
+| `StorageBackend` | `register_backend(scheme, factory)` | sqlite, postgresql, mysql, mssql |
 | `Target` (deployment) | `register_target(name, target)` | generic, swa, nginx |
-| `Theme` | `register_theme(name, theme)` | default (reference theme in M4) |
-| Validation `Rule` | `RuleSet` composition | core rules |
+| `Theme` | `register_theme(name, theme)` | default, reference theme package |
+| Validation `Rule` | `RuleSet` composition | core rules + extension contributions |
+| `Extension` | `sardine.extensions` entry points or dotted paths | explicit activation; rules, build steps, registries, CLI and section hints |
 
 ## Development rules
 
-1. **No hardcoding.** URLs, language lists, site names, output paths and
-   feature switches come from `SiteConfig`/project configuration — never
+1. **No product hardcoding.** URLs, language lists, site names, output paths
+   and feature switches come from `SiteConfig`/project configuration — never
    literals in application code. Editorial text never appears in templates.
+   Wire-format identifiers may be constants only inside their explicit
+   adapter; they must not cause network access or leak into the domain model.
 2. **Contracts first.** Every cross-layer boundary is a typed `Protocol` or
    ABC with a conformance test suite. New adapters pass the suite unchanged.
 3. **Pure domain.** `cms-core` performs no I/O, reads no clock (`now` is

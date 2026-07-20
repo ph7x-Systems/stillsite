@@ -46,7 +46,7 @@ URI and scroll-driven animations behind `@supports`, all disabled under
 | `story` | Two-column `.two` grid: sticky kick label + `h2`/`body` prose |
 | _any other_ | Generic field/image rendering (graceful fallback) |
 
-## Admin panel (Milestone 3 — in progress)
+## Admin panel (Milestone 3 — shipped)
 
 Server-rendered Jinja inside the FastAPI process
 ([ADR-0013](adr/0013-admin-ui-architecture.md)), built on **AdminLTE 4**

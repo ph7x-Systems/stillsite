@@ -25,7 +25,10 @@ A static-first, multilingual content and publishing engine (EN as source + PT-PT
 - strong validation before publishing (language parity, structure, editorial rules);
 - deterministic build with static export ready for Azure Static Web Apps;
 - multilingual SEO: canonical, hreflang, Open Graph, JSON-LD, sitemap and RSS;
-- authenticated admin panel with a `draft → review → published → archived` workflow.
+- authenticated admin panel with workflow, autosave, themed preview, revisions,
+  scheduling, trash, media, menus and user management;
+- portable content, controlled external imports and an explicit extension
+  contract for themes, storage, build steps, rules and editorial components.
 
 ## Structure
 
@@ -46,7 +49,13 @@ tests/                          # unit and integration tests
 
 ## Status
 
-Developed in the open and released on PyPI (see the version badge above for the current release). The content core (models, translation states, four storage engines, deterministic export), the validator, the deterministic builder, the theme system, the `cms` CLI and the browser admin (the full editorial cycle, hardened and accessibility-gated) are implemented and tested — the live demo is built with them on every merge. See [docs/PLAN.md](docs/PLAN.md) for the execution plan, [docs/POC_PLAN.md](docs/POC_PLAN.md) for the proof-of-concept target and [docs/BRIEF.md](docs/BRIEF.md) for the full brief. No secrets, personal data or client content live in this repository.
+Developed in the open and released on PyPI (see the version badge above for
+the current release). Milestone 5 is closed; Milestone 6 now concentrates on
+the remaining adoption seams, followed by operational completeness in
+Milestone 7. The content core, validator, deterministic builder, theme system,
+`cms` CLI and full browser editorial cycle are implemented and tested — the
+live demo is built with them on every merge. No secrets, personal data or
+client content live in this repository.
 
 ## Install
 
@@ -101,11 +110,16 @@ cms preview  -p examples/multilingual-company-site   # serve locally
 
 ## Documentation
 
-[Architecture](docs/ARCHITECTURE.md) · [Execution plan](docs/PLAN.md) ·
-[Roadmap](docs/ROADMAP.md) · [Design rules](docs/DESIGN_RULES.md) ·
-[Theme guide](docs/THEME_GUIDE.md) · [Components](docs/COMPONENTS.md) ·
-[Ecosystem](docs/ECOSYSTEM.md) · [Testing](docs/TEST_PLAN.md) ·
-[Security](docs/SECURITY_STRATEGY.md) · [ADRs](docs/adr/)
+- [Roadmap](docs/ROADMAP.md) — capability inventory, product direction and
+  acceptance criteria for what comes next.
+- [Execution plan](docs/PLAN.md) — delivered milestones and current queue.
+- [Architecture](docs/ARCHITECTURE.md), [design rules](docs/DESIGN_RULES.md),
+  [theme guide](docs/THEME_GUIDE.md), [components](docs/COMPONENTS.md) and
+  [ecosystem](docs/ECOSYSTEM.md) — contracts for contributors and extensions.
+- [Admin guide](docs/ADMIN_GUIDE.md), [testing](docs/TEST_PLAN.md),
+  [security](docs/SECURITY_STRATEGY.md), [proof-of-concept](docs/POC_PLAN.md),
+  [brief](docs/BRIEF.md) and [ADRs](docs/adr/) — operation, verification and
+  decision history.
 
 ## Principles
 

@@ -30,6 +30,16 @@ def test_every_adr_has_an_accepted_status_line() -> None:
         assert re.search(r"\*\*Status:\*\*", text), f"{adr.name} has no status line"
 
 
+def test_docs_use_capabilities_not_competitor_names() -> None:
+    """Position the product by capability without nominal comparisons."""
+    forbidden = "word" + "press"
+    for document in sorted(REPO_ROOT.rglob("*.md")):
+        assert forbidden not in document.read_text(encoding="utf-8").lower(), (
+            f"{document.relative_to(REPO_ROOT)} names a competitor; describe the "
+            "capability or wire format instead"
+        )
+
+
 def test_readme_structure_matches_real_directories() -> None:
     """Parse the README tree block (2-space indentation) into real paths."""
     listed: list[str] = []

@@ -2,8 +2,9 @@
 
 What gets tested, at which layer, with which gate. Rule of thumb: **every
 guarantee the docs promise has a test that fails when it stops being true.**
-Current state: 53 tests, mypy strict, ruff — all required in CI on every
-push/PR (branch protection enforces the six checks).
+The suite size is intentionally not fixed here; it grows with every shipped
+guarantee. Mypy strict, ruff and the test suites run on every push/PR, with
+branch protection enforcing nine required CI checks.
 
 ## 1. Layers
 
@@ -17,16 +18,15 @@ push/PR (branch protection enforces the six checks).
   image dimensions, safe media paths (traversal rejected).
 - Checksums: field-order insensitivity, media-list sensitivity.
 
-### 1.2 Storage conformance suite — in force, grows per backend
+### 1.2 Storage conformance suite — in force on all four backends
 
 The suite in `tests/test_storage.py` **is the contract** (ADR-0004): every
 backend must pass it unchanged. Covers migrations (idempotent, versioned),
 round-trips preserving equality, upserts, cascade deletes, ordering, None on
-missing. When PostgreSQL/SQL Server/MySQL land, the same tests run against a
-project-prefixed Docker container per engine (created, never destroying
-existing containers); the only difference per engine is the connection URL.
-Factory tests: scheme registry, aliases, bare paths, loud failure of planned
-engines, custom registration.
+missing. SQLite runs in-process; PostgreSQL, SQL Server and MySQL run against
+real CI service containers. The test contract is unchanged and only the
+connection URL differs. Factory tests cover the scheme registry, aliases,
+bare paths, loud failure on unavailable dependencies and custom registration.
 
 ### 1.3 Validation (`cms-validation`, M2)
 
@@ -79,6 +79,7 @@ Applies to the reference theme and any third-party theme:
 - Workflow: draft→review→published→archived transitions, invalid transitions
   rejected; publishing blocked while validation fails.
 - API contract tests against the storage interface (backend-agnostic).
+- Autosave, scoped themed preview and bounded revision behavior.
 
 ### 1.7 Docs anti-drift — in force
 
@@ -89,7 +90,10 @@ README promises. Grows one check per new guarded fact.
 ### 1.8 CLI (`cms`, M2)
 
 - Each subcommand smoke-tested end-to-end on the example project
-  (validate/build/preview/export/seed, init via Copier template).
+  (validate/build/preview/export/seed, portable dump/import, external import,
+  and init via the Copier template).
+- Import safety: offline parsing, hostile XML rejection and explicit skip
+  counts for unsupported records.
 - Exit codes: non-zero on validation failure (CI-friendly); machine-readable
   output where promised.
 
@@ -104,10 +108,10 @@ README promises. Grows one check per new guarded fact.
 | Secret scan (full history) | job `Secret scan` (trufflehog) | in force |
 | Example build (seed→validate→build→export via the CLI) | job `Example build` | in force |
 | Head contract + determinism + URL tree | `tests/test_builder.py`, `tests/test_cli.py` | in force |
-| Full PoC structural parity (categories, pagination, JSON-LD) | extend at M2 follow-ups | planned |
+| Full PoC structural parity (categories, pagination, JSON-LD) | `tests/test_builder.py`, `tests/test_cli.py` | in force |
 | Backend conformance (PostgreSQL service container) | job `Backend conformance (PostgreSQL)` | in force |
 | Output integrity (HTML refs, CSS urls, theme assets) | `tests/test_output_integrity.py` | in force |
-| Backend conformance (SQL Server, MySQL) | same mold when implemented | planned |
+| Backend conformance (SQL Server, MySQL) | same backend job, real service containers | in force |
 | Theme conformance (all shipped themes) | `tests/test_theme_conformance.py` | in force |
 | Accessibility (axe serious/critical, 7 pages) | job `Accessibility (axe)` + `scripts/a11y_check.py` | in force |
 | W3C markup validity (Nu checker, all pages) | same job, `html5validator` | in force |

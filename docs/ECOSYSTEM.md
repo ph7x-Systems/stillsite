@@ -12,7 +12,7 @@ shareable, license it, name it, and get it listed. Policy rationale lives in
 | Theme | `Theme` protocol + `register_theme` ([THEME_GUIDE.md](THEME_GUIDE.md)) | Theme checklist (THEME_GUIDE) + output-integrity suite |
 | Deployment target | `Target` protocol + `register_target` (ADR-0005) | Adapter tests over a built artifact |
 | Storage backend | `StorageBackend` + `register_backend` (ADR-0004) | The storage conformance suite, unchanged |
-| Validation rules / plugins | `Rule` protocol + `RuleSet` | Rule unit tests; plugin mechanism ADR pending |
+| Extensions | `sardine.extensions` (ADR-0028): rules, build steps, registries, CLI and section hints | Explicit activation + relevant conformance suites |
 
 ## Licensing
 

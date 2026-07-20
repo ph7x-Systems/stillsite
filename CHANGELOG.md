@@ -13,9 +13,9 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
   Requests are serialized, CSRF-protected and announced through an accessible
   localized status line.
 
-- **WordPress blog import** (M6, ADR-0030):
-  `cms import export.xml --format wordpress` converts WXR 1.2 posts into
-  Sardine articles — common HTML becomes Markdown; workflow status, dates,
+- **External blog import** (M6, ADR-0030): the WXR 1.2 adapter converts
+  foreign posts into Sardine articles — common HTML becomes Markdown;
+  workflow status, dates,
   author, category and tags are retained. The adapter is deterministic,
   performs no network access and rejects DTD/entity declarations. Foreign
   pages, attachments, menu items and comments are counted and skipped

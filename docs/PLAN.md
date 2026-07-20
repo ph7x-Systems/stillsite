@@ -1,30 +1,35 @@
 # Execution Plan — Sardine CMS
 
-Short plan by milestones, per the brief ([BRIEF.md](BRIEF.md)). Small increments, clear commits, reversible decisions recorded as ADRs.
+Execution record by milestone, per the brief ([BRIEF.md](BRIEF.md)).
+[ROADMAP.md](ROADMAP.md) is the outward capability inventory and product
+direction; this file records delivery state and the current implementation
+queue. Work lands in small increments, with reversible decisions recorded as
+ADRs.
 
-## Milestone 0 — Foundation (current)
+## Milestone 0 — Foundation (CLOSED)
 
 - [x] Repository initialized (`main`), folder structure, base docs
 - [x] Repository published to GitHub (`ph7x-Systems/sardine-cms`, public)
 - [x] License: Apache-2.0 (`LICENSE`, `NOTICE`, ADR-0002)
 - [x] Python toolchain: `pyproject.toml`, lint (ruff), type checking (mypy), pytest
-- [x] GitHub Actions CI: lint, types, tests, docs link check, secret scan
-      (content validation and example build jobs arrive with Milestone 2)
+- [x] GitHub Actions CI: nine required checks covering lint, types, tests,
+      backend conformance, example build, accessibility/markup, docs links
+      and secret scanning
 - [x] ADR-0001: base architecture (Python core + FastAPI admin)
-- [x] Branch protection on `main`: force-pushes and deletions blocked; all six
+- [x] Branch protection on `main`: force-pushes and deletions blocked; all nine
       CI checks required (strict, up-to-date branches) for pull requests
 
 ## Milestone 1 — Content core
 
-- [x] PoC — `cms-core` article schema with languages and per-language translations
-      (pydantic; pages, sections and media schemas still pending)
+- [x] `cms-core` content model: articles, pages, typed sections and media,
+      with languages and per-language translations (pydantic)
 - [x] Translation model: EN as source; `missing / outdated / complete` states
       derived from source checksums (outdated detection is automatic)
 - [x] PoC persistence: SQLite via stdlib `sqlite3`, no ORM yet ([ADR-0003](adr/0003-sqlite-poc-persistence.md))
 - [x] Storage backend factory ([ADR-0004](adr/0004-storage-backend-factory.md)):
       one `StorageBackend` interface + URL-scheme factory (`create_storage`);
-      SQLite implemented; PostgreSQL, SQL Server and MySQL/MariaDB registered
-      as planned engines; custom backends pluggable via `register_backend`
+      SQLite, PostgreSQL, SQL Server and MySQL/MariaDB implemented; custom
+      backends pluggable via `register_backend`
 - [x] Versioned migrations (ordered scripts tracked via `user_version`)
 - [x] Deterministic JSON/Markdown export as the portable source of truth
 - [x] Pages composed of typed sections (`kind` maps to a theme template per the
@@ -34,7 +39,8 @@ Short plan by milestones, per the brief ([BRIEF.md](BRIEF.md)). Small increments
 - [x] PostgreSQL backend ([ADR-0009](adr/0009-postgres-backend.md)): psycopg 3,
       optional extra `cms-core[postgres]`, shared ANSI migration history,
       conformance suite green in CI (service container) and locally (Docker)
-- [ ] SQL Server and MySQL/MariaDB backends — same mold as ADR-0009
+- [x] SQL Server and MySQL/MariaDB backends — optional extras, shared
+      conformance suite and real CI service containers
 
 > **PoC anchor:** Milestones 2 and 4 are executed against a concrete target —
 > reproducing the ph7x.com architecture (URL tree, head contract, design
@@ -136,13 +142,12 @@ with tests:
 against any supported storage engine, with every security and accessibility
 gate green in CI.
 
-## Release plan — first PyPI release (after Milestone 3 kickoff)
+## Release plan — first PyPI release (SHIPPED)
 
 - [x] **ADR-0014 — distribution naming**: `sardine-cms-*` for all six
       packages, import names unchanged
-      ([ADR-0014](adr/0014-distribution-naming.md)). Reserving the names on
-      PyPI (pending publishers) is an owner web-UI step before the first
-      tag.
+      ([ADR-0014](adr/0014-distribution-naming.md)); the names are reserved
+      and the packages are published on PyPI.
 - [x] **Trusted publishing**: `release.yml` publishes all six packages on
       `v*` tags via PyPI OIDC (no long-lived tokens), with a tag-vs-version
       consistency check; semantic versioning from `0.1.0` in lockstep;
@@ -185,8 +190,8 @@ the theme conformance suite.
       running the DESIGN_RULES mechanical checks over every shipped theme
 - [x] **Demo switch**: example project sets `theme = "ph7x-reference"`;
       CI/deploy install the theme package; COMPONENTS.md updated
-- [ ] Documentation pass: installation, architecture, content model, theme
-      extension, deployment (pre-announcement)
+- [x] Documentation pass: installation, architecture, content model, theme
+      extension and deployment
 
 ## Milestone 5 — Editorial completeness (CLOSED)
 
@@ -239,7 +244,8 @@ tests, docs and wiki updates, per the standing gates.
       nginx, meta-refresh fallback pages in every artifact
 - [x] Portable round-trip: `cms dump` + `cms import`, lossless
       (byte-verified)
-- [x] WordPress WXR 1.2 blog importer (ADR-0030): offline XML adapter,
+- [x] WXR 1.2 external blog importer
+      ([ADR-0030](adr/0030-foreign-blog-import.md)): offline XML adapter,
       namespace identifiers confined to it, safe HTML-to-Markdown mapping;
       pages/media/comments are counted and skipped rather than guessed
 - [ ] Reusable-block gallery and section-kind authoring documentation
@@ -259,33 +265,21 @@ tests, docs and wiki updates, per the standing gates.
 - [ ] `cms doctor`: storage, media, config, environment diagnostics
 - [x] Documented backup/restore and scheduled-build recipes
 
-## Next steps (priority order)
+## Current execution queue
 
-1. ~~Close Milestone 2 — PoC parity~~ **done** (categories/tags/pagination,
-   404, JSON-LD, media pipeline, theme overrides ADR-0007, `cms init`
-   ADR-0008).
-2. ~~Close Milestone 1 — PostgreSQL~~ **done** (ADR-0009; SQL Server and
-   MySQL/MariaDB remain, same mold).
-3. ~~Reference theme~~ **done** (production stylesheets vendored; demo on
-   sardine.ph7x.com).
-4. ~~Demo ready gate~~ **done** (axe/WCAG + W3C Nu job required in CI, README
-   links the live demo; owner still owes the social preview upload and the
-   announcement moment).
-5. ~~Milestone 3 — admin panel~~ **done** (accounts/roles, editors, media
-   library, workflow, publishing, hardening; AdminLTE with its behaviors,
-   ADR-0017/0020).
-6. ~~First PyPI release~~ **done** (v0.1.x, `sardine-cms-*`, trusted
-   publishing, per-package environments; all four storage backends
-   shipped, ADR-0018/0019).
-7. **Milestone 5 — editorial completeness (next)**: the checklist above,
-   starting with direct unpublish, scheduling and revisions.
-8. **Milestones 6–7**: extensibility/adoption, then operations — see the
-   checklists above and [ROADMAP.md](ROADMAP.md).
+1. **Reusable-block authoring** — document and demonstrate how section kinds
+   become a reusable editorial gallery.
+2. **Comments integration ADR** — define privacy, consent, theme-island and
+   static-build boundaries before choosing adapters.
+3. **JSON content target** — export a stable, versioned contract for headless
+   consumers without weakening the HTML build.
+4. **Milestone 7 operations** — email/notifications, TOTP, on-publish
+   webhooks and `cms doctor`, in that order.
 
-Small pending items: GitHub social preview upload (owner, web UI only);
-reserve the PyPI names (`sardine-cms`; decide `sardine-cms-*` vs `cms-*`
-distribution naming at first release, with an ADR); rename the local working
-folder to match the project name.
+Acceptance criteria and capability gaps are maintained in
+[ROADMAP.md](ROADMAP.md). External owner action still pending: upload the
+GitHub social preview. Two independent production deployments remain the
+adoption evidence required before 1.0.
 
 ## Demo readiness plan (sardine.ph7x.com)
 
@@ -348,8 +342,9 @@ Everything user-facing must be extensible without forking the framework:
   shortcodes so editors can embed rich HTML components without raw HTML.
 - **Extensions/plugins**: registration points for custom content types,
   validation rules (`cms-validation` is configurable per project), build
-  steps and CLI subcommands. Mechanism (entry points vs. explicit registry)
-  decided in an ADR when the first extension lands.
+  steps and CLI subcommands. ADR-0028 fixes the mechanism: explicit project
+  activation through `sardine.extensions` entry points or dotted paths,
+  with contributions made through public registries.
 
 ## Design and themes
 
@@ -369,13 +364,10 @@ technology strategy (native platform, Web Component islands, no framework) is
 [ECOSYSTEM.md](ECOSYSTEM.md) / [ADR-0011](adr/0011-community-ecosystem-policy.md). The component inventory
 (theme chrome, islands, admin candidates) is [COMPONENTS.md](COMPONENTS.md).
 
-## Open decisions
-
-- PyPI distribution naming, `sardine-cms-*` vs `cms-*` (ADR-0014 at first
-  release — see the release plan above)
-
 ## Decided
 
+- Distribution names: `sardine-cms-*` (ADR-0014); six packages published
+  in lockstep through trusted publishing
 - Admin UI: server-rendered FastAPI + Jinja, islands per ADR-0010,
   session-cookie auth ([ADR-0013](adr/0013-admin-ui-architecture.md));
   styled natively with the ph7x design system — no component library

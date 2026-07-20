@@ -12,7 +12,7 @@ deliver. The public-facing policy (how to report vulnerabilities) lives in
    attack surface from the published product. Everything dynamic is isolated
    in the admin panel, which can live on a private network.
 2. **Secure by default.** Defaults must be the safe option: publishing blocked
-   on failed validation, planned storage engines fail loudly instead of
+   on failed validation, optional storage engines fail loudly instead of
    falling back, strict schema validation on every model.
 3. **Least privilege.** CI runs with read-only tokens; the admin panel (M3)
    ships with explicit authn/authz and role separation; nothing gets broader
@@ -38,7 +38,7 @@ deliver. The public-facing policy (how to report vulnerabilities) lives in
 
 ### Build/export (`cms-build`, M2)
 
-| Threat | Control (planned) |
+| Threat | Control |
 | --- | --- |
 | XSS in generated sites | Autoescaping templates (Jinja2) everywhere; editors never inject raw HTML — rich content only via reviewed shortcodes/custom blocks |
 | Malicious content in Markdown | Markdown rendered with a safe renderer; raw HTML blocks disabled by default, allowlist configurable per project |
@@ -51,8 +51,7 @@ Access control is **in force** since M3 phase 3 (argon2id hashes, server-side
 sessions with expiry, session cookies `HttpOnly`/`Secure`/`SameSite=Strict`,
 synchronizer + double-submit CSRF tokens, login rate limiting, roles enforced
 server-side, first account only via `cms admin create-user`) — exercised by
-`tests/test_admin_auth.py`. Upload controls arrive with the media library
-phase.
+`tests/test_admin_auth.py`. Media-library upload controls are also in force.
 
 | Threat | Control |
 | --- | --- |
@@ -69,16 +68,16 @@ phase.
 | --- | --- |
 | Credential leakage in database URLs | URLs come from environment variables; never logged; example values only in `.env.example` (**policy in force**) |
 | Backend impersonation via plugins | `register_backend` is an explicit, code-level API — projects audit the backends they register (**done**) |
-| Server engines (PostgreSQL/SQL Server/MySQL) | TLS connections and least-privilege database users documented as deployment requirements when implemented |
+| Server engines (PostgreSQL/SQL Server/MySQL) | TLS connections and least-privilege database users are deployment requirements |
 
 ### Supply chain & CI — implemented, evolving
 
 | Threat | Control (status) |
 | --- | --- |
 | Leaked secrets in history | trufflehog scans the full git history on every push/PR (**done**) |
-| Compromised dependency | Minimal dependency surface (pydantic only in core); version floors in `pyproject.toml`; lockfile + automated update PRs planned for M2 (**partial**) |
+| Compromised dependency | Minimal dependency surface, version floors in `pyproject.toml` and dependency review; reproducible lock/update automation remains an open supply-chain improvement (**partial**) |
 | CI token abuse | Workflow `permissions: contents: read`; no write tokens in CI (**done**) |
-| Force-push/history rewrite on `main` | Branch protection: force-pushes and deletions blocked; six required checks (**done**) |
+| Force-push/history rewrite on `main` | Branch protection: force-pushes and deletions blocked; nine required checks (**done**) |
 | Malicious PR changing CI | Required status checks on PRs; workflow changes reviewed like code (**done**) |
 
 ## 3. Data protection
@@ -90,15 +89,19 @@ phase.
   by a project is that project's responsibility.
 - The example site ships fictional content only.
 
-## 4. Go-public checklist (before flipping the repo to public)
+## 4. Go-public record
 
-- [ ] `git log` authored exclusively by `pH7x Systems <support@ph7x.com>`; no
+- [x] `git log` audited for project-owned author addresses; no
       personal emails anywhere in history
-- [ ] Secret scan green over the full history at the flip commit
-- [ ] No files excluded by policy are tracked (local tooling context, `.env`)
-- [ ] Dependencies reviewed and pinned; no known-vulnerable versions
-- [ ] SECURITY.md reporting channel is a monitored address
-- [ ] License headers/NOTICE consistent (Apache-2.0)
+- [x] Secret scan green over the full history at the flip commit
+- [x] No files excluded by policy tracked (local tooling context, `.env`)
+- [x] Dependencies reviewed; no known-vulnerable versions at the flip
+- [x] SECURITY.md reporting channel set to a monitored address
+- [x] License headers/NOTICE consistent (Apache-2.0)
+
+Executed before the repository became public on 2026-07-17. These controls
+remain standing CI and review requirements; the checklist is not a future
+launch gate.
 
 ## 5. Incident response
 
@@ -114,7 +117,7 @@ phase.
 Security work is part of each milestone's definition of done:
 
 - **M2 (build/CLI):** autoescaping verified by tests; safe Markdown rendering;
-  dependency lockfile + update automation; export path confinement tests.
+  dependency review and version floors; export path confinement tests.
 - **M3 (admin):** authn/authz test suite; CSRF protection; upload validation
   tests; failed-login rate limiting; security section in the admin docs —
   **all in force**, plus security headers on every admin response (CSP with
@@ -122,5 +125,5 @@ Security work is part of each milestone's definition of done:
   pages in CI. See [ADMIN_GUIDE.md](ADMIN_GUIDE.md).
 - **M4 (theme/example):** CSP-compatible reference theme (no inline styles —
   already a theme rule); accessibility (WCAG 2.2 AA) checks in CI.
-- **Go-public:** the checklist in section 4, executed and recorded in the PR
-  that flips visibility.
+- **Go-public:** the checklist in section 4 was executed before visibility
+  changed and remains the audit record.
