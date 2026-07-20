@@ -342,16 +342,53 @@ def dump(
 
 @app.command(name="import")
 def import_command(
-    source: Annotated[Path, typer.Argument(help="Directory written by `cms dump`")],
+    source: Annotated[Path, typer.Argument(help="Portable directory or foreign export file")],
     project_dir: ProjectDir = Path(),
+    source_format: Annotated[
+        str,
+        typer.Option(
+            "--format",
+            help="Input format: portable (cms dump) or wordpress (WXR 1.2)",
+        ),
+    ] = "portable",
     replace: Annotated[
         bool, typer.Option("--replace", help="Import even if the storage already has content")
     ] = False,
 ) -> None:
-    """Read a portable dump back into the project storage (upserts)."""
-    from cms_core import import_content_json
+    """Import a portable dump or a supported foreign blog export."""
+    from cms_core import import_content_json, import_wordpress_wxr
 
     project = _project(project_dir)
+    if source_format not in {"portable", "wordpress"}:
+        typer.echo(
+            f"error: unknown import format {source_format!r} (use portable or wordpress)",
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    if source_format == "wordpress":
+        if not source.is_file():
+            typer.echo(f"error: {source} not found", err=True)
+            raise typer.Exit(code=2)
+        try:
+            imported = import_wordpress_wxr(source.read_bytes())
+        except ValueError as error:
+            typer.echo(f"error: {error}", err=True)
+            raise typer.Exit(code=2) from error
+        with project.open_storage() as storage:
+            if storage.has_content() and not replace:
+                typer.echo(
+                    "error: the project storage already has content (use --replace to upsert)",
+                    err=True,
+                )
+                raise typer.Exit(code=3)
+            for article in imported.articles:
+                storage.save_article(article)
+        typer.echo(
+            f"imported {len(imported.articles)} WordPress article(s); "
+            f"skipped {imported.skipped} unsupported item(s)"
+        )
+        return
+
     payload_path = source / "content.json"
     if not payload_path.is_file():
         typer.echo(f"error: {payload_path} not found", err=True)

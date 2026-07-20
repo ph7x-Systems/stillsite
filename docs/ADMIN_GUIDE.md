@@ -92,6 +92,32 @@ up) which validates first, then writes the project's output directory with
 the chosen target's extras (`generic`, `swa`, `nginx`). Every run is
 recorded and shown on the panel and the dashboard.
 
+## Backup, restore and foreign import
+
+The database is disposable infrastructure; the portable pair is the source
+of truth. Dump and restore it with:
+
+```bash
+cms dump -p . --out portable
+cms import portable -p .
+```
+
+Importing into storage that already contains content is blocked unless
+`--replace` is supplied; replacement is an upsert, not an implicit purge.
+
+An existing WordPress blog can enter through its WXR 1.2 export:
+
+```bash
+cms import wordpress-export.xml --format wordpress -p .
+```
+
+The importer reads the local file only, rejects DTD/entity declarations and
+converts posts and common HTML structure to Sardine articles and Markdown.
+It preserves status, dates, author, first category and tags. Pages,
+attachments, menu items and comments are reported as skipped because their
+mapping needs project-specific page-section and media decisions. Remote
+image references are retained but never downloaded.
+
 The validation report (shared with the dashboard) always shows the whole
 story, not only failures: a gate callout (open/blocked) with the scope that
 was validated (articles, pages, media assets, languages), one row per rule

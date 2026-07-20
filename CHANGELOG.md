@@ -5,6 +5,14 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **WordPress blog import** (M6, ADR-0030):
+  `cms import export.xml --format wordpress` converts WXR 1.2 posts into
+  Sardine articles — common HTML becomes Markdown; workflow status, dates,
+  author, category and tags are retained. The adapter is deterministic,
+  performs no network access and rejects DTD/entity declarations. Foreign
+  pages, attachments, menu items and comments are counted and skipped
+  instead of receiving invented mappings.
+
 - **Portable round-trip** (M6): the portable format is now complete
   (slugs, category, tags, cover, trash flag included) and gains its
   commands — `cms dump` writes `content.json` + the Markdown tree,

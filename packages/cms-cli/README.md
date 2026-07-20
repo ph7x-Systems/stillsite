@@ -12,6 +12,9 @@ cms validate   # the rules; non-zero exit on errors
 cms build      # validate + deterministic build into the output directory
 cms export     # build + deployment-target config (--target swa|nginx|generic)
 cms preview    # serve the built site locally
+cms dump       # portable content.json + Markdown backup
+cms import portable                  # restore a portable dump
+cms import export.xml --format wordpress  # import WordPress WXR 1.2 posts
 cms admin create-user <name> --role admin   # first admin account (no defaults)
 ```
 

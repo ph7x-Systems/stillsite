@@ -192,3 +192,31 @@ def test_portable_round_trip_is_lossless(tmp_path: Path) -> None:
         ), relative
     blocked = runner.invoke(app, ["import", str(origin / "portable"), "-p", str(clone)])
     assert blocked.exit_code == 3  # refuses to overwrite without --replace
+
+
+def test_import_wordpress_wxr_into_a_fresh_project(tmp_path: Path) -> None:
+    project = make_project(tmp_path)
+    export = tmp_path / "blog.xml"
+    export.write_text(
+        """<?xml version="1.0"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:wp="http://wordpress.org/export/1.2/">
+  <channel><item>
+    <title>Imported launch</title>
+    <content:encoded><![CDATA[<p>From another blog.</p>]]></content:encoded>
+    <wp:post_id>7</wp:post_id><wp:post_name>imported-launch</wp:post_name>
+    <wp:status>draft</wp:status><wp:post_type>post</wp:post_type>
+  </item></channel>
+</rss>""",
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app, ["import", str(export), "--format", "wordpress", "-p", str(project)]
+    )
+    assert result.exit_code == 0, result.output
+    assert "imported 1 WordPress article(s)" in result.output
+    with load_project(project).open_storage() as storage:
+        article = storage.load_article("imported-launch")
+    assert article is not None
+    assert article.source.body_markdown == "From another blog."

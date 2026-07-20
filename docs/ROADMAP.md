@@ -51,7 +51,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Quick actions from the list | ✅ per-row dropdown: workflow transitions + trash | — |
 | Featured / pinned content | ✅ featured flag: leads the home highlight; listings stay recency | — |
 | Editorial notes on entries | ✅ note trail per article/page (author-or-admin removal); never published | — |
-| Autosave while editing | ❌ | 🔜 with the admin's JS layer (M5, after ADR-0020) |
+| Autosave while editing | ❌ | 🔜 with ADR-0027 live refresh (M6) |
 
 ### Content model
 
@@ -73,7 +73,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | --- | --- | --- |
 | Library: validated uploads, translatable alt, safe delete | ✅ MIME-sniffed, dimensions parsed | — |
 | Image derivatives / responsive sizes | ✅ opt-in build-time derivatives (ADR-0029): `[build] image_widths`, deterministic, `srcset` in both themes | — |
-| Crop / focal point | ❌ | 🔜 with derivatives (M6) |
+| Crop / focal point | ❌ | 🧭 separate post-M6 decision; ADR-0029 deliberately covers scaling only |
 | Media search / filters | ✅ server-side search (id/path/type/alt) + quick views (images, missing alt) | — |
 
 ### Site features (static-first)
@@ -104,7 +104,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | --- | --- | --- |
 | Plugin system | ✅ ADR-0028: `sardine.extensions` contract — rules, build steps, targets, backends, themes, `cms x` CLI, section-kind hints; explicit activation in `sardine.toml` | — |
 | Themes + per-project overrides | ✅ entry-point discovery | — |
-| Import / restore | ✅ `cms dump` + `cms import`: the portable JSON/Markdown pair round-trips losslessly (byte-verified) — backup, restore and instance migration | 🧭 third-party blog-export importer needs an owner call (the parser must reference the foreign format's XML namespaces in code) |
+| Import / restore | ✅ portable JSON/Markdown round-trip plus WordPress WXR 1.2 blog import (ADR-0030); namespace identifiers stay confined to the offline adapter | More foreign formats only when a concrete migration requires one |
 | Export / portability | ✅ JSON/Markdown is the source of truth | — |
 | Content API | ❌ builds are the API | 🔜 optional JSON content export target (M6) |
 | Webhooks (publish → host build) | ❌ | 🔜 on-publish webhook (M7) |
@@ -116,10 +116,11 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 
 The queue evolves with the ADRs, in this order:
 
-1. **M6 by ADR** (M5 closed): ADR-0028 extension contract (custom content types,
-   fields, rules, build steps) → menu manager → image derivatives →
-   redirects → importers → ADR-0027 live refresh together with the
-   autosave layer.
+1. **M6 by ADR** (M5 closed): ADR-0028 extension contract (custom fields,
+   rules, build steps) → menu manager → image derivatives → redirects →
+   portable round-trip → WordPress importer (ADR-0030) → ADR-0027 live
+   refresh with autosave → reusable-block gallery → comments-integration
+   contract → JSON content target.
 2. **M7 by ADR**: email/notifications ADR → TOTP 2FA → webhooks →
    `cms doctor`.
 
@@ -131,13 +132,12 @@ The queue evolves with the ADRs, in this order:
   filters, users screen, editorial notes — all shipped, all live on the
   demo. (Autosave remains queued with the ADR-0027 live-refresh work.)
 - **M6 — Extensibility and adoption**: the plugin/extension ADR executed
-  (custom content types, custom fields, rules, build steps), menu
-  manager, image derivatives, redirects, comments-integration contract,
-  JSON content target, the importers so existing sites can walk in.
-  (Admin localization shipped early — ADR-0022.)
+  (custom fields, rules, build steps), menu manager, image derivatives,
+  redirects, portable and WordPress import, live refresh/autosave,
+  reusable-block authoring, comments-integration contract and JSON content
+  target. (Admin localization shipped early — ADR-0022.)
 - **M7 — Operations**: email/notification subsystem (password reset,
-  review notifications), TOTP 2FA, webhooks, `cms doctor`, documented
-  backup/restore and scheduled-build recipes.
+  review notifications), TOTP 2FA, webhooks and `cms doctor`.
 - **1.0** — criteria: M5–M7 shipped, admin stable, two production
   deployments beyond ph7x.com, deprecation policy on PyPI, all
   conformance suites documented as public contracts.

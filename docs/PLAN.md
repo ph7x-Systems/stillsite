@@ -226,21 +226,26 @@ tests, docs and wiki updates, per the standing gates.
       steps, targets/backends/themes, `cms x` CLI, section-kind hints;
       free-form custom fields on articles (migration 13)
 - [x] **Design-aware editing** (ADR-0027, accepted): themed side-preview
-      in the editors via the real preview pipeline; live refresh arrives
-      with the autosave layer
+      in the editors via the real preview pipeline
+- [ ] **Live refresh + autosave** (ADR-0027 phase 2): one debounced save
+      refreshes the real themed preview without flooding bounded revisions
 - [x] Explicit menu manager (migration 14): per-language labels,
       ordering, external links; defined items replace the derived menu,
       empty list falls back to it
 - [x] Build-time image derivatives (ADR-0029): opt-in widths,
-      deterministic, srcset in both themes (crop/focal point deferred)
+      deterministic, srcset in both themes (crop/focal point explicitly
+      deferred beyond M6 pending its own decision)
 - [x] Redirect map: `[redirects]` in sardine.toml — 301s on SWA and
       nginx, meta-refresh fallback pages in every artifact
+- [x] Portable round-trip: `cms dump` + `cms import`, lossless
+      (byte-verified)
+- [x] WordPress WXR 1.2 blog importer (ADR-0030): offline XML adapter,
+      namespace identifiers confined to it, safe HTML-to-Markdown mapping;
+      pages/media/comments are counted and skipped rather than guessed
+- [ ] Reusable-block gallery and section-kind authoring documentation
 - [ ] Comments-integration contract for static sites (embed islands,
       privacy-respecting)
 - [ ] JSON content export target (headless consumption)
-- [x] Portable round-trip: `cms dump` + `cms import`, lossless
-      (byte-verified); third-party blog importer awaits the owner's call
-      on foreign-format namespace references in code
 - [x] **Admin panel localization** — shipped early (ADR-0022): gettext
       catalogs (EN msgids; PT-PT/ES/FR/DE), per-user preference +
       `Accept-Language` fallback, anti-drift completeness test
@@ -252,7 +257,7 @@ tests, docs and wiki updates, per the standing gates.
 - [ ] TOTP two-factor authentication
 - [ ] On-publish webhook (trigger the host's build)
 - [ ] `cms doctor`: storage, media, config, environment diagnostics
-- [ ] Documented backup/restore and scheduled-build recipes
+- [x] Documented backup/restore and scheduled-build recipes
 
 ## Next steps (priority order)
 
