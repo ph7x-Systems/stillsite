@@ -13,6 +13,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from cms_build import urls
+from cms_build.themes import SECTION_KIND_GALLERY
 from cms_core import (
     SOURCE_LANGUAGE,
     AdminSession,
@@ -56,17 +57,20 @@ router = APIRouter(prefix="/pages")
 
 HTTP_422 = status.HTTP_422_UNPROCESSABLE_CONTENT
 
-# Field names the reference theme's section kinds consume — shown as empty
-# suggested rows in the editor. Hints only; themes own the real contract.
-KIND_FIELD_HINTS: dict[str, tuple[str, ...]] = {
-    "hero": ("kicker", "lead", "heading", "accent"),
-    "latest-articles": ("kicker", "heading"),
-    "story": ("kicker", "heading", "body"),
-    "expertise": ("kicker", "heading", "row1no", "row1t", "row1d"),
-    "contact": ("kicker", "heading", "accent", "button"),
-}
-
 BLANK_FIELD_ROWS = 3
+
+
+def _kind_hints(request: Request) -> dict[str, tuple[str, ...]]:
+    """The bundled section-kind gallery plus any kinds the project's
+    extensions advertise (ADR-0028). Hints only, never validation: any
+    theme can define any kind; bundled names win on collision."""
+    hints = dict(SECTION_KIND_GALLERY)
+    project = _project(request)
+    if project is not None:
+        for extension in sorted(project.load_extensions(), key=lambda e: e.name):
+            for kind, fields in extension.section_kinds.items():
+                hints.setdefault(kind, tuple(fields))
+    return hints
 
 
 def parse_media(raw: str) -> list[str]:
@@ -203,7 +207,7 @@ async def page_create(
 
 
 def _editor_context(
-    page: Page, form: dict[str, str] | None = None, role: Role | None = None
+    request: Request, page: Page, form: dict[str, str] | None = None, role: Role | None = None
 ) -> dict[str, object]:
     return {
         "page": page,
@@ -211,7 +215,7 @@ def _editor_context(
         "states": {language: page.translation_state(language) for language in TARGET_LANGUAGES},
         "own_states": own_states(page),
         "target_languages": TARGET_LANGUAGES,
-        "kind_hints": sorted(KIND_FIELD_HINTS),
+        "kind_hints": sorted(_kind_hints(request)),
         "form": form
         or {
             "title": page.source.title,
@@ -252,7 +256,7 @@ async def page_edit_form(
             "entity_id": page_id,
             "preview_path": preview_path,
             "preview_ready": preview_ready,
-            **_editor_context(page, role=user.role),
+            **_editor_context(request, page, role=user.role),
         },
     )
 
@@ -281,7 +285,7 @@ async def page_edit_save(
                 "user": user,
                 "csrf_token": session.csrf_token,
                 "errors": _form_error_list(error),
-                **_editor_context(page, form),
+                **_editor_context(request, page, form),
             },
             status_code=HTTP_422,
         )
@@ -338,7 +342,7 @@ async def section_add(
                 "user": user,
                 "csrf_token": session.csrf_token,
                 "errors": errors,
-                **_editor_context(page),
+                **_editor_context(request, page),
             },
             status_code=HTTP_422,
         )
@@ -383,20 +387,20 @@ async def section_delete(
     return RedirectResponse(admin_path("pages", page.id), status_code=status.HTTP_303_SEE_OTHER)
 
 
-def _field_rows(section: Section) -> list[dict[str, str]]:
+def _field_rows(section: Section, hints: dict[str, tuple[str, ...]]) -> list[dict[str, str]]:
     rows = [{"name": name, "value": value} for name, value in sorted(section.source.fields.items())]
-    for hint in KIND_FIELD_HINTS.get(section.kind, ()):
+    for hint in hints.get(section.kind, ()):
         if hint not in section.source.fields:
             rows.append({"name": hint, "value": ""})
     rows.extend({"name": "", "value": ""} for _ in range(BLANK_FIELD_ROWS))
     return rows
 
 
-def _section_context(page: Page, section: Section) -> dict[str, object]:
+def _section_context(request: Request, page: Page, section: Section) -> dict[str, object]:
     return {
         "page": page,
         "section": section,
-        "rows": _field_rows(section),
+        "rows": _field_rows(section, _kind_hints(request)),
         "media_text": "\n".join(section.source.media),
         "states": {language: section.translation_state(language) for language in TARGET_LANGUAGES},
         "target_languages": TARGET_LANGUAGES,
@@ -420,7 +424,7 @@ async def section_edit_form(
             "user": user,
             "csrf_token": session.csrf_token,
             "errors": [],
-            **_section_context(page, section),
+            **_section_context(request, page, section),
         },
     )
 
@@ -634,7 +638,7 @@ async def page_status(
                     "user": user,
                     "csrf_token": session.csrf_token,
                     "errors": blockers,
-                    **_editor_context(page, role=user.role),
+                    **_editor_context(request, page, role=user.role),
                 },
                 status_code=HTTP_422,
             )

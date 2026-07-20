@@ -93,3 +93,77 @@ def test_local_references_resolve_with_this_theme(theme: Theme) -> None:
         html = artifact.files[path].decode("utf-8")
         for reference in _LOCAL_REF.findall(html):
             assert _resolves(reference, paths), f"{theme.name}:{path}: {reference}"
+
+
+def test_gallery_kinds_render_every_advertised_field(theme: Theme) -> None:
+    """THEME_GUIDE: the bundled gallery is a real contract — each kind's
+    advertised fields all reach the rendered page, in both bundled themes."""
+    from datetime import UTC, datetime
+
+    from cms_build import build_site
+    from cms_build.themes import SECTION_KIND_GALLERY
+    from cms_core import (
+        ContentStatus,
+        Language,
+        MediaAsset,
+        PageContent,
+        Section,
+        SectionContent,
+        new_page,
+    )
+    from cms_validation import SiteContent
+
+    now = datetime(2026, 1, 15, 9, 0, tzinfo=UTC)
+    page = new_page(
+        "showcase", PageContent(title="Showcase", description="D", slug="showcase"), now=now
+    )
+    expected: list[str] = []
+    for kind, fields in SECTION_KIND_GALLERY.items():
+        data: dict[str, str] = {}
+        for name in fields:
+            sentinel = f"XK{kind}{name}QZ".replace("-", "")
+            data[name] = sentinel
+            expected.append(sentinel)
+        media = ["shot"] if kind == "gallery" else []
+        page.sections.append(
+            Section(key=f"s-{kind}", kind=kind, source=SectionContent(fields=data, media=media))
+        )
+    page.status = ContentStatus.PUBLISHED
+    shot = MediaAsset(
+        id="shot",
+        path="images/shot.svg",
+        mime_type="image/svg+xml",
+        width=1200,
+        height=675,
+        alt={Language.EN: "XKgalleryimagealtQZ"},
+    )
+    artifact = build_site(CONFIG, SiteContent(pages=[page], media=[shot]), theme=theme)
+    html = artifact.files["showcase/index.html"].decode("utf-8")
+    for sentinel in expected:
+        assert sentinel in html, (theme.name, sentinel)
+    assert "XKgalleryimagealtQZ" in html, theme.name  # gallery renders its media
+
+
+def test_unknown_section_kinds_degrade_gracefully(theme: Theme) -> None:
+    """THEME_GUIDE: a kind the theme has never heard of still renders its
+    fields generically — extensions can invent kinds without crashing."""
+    from datetime import UTC, datetime
+
+    from cms_build import build_site
+    from cms_core import ContentStatus, PageContent, Section, SectionContent, new_page
+    from cms_validation import SiteContent
+
+    now = datetime(2026, 1, 15, 9, 0, tzinfo=UTC)
+    page = new_page("odd", PageContent(title="Odd", description="D", slug="odd"), now=now)
+    page.sections.append(
+        Section(
+            key="mystery",
+            kind="mystery-widget",
+            source=SectionContent(fields={"note": "XKmysterynoteQZ"}),
+        )
+    )
+    page.status = ContentStatus.PUBLISHED
+    artifact = build_site(CONFIG, SiteContent(pages=[page]), theme=theme)
+    html = artifact.files["odd/index.html"].decode("utf-8")
+    assert "XKmysterynoteQZ" in html, theme.name
+    assert "section-mystery-widget" in html, theme.name

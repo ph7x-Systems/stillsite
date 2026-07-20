@@ -196,6 +196,126 @@ ABOUT_STORY: dict[Language, SectionContent] = {
     ),
 }
 
+HOME_FAQ: dict[Language, SectionContent] = {
+    EN: SectionContent(
+        fields={
+            "kicker": "Questions",
+            "heading": "What everyone asks",
+            "q1": "Why a sardine?",
+            "a1": "Small payload, big story. She fits the capsule, and the tin "
+            "doubles as a heat shield.",
+            "q2": "Is the olive oil really rocket fuel?",
+            "a2": "No. It is for the salad. The rocket burns the usual mixture, checked twice.",
+            "q3": "When is the launch?",
+            "a3": "When the validation report is green in every language. The "
+            "countdown respects the publish gate.",
+        }
+    ),
+    PT: SectionContent(
+        fields={
+            "kicker": "Perguntas",
+            "heading": "O que todos perguntam",
+            "q1": "Porque uma sardinha?",
+            "a1": "Carga pequena, historia grande. Cabe na capsula, e a lata "
+            "serve de escudo termico.",
+            "q2": "O azeite e mesmo combustivel?",
+            "a2": "Nao. E para a salada. O foguetao queima a mistura habitual, "
+            "verificada duas vezes.",
+            "q3": "Quando e o lancamento?",
+            "a3": "Quando o relatorio de validacao estiver verde em todas as "
+            "linguas. A contagem respeita o portao de publicacao.",
+        }
+    ),
+    ES: SectionContent(
+        fields={
+            "kicker": "Preguntas",
+            "heading": "Lo que todos preguntan",
+            "q1": "Por que una sardina?",
+            "a1": "Carga pequena, gran historia. Cabe en la capsula, y la lata "
+            "sirve de escudo termico.",
+            "q2": "El aceite de oliva es de verdad combustible?",
+            "a2": "No. Es para la ensalada. El cohete quema la mezcla habitual, "
+            "comprobada dos veces.",
+            "q3": "Cuando es el lanzamiento?",
+            "a3": "Cuando el informe de validacion este en verde en todos los "
+            "idiomas. La cuenta atras respeta la puerta de publicacion.",
+        }
+    ),
+    FR: SectionContent(
+        fields={
+            "kicker": "Questions",
+            "heading": "Ce que tout le monde demande",
+            "q1": "Pourquoi une sardine ?",
+            "a1": "Petite charge utile, grande histoire. Elle tient dans la "
+            "capsule, et la boite sert de bouclier thermique.",
+            "q2": "L'huile d'olive est-elle vraiment du carburant ?",
+            "a2": "Non. C'est pour la salade. La fusee brule le melange "
+            "habituel, verifie deux fois.",
+            "q3": "Quand a lieu le lancement ?",
+            "a3": "Quand le rapport de validation est vert dans toutes les "
+            "langues. Le compte a rebours respecte la porte de publication.",
+        }
+    ),
+    DE: SectionContent(
+        fields={
+            "kicker": "Fragen",
+            "heading": "Was alle fragen",
+            "q1": "Warum eine Sardine?",
+            "a1": "Kleine Nutzlast, grosse Geschichte. Sie passt in die Kapsel, "
+            "und die Dose dient als Hitzeschild.",
+            "q2": "Ist das Olivenoel wirklich Treibstoff?",
+            "a2": "Nein. Es ist fuer den Salat. Die Rakete verbrennt die "
+            "uebliche Mischung, zweimal geprueft.",
+            "q3": "Wann ist der Start?",
+            "a3": "Wenn der Validierungsbericht in allen Sprachen gruen ist. "
+            "Der Countdown respektiert das Publikationsgate.",
+        }
+    ),
+}
+
+ABOUT_QUOTE: dict[Language, SectionContent] = {
+    EN: SectionContent(
+        fields={
+            "quote": "They said a sardine would never reach orbit. We brought "
+            "the tin opener anyway.",
+            "attribution": "Commander Sardinha",
+            "role": "Mission lead",
+        }
+    ),
+    PT: SectionContent(
+        fields={
+            "quote": "Disseram que uma sardinha nunca chegaria a orbita. "
+            "Trouxemos o abre-latas na mesma.",
+            "attribution": "Comandante Sardinha",
+            "role": "Chefe de missao",
+        }
+    ),
+    ES: SectionContent(
+        fields={
+            "quote": "Dijeron que una sardina nunca llegaria a la orbita. "
+            "Trajimos el abrelatas igualmente.",
+            "attribution": "Comandante Sardina",
+            "role": "Jefa de mision",
+        }
+    ),
+    FR: SectionContent(
+        fields={
+            "quote": "On disait qu'une sardine n'atteindrait jamais l'orbite. "
+            "Nous avons pris l'ouvre-boite quand meme.",
+            "attribution": "Commandante Sardine",
+            "role": "Cheffe de mission",
+        }
+    ),
+    DE: SectionContent(
+        fields={
+            "quote": "Man sagte, eine Sardine wuerde nie den Orbit erreichen. "
+            "Wir haben trotzdem den Dosenoeffner mitgenommen.",
+            "attribution": "Kommandantin Sardine",
+            "role": "Missionsleiterin",
+        }
+    ),
+}
+
 CATEGORIES: dict[str, dict[Language, str]] = {
     "missions": {
         EN: "Missions",

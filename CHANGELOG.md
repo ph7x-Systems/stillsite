@@ -5,6 +5,20 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **The section-kind gallery becomes a contract** (M6): reusable blocks
+  now have one source of truth — `SECTION_KIND_GALLERY` maps each bundled
+  kind to the fields it consumes, and four new kinds join the nine-strong
+  gallery: pull **quote**, **faq** (native `<details>`, no JavaScript),
+  **cta** (per-language target URL) and image **gallery** (`srcset`-aware
+  grid). Both bundled themes render every kind; unknown kinds keep falling
+  back to the generic renderer (conformance-tested). The section editor's
+  suggestions come from the same gallery and now merge kinds advertised by
+  activated extensions (ADR-0028). The seeded demo shows a FAQ on the home
+  page and a crew quote on the About page in all five languages; the Theme
+  Guide gains the authoring table. Also repairs broken selector lines in
+  the reference theme's stylesheet that were silently disabling its
+  large-button styles.
+
 - **System security hardening**: hostile XML now goes through `defusedxml`;
   preview/media files require authentication; uploads are bounded before
   allocation, reject active SVG and excessive pixel counts, and never replace

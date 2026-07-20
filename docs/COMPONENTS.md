@@ -37,13 +37,23 @@ reveal-on-scroll) are modern CSS only — gradients, an inline-SVG noise data
 URI and scroll-driven animations behind `@supports`, all disabled under
 `prefers-reduced-motion` (ADR-0010's CSS-over-JS rule). It also adopts the modern platform end to end: oklch color tokens with `color-mix()` states, cross-document View Transitions, a sticky glass header (`backdrop-filter`), `text-wrap: balance/pretty`, and declarative Speculation Rules prerendering (inline JSON, not JavaScript).
 
-### Reference theme section kinds (`cms-theme-ph7x-reference`)
+### Section kinds — the bundled gallery
+
+The full authoring contract (kind → fields) lives in
+[THEME_GUIDE.md](THEME_GUIDE.md) as `SECTION_KIND_GALLERY`; the reference
+theme's markup per kind:
 
 | Kind | Markup |
 | --- | --- |
 | `hero` | ph7x hero: `kicker` kick line, `lead` right-aligned lead-line, serif display `heading` + italic `accent`, base row with description + menu CTAs, optional hero image |
 | `latest-articles` | Kick + serif `h2` + the language's three newest articles as `b-card`s |
-| `story` | Two-column `.two` grid: sticky kick label + `h2`/`body` prose |
+| `story` | Two-column `.two` grid: sticky kick label + `h2`/`body` prose, `metaNk`/`metaNv` stat cells, images |
+| `expertise` | Kick + `h2` + numbered `.exp` capability rows (`rowNno`/`rowNt`/`rowNd`) |
+| `quote` | Serif pull quote with typographic quotation marks, uppercase attribution + role |
+| `faq` | Kick + `h2` + native `<details>` question list with animated `+` marker (CSS only) |
+| `cta` | Centered `.contact` idiom: kick, big serif line, optional body, `btn-lg` arrow button to the section's own `url` |
+| `gallery` | Kick + `h2` + bordered `.g-grid` image grid (`srcset`-aware, lazy) |
+| `contact` | Centered closing CTA: kick, big serif line + italic `accent`, button to the last menu entry |
 | _any other_ | Generic field/image rendering (graceful fallback) |
 
 ## Admin panel (Milestone 3 — shipped)

@@ -132,7 +132,7 @@
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
       {{ text_field("key", _("Key"), "", required=true, hint=_("unique on this page, lowercase-with-dashes")) }}
       {{ text_field("kind", _("Kind"), "", required=true,
-                    hint=_("the theme template that renders it — reference theme kinds:") + " " + kind_hints | join(", ")) }}
+                    hint=_("the theme template that renders it — bundled kinds:") + " " + kind_hints | join(", ")) }}
       <button type="submit" class="btn btn-primary">{{ _("Add section") }}</button>
     </form>
   </div>

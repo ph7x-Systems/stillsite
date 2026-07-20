@@ -251,7 +251,10 @@ tests, docs and wiki updates, per the standing gates.
       ([ADR-0030](adr/0030-foreign-blog-import.md)): offline XML adapter,
       namespace identifiers confined to it, safe HTML-to-Markdown mapping;
       pages/media/comments are counted and skipped rather than guessed
-- [ ] Reusable-block gallery and section-kind authoring documentation
+- [x] Reusable-block gallery: `SECTION_KIND_GALLERY` is the one authoring
+      contract (nine bundled kinds incl. new quote/faq/cta/gallery, both
+      themes, admin suggestions, extension merge, THEME_GUIDE table,
+      conformance-tested incl. unknown-kind fallback)
 - [ ] Comments-integration contract for static sites (embed islands,
       privacy-respecting)
 - [ ] JSON content export target (headless consumption)
@@ -270,13 +273,11 @@ tests, docs and wiki updates, per the standing gates.
 
 ## Current execution queue
 
-1. **Reusable-block authoring** — document and demonstrate how section kinds
-   become a reusable editorial gallery.
-2. **Comments integration ADR** — define privacy, consent, theme-island and
+1. **Comments integration ADR** — define privacy, consent, theme-island and
    static-build boundaries before choosing adapters.
-3. **JSON content target** — export a stable, versioned contract for headless
+2. **JSON content target** — export a stable, versioned contract for headless
    consumers without weakening the HTML build.
-4. **Milestone 7 operations** — email/notifications, TOTP, on-publish
+3. **Milestone 7 operations** — email/notifications, TOTP, on-publish
    webhooks and `cms doctor`, in that order.
 
 Acceptance criteria and capability gaps are maintained in
