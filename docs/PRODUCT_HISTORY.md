@@ -10,7 +10,7 @@ in [CHANGELOG.md](../CHANGELOG.md); the map as it stands in
 Sardine CMS began as the extraction of the architecture behind the
 public ph7x.com site: structured multilingual content, strong
 validation before publishing, deterministic static builds. The brief
-(BRIEF.md) fixed the contracts; ADR-0001 fixed the architecture
+The founding requirements fixed the contracts; ADR-0001 fixed the architecture
 (Python engine, FastAPI admin, monorepo, SQLite→PostgreSQL, exporter
 independent of the admin).
 

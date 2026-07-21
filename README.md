@@ -128,7 +128,7 @@ cms preview  -p examples/multilingual-company-site   # serve locally
   [ecosystem](docs/ECOSYSTEM.md) — contracts for contributors and extensions.
 - [Admin guide](docs/ADMIN_GUIDE.md), [testing](docs/TEST_PLAN.md),
   [security](docs/SECURITY_STRATEGY.md), [proof-of-concept](docs/POC_PLAN.md),
-  [brief](docs/BRIEF.md) and [ADRs](docs/adr/) — operation, verification and
+  [ADRs](docs/adr/) — operation, verification and
   decision history.
 
 ## Principles

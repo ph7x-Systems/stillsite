@@ -1,6 +1,6 @@
 # Execution Plan — Sardine CMS
 
-Execution record by milestone, per the brief ([BRIEF.md](BRIEF.md)).
+Execution record by milestone.
 [ROADMAP.md](ROADMAP.md) is the outward capability inventory and product
 direction; this file records delivery state and the current implementation
 queue. Work lands in small increments, with reversible decisions recorded as
