@@ -332,6 +332,17 @@ what the build includes. The choice is remembered in `sardine.toml`
 successful build answers *what now*: where the files are and the one
 action that puts them live for the chosen target.
 
+## Search (#129)
+
+The navbar carries a search box on every screen; `/search` finds
+anything an editor can edit — articles, pages, sections and media — by
+title, text, slug, section fields (items included) and media alt text,
+**in every language**. Results come grouped by kind, each hit linking
+straight to its editor. Trashed entries never appear. The query runs
+at the storage layer (ADR-0038): measured worst case 13.6 ms on SQLite
+and 34.5 ms on PostgreSQL at 10 000 entries (`scripts/search_bench.py`
+reproduces the measurement).
+
 ## Panel language (i18n)
 
 The panel speaks the editor's language (ADR-0022 + ADR-0034).

@@ -5,6 +5,18 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **One search box finds everything** (#129, ADR-0038): the navbar
+  carries a search on every admin screen; results come grouped —
+  articles, pages, sections and media — matched by title, text, slug,
+  section fields (items included) and media alt text in every
+  language, each hit linking straight to its editor; the trash never
+  matches. The query is a storage-contract method with a portable
+  default (third-party backends inherit correctness) and LIKE
+  overrides on all four bundled engines; the 300 ms budget at 10 000
+  entries is met with an order of magnitude to spare (13.6 ms SQLite,
+  34.5 ms PostgreSQL, worst of five runs — `scripts/search_bench.py`
+  is the reproducible method).
+
 - **Publishing answers "where will the site live?"** (#128, second
   slice): the build form becomes a guided choice — a card per
   deployment target explaining in plain words what the build includes

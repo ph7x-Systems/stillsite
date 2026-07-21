@@ -1154,3 +1154,12 @@ msgstr "O seu próprio servidor nginx"
 
 msgid "Your site is built and ready to go live."
 msgstr "O seu site está construído e pronto para ir ao ar."
+
+msgid "%(total)s result(s) for"
+msgstr "%(total)s resultado(s) para"
+
+msgid "Nothing matched. Search covers titles, text, slugs, section fields and media alt text — in every language."
+msgstr "Nada correspondeu. A pesquisa cobre títulos, texto, slugs, campos de secções e texto alternativo de media — em todas as línguas."
+
+msgid "Search everything you can edit"
+msgstr "Pesquisar tudo o que pode editar"

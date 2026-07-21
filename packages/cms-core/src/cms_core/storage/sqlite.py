@@ -15,6 +15,7 @@ from cms_core.media import MediaAsset
 from cms_core.menus import MenuItem
 from cms_core.models import Article, ArticleContent
 from cms_core.pages import Page, PageContent, Section, SectionContent
+from cms_core.search import SearchHit, like_pattern
 from cms_core.states import ContentStatus
 from cms_core.storage.base import StorageBackend
 from cms_core.storage.migrations import MIGRATIONS
@@ -293,6 +294,70 @@ class SQLiteBackend(StorageBackend):
                 )
             )
         return sections
+
+    def search_content(self, needle: str, limit: int = 20) -> list[SearchHit]:
+        """LIKE-based override of the portable default (#129): four
+        queries instead of loading every entry; case folded on both
+        sides, user input made literal via ESCAPE '!'."""
+        if not needle:
+            return []
+        pattern = like_pattern(needle)
+        hits: list[SearchHit] = []
+        rows = self._rows(
+            "SELECT DISTINCT a.id, a.title FROM articles a"
+            " LEFT JOIN translations t ON t.article_id = a.id"
+            " WHERE a.deleted_at IS NULL AND ("
+            "  LOWER(a.id) LIKE ? ESCAPE '!' OR LOWER(a.title) LIKE ? ESCAPE '!'"
+            "  OR LOWER(a.summary) LIKE ? ESCAPE '!'"
+            "  OR LOWER(a.body_markdown) LIKE ? ESCAPE '!'"
+            "  OR LOWER(t.title) LIKE ? ESCAPE '!' OR LOWER(t.summary) LIKE ? ESCAPE '!'"
+            "  OR LOWER(t.body_markdown) LIKE ? ESCAPE '!')"
+            " ORDER BY a.id",
+            (pattern,) * 7,
+        )
+        hits.extend(SearchHit("article", row[0], row[1]) for row in rows[:limit])
+        rows = self._rows(
+            "SELECT DISTINCT p.id, p.title FROM pages p"
+            " LEFT JOIN page_translations t ON t.page_id = p.id"
+            " WHERE p.deleted_at IS NULL AND ("
+            "  LOWER(p.id) LIKE ? ESCAPE '!' OR LOWER(p.title) LIKE ? ESCAPE '!'"
+            "  OR LOWER(p.description) LIKE ? ESCAPE '!'"
+            "  OR LOWER(p.body_markdown) LIKE ? ESCAPE '!'"
+            "  OR LOWER(t.title) LIKE ? ESCAPE '!' OR LOWER(t.description) LIKE ? ESCAPE '!'"
+            "  OR LOWER(t.body_markdown) LIKE ? ESCAPE '!')"
+            " ORDER BY p.id",
+            (pattern,) * 7,
+        )
+        hits.extend(SearchHit("page", row[0], row[1]) for row in rows[:limit])
+        rows = self._rows(
+            "SELECT DISTINCT s.page_id, s.key, s.kind FROM sections s"
+            " JOIN pages p ON p.id = s.page_id AND p.deleted_at IS NULL"
+            " LEFT JOIN section_translations t"
+            "  ON t.page_id = s.page_id AND t.section_key = s.key"
+            " WHERE LOWER(s.key) LIKE ? ESCAPE '!'"
+            "  OR LOWER(s.fields_json) LIKE ? ESCAPE '!'"
+            "  OR LOWER(s.items_json) LIKE ? ESCAPE '!'"
+            "  OR LOWER(t.fields_json) LIKE ? ESCAPE '!'"
+            "  OR LOWER(t.items_json) LIKE ? ESCAPE '!'"
+            " ORDER BY s.page_id, s.key",
+            (pattern,) * 5,
+        )
+        hits.extend(
+            SearchHit("section", f"{row[0]}/{row[1]}", row[1], row[2]) for row in rows[:limit]
+        )
+        rows = self._rows(
+            "SELECT DISTINCT m.id, m.path FROM media_assets m"
+            " LEFT JOIN media_alt_texts alt ON alt.media_id = m.id"
+            " WHERE LOWER(m.id) LIKE ? ESCAPE '!' OR LOWER(m.path) LIKE ? ESCAPE '!'"
+            "  OR LOWER(alt.alt) LIKE ? ESCAPE '!'"
+            " ORDER BY m.id",
+            (pattern,) * 3,
+        )
+        hits.extend(SearchHit("media", row[0], row[1]) for row in rows[:limit])
+        return hits
+
+    def _rows(self, sql: str, params: tuple[str, ...]) -> list[tuple[str, ...]]:
+        return list(self._connection.execute(sql, params))
 
     def load_page(self, page_id: str) -> Page | None:
         row = self._connection.execute(

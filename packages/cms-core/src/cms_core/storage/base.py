@@ -15,6 +15,7 @@ from cms_core.media import MediaAsset
 from cms_core.menus import MenuItem
 from cms_core.models import Article
 from cms_core.pages import Page
+from cms_core.search import SearchHit
 
 
 class StorageBackend(ABC):
@@ -40,6 +41,75 @@ class StorageBackend(ABC):
 
     @abstractmethod
     def list_article_ids(self) -> list[str]: ...
+
+    def search_content(self, needle: str, limit: int = 20) -> list[SearchHit]:
+        """Find articles, pages, sections and media whose text contains
+        ``needle`` (case-insensitive), at most ``limit`` hits per kind.
+        Trashed entries never match. This portable default walks the
+        loaded content; the bundled SQL engines override it with LIKE
+        queries — third-party backends inherit correctness and may
+        override for speed (#129)."""
+        lowered = needle.lower()
+        if not lowered:
+            return []
+        hits: list[SearchHit] = []
+
+        def texts_match(*values: str | None) -> bool:
+            return any(lowered in value.lower() for value in values if value)
+
+        articles = 0
+        for article in self.load_all_articles():
+            if article.deleted_at is not None or articles >= limit:
+                continue
+            contents = [article.source, *(t.content for t in article.translations.values())]
+            if texts_match(
+                article.id,
+                *(c.title for c in contents),
+                *(c.summary for c in contents),
+                *(c.body_markdown for c in contents),
+                *(c.slug or "" for c in contents),
+            ):
+                hits.append(SearchHit("article", article.id, article.source.title))
+                articles += 1
+        pages = sections = 0
+        for page in self.load_all_pages():
+            if page.deleted_at is not None:
+                continue
+            page_contents = [page.source, *(t.content for t in page.translations.values())]
+            if pages < limit and texts_match(
+                page.id,
+                *(c.title for c in page_contents),
+                *(c.description for c in page_contents),
+                *(c.body_markdown for c in page_contents),
+                *(c.slug for c in page_contents),
+            ):
+                hits.append(SearchHit("page", page.id, page.source.title))
+                pages += 1
+            for section in page.sections:
+                if sections >= limit:
+                    break
+                bodies = [section.source, *(t.content for t in section.translations.values())]
+                values = [
+                    value
+                    for body in bodies
+                    for value in (
+                        *body.fields.values(),
+                        *(cell for item in body.items for cell in item.values()),
+                    )
+                ]
+                if texts_match(section.key, *values):
+                    hits.append(
+                        SearchHit("section", f"{page.id}/{section.key}", section.key, section.kind)
+                    )
+                    sections += 1
+        media = 0
+        for asset in self.load_all_media_assets():
+            if media >= limit:
+                break
+            if texts_match(asset.id, asset.path, *(alt for alt in asset.alt.values())):
+                hits.append(SearchHit("media", asset.id, asset.path))
+                media += 1
+        return hits
 
     def load_all_articles(self) -> list[Article]:
         articles = (self.load_article(article_id) for article_id in self.list_article_ids())

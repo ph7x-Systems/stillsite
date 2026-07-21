@@ -435,3 +435,52 @@ def test_totp_state_round_trips(backend: StorageBackend) -> None:
     backend.save_user(user.model_copy(update={"totp_secret": None, "totp_step": None}))
     cleared = backend.load_user("ana")
     assert cleared is not None and cleared.totp_secret is None and cleared.totp_step is None
+
+
+def test_search_finds_content_across_kinds(backend: StorageBackend) -> None:
+    """#129: one query finds articles, pages, sections and media by any
+    text — translations included — and the trash never matches."""
+    from cms_core import MediaAsset
+    from cms_core.models import ArticleContent, new_article
+
+    article = new_article(
+        "voyage", ArticleContent(title="The tin voyage", summary="S", body_markdown="B")
+    )
+    article.set_translation(Language.PT_PT, ArticleContent(title="A viagem da lata", summary="S"))
+    backend.save_article(article)
+
+    trashed = new_article(
+        "gone", ArticleContent(title="Trashed voyage entry", summary="S", body_markdown="B")
+    )
+    trashed.deleted_at = trashed.created_at
+    backend.save_article(trashed)
+
+    page = new_page("crew", PageContent(title="The crew", slug="crew"))
+    page.sections.append(
+        Section(
+            key="faq",
+            kind="faq",
+            source=SectionContent(items=[{"question": "Voyage length?", "answer": "Weeks."}]),
+        )
+    )
+    backend.save_page(page)
+    backend.save_media_asset(
+        MediaAsset(
+            id="voyage-cover",
+            path="images/voyage.svg",
+            mime_type="image/svg+xml",
+            width=64,
+            height=64,
+            alt={Language.EN: "A tin on a voyage"},
+        )
+    )
+
+    hits = backend.search_content("voyage")
+    kinds = {(hit.kind, hit.id) for hit in hits}
+    assert ("article", "voyage") in kinds
+    assert ("section", "crew/faq") in kinds
+    assert ("media", "voyage-cover") in kinds
+    assert not any(hit.id == "gone" for hit in hits)
+    # translated text matches too, and LIKE wildcards stay literal
+    assert any(hit.id == "voyage" for hit in backend.search_content("viagem da lata"))
+    assert backend.search_content("%") == []

@@ -30,6 +30,16 @@
         <li class="nav-item d-none d-md-block">
           <a href="/" class="nav-link"><i class="bi bi-house me-1" aria-hidden="true"></i>{{ _("Home") }}</a>
         </li>
+        <li class="nav-item flex-grow-1"></li>
+        <li class="nav-item">
+          <form method="get" action="/search" role="search" class="d-flex my-1">
+            <label class="mb-0">
+              <span class="visually-hidden admin-visually-hidden">{{ _("Search") }}</span>
+              <input class="form-control form-control-sm admin-input" type="search" name="q"
+                     placeholder="{{ _("Search") }}&hellip;">
+            </label>
+          </form>
+        </li>
         <li class="nav-item d-none d-md-block">
           <a href="/preview/" class="nav-link"><i class="bi bi-eye me-1" aria-hidden="true"></i>{{ _("Preview") }}</a>
         </li>

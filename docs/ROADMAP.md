@@ -63,7 +63,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Featured / pinned content | ✅ featured flag: leads the home highlight; listings stay recency | — |
 | Editorial notes on entries | ✅ note trail per article/page (author-or-admin removal); never published | — |
 | Bulk actions on content lists | ❌ one entry at a time | 🔜 multi-select workflow/trash operations (M8) |
-| Admin-wide search | ❌ per-list filters only | 🔜 one search box over articles, pages, media (M8) |
+| Admin-wide search | ✅ navbar box on every screen; grouped results over articles, pages, sections and media, every language, straight to each editor; storage-level queries ([ADR-0038](adr/0038-admin-search-in-storage.md)) | — |
 | Scheduled unpublish | ❌ `publish_at` only | 🔜 `unpublish_at` mirror of the scheduling contract (M8) |
 | Editorial calendar | ❌ | 🔜 month view of scheduled/published entries (M8) |
 | Audit log | ❌ revisions cover content only | 🔜 who-did-what trail for accounts and workflow (M8) |
@@ -227,7 +227,7 @@ details do not need one.
 | First page created | without touching the CLI |
 | Landing page built by a non-technical editor | < 15 minutes |
 | Preview refresh | < 2 seconds |
-| Admin search on 10 000 entries | < 300 ms |
+| Admin search on 10 000 entries | < 300 ms — **met**: worst case 13.6 ms SQLite / 34.5 ms PostgreSQL (method: `scripts/search_bench.py` — deterministic 10k dataset, worst of 5 runs after warm-up, engine via env) |
 | WXR migration of a reference export | explicit fidelity % reported |
 
 Each metric, when first measured, must declare its method: reference

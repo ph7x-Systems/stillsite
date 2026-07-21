@@ -150,6 +150,9 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
     from cms_admin.setup import router as setup_router
 
     app.include_router(setup_router)
+    from cms_admin.search import router as search_router
+
+    app.include_router(search_router)
     app.include_router(auth_router)
     app.include_router(dashboard_router)
     app.include_router(articles_router)
