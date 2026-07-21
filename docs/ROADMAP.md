@@ -134,7 +134,7 @@ paid add-ons, it is this product's core — the bar is to stay ahead.
 | --- | --- | --- |
 | SEO: canonical, hreflang, Open Graph, JSON-LD, sitemap, RSS | ✅ in every build | — |
 | Search | ✅ client-side index island | — |
-| Comments | ✅ contract shipped ([ADR-0031](adr/0031-comments-integration.md)): `[comments]` + extension-registered providers, consent-first island, no-JS link, byte-identical builds without it | Real provider packages live outside the core |
+| Comments | 🟡 contract + fictional test provider only ([ADR-0031](adr/0031-comments-integration.md)): `[comments]`, consent-first island, no-JS link | An **official usable provider** is the done bar — contract alone is not a feature |
 | Redirects | ✅ `[redirects]` map: real 301s on SWA/nginx + meta-refresh fallback pages for any host | — |
 | Localized 404 / error pages | ✅ | — |
 | Embeds (video, social, maps) | ❌ safe Markdown only | 🧭 static-safe embed contract — consent-first islands like comments (M8) |
@@ -181,17 +181,54 @@ portable round-trip → external blog adapter → live refresh + autosave →
 reusable-block gallery → comments contract (ADR-0031) → JSON content
 target`
 
-Current queue:
+The execution queue lives in the
+[issue tracker](https://github.com/ph7x-Systems/sardine-cms/issues) now —
+one issue per capability, each carrying the user problem, scope,
+dependencies and acceptance criteria. **No implementation starts without
+its issue.** The 2026-07-21 product review reset the direction: the
+engineering base (multilingual core, four storage engines, deterministic
+builds, admin, workflows, extensions, operations) outgrew the product
+experience, so the queue is now organized by what an *editor* can do,
+not by which contract exists.
 
-1. **v0.2.0 release** — M5–M7 ship to PyPI.
-2. **ADR-0034 execution, phase 1** — tag-based locales in the core
-   (language packs open M8).
+## Priorities (P0 → P3)
 
-## Definition of done for the current queue
+- **P0 — usable by a non-technical editor** (#126–#135): close ADR-0037
+  vertically, page-editor UX (block gallery, duplicate, drag reorder,
+  hide, delete with undo), browser onboarding wizard, global admin
+  search, bulk actions, translation queue + filters, editorial
+  calendar, scheduled unpublish, audit log, needs-attention dashboard.
+- **P1 — gaps that block real sites** (#136–#139): media maturity
+  (collections, crop, focal point, WebP/AVIF, replace, picker), an
+  **official forms provider** — a contract alone is not a feature —
+  per-entry SEO controls, signed external preview links.
+- **P2 — ecosystem experience** (#140–#141): WXR migration as a real
+  admin flow, theme/extension install-activate-inspect without editing
+  files, three official themes.
+- **P3 — scale and platform**: incremental builds, multisite, SSO/OIDC,
+  custom taxonomies, content relations, analytics — only when real
+  sites surface real problems.
 
-| Item | Done means |
+## Definition of done (every feature)
+
+A capability is ✅ only when **all** hold: usable in the admin; E2E
+tested; works in both bundled themes; works in at least two languages;
+has empty and error states; documented (repo + wiki); demonstrated on
+the public demo. "Contract shipped" without a bundled usable
+implementation is 🟡, never ✅. ADRs are reserved for decisions that
+change public contracts, storage, security or extensibility — UX
+details do not need one.
+
+## Product metrics (targets, measured before 1.0)
+
+| Metric | Target |
 | --- | --- |
-| M7 operations | Recovery and notifications have an explicit delivery contract; 2FA is role-safe; webhooks are signed/retryable; `cms doctor` reports storage, media, configuration and environment health. |
+| First site published (seed path, browser) | < 10 minutes |
+| First page created | without touching the CLI |
+| Landing page built by a non-technical editor | < 15 minutes |
+| Preview refresh | < 2 seconds |
+| Admin search on 10 000 entries | < 300 ms |
+| WXR migration of a reference export | explicit fidelity % reported |
 
 ## Milestones ahead
 
@@ -211,14 +248,11 @@ Current queue:
   enumeration-safe password reset and editorial notifications
   (ADR-0032), TOTP two-factor with per-role enforcement (ADR-0035),
   signed on-publish webhooks (ADR-0036) and `cms doctor` — all shipped.
-- **M8 — Editorial power and content depth**: bulk actions, admin-wide
-  search, scheduled unpublish, editorial calendar, audit log, custom
-  taxonomies (ADR), content relations (ADR), crop/focal point (ADR),
-  WebP/AVIF derivatives, media organization, embeds contract (ADR),
-  forms contract (ADR), per-entry SEO controls.
-- **M9 — Platform, measurement and ecosystem**: privacy-first analytics
-  contract (ADR), external review links (ADR), incremental builds,
-  ecosystem catalog.
+- **M8 → reorganized into P0/P1 issues** (#126–#139): editorial
+  usability first — see Priorities above. Custom taxonomies and content
+  relations moved to P3: they are platform depth, not editor pain.
+- **M9 → reorganized into P2/P3**: ecosystem experience (#140–#141),
+  then incremental builds, analytics, external review links, catalog.
 - **1.0** — criteria: M5–M7 shipped, admin stable, two production
   deployments beyond ph7x.com, deprecation policy on PyPI, all
   conformance suites documented as public contracts. M8/M9 continue

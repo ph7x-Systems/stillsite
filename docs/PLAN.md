@@ -380,12 +380,24 @@ Ordered by dependency; every 🧭 item begins with its ADR:
 
 ## Current execution queue
 
-1. **Release v0.2.0** — M5–M7 to PyPI (lockstep bump, tag, trusted
-   publishing).
-2. **Milestone 8, by ADR** — ADR-0034 phase 1 (tag-based locales) first,
-   then the editorial-power scope, ADRs first.
-3. **Milestone 9** — platform and ecosystem scope, after M8 or as
-   adoption pulls items forward.
+The queue lives in the [issue tracker](https://github.com/ph7x-Systems/sardine-cms/issues)
+— one issue per capability with acceptance criteria (#126–#141),
+prioritized P0 → P3 (see ROADMAP.md). Standing execution rules from the
+2026-07-21 product review:
+
+1. **No implementation starts without its issue.**
+2. **Vertical slices** — model → render → admin → preview → docs →
+   public demo close together; backend never accumulates without
+   visible UI.
+3. **Done means usable**: admin flow + E2E test + both themes + two
+   languages + empty/error states + docs + demo. A contract without a
+   bundled usable implementation is 🟡, never ✅.
+4. **ADRs only** for public contracts, storage, security or
+   extensibility changes.
+5. **Metrics** in ROADMAP.md are targets, measured before 1.0.
+
+Shipped context: v0.2.0 is on PyPI; ADR-0034 is fully executed;
+ADR-0037 phases 1–3 are merged (vertical close = #126).
 
 Acceptance criteria and capability gaps are maintained in
 [ROADMAP.md](ROADMAP.md). External owner action still pending: upload the
