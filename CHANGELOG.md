@@ -3,7 +3,11 @@
 All notable changes to Sardine CMS. The project follows semantic versioning
 from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
-## Unreleased
+## 0.2.0 — 2026-07-21
+
+Three milestones in one release: editorial completeness (M5),
+extensibility and adoption (M6) and operations (M7) — the capability
+inventory in docs/ROADMAP.md tells the full story.
 
 - **`cms doctor` closes M7**: one read-only command diagnoses the
   machinery around the content — configuration (theme, extensions,
