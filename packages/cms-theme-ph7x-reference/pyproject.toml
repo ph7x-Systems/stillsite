@@ -5,7 +5,7 @@ description = "Sardine CMS reference theme: dark editorial design system with lo
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"
-dependencies = ["sardine-cms-build"]
+dependencies = ["sardine-cms-build>=0.2.0,<0.3"]
 
 [project.entry-points."sardine.themes"]
 ph7x-reference = "cms_theme_ph7x_reference:ReferenceTheme"

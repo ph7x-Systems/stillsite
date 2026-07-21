@@ -3,6 +3,17 @@
 All notable changes to Sardine CMS. The project follows semantic versioning
 from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
+## Unreleased
+
+- **Internal dependencies are bounded to the release series**
+  (`>=0.2.0,<0.3`): a half-published release can no longer hand new
+  installs a mix of package versions — the resolver now refuses instead
+  of breaking at import time.
+- **Publishing gains a fallback**: OIDC trusted publishing stays the
+  primary path; when it fails, the job retries with the repository's
+  API-token secret so a PyPI publisher mismatch can never stall a
+  release again (the v0.2.0 lesson).
+
 ## 0.2.0 — 2026-07-21
 
 Three milestones in one release: editorial completeness (M5),
