@@ -300,12 +300,21 @@ def test_a_pack_language_can_be_the_source(tmp_path: Path) -> None:
         source=Language("tin"),
     )
     article.status = ContentStatus.PUBLISHED
-    artifact = build_site(project.site, SiteContent(articles=[article]), now=now)
+
+    from cms_core.pages import PageContent, new_page
+
+    page = new_page("home", PageContent(title="Tin home", description="D", slug="home"), now=now)
+    page.status = ContentStatus.PUBLISHED
+    artifact = build_site(project.site, SiteContent(articles=[article], pages=[page]), now=now)
 
     # the source (tin) lives at the root, RTL from its pack; pt-pt under /pt-pt/
     root = artifact.files["blog/hello/index.html"].decode("utf-8")
     assert 'lang="tin"' in root and 'dir="rtl"' in root
     assert "pt-pt/blog/hello/index.html" in artifact.files
+    # pages too: the home renders at the URL root in the source language
+    # (the RTL probe caught the builder skipping source pages once)
+    home = artifact.files["index.html"].decode("utf-8")
+    assert 'lang="tin"' in home and 'dir="rtl"' in home
     # the default source language earns no output when not configured
     assert not any(path.startswith("en/") for path in artifact.paths())
 
@@ -321,3 +330,34 @@ def test_the_source_never_appears_among_the_targets(tmp_path: Path) -> None:
     )
     assert [str(lang) for lang in config.languages] == ["es"]
     assert [str(lang) for lang in config.all_languages] == ["pt-pt", "es"]
+
+
+data_only_extension = Extension(
+    name="tin-data-only",
+    language_packs=(
+        LanguagePack(
+            tag="dat",
+            direction="ltr",
+            native_name="Datish",
+            site_labels={"blog": "DatBlog"},
+        ),
+    ),
+)
+
+
+def test_a_data_only_pack_extension_is_a_valid_extension(tmp_path: Path) -> None:
+    """ADR-0034 ecosystem phase: an extension whose ONLY contribution is
+    a language pack — the `sardine-lang-<tag>` shape — activates like
+    any other and makes its tag a content language."""
+    (tmp_path / "sardine.toml").write_text(
+        'extensions = ["test_extensions:data_only_extension"]\n'
+        '[site]\nname = "T"\nbase_url = "https://t.example"\nlanguages = ["dat"]\n',
+        encoding="utf-8",
+    )
+    from cms_build.ui import ui_label
+    from cms_cli.project import load_project
+    from cms_core import Language
+
+    project = load_project(tmp_path)
+    assert "dat" in [str(lang) for lang in project.site.languages]
+    assert ui_label(project.site, "blog", Language("dat")) == "DatBlog"

@@ -13,6 +13,7 @@ shareable, license it, name it, and get it listed. Policy rationale lives in
 | Deployment target | `Target` protocol + `register_target` (ADR-0005) | Adapter tests over a built artifact |
 | Storage backend | `StorageBackend` + `register_backend` (ADR-0004) | The storage conformance suite, unchanged |
 | Extensions | `sardine.extensions` (ADR-0028): rules, build steps, registries, CLI and section hints | Explicit activation + relevant conformance suites |
+| Language pack | `LanguagePack` via `Extension.language_packs` (ADR-0034; [LANGUAGE_PACK_GUIDE.md](LANGUAGE_PACK_GUIDE.md)) | End-to-end build with the pack's tag (test-suite pattern); RTL packs ride the CI axe gate |
 
 ## Licensing
 
@@ -32,6 +33,7 @@ grant — see ADR-0011):
 ```text
 sardine-theme-<name>        sardine-target-<name>
 sardine-backend-<engine>    sardine-plugin-<name>
+sardine-lang-<tag>
 ```
 
 Not permitted: the Sardine CMS logos, "official" claims, or names implying
@@ -49,7 +51,7 @@ Open a pull request adding one row to the registry below. Requirements
 
 Delisting follows the same path: a PR with evidence of the failing gate.
 Tag your repo with the GitHub topics `sardine-cms` and the kind
-(`sardine-theme`, …) for discovery.
+(`sardine-theme`, `sardine-lang`, …) for discovery.
 
 ## Registry
 

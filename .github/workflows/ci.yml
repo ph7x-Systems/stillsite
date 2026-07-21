@@ -194,6 +194,10 @@ jobs:
           cms seed  -p examples/multilingual-company-site
           cms build -p examples/multilingual-company-site
           python scripts/a11y_check.py examples/multilingual-company-site/_site package/axe.min.js
+      - name: Run the accessibility gate over an RTL build (ADR-0034)
+        run: |
+          python scripts/rtl_probe.py /tmp/rtl-site
+          python scripts/a11y_check.py /tmp/rtl-site package/axe.min.js / /blog/ /blog/first-post/ /404.html
       - name: Run the accessibility gate over the admin (snapshot)
         run: |
           # TestClient's transport: starlette prefers httpx2 (the
