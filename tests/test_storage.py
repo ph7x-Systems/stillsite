@@ -328,3 +328,53 @@ def test_menu_items_round_trip_ordering_and_delete(backend: StorageBackend) -> N
     assert backend.load_menu_items()[0].url == "/documentation/"  # upsert + reorder
     assert backend.delete_menu_item("home")
     assert not backend.delete_menu_item("home")
+
+
+def test_user_email_round_trips(backend: StorageBackend) -> None:
+    user = _user().model_copy(update={"email": "ana@example.com"})
+    backend.save_user(user)
+    loaded = backend.load_user("ana")
+    assert loaded is not None and loaded.email == "ana@example.com"
+    backend.save_user(user.model_copy(update={"email": None}))
+    reloaded = backend.load_user("ana")
+    assert reloaded is not None and reloaded.email is None
+
+
+def test_password_reset_is_single_use_and_expires(backend: StorageBackend) -> None:
+    from cms_core import PasswordReset
+
+    backend.save_user(_user())
+    reset = PasswordReset(
+        token_hash="reset-1", username="ana", expires_at=datetime(2026, 7, 18, 12, 0, 0)
+    )
+    backend.save_password_reset(reset)
+    # single use: the first pop returns it, the second finds nothing
+    popped = backend.pop_password_reset("reset-1", datetime(2026, 7, 18, 11, 0, 0))
+    assert popped == reset
+    assert backend.pop_password_reset("reset-1", datetime(2026, 7, 18, 11, 0, 0)) is None
+    # expiry: a pop after the moment removes the row and returns nothing
+    backend.save_password_reset(reset)
+    assert backend.pop_password_reset("reset-1", datetime(2026, 7, 18, 12, 0, 0)) is None
+    # bulk removal for an account
+    backend.save_password_reset(reset)
+    assert backend.delete_password_resets_for("ana") == 1
+    # user deletion cascades to pending resets
+    backend.save_password_reset(reset)
+    backend.delete_user("ana")
+    assert backend.pop_password_reset("reset-1", datetime(2026, 7, 18, 11, 0, 0)) is None
+
+
+def test_sessions_revoke_per_account(backend: StorageBackend) -> None:
+    backend.save_user(_user())
+    for index in range(2):
+        backend.save_session(
+            AdminSession(
+                token_hash=f"digest-{index}",
+                username="ana",
+                csrf_token=f"csrf-{index}",
+                expires_at=datetime(2026, 7, 18, 23, 0, 0),
+            )
+        )
+    assert backend.delete_sessions_for("ana") == 2
+    assert backend.load_session("digest-0") is None
+    assert backend.load_session("digest-1") is None

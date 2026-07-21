@@ -252,6 +252,9 @@ def admin_create_user(
     language: Annotated[
         str, typer.Option(help="Preferred admin language (en|pt-pt|es|fr|de); default browser")
     ] = "",
+    email: Annotated[
+        str, typer.Option(help="Optional address for password reset and notifications")
+    ] = "",
 ) -> None:
     """Create an admin account (there are no default credentials)."""
     from datetime import UTC, datetime
@@ -292,6 +295,7 @@ def admin_create_user(
             role=account_role,
             created_at=datetime.now(UTC),
             language=account_language,
+            email=email.strip() or None,
         )
         if existing is not None:
             # Replacing credentials is a security boundary: deleting first

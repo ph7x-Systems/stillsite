@@ -68,6 +68,7 @@ async def user_create(
     password: str = Form(""),
     role: str = Form("editor"),
     language: str = Form(""),
+    email: str = Form(""),
 ) -> object:
     user, session = user_session
     errors: list[str] = []
@@ -87,6 +88,9 @@ async def user_create(
             preference = Language(language)
         except ValueError:
             errors.append("language: unknown language")
+    address = email.strip() or None
+    if address is not None and ("@" not in address or len(address) > 254):
+        errors.append("email: not a usable address")
     db = get_db(request)
     if not errors and await db.run(lambda storage: storage.load_user(name)) is not None:
         errors.append("username: already taken")
@@ -102,6 +106,7 @@ async def user_create(
         role=account_role,
         created_at=datetime.now(UTC),
         language=preference,
+        email=address,
     )
     await db.run(lambda storage: storage.save_user(account))
     return RedirectResponse("/users", status_code=status.HTTP_303_SEE_OTHER)

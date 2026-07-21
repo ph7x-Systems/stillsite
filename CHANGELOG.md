@@ -5,6 +5,24 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Password reset, with a pluggable mail contract** (M7, ADR-0032
+  phase 1): accounts gain an optional email address (Users screen,
+  `cms admin create-user --email`; migration 15) and the login page —
+  when email is configured — offers an enumeration-safe reset: identical
+  response for any username, hashed single-use tokens expiring in 30
+  minutes (migration 16), the password policy enforced and **every
+  session of the account revoked** on completion. Messages are plain
+  text in the recipient's panel language. Delivery goes through a named
+  transport: `smtp` (standard library, STARTTLS/TLS) ships as the
+  baseline, and `Extension.mail_transports` lets extensions register
+  passwordless provider-API transports (ADR-0028 pattern) selected via
+  `SARDINE_MAIL_TRANSPORT`. Unconfigured email keeps the panel exactly
+  as before. Language stays abstract throughout — and the roadmap now
+  pins it as a standing invariant: languages are rows, keys and
+  configuration, never schema columns or fixed enumerations; the
+  language-pack ADR (arbitrary locales, contributable packs, RTL/LTR)
+  opens Milestone 8.
+
 - **The scope is written down**: the roadmap now carries the full
   capability map toward a complete static-first CMS — new scheduled rows
   (bulk actions, admin-wide search, scheduled unpublish, editorial

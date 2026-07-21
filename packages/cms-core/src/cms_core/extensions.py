@@ -22,6 +22,12 @@ ENTRY_POINT_GROUP = "sardine.extensions"
 BuildStep = Callable[..., None]
 """``(config, content, artifact) -> None`` — post-artifact, deterministic."""
 
+MailSender = Callable[[str, str, str], None]
+"""``(to, subject, body) -> None`` — deliver one plain-text message
+(ADR-0032). Transports read their own configuration (OAuth tokens,
+tenant ids…) from the environment; the factory below may raise at
+startup when misconfigured — loudly, never at send time."""
+
 
 @dataclass(frozen=True)
 class CommentsProvider:
@@ -53,6 +59,9 @@ class Extension:
     comments_providers: Mapping[str, CommentsProvider] = field(default_factory=dict)
     """name -> provider (ADR-0031); selected by ``[comments]`` in
     ``sardine.toml``, never active by mere installation."""
+    mail_transports: Mapping[str, Callable[[], MailSender]] = field(default_factory=dict)
+    """name -> factory building a configured sender (ADR-0032); selected
+    by ``SARDINE_MAIL_TRANSPORT``, never active by mere installation."""
 
 
 class ExtensionError(RuntimeError):

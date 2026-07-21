@@ -850,3 +850,61 @@ msgstr "Guardado"
 
 msgid "Autosave paused — fix invalid fields."
 msgstr "Guardado automático en pausa — corrige los campos no válidos."
+
+msgid "Forgot your password?"
+msgstr "¿Olvidaste tu contraseña?"
+
+msgid "Reset your password"
+msgstr "Restablecer tu contraseña"
+
+msgid "Send the reset link"
+msgstr "Enviar el enlace de restablecimiento"
+
+msgid "If that account has an address, a message is on its way."
+msgstr "Si esa cuenta tiene una dirección, el mensaje va en camino."
+
+msgid "Back to sign in"
+msgstr "Volver al inicio de sesión"
+
+msgid "New password"
+msgstr "Nueva contraseña"
+
+msgid "Repeat the new password"
+msgstr "Repite la nueva contraseña"
+
+msgid "Set the new password"
+msgstr "Establecer la nueva contraseña"
+
+msgid "The password needs at least 12 characters."
+msgstr "La contraseña necesita al menos 12 caracteres."
+
+msgid "The two passwords do not match."
+msgstr "Las dos contraseñas no coinciden."
+
+msgid "This reset link is no longer valid — request a new one."
+msgstr "Este enlace de restablecimiento ya no es válido: solicita uno nuevo."
+
+msgid "Your password was changed. Sign in with the new one."
+msgstr "Tu contraseña fue cambiada. Inicia sesión con la nueva."
+
+msgid "Reset your Sardine CMS admin password"
+msgstr "Restablece la contraseña del admin de Sardine CMS"
+
+msgid ""
+"Someone asked to reset the password for %(username)s. If it was you, open this link within 30 minutes:\n"
+"\n"
+"%(link)s\n"
+"\n"
+"If it was not you, ignore this message — nothing changed."
+msgstr ""
+"Alguien pidió restablecer la contraseña de %(username)s. Si fuiste tú, abre este enlace en los próximos 30 minutos:\n"
+"\n"
+"%(link)s\n"
+"\n"
+"Si no fuiste tú, ignora este mensaje: nada cambió."
+
+msgid "Email"
+msgstr "Correo electrónico"
+
+msgid "optional — password reset and notifications"
+msgstr "opcional: restablecimiento de contraseña y notificaciones"

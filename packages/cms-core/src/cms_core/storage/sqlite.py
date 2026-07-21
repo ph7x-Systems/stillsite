@@ -9,7 +9,7 @@ import sqlite3
 from datetime import datetime
 from pathlib import Path
 
-from cms_core.accounts import AdminSession, Role, User
+from cms_core.accounts import AdminSession, PasswordReset, Role, User
 from cms_core.languages import Language
 from cms_core.media import MediaAsset
 from cms_core.menus import MenuItem
@@ -479,23 +479,24 @@ class SQLiteBackend(StorageBackend):
     def save_user(self, user: User) -> None:
         with self._connection as connection:
             connection.execute(
-                "INSERT INTO users (username, password_hash, role, created_at, language)"
-                " VALUES (?, ?, ?, ?, ?)"
+                "INSERT INTO users (username, password_hash, role, created_at, language, email)"
+                " VALUES (?, ?, ?, ?, ?, ?)"
                 " ON CONFLICT(username) DO UPDATE SET"
                 " password_hash = excluded.password_hash, role = excluded.role,"
-                " language = excluded.language",
+                " language = excluded.language, email = excluded.email",
                 (
                     user.username,
                     user.password_hash,
                     user.role.value,
                     user.created_at.isoformat(),
                     user.language.value if user.language else None,
+                    user.email,
                 ),
             )
 
     def load_user(self, username: str) -> User | None:
         row = self._connection.execute(
-            "SELECT username, password_hash, role, created_at, language"
+            "SELECT username, password_hash, role, created_at, language, email"
             " FROM users WHERE username = ?",
             (username,),
         ).fetchone()
@@ -507,6 +508,7 @@ class SQLiteBackend(StorageBackend):
             role=Role(row[2]),
             created_at=datetime.fromisoformat(row[3]),
             language=Language(row[4]) if row[4] else None,
+            email=row[5],
         )
 
     def delete_user(self, username: str) -> bool:
@@ -560,5 +562,43 @@ class SQLiteBackend(StorageBackend):
         with self._connection as connection:
             cursor = connection.execute(
                 "DELETE FROM admin_sessions WHERE expires_at <= ?", (now.isoformat(),)
+            )
+        return cursor.rowcount
+
+    def delete_sessions_for(self, username: str) -> int:
+        with self._connection as connection:
+            cursor = connection.execute(
+                "DELETE FROM admin_sessions WHERE username = ?", (username,)
+            )
+        return cursor.rowcount
+
+    def save_password_reset(self, reset: PasswordReset) -> None:
+        with self._connection as connection:
+            connection.execute(
+                "INSERT INTO password_resets (token_hash, username, expires_at)"
+                " VALUES (?, ?, ?)"
+                " ON CONFLICT(token_hash) DO UPDATE SET"
+                " username = excluded.username, expires_at = excluded.expires_at",
+                (reset.token_hash, reset.username, reset.expires_at.isoformat()),
+            )
+
+    def pop_password_reset(self, token_hash: str, now: datetime) -> PasswordReset | None:
+        row = self._connection.execute(
+            "SELECT token_hash, username, expires_at FROM password_resets WHERE token_hash = ?",
+            (token_hash,),
+        ).fetchone()
+        if row is None:
+            return None
+        with self._connection as connection:
+            connection.execute("DELETE FROM password_resets WHERE token_hash = ?", (token_hash,))
+        expires_at = datetime.fromisoformat(row[2])
+        if expires_at <= now:
+            return None
+        return PasswordReset(token_hash=row[0], username=row[1], expires_at=expires_at)
+
+    def delete_password_resets_for(self, username: str) -> int:
+        with self._connection as connection:
+            cursor = connection.execute(
+                "DELETE FROM password_resets WHERE username = ?", (username,)
             )
         return cursor.rowcount

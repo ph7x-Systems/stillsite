@@ -3,7 +3,7 @@
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _dist_version
 
-from cms_core.accounts import AdminSession, Role, User
+from cms_core.accounts import AdminSession, PasswordReset, Role, User
 from cms_core.extensions import (
     ENTRY_POINT_GROUP,
     CommentsProvider,
@@ -55,6 +55,7 @@ __all__ = [
     "MenuItem",
     "Page",
     "PageContent",
+    "PasswordReset",
     "Role",
     "Section",
     "SectionContent",

@@ -1,0 +1,17 @@
+{% extends "base.html.j2" %}
+{% block title %}{{ _("Reset your password") }} — Sardine CMS admin{% endblock %}
+{% block bodyclass %}login-page bg-body-secondary{% endblock %}
+{% block body %}
+<main id="main" class="login-box">
+  <div class="card card-outline card-primary admin-login">
+    <div class="card-header text-center">
+      <img src="/static/brand/sardine.svg" alt="" width="56" height="56" class="mb-2">
+      <span class="h4 d-block">Sardine CMS <small class="text-body-secondary">admin</small></span>
+    </div>
+    <div class="card-body text-center">
+      <p role="status" class="alert alert-success admin-alert">{{ _("Your password was changed. Sign in with the new one.") }}</p>
+      <p class="mb-0"><a class="btn btn-primary" href="/login">{{ _("Back to sign in") }}</a></p>
+    </div>
+  </div>
+</main>
+{% endblock %}

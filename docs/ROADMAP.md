@@ -84,7 +84,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Authors / bylines | ✅ editorial byline on articles, rendered by the themes | — |
 | Custom taxonomies | ❌ category + tags | 🧭 arbitrary taxonomy definitions need an ADR (M8) |
 | Content relations | ❌ | 🧭 typed entry-to-entry links (related articles) need an ADR (M8) |
-| Arbitrary locale sets | ❌ the five supported languages are fixed | 🧭 configurable locales are an architectural ADR (post-1.0) |
+| Arbitrary locale sets + language packs | ❌ the five supported languages are fixed | 🧭 **top of M8**: one ADR for configurable locales, contributable language packs (site labels + admin catalogs) and RTL/LTR text direction |
 
 ### Media
 
@@ -120,9 +120,9 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Role ladder | ✅ editor < reviewer < publisher < admin | — |
 | User management UI | ✅ Users screen (admin role): create, role change, delete — self and last-admin safeguards; CLI stays the bootstrap | — |
 | Admin panel in the editor's language | ✅ gettext i18n (ADR-0022): PT-PT/ES/FR/DE shipped, per-user preference + browser fallback, completeness enforced by tests | — |
-| Password reset | ❌ | 🔜 per [ADR-0032](adr/0032-email-and-notifications.md) (proposed): SMTP-only, enumeration-safe, hashed single-use tokens (M7) |
+| Password reset | ✅ ADR-0032: enumeration-safe request, hashed single-use 30-min tokens, session revocation; pluggable mail transports (`smtp` baseline, extensions for passwordless APIs) | — |
 | Two-factor authentication | ❌ | 🔜 TOTP (M7) |
-| Notifications (review requested…) | ❌ | 🔜 per [ADR-0032](adr/0032-email-and-notifications.md): review-requested + published, fire-and-forget (M7) |
+| Notifications (review requested…) | ❌ | 🔜 ADR-0032 phase 2: review-requested + published, fire-and-forget (M7, next) |
 
 ### Platform and operations
 
@@ -190,14 +190,21 @@ Current queue:
   deployments beyond ph7x.com, deprecation policy on PyPI, all
   conformance suites documented as public contracts. M8/M9 continue
   past 1.0 unless adoption pulls items forward.
-- **Post-1.0 architectural horizon**: arbitrary locale sets and SSO/OIDC
-  — both change core contracts and wait for their own ADRs.
+- **Post-1.0 architectural horizon**: SSO/OIDC — it changes core
+  contracts and waits for its own ADR. (Arbitrary locales moved up: the
+  language-pack ADR opens M8.)
 
 The bar stays what it has been since M5: the capability set editors
 expect from the mature publishing systems they come from, delivered
 static-first — the same benchmark, never a clone.
 
 ## Standing invariants (any horizon)
+
+Language sets are data, never structure: anything per-language is
+modeled as rows, keys or configuration — never as schema columns, fixed
+enumerations in new contracts, or hardcoded strings — so that adding a
+language (packs, RTL scripts included) never alters a table or a code
+path.
 
 Everything lands through the same gates: English-only repo, PR + green CI,
 repository docs and public wiki move with the code (anti-drift enforced for

@@ -273,8 +273,11 @@ tests, docs and wiki updates, per the standing gates.
       ([ADR-0032](adr/0032-email-and-notifications.md), proposed):
       SMTP-only transport, optional by construction, enumeration-safe
       reset, two explicit notification events
-- [ ] ADR-0032 implemented: users.email + password_resets migrations,
-      reset flow, review/published notifications
+- [x] ADR-0032 phase 1: users.email + password_resets migrations (15/16,
+      four engines), pluggable mail transports (`smtp` baseline +
+      `Extension.mail_transports` for passwordless provider APIs),
+      enumeration-safe reset flow, localized messages, session revocation
+- [ ] ADR-0032 phase 2: review-requested + published notifications
 - [ ] TOTP two-factor authentication
 - [ ] On-publish webhook (trigger the host's build)
 - [ ] `cms doctor`: storage, media, config, environment diagnostics
@@ -284,6 +287,9 @@ tests, docs and wiki updates, per the standing gates.
 
 Ordered by dependency; every 🧭 item begins with its ADR:
 
+- [ ] **Language-pack ADR first**: arbitrary locale sets, contributable
+      language packs (site labels + admin catalogs), RTL/LTR text
+      direction — languages stay data, never schema or enumerations
 - [ ] Bulk actions on the content lists (multi-select workflow + trash)
 - [ ] Admin-wide search (articles, pages, media from one box)
 - [ ] Scheduled unpublish: `unpublish_at` mirroring ADR-0024's contract

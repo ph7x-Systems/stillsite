@@ -850,3 +850,61 @@ msgstr "Enregistré"
 
 msgid "Autosave paused — fix invalid fields."
 msgstr "Enregistrement automatique en pause — corrigez les champs invalides."
+
+msgid "Forgot your password?"
+msgstr "Mot de passe oublié ?"
+
+msgid "Reset your password"
+msgstr "Réinitialiser votre mot de passe"
+
+msgid "Send the reset link"
+msgstr "Envoyer le lien de réinitialisation"
+
+msgid "If that account has an address, a message is on its way."
+msgstr "Si ce compte a une adresse, un message est en route."
+
+msgid "Back to sign in"
+msgstr "Retour à la connexion"
+
+msgid "New password"
+msgstr "Nouveau mot de passe"
+
+msgid "Repeat the new password"
+msgstr "Répétez le nouveau mot de passe"
+
+msgid "Set the new password"
+msgstr "Définir le nouveau mot de passe"
+
+msgid "The password needs at least 12 characters."
+msgstr "Le mot de passe doit compter au moins 12 caractères."
+
+msgid "The two passwords do not match."
+msgstr "Les deux mots de passe ne correspondent pas."
+
+msgid "This reset link is no longer valid — request a new one."
+msgstr "Ce lien de réinitialisation n'est plus valide — demandez-en un nouveau."
+
+msgid "Your password was changed. Sign in with the new one."
+msgstr "Votre mot de passe a été changé. Connectez-vous avec le nouveau."
+
+msgid "Reset your Sardine CMS admin password"
+msgstr "Réinitialisez le mot de passe admin de Sardine CMS"
+
+msgid ""
+"Someone asked to reset the password for %(username)s. If it was you, open this link within 30 minutes:\n"
+"\n"
+"%(link)s\n"
+"\n"
+"If it was not you, ignore this message — nothing changed."
+msgstr ""
+"Quelqu'un a demandé la réinitialisation du mot de passe de %(username)s. Si c'était vous, ouvrez ce lien dans les 30 minutes :\n"
+"\n"
+"%(link)s\n"
+"\n"
+"Sinon, ignorez ce message — rien n'a changé."
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "optional — password reset and notifications"
+msgstr "facultatif — réinitialisation du mot de passe et notifications"

@@ -147,7 +147,9 @@ def _account_key(username: str) -> str:
 async def login_form(request: Request) -> object:
     csrf = new_token()
     response = request.app.state.templates.TemplateResponse(
-        request, "login.html.j2", {"error": None, "login_csrf": csrf}
+        request,
+        "login.html.j2",
+        {"error": None, "login_csrf": csrf, "reset_enabled": _reset_enabled(request)},
     )
     response.set_cookie(
         login_csrf_cookie_name(request),
@@ -180,7 +182,11 @@ async def login_submit(
         response = request.app.state.templates.TemplateResponse(
             request,
             "login.html.j2",
-            {"error": "Wrong username or password.", "login_csrf": login_csrf},
+            {
+                "error": "Wrong username or password.",
+                "login_csrf": login_csrf,
+                "reset_enabled": _reset_enabled(request),
+            },
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
         return response
@@ -207,7 +213,11 @@ async def login_submit(
         response = request.app.state.templates.TemplateResponse(
             request,
             "login.html.j2",
-            {"error": "Wrong username or password.", "login_csrf": login_csrf},
+            {
+                "error": "Wrong username or password.",
+                "login_csrf": login_csrf,
+                "reset_enabled": _reset_enabled(request),
+            },
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
         return response
@@ -285,3 +295,178 @@ async def logout(
         samesite="strict",
     )
     return response
+
+
+# Password reset (ADR-0032): enumeration-safe, single-use, revoking.
+
+RESET_TTL = timedelta(minutes=30)
+
+
+def _reset_enabled(request: Request) -> bool:
+    return request.app.state.mailer is not None
+
+
+def _reset_email_body(request: Request, user: User, link: str) -> tuple[str, str]:
+    from cms_admin.i18n import translate_for
+
+    subject = translate_for(request, user.language, "Reset your Sardine CMS admin password")
+    body = translate_for(
+        request,
+        user.language,
+        "Someone asked to reset the password for %(username)s. If it was "
+        "you, open this link within 30 minutes:\n\n%(link)s\n\nIf it was "
+        "not you, ignore this message — nothing changed.",
+    ) % {"username": user.username, "link": link}
+    return subject, body
+
+
+def _send_in_background(request: Request, to: str, subject: str, body: str) -> None:
+    """Fire-and-forget delivery: the response never waits for SMTP and a
+    provider failure never becomes a page error (ADR-0032)."""
+    import threading
+
+    mailer = request.app.state.mailer
+
+    def run() -> None:
+        try:
+            mailer.send(to, subject, body)
+        except Exception:
+            request.app.state.last_mail_error = datetime.now(UTC).isoformat()
+
+    threading.Thread(target=run, daemon=True).start()
+
+
+@router.get("/reset")
+async def reset_request_form(request: Request) -> object:
+    if not _reset_enabled(request):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    csrf = new_token()
+    response = request.app.state.templates.TemplateResponse(
+        request, "reset_request.html.j2", {"sent": False, "login_csrf": csrf}
+    )
+    response.set_cookie(
+        login_csrf_cookie_name(request),
+        csrf,
+        max_age=LOGIN_CSRF_TTL_SECONDS,
+        httponly=True,
+        samesite="strict",
+        secure=request.app.state.settings.cookie_secure,
+        path="/",
+    )
+    return response
+
+
+@router.post("/reset")
+async def reset_request_submit(
+    request: Request,
+    username: str = Form(""),
+    login_csrf: str = Form(...),
+) -> object:
+    if not _reset_enabled(request):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    login_cookie = request.cookies.get(login_csrf_cookie_name(request))
+    if not login_cookie or not secrets.compare_digest(login_cookie, login_csrf):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="invalid CSRF token")
+    now = datetime.now(UTC)
+    limiter: LoginRateLimiter = request.app.state.login_limiter
+    client_key = _client_key(request)
+    if limiter.is_blocked(client_key, now):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="too many attempts; try again later",
+        )
+    # Every request spends one attempt: reset requests share the login
+    # budget, so the endpoint cannot be used to probe accounts at volume.
+    limiter.record_failure(client_key, now)
+    db = get_db(request)
+    if len(username) <= 64:
+        user = await db.run(lambda storage: storage.load_user(username))
+        if user is not None and user.email:
+            token = new_token()
+            from cms_core import PasswordReset
+
+            reset = PasswordReset(
+                token_hash=token_digest(token),
+                username=user.username,
+                expires_at=now + RESET_TTL,
+            )
+            await db.run(lambda storage: storage.save_password_reset(reset))
+            link = str(request.url_for("reset_form", token=token))
+            subject, body = _reset_email_body(request, user, link)
+            _send_in_background(request, user.email, subject, body)
+    # One response for every outcome: existing or unknown account, with
+    # or without an address — nothing to enumerate.
+    return request.app.state.templates.TemplateResponse(
+        request, "reset_request.html.j2", {"sent": True, "login_csrf": login_csrf}
+    )
+
+
+@router.get("/reset/{token}")
+async def reset_form(request: Request, token: str) -> object:
+    if not _reset_enabled(request):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    csrf = new_token()
+    response = request.app.state.templates.TemplateResponse(
+        request, "reset_form.html.j2", {"token": token, "error": None, "login_csrf": csrf}
+    )
+    response.set_cookie(
+        login_csrf_cookie_name(request),
+        csrf,
+        max_age=LOGIN_CSRF_TTL_SECONDS,
+        httponly=True,
+        samesite="strict",
+        secure=request.app.state.settings.cookie_secure,
+        path="/",
+    )
+    return response
+
+
+@router.post("/reset/{token}")
+async def reset_submit(
+    request: Request,
+    token: str,
+    password: str = Form(""),
+    password_repeat: str = Form(""),
+    login_csrf: str = Form(...),
+) -> object:
+    if not _reset_enabled(request):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    login_cookie = request.cookies.get(login_csrf_cookie_name(request))
+    if not login_cookie or not secrets.compare_digest(login_cookie, login_csrf):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="invalid CSRF token")
+    now = datetime.now(UTC)
+
+    def failed(error: str) -> object:
+        return request.app.state.templates.TemplateResponse(
+            request,
+            "reset_form.html.j2",
+            {"token": token, "error": error, "login_csrf": login_csrf},
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        )
+
+    from cms_admin.security import MIN_PASSWORD_LENGTH
+
+    if not MIN_PASSWORD_LENGTH <= len(password) <= MAX_PASSWORD_LENGTH:
+        return failed("The password needs at least 12 characters.")
+    if password != password_repeat:
+        return failed("The two passwords do not match.")
+    db = get_db(request)
+    digest = token_digest(token)
+    reset = await db.run(lambda storage: storage.pop_password_reset(digest, now))
+    if reset is None:
+        return failed("This reset link is no longer valid — request a new one.")
+    user = await db.run(lambda storage: storage.load_user(reset.username))
+    if user is None:
+        return failed("This reset link is no longer valid — request a new one.")
+    new_hash = await asyncio.to_thread(hash_password, password)
+    updated = user.model_copy(update={"password_hash": new_hash})
+
+    def apply(storage: object) -> None:
+        storage.save_user(updated)  # type: ignore[attr-defined]
+        storage.delete_sessions_for(updated.username)  # type: ignore[attr-defined]
+        storage.delete_password_resets_for(updated.username)  # type: ignore[attr-defined]
+
+    await db.run(apply)
+    return request.app.state.templates.TemplateResponse(
+        request, "reset_done.html.j2", {"login_csrf": login_csrf}
+    )

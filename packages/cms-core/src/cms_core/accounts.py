@@ -39,6 +39,9 @@ class User(BaseModel):
     created_at: datetime
     language: Language | None = None
     """Preferred admin-panel language; None follows the browser."""
+    email: str | None = None
+    """Optional address for password reset and notifications (ADR-0032);
+    never exported, lives only in the project database."""
 
 
 class AdminSession(BaseModel):
@@ -49,4 +52,15 @@ class AdminSession(BaseModel):
     token_hash: str = Field(min_length=1)
     username: str = Field(pattern=USERNAME_PATTERN)
     csrf_token: str = Field(min_length=1)
+    expires_at: datetime
+
+
+class PasswordReset(BaseModel):
+    """A pending password-reset request (ADR-0032). Only the token's
+    hash is stored; the row is single-use and expires."""
+
+    model_config = ConfigDict(frozen=True)
+
+    token_hash: str = Field(min_length=1)
+    username: str = Field(pattern=USERNAME_PATTERN)
     expires_at: datetime

@@ -1,6 +1,6 @@
 """The extension contract (ADR-0028): loading, activation, contributions."""
 
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from pathlib import Path
 
 import pytest
@@ -57,6 +57,16 @@ def _fishbowl_thread_url(base: str, page_url: str) -> str:
     return f"{base.rstrip('/')}/threads?page={page_url}"
 
 
+CAUGHT_MAIL: list[tuple[str, str, str]] = []
+
+
+def _fishmail_factory() -> "Callable[[str, str, str], None]":
+    def deliver(to: str, subject: str, body: str) -> None:
+        CAUGHT_MAIL.append((to, subject, body))
+
+    return deliver
+
+
 extension = Extension(
     name="testext",
     validation_rules=(ShoutingTitlesRule(),),
@@ -66,6 +76,7 @@ extension = Extension(
     comments_providers={
         "fishbowl": CommentsProvider(island_js=FISHBOWL_ISLAND, thread_url=_fishbowl_thread_url)
     },
+    mail_transports={"fishmail": _fishmail_factory},
 )
 
 

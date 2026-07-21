@@ -18,7 +18,7 @@ from contextlib import contextmanager
 from datetime import datetime
 from typing import Any
 
-from cms_core.accounts import AdminSession, Role, User
+from cms_core.accounts import AdminSession, PasswordReset, Role, User
 from cms_core.languages import Language
 from cms_core.media import MediaAsset
 from cms_core.menus import MenuItem
@@ -534,12 +534,13 @@ class DbApiBackend(StorageBackend):
                     "role": user.role.value,
                     "created_at": user.created_at.isoformat(),
                     "language": user.language.value if user.language else None,
+                    "email": user.email,
                 },
             )
 
     def load_user(self, username: str) -> User | None:
         row = self._fetchone(
-            "SELECT username, password_hash, role, created_at, language"
+            "SELECT username, password_hash, role, created_at, language, email"
             " FROM users WHERE username = %s",
             (username,),
         )
@@ -551,11 +552,13 @@ class DbApiBackend(StorageBackend):
             role=Role(row[2]),
             created_at=datetime.fromisoformat(row[3]),
             language=Language(row[4]) if row[4] else None,
+            email=row[5],
         )
 
     def delete_user(self, username: str) -> bool:
         with self._tx():
             self._execute("DELETE FROM admin_sessions WHERE username = %s", (username,))
+            self._execute("DELETE FROM password_resets WHERE username = %s", (username,))
             cursor = self._execute("DELETE FROM users WHERE username = %s", (username,))
             count = int(cursor.rowcount)
         return count > 0
@@ -607,5 +610,39 @@ class DbApiBackend(StorageBackend):
             cursor = self._execute(
                 "DELETE FROM admin_sessions WHERE expires_at <= %s", (now.isoformat(),)
             )
+            count = int(cursor.rowcount)
+        return count
+
+    def delete_sessions_for(self, username: str) -> int:
+        with self._tx():
+            cursor = self._execute("DELETE FROM admin_sessions WHERE username = %s", (username,))
+            count = int(cursor.rowcount)
+        return count
+
+    def save_password_reset(self, reset: PasswordReset) -> None:
+        with self._tx():
+            self._upsert(
+                "password_resets",
+                {"token_hash": reset.token_hash},
+                {"username": reset.username, "expires_at": reset.expires_at.isoformat()},
+            )
+
+    def pop_password_reset(self, token_hash: str, now: datetime) -> PasswordReset | None:
+        row = self._fetchone(
+            "SELECT token_hash, username, expires_at FROM password_resets WHERE token_hash = %s",
+            (token_hash,),
+        )
+        if row is None:
+            return None
+        with self._tx():
+            self._execute("DELETE FROM password_resets WHERE token_hash = %s", (token_hash,))
+        expires_at = datetime.fromisoformat(row[2])
+        if expires_at <= now:
+            return None
+        return PasswordReset(token_hash=str(row[0]), username=str(row[1]), expires_at=expires_at)
+
+    def delete_password_resets_for(self, username: str) -> int:
+        with self._tx():
+            cursor = self._execute("DELETE FROM password_resets WHERE username = %s", (username,))
             count = int(cursor.rowcount)
         return count

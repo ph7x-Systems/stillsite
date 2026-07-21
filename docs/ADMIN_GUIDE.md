@@ -35,6 +35,19 @@ revokes all of its existing sessions before storing the new credentials.
 | `SARDINE_ADMIN_UPLOAD_MAX_PIXELS` | `40000000` | Maximum image dimensions (`width × height`) |
 | `SARDINE_PROJECT_DIR` | `.` | Project directory holding `sardine.toml` (panel builds) |
 | `SARDINE_ADMIN_PUBLISH_GATE` | `1` | Set `0` to allow publishing despite validation errors |
+| `SARDINE_MAIL_TRANSPORT` | `smtp` | Outbound email transport (ADR-0032): `smtp` is the bundled baseline; any other name resolves to an activated extension's mail transport (passwordless provider APIs) |
+| `SARDINE_SMTP_URL` | unset | For the `smtp` transport: `smtp://user:pass@host:587` (STARTTLS) or `smtps://host:465`; unset keeps email off |
+| `SARDINE_MAIL_FROM` | unset | The From address for panel email; required together with the SMTP URL |
+
+### Password reset (ADR-0032)
+
+With SMTP configured and an address on the account (Users screen or
+`cms admin create-user --email`), the login page offers "Forgot your
+password?". The response never reveals whether an account exists; the
+mailed link is single-use, expires in 30 minutes, and its token is
+stored only as a hash. Completing a reset applies the password policy
+and revokes every session of the account. Without SMTP the pages do not
+exist and the panel behaves exactly as before.
 
 The admin never reads configuration files — secrets cannot end up in a
 project directory that gets committed or exported. Preview artifacts and

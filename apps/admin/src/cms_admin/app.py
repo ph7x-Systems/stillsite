@@ -24,6 +24,7 @@ from cms_admin.auth import router as auth_router
 from cms_admin.dashboard import router as dashboard_router
 from cms_admin.db import StorageExecutor
 from cms_admin.i18n import i18n_context, load_catalogs
+from cms_admin.mail import resolve_mailer
 from cms_admin.media import router as media_router
 from cms_admin.menu import router as menu_router
 from cms_admin.notes import router as notes_router
@@ -103,7 +104,8 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
             response.headers[name] = value
         return response
 
-    app.state.settings = settings if settings is not None else AdminSettings.from_env()
+    resolved = settings if settings is not None else AdminSettings.from_env()
+    app.state.settings = resolved
     # autoescape must be forced on: the stock select_autoescape does not
     # recognize the .html.j2 extension and would render templates unescaped.
     app.state.templates = Jinja2Templates(
@@ -117,6 +119,21 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
     )
     app.state.translations = load_catalogs()
     app.state.login_limiter = LoginRateLimiter()
+    # ADR-0032: outbound email is optional and transport-pluggable; a
+    # broken or unknown transport fails startup, never a request.
+    extension_transports: dict[str, object] = {}
+    if resolved.mail_transport != "smtp":
+        from cms_cli.project import load_project
+
+        project = load_project(resolved.project_dir)
+        for extension in sorted(project.load_extensions(), key=lambda e: e.name):
+            extension_transports.update(extension.mail_transports)
+    app.state.mailer = resolve_mailer(
+        resolved.mail_transport,
+        resolved.smtp_url,
+        resolved.mail_from,
+        extension_transports,  # type: ignore[arg-type]
+    )
     # Argon2 is deliberately expensive. Bound concurrent work so a burst of
     # login attempts cannot exhaust every worker thread/CPU core.
     app.state.password_slots = asyncio.Semaphore(4)

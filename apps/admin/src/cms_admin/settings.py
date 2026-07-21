@@ -32,6 +32,12 @@ class AdminSettings:
     # The publish gate: block the review→published transition on validation
     # errors for the entity. Set SARDINE_ADMIN_PUBLISH_GATE=0 to disable.
     publish_gate: bool = True
+    # Outbound email (ADR-0032): a named transport. "smtp" is the bundled
+    # baseline (needs smtp_url + mail_from); any other name resolves to an
+    # activated extension's mail transport. Unconfigured = email off.
+    mail_transport: str = "smtp"
+    smtp_url: str | None = None
+    mail_from: str | None = None
 
     def __post_init__(self) -> None:
         if self.session_ttl <= timedelta(0):
@@ -62,4 +68,7 @@ class AdminSettings:
             ),
             project_dir=Path(os.environ.get("SARDINE_PROJECT_DIR", ".")),
             publish_gate=os.environ.get("SARDINE_ADMIN_PUBLISH_GATE", "1") != "0",
+            mail_transport=os.environ.get("SARDINE_MAIL_TRANSPORT", "smtp"),
+            smtp_url=os.environ.get("SARDINE_SMTP_URL"),
+            mail_from=os.environ.get("SARDINE_MAIL_FROM"),
         )

@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from types import TracebackType
 
-from cms_core.accounts import AdminSession, User
+from cms_core.accounts import AdminSession, PasswordReset, User
 from cms_core.media import MediaAsset
 from cms_core.menus import MenuItem
 from cms_core.models import Article
@@ -155,6 +155,22 @@ class StorageBackend(ABC):
 
     @abstractmethod
     def delete_expired_sessions(self, now: datetime) -> int: ...
+
+    @abstractmethod
+    def delete_sessions_for(self, username: str) -> int:
+        """Revoke every session of the account (ADR-0032 reset contract)."""
+
+    # Password resets (ADR-0032)
+
+    @abstractmethod
+    def save_password_reset(self, reset: PasswordReset) -> None: ...
+
+    @abstractmethod
+    def pop_password_reset(self, token_hash: str, now: datetime) -> PasswordReset | None:
+        """Single use: return and delete the row; None when absent or expired."""
+
+    @abstractmethod
+    def delete_password_resets_for(self, username: str) -> int: ...
 
     # Context manager
 

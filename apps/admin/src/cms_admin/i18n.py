@@ -40,6 +40,25 @@ LOCALE_DIR = Path(__file__).parent / "locale"
 RUNTIME_MSGIDS: tuple[str, ...] = (
     # login route
     "Wrong username or password.",
+    # password reset (ADR-0032)
+    "Email",
+    "optional — password reset and notifications",
+    "Forgot your password?",
+    "Reset your password",
+    "Send the reset link",
+    "If that account has an address, a message is on its way.",
+    "Back to sign in",
+    "New password",
+    "Repeat the new password",
+    "Set the new password",
+    "The password needs at least 12 characters.",
+    "The two passwords do not match.",
+    "This reset link is no longer valid — request a new one.",
+    "Your password was changed. Sign in with the new one.",
+    "Reset your Sardine CMS admin password",
+    "Someone asked to reset the password for %(username)s. If it was "
+    "you, open this link within 30 minutes:\n\n%(link)s\n\nIf it was "
+    "not you, ignore this message — nothing changed.",
     # workflow transition labels (cms_admin.workflow.LABELS)
     "Submit for review",
     "Send back to draft",
@@ -143,4 +162,13 @@ def i18n_context(request: Request) -> dict[str, object]:
 
 def translate(request: Request, message: str) -> str:
     """Python-side messages (route errors, run records)."""
+    return translations_for(request).gettext(message)
+
+
+def translate_for(request: Request, language: Language | None, message: str) -> str:
+    """A message in a specific user's language (ADR-0032 emails): the
+    stored preference wins; None falls back to the request's resolution."""
+    catalogs: dict[Language, gettext.NullTranslations] = request.app.state.translations
+    if language is not None:
+        return catalogs.get(language, catalogs[SOURCE]).gettext(message)
     return translations_for(request).gettext(message)

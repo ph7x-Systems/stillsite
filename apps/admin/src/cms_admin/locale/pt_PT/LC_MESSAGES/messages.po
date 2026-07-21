@@ -850,3 +850,61 @@ msgstr "Gravado"
 
 msgid "Autosave paused — fix invalid fields."
 msgstr "Gravação automática em pausa — corrija os campos inválidos."
+
+msgid "Forgot your password?"
+msgstr "Esqueceu-se da palavra-passe?"
+
+msgid "Reset your password"
+msgstr "Repor a palavra-passe"
+
+msgid "Send the reset link"
+msgstr "Enviar a ligação de reposição"
+
+msgid "If that account has an address, a message is on its way."
+msgstr "Se essa conta tiver um endereço, a mensagem segue a caminho."
+
+msgid "Back to sign in"
+msgstr "Voltar ao início de sessão"
+
+msgid "New password"
+msgstr "Nova palavra-passe"
+
+msgid "Repeat the new password"
+msgstr "Repita a nova palavra-passe"
+
+msgid "Set the new password"
+msgstr "Definir a nova palavra-passe"
+
+msgid "The password needs at least 12 characters."
+msgstr "A palavra-passe precisa de pelo menos 12 caracteres."
+
+msgid "The two passwords do not match."
+msgstr "As duas palavras-passe não coincidem."
+
+msgid "This reset link is no longer valid — request a new one."
+msgstr "Esta ligação de reposição já não é válida — peça uma nova."
+
+msgid "Your password was changed. Sign in with the new one."
+msgstr "A palavra-passe foi alterada. Inicie sessão com a nova."
+
+msgid "Reset your Sardine CMS admin password"
+msgstr "Reponha a palavra-passe do admin do Sardine CMS"
+
+msgid ""
+"Someone asked to reset the password for %(username)s. If it was you, open this link within 30 minutes:\n"
+"\n"
+"%(link)s\n"
+"\n"
+"If it was not you, ignore this message — nothing changed."
+msgstr ""
+"Alguém pediu a reposição da palavra-passe de %(username)s. Se foi você, abra esta ligação nos próximos 30 minutos:\n"
+"\n"
+"%(link)s\n"
+"\n"
+"Se não foi, ignore esta mensagem — nada mudou."
+
+msgid "Email"
+msgstr "Email"
+
+msgid "optional — password reset and notifications"
+msgstr "opcional — reposição de palavra-passe e notificações"

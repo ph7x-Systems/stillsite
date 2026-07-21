@@ -196,8 +196,9 @@ jobs:
           python scripts/a11y_check.py examples/multilingual-company-site/_site package/axe.min.js
       - name: Run the accessibility gate over the admin (snapshot)
         run: |
-          # TestClient's transport: the real httpx, never a fork.
-          python -m pip install httpx
+          # TestClient's transport: starlette prefers httpx2 (the
+          # pydantic-maintained successor) and falls back to httpx.
+          python -m pip install httpx2
           python -m cms_admin.demo_export \
             --storage examples/multilingual-company-site/content.sqlite3 \
             --out demo-admin/admin \

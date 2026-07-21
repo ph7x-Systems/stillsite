@@ -17,18 +17,27 @@ localized (ADR-0022).
 
 ## Decision
 
-**Transport: SMTP, nothing else.**
+**Transport: a pluggable contract; SMTP is only the bundled baseline.**
 
-- Delivery uses the standard library (`smtplib`, `email.message`) over
-  STARTTLS or implicit TLS. No provider SDKs, no HTTP APIs, no new
-  dependencies: SMTP is the one contract every provider offers, and it
-  keeps provider names out of the repository.
-- Configuration is environment-only:
-  `SARDINE_SMTP_URL` (`smtp://user:password@host:587` — STARTTLS — or
-  `smtps://…:465`) and `SARDINE_MAIL_FROM`. Unset means **email is off
-  and everything degrades gracefully**: no reset link on the login page,
-  no notifications, the panel fully functional — exactly today's
-  behavior. Misconfigured SMTP never blocks an editorial action.
+- The core defines one abstract surface — `Extension.mail_transports`
+  maps a transport name to a factory returning a
+  ``send(to, subject, body)`` callable (ADR-0028 pattern, like comments
+  providers). `SARDINE_MAIL_TRANSPORT` selects the transport by name;
+  the panel resolves it once, at startup, and an unknown name fails
+  loudly there — a configured transport never vanishes silently.
+- **`smtp` is the bundled baseline**, standard library only
+  (`smtplib`, `email.message`) over STARTTLS or implicit TLS:
+  `SARDINE_SMTP_URL` (`smtp://user:password@host:587` or
+  `smtps://…:465`) plus `SARDINE_MAIL_FROM`. Modern passwordless
+  delivery — OAuth/managed-identity provider APIs such as Microsoft
+  Graph or the Gmail API — lives in **extension transports**, each
+  reading its own configuration from the environment; the core carries
+  no provider SDKs and no provider endpoints.
+- Everything is optional: `smtp` selected but unconfigured means
+  **email is off and everything degrades gracefully** — no reset link
+  on the login page, no notifications, the panel fully functional,
+  exactly today's behavior. A failing transport never blocks an
+  editorial action.
 
 **Addresses: a new optional `email` column on users** (storage migration,
 all four engines, shared dialect transforms). The Users screen and
@@ -75,3 +84,9 @@ unexported; addresses live only in the project database.
 - The demo ships with SMTP unset: the public snapshot must not change.
 - TOTP 2FA (next M7 item) stays out of scope here — it deliberately
   does not depend on email.
+- **Language stays abstract**: messages localize through the admin
+  catalogs by each recipient's stored language; nothing in this design
+  enumerates languages in schema or code paths (the reset/notification
+  tables are language-free; catalogs are data). The forthcoming
+  language-pack ADR (arbitrary locales, contributable packs, RTL/LTR
+  direction) supersedes nothing here.
