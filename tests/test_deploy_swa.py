@@ -36,6 +36,7 @@ class MockSwa(http.server.BaseHTTPRequestHandler):
     mode: ClassVar[str] = "ok"
     uploads: ClassVar[list[int]] = []
     polls: ClassVar[int] = 0
+    base: ClassVar[str] = ""
 
     def do_POST(self) -> None:
         length = int(self.headers.get("Content-Length", "0"))
@@ -50,10 +51,9 @@ class MockSwa(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             return
         self.send_response(202)
-        # Build the URL from the server's own bound address, never from
-        # request headers (CodeQL: response splitting via Host).
-        host, port = self.server.server_address[:2]
-        self.send_header("Location", f"http://{host}:{port}/status")
+        # The fixture records the bound address; nothing from request
+        # headers ever enters a response header.
+        self.send_header("Location", f"{MockSwa.base}/status")
         self.send_header("Content-Type", "application/json")
         self.end_headers()
         self.wfile.write(b'{"status": "running"}')
@@ -89,7 +89,8 @@ def mock_swa() -> "Iterator[str]":
     MockSwa.mode = "ok"
     MockSwa.uploads = []
     MockSwa.polls = 0
-    yield f"http://127.0.0.1:{server.server_address[1]}"
+    MockSwa.base = f"http://127.0.0.1:{server.server_address[1]}"
+    yield MockSwa.base
     server.shutdown()
 
 
