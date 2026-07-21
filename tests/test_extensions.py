@@ -268,3 +268,56 @@ def test_a_pack_language_without_the_extension_fails_loudly(tmp_path: Path) -> N
         raise AssertionError("expected ValueError")
     except ValueError as error:
         assert "tin-alone" in str(error)
+
+
+def test_a_pack_language_can_be_the_source(tmp_path: Path) -> None:
+    """ADR-0034: the source is configurable — a pack tag at the URL root,
+    the default source nowhere unless targeted."""
+    (tmp_path / "sardine.toml").write_text(
+        'extensions = ["test_extensions:extension"]\n'
+        '[site]\nname = "T"\nbase_url = "https://t.example"\n'
+        'source_language = "tin"\nlanguages = ["pt-pt"]\n',
+        encoding="utf-8",
+    )
+    from datetime import UTC, datetime
+
+    from cms_build import build_site
+    from cms_cli.project import load_project
+    from cms_core import ArticleContent, ContentStatus, Language, new_article
+    from cms_validation import SiteContent
+
+    project = load_project(tmp_path)
+    assert str(project.site.source_language) == "tin"
+    assert [str(lang) for lang in project.site.languages] == ["pt-pt"]
+
+    now = datetime(2026, 1, 15, 9, 0, tzinfo=UTC)
+    article = new_article(
+        "hello", ArticleContent(title="Tin hello", summary="S", body_markdown="B"), now=now
+    )
+    article.set_translation(
+        Language("pt-pt"),
+        ArticleContent(title="Olá", summary="S", body_markdown="B"),
+        source=Language("tin"),
+    )
+    article.status = ContentStatus.PUBLISHED
+    artifact = build_site(project.site, SiteContent(articles=[article]), now=now)
+
+    # the source (tin) lives at the root, RTL from its pack; pt-pt under /pt-pt/
+    root = artifact.files["blog/hello/index.html"].decode("utf-8")
+    assert 'lang="tin"' in root and 'dir="rtl"' in root
+    assert "pt-pt/blog/hello/index.html" in artifact.files
+    # the default source language earns no output when not configured
+    assert not any(path.startswith("en/") for path in artifact.paths())
+
+
+def test_the_source_never_appears_among_the_targets(tmp_path: Path) -> None:
+    from cms_build import SiteConfig
+
+    config = SiteConfig(
+        name="T",
+        base_url="https://t.example",
+        source_language="pt-pt",
+        languages=("pt-pt", "es"),
+    )
+    assert [str(lang) for lang in config.languages] == ["es"]
+    assert [str(lang) for lang in config.all_languages] == ["pt-pt", "es"]

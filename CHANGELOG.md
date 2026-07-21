@@ -5,6 +5,16 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **The source language is configurable** (M8, ADR-0034):
+  `[site] source_language` (default `en`) accepts any registered pack
+  tag — the URL root, hreflang x-default, feeds, label and alt-text
+  fallbacks, menu labels and the validation parity gates all follow it,
+  and the source never doubles as a target. A stored translation now
+  always wins over the source shortcut, so a project whose source is
+  not `en` can still target `en` correctly. Existing projects change by
+  nothing: the whole suite passed untouched, and a fictional pack-tag
+  source builds with its language at the root and RTL from its pack.
+
 - **No language data outside packs** (M8, ADR-0034): the bundled five
   languages' UI labels, month names and date patterns moved into their
   `LanguagePack`s and the hardcoded tables in `cms_build.ui` are gone —

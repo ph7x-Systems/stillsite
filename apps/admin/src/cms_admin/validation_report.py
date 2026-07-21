@@ -6,7 +6,7 @@ ran, not only what failed) and the issue list with subjects linked to their
 edit screens.
 """
 
-from cms_core import TARGET_LANGUAGES, Language
+from cms_core import SOURCE_LANGUAGE, TARGET_LANGUAGES, Language
 from cms_validation import Report, RuleSet, SiteContent, ValidationContext, default_ruleset
 
 
@@ -14,10 +14,14 @@ def run_report(
     content: SiteContent,
     languages: tuple[Language, ...],
     extra_rules: tuple[object, ...] = (),
+    source_language: Language = SOURCE_LANGUAGE,
 ) -> Report:
     rules = default_ruleset()
     rules.extend(extra_rules)  # type: ignore[arg-type]  # ADR-0028 extensions
-    return RuleSet(rules=rules).run(content, ValidationContext(required_languages=languages))
+    return RuleSet(rules=rules).run(
+        content,
+        ValidationContext(required_languages=languages, source_language=source_language),
+    )
 
 
 def report_context(

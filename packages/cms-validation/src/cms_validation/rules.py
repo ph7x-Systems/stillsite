@@ -36,7 +36,7 @@ class RequiredTranslationsRule:
                 Severity.ERROR if entry.status is ContentStatus.PUBLISHED else Severity.WARNING
             )
             for language in context.required_languages:
-                state = entry.translation_state(language)
+                state = entry.translation_state(language, source=context.source_language)
                 if state is not TranslationState.COMPLETE:
                     yield Issue(
                         code=self.name,
@@ -54,7 +54,7 @@ class UniqueSlugsRule:
     description = "Generated URLs never collide within a language, across articles and pages"
 
     def check(self, content: SiteContent, context: ValidationContext) -> Iterator[Issue]:
-        for language in (Language.EN, *context.required_languages):
+        for language in (context.source_language, *context.required_languages):
             seen: dict[str, str] = {}
             for article in content.articles:
                 slug = _article_slug(article, language)

@@ -49,5 +49,6 @@ class MenuItem(BaseModel):
     def _safe_url(cls, value: str) -> str:
         return validate_navigation_url(value)
 
-    def label(self, language: Language) -> str:
-        return self.labels.get(language) or self.labels.get(SOURCE_LANGUAGE) or self.id
+    def label(self, language: Language, source: Language | None = None) -> str:
+        fallback = source if source is not None else SOURCE_LANGUAGE
+        return self.labels.get(language) or self.labels.get(fallback) or self.id

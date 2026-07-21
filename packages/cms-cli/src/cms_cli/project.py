@@ -111,6 +111,7 @@ def load_project(directory: Path) -> Project:
     site = SiteConfig(
         name=site_data["name"],
         base_url=site_data["base_url"],
+        source_language=Language(site_data.get("source_language", "en")),
         languages=tuple(Language(code) for code in site_data.get("languages", [])),
         blog_path=site_data.get("blog_path", "blog"),
         theme=site_data.get("theme", "default"),
