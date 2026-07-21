@@ -166,6 +166,9 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
     from cms_admin.translations_queue import router as translations_router
 
     app.include_router(translations_router)
+    from cms_admin.calendar_view import router as calendar_router
+
+    app.include_router(calendar_router)
     app.include_router(trash_router)
     app.include_router(users_router)
     app.include_router(notes_router)

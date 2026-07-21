@@ -1259,3 +1259,36 @@ msgstr "Übersetzen"
 
 msgid "missing %(tag)s"
 msgstr "%(tag)s fehlt"
+
+msgid "Calendar"
+msgstr "Kalender"
+
+msgid "Drag a scheduled chip to another day, or set the exact moment in its editor."
+msgstr "Ziehen Sie einen geplanten Chip auf einen anderen Tag, oder legen Sie den genauen Zeitpunkt im Editor fest."
+
+msgid "Mon"
+msgstr "Mo"
+
+msgid "Tue"
+msgstr "Di"
+
+msgid "Wed"
+msgstr "Mi"
+
+msgid "Thu"
+msgstr "Do"
+
+msgid "Fri"
+msgstr "Fr"
+
+msgid "Sat"
+msgstr "Sa"
+
+msgid "Sun"
+msgstr "So"
+
+msgid "Published entries on their publication day, scheduled entries on the day they will fire. Times are UTC, exactly as the panel schedules."
+msgstr "Veröffentlichte Einträge an ihrem Veröffentlichungstag, geplante an dem Tag, an dem sie erscheinen. Zeiten sind UTC, genau wie das Panel plant."
+
+msgid "scheduled"
+msgstr "geplant"
