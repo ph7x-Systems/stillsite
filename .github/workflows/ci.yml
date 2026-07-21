@@ -105,11 +105,11 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
           ACCEPT_EULA: "Y"
-          MSSQL_SA_PASSWORD: "CiOnly!Passw0rd"
+          MSSQL_SA_PASSWORD: ${{ secrets.MSSQL_CI_PASSWORD }}
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'CiOnly!Passw0rd' -Q 'SELECT 1' -b"
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$MSSQL_SA_PASSWORD\" -Q 'SELECT 1' -b"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 30
@@ -117,7 +117,7 @@ jobs:
     env:
       SARDINE_POSTGRES_URL: postgresql://sardine:ci-only@127.0.0.1:5432/sardine
       SARDINE_MYSQL_URL: mysql://sardine:ci-only@127.0.0.1:3306/sardine
-      SARDINE_MSSQL_URL: mssql://sa:CiOnly%21Passw0rd@127.0.0.1:1433/sardine
+      SARDINE_MSSQL_URL: mssql://sa:${{ secrets.MSSQL_CI_PASSWORD }}@127.0.0.1:1433/sardine
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
