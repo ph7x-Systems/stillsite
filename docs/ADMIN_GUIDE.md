@@ -332,6 +332,14 @@ what the build includes. The choice is remembered in `sardine.toml`
 successful build answers *what now*: where the files are and the one
 action that puts them live for the chosen target.
 
+With `[deploy]` configured (DEPLOYMENT.md), the flow goes further —
+**editorial actions end on the public site**: publishing or
+unpublishing content rebuilds, validates, writes an immutable release,
+activates it atomically and health-checks it, automatically; the
+Public site card shows the state (active / failed / rolled back), the
+actionable error and its phase, a Publish/Retry button, and the kept
+releases with one-click rollback that needs no rebuild. A failure
+never touches the healthy version. Without `[deploy]`:
 "Publish" here means: validate, build deterministically, apply the
 destination's extras and write the output directory — the public site
 itself is served by external infrastructure (DEPLOYMENT.md documents

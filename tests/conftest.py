@@ -93,3 +93,17 @@ def backend(request: pytest.FixtureRequest, tmp_path: Path) -> Iterator[StorageB
         storage = create_storage(url)
     yield storage
     storage.close()
+
+
+@pytest.fixture(params=["sqlite", "postgresql", "mysql", "mssql"])
+def backend_url(request: pytest.FixtureRequest, tmp_path: Path) -> str:
+    """A bare storage URL for tests that open their own connections
+    (cross-connection persistence)."""
+    if request.param == "sqlite":
+        return f"sqlite:///{tmp_path / 'cms.sqlite3'}"
+    variable, wipe = ENGINE_ENV[request.param]
+    url = os.environ.get(variable)
+    if not url:
+        pytest.skip(f"{variable} not set")
+    wipe(url)
+    return url

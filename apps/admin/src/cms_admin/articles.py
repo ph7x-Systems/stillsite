@@ -593,6 +593,12 @@ async def article_status(
     await audit_record(
         request, user.username, target.value, "article", article.id, f"from {previous.value}"
     )
+    if ContentStatus.PUBLISHED in (previous, target):
+        # #156: publish and unpublish end on the public site — the
+        # configured provider redeploys automatically (no-op without one).
+        from cms_admin.deploy import run_deploy
+
+        await run_deploy(request, user.username)
     await notify_transition(
         request,
         section="articles",

@@ -84,6 +84,12 @@ async def bulk_apply(
         except HTTPException:
             outcome = translate(request, "not found")
         outcomes.append((entity_id, outcome))
+    published_touched = action in ("publish", "to-draft", "archive", "trash", "restore")
+    if kind != "media" and published_touched and any(o == "ok" for _i, o in outcomes):
+        # One redeploy for the whole batch (#156); no-op without [deploy].
+        from cms_admin.deploy import run_deploy
+
+        await run_deploy(request, user.username)
     return _report(request, user, session, kind, action, outcomes)
 
 

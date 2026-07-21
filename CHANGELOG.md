@@ -10,6 +10,13 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Automated deployment, filesystem/Nginx reference provider: publish
+  and unpublish end on the public site through immutable releases,
+  atomic symlink activation, health checks with automatic rollback,
+  panel-side manual rollback without rebuild, concurrency locking, a
+  scheduled-window watcher and full audit-trail coverage (#156
+  slice 1).
+
 - Needs-attention dashboard: review queue, pending translations,
   scheduled changes within 7 days and stale drafts — each card linking
   to its work, with a real all-clear state (#135).

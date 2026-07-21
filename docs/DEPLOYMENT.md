@@ -33,7 +33,53 @@ truth for content itself.
 
 ## Supported operating models
 
-### 1. Local directory served by Nginx
+### 1. Local directory served by Nginx — automated (#156 slice 1)
+
+With one table in `sardine.toml`, editorial actions end on the public
+site — publish and unpublish redeploy automatically, and nobody runs a
+deploy by hand:
+
+```toml
+[deploy]
+root = "/srv/site/www"        # required — where releases live
+health_url = ""               # optional — checked after activation
+keep = 5                      # kept releases (rollback candidates)
+```
+
+The layout under `root`:
+
+```text
+releases/<timestamp>-<digest>/site/   immutable release artifacts
+releases/<timestamp>-<digest>/release.json
+current -> releases/<id>/site         atomic symlink (rename swap)
+state.json                            the panel's deployment state
+```
+
+Point Nginx at `current/` once; it is never reconfigured or restarted
+by a publication:
+
+```nginx
+server {
+    root /srv/site/www/current;
+    # include the security headers from `cms export --target nginx`
+}
+```
+
+**Filesystem permissions**: the panel process needs write access to
+`root`; Nginx needs read access to `root` (the symlink target changes,
+the path does not). **Health check**: after activation the provider
+verifies the release marker; with `health_url` set it also fetches the
+URL and rolls back automatically on failure — the previous release is
+always kept. **Rollback**: the panel lists kept releases; reactivating
+one is a symlink swap, no rebuild. **Scheduled changes**: a watcher
+redeploys as `system` when a publication window boundary passes.
+**Troubleshooting**: the panel's Public site card shows the failing
+phase and an actionable error; `state.json` holds the same truth for
+operators; a stale `.deploy.lock` (crashed process) expires after 10
+minutes. Every operation lands in the admin's Activity trail.
+
+### 1b. Manual local directory
+
 
 The panel and Nginx share a machine (or a volume). Build & export with
 the `nginx` target writes the site plus a ready server block into the

@@ -8,6 +8,7 @@ like the CLI. Every run is recorded in-process and shown on the dashboard.
 """
 
 import asyncio
+import logging
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
@@ -25,6 +26,8 @@ from fastapi.responses import RedirectResponse
 from cms_admin.audit import record as audit_record
 from cms_admin.auth import current_session, enforce_csrf, get_db, require_at_least
 from cms_admin.validation_report import report_context, run_report
+
+logger = logging.getLogger("cms_admin.publishing")
 
 router = APIRouter(prefix="/publishing")
 
@@ -76,6 +79,26 @@ async def _site_content(request: Request) -> SiteContent:
         )
 
     return await get_db(request).run(load)
+
+
+def _deploy_view(request: Request) -> dict[str, object] | None:
+    """The provider's state and kept releases for the panel (#156);
+    None without a [deploy] configuration."""
+    from cms_admin.deploy import deployer_for
+
+    deployer, _project_obj = deployer_for(request)
+    if deployer is None:
+        return None
+    state = deployer.state()
+    return {
+        "status": state.status,
+        "release_id": state.release_id,
+        "at": state.at,
+        "actor": state.actor,
+        "error": state.error,
+        "phase": state.phase,
+        "releases": deployer.releases(),
+    }
 
 
 def _project(request: Request) -> Project | None:
@@ -175,6 +198,7 @@ async def publishing_home(
             ),
             "targets": TARGETS,
             "current_target": project.target if project else "generic",
+            "deploy_state": _deploy_view(request),
             "last_build": getattr(request.app.state, "last_build", None),
         },
     )

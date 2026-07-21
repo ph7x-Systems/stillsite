@@ -27,6 +27,12 @@ class Project:
     target: str = "generic"
     """The project's deployment target (``[build] target``): the admin's
     publish flow and ``cms export`` default to it (#128)."""
+    deploy_root: Path | None = None
+    """``[deploy] root``: when set, the filesystem provider (#156)
+    publishes releases there and the panel's publish flow deploys
+    automatically — no CLI, no manual copying."""
+    deploy_health_url: str = ""
+    deploy_keep: int = 5
 
     def load_extensions(self) -> list[Extension]:
         """The extensions this project explicitly trusts (ADR-0028); their
@@ -135,6 +141,7 @@ def load_project(directory: Path) -> Project:
         resolved = raw_path if raw_path.is_absolute() else directory / raw_path
         storage_url = f"sqlite:///{resolved}"
 
+    deploy_data = data.get("deploy", {})
     build_data = data.get("build", {})
     build_updates: dict[str, object] = {}
     if build_data.get("image_widths"):
@@ -150,4 +157,11 @@ def load_project(directory: Path) -> Project:
         output=output,
         extension_names=extension_names,
         target=str(build_data.get("target", "generic")),
+        deploy_root=(
+            (directory / raw_root if not Path(raw_root).is_absolute() else Path(raw_root))
+            if (raw_root := str(deploy_data.get("root", "")))
+            else None
+        ),
+        deploy_health_url=str(deploy_data.get("health_url", "")),
+        deploy_keep=int(deploy_data.get("keep", 5)),
     )

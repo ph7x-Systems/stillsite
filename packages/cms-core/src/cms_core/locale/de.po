@@ -1343,3 +1343,33 @@ msgstr "ausstehende(s) Übersetzungspaar(e)"
 
 msgid "waiting for your decision"
 msgstr "wartet auf Ihre Entscheidung"
+
+msgid "Kept releases (rollback needs no rebuild)"
+msgstr "Aufbewahrte Releases (Rollback braucht keinen Rebuild)"
+
+msgid "Public site"
+msgstr "Öffentliche Website"
+
+msgid "Publish site now"
+msgstr "Website jetzt veröffentlichen"
+
+msgid "Publishing and unpublishing content redeploys automatically; this button forces a fresh release."
+msgstr "Veröffentlichen und Zurückziehen von Inhalten deployt automatisch neu; dieser Knopf erzwingt eine frische Release."
+
+msgid "Retry deployment"
+msgstr "Deployment wiederholen"
+
+msgid "Roll back to this release"
+msgstr "Auf diese Release zurücksetzen"
+
+msgid "active"
+msgstr "aktiv"
+
+msgid "never deployed"
+msgstr "nie deployt"
+
+msgid "phase"
+msgstr "Phase"
+
+msgid "rolled back"
+msgstr "zurückgesetzt"

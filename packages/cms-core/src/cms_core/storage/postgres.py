@@ -34,7 +34,13 @@ def _connect(dsn: str) -> "psycopg.Connection[Any]":
         raise ImportError(
             "the PostgreSQL backend needs the optional dependency: pip install 'cms-core[postgres]'"
         ) from error
-    return psycopg.connect(dsn)
+    # autocommit=True is the psycopg3 idiom this backend is written in:
+    # every write sits inside an explicit `connection.transaction()`
+    # block (a real transaction under autocommit), and reads need none.
+    # Without it, psycopg opens an implicit outer transaction that is
+    # never committed - writes stayed invisible to other connections
+    # and vanished on close (caught by the cross-connection test).
+    return psycopg.connect(dsn, autocommit=True)
 
 
 class PostgresBackend(StorageBackend):

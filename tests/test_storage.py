@@ -523,3 +523,21 @@ def test_activity_records_append_filter_and_prune(backend: StorageBackend) -> No
     pruned = backend.prune_activity(before=base + timedelta(minutes=1))
     assert pruned == 1
     assert len(backend.list_activity()) == 2
+
+
+def test_writes_survive_the_connection(backend_url: str) -> None:
+    """A second, independent connection must see committed writes —
+    the cross-connection contract every engine honors (a missing
+    autocommit once made PostgreSQL keep everything in a phantom
+    transaction that vanished on close)."""
+    from cms_core import create_storage
+
+    article = new_article(
+        "durable", ArticleContent(title="Durable", summary="S", body_markdown="B")
+    )
+    with create_storage(backend_url) as writer:
+        writer.save_article(article)
+    with create_storage(backend_url) as reader:
+        loaded = reader.load_article("durable")
+        assert loaded is not None and loaded.source.title == "Durable"
+        reader.delete_article("durable")

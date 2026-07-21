@@ -42,12 +42,18 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     from cms_admin.audit import prune_on_startup
 
     await prune_on_startup(app.state.db, settings.activity_retention_days)
+    import asyncio as _asyncio
+
+    from cms_admin.deploy import run_scheduled_deploys
+
+    watcher = _asyncio.create_task(run_scheduled_deploys(app))
     # Autosaves and manual preview builds serialize writes into /preview/ so
     # overlapping requests cannot leave a mixed artifact behind.
     app.state.preview_lock = asyncio.Lock()
     try:
         yield
     finally:
+        watcher.cancel()
         app.state.db.close()
 
 
@@ -175,6 +181,9 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
     from cms_admin.activity_view import router as activity_router
 
     app.include_router(activity_router)
+    from cms_admin.deploy import router as deploy_router
+
+    app.include_router(deploy_router)
     app.include_router(trash_router)
     app.include_router(users_router)
     app.include_router(notes_router)
