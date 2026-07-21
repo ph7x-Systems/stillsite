@@ -58,6 +58,19 @@ recent editing author. Messages are plain text in each recipient's
 panel language; delivery runs off the request path and a transport
 failure never becomes an editorial error.
 
+### Two-factor authentication (ADR-0035)
+
+Self-service TOTP (RFC 6238, the profile every authenticator app
+implements — standard library only). Each user enables it from the user
+menu: enter the shown key in an authenticator app and confirm with a
+valid code; from then on sign-in requires the current code, every code
+is single-use, and wrong codes spend the same rate-limit budget as
+wrong passwords. Disabling requires a valid code. There are no backup
+codes in this phase: the recovery path is
+`cms admin create-user --force`, which replaces the account, clears
+two-factor state and revokes every session. Password reset by email
+deliberately does not clear the second factor.
+
 The admin never reads configuration files — secrets cannot end up in a
 project directory that gets committed or exported. Preview artifacts and
 uploaded media are served only to an authenticated session. Responses are

@@ -535,12 +535,15 @@ class DbApiBackend(StorageBackend):
                     "created_at": user.created_at.isoformat(),
                     "language": user.language.value if user.language else None,
                     "email": user.email,
+                    "totp_secret": user.totp_secret,
+                    "totp_step": user.totp_step,
                 },
             )
 
     def load_user(self, username: str) -> User | None:
         row = self._fetchone(
-            "SELECT username, password_hash, role, created_at, language, email"
+            "SELECT username, password_hash, role, created_at, language, email,"
+            " totp_secret, totp_step"
             " FROM users WHERE username = %s",
             (username,),
         )
@@ -553,6 +556,8 @@ class DbApiBackend(StorageBackend):
             created_at=datetime.fromisoformat(row[3]),
             language=Language(row[4]) if row[4] else None,
             email=row[5],
+            totp_secret=row[6],
+            totp_step=int(row[7]) if row[7] is not None else None,
         )
 
     def delete_user(self, username: str) -> bool:

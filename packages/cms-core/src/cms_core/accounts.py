@@ -42,6 +42,10 @@ class User(BaseModel):
     email: str | None = None
     """Optional address for password reset and notifications (ADR-0032);
     never exported, lives only in the project database."""
+    totp_secret: str | None = None
+    """Base32 TOTP secret (ADR-0035); set = two-factor enabled."""
+    totp_step: int | None = None
+    """Last accepted TOTP timestep — makes every code single-use."""
 
 
 class AdminSession(BaseModel):

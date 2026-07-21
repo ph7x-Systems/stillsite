@@ -378,3 +378,15 @@ def test_sessions_revoke_per_account(backend: StorageBackend) -> None:
     assert backend.delete_sessions_for("ana") == 2
     assert backend.load_session("digest-0") is None
     assert backend.load_session("digest-1") is None
+
+
+def test_totp_state_round_trips(backend: StorageBackend) -> None:
+    user = _user().model_copy(update={"totp_secret": "JBSWY3DPEHPK3PXP", "totp_step": 12345})
+    backend.save_user(user)
+    loaded = backend.load_user("ana")
+    assert loaded is not None
+    assert loaded.totp_secret == "JBSWY3DPEHPK3PXP"
+    assert loaded.totp_step == 12345
+    backend.save_user(user.model_copy(update={"totp_secret": None, "totp_step": None}))
+    cleared = backend.load_user("ana")
+    assert cleared is not None and cleared.totp_secret is None and cleared.totp_step is None

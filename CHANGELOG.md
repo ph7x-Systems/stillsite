@@ -5,6 +5,14 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Two-factor authentication** (M7, ADR-0035): self-service TOTP —
+  RFC 6238 with the standard library only, enrolment confirmed by a
+  valid code, single-use codes (replay refused), wrong codes spending
+  the same login rate budget, disable gated by a current code. Storage
+  migration 17 on all four engines; panel strings in the four
+  languages. Recovery is `cms admin create-user --force`; password
+  reset deliberately does not clear the second factor.
+
 - **Editorial notifications** (M7, ADR-0032 phase 2 — the ADR is now
   accepted): a transition into review mails every reviewer-and-above
   account with an address (except the actor), and publishing mails the

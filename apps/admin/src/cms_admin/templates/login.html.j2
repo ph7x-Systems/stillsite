@@ -16,13 +16,20 @@
         <div class="mb-3 admin-field">
           <label class="form-label" for="username">{{ _("Username") }}</label>
           <input class="form-control admin-input" id="username" name="username" type="text"
-                 autocomplete="username" required>
+                 autocomplete="username" required{% if username_value %} value="{{ username_value }}"{% endif %}>
         </div>
         <div class="mb-3 admin-field">
           <label class="form-label" for="password">{{ _("Password") }}</label>
           <input class="form-control admin-input" id="password" name="password" type="password"
                  autocomplete="current-password" required>
         </div>
+        {% if totp_required %}
+        <div class="mb-3 admin-field">
+          <label class="form-label" for="totp">{{ _("Authentication code") }}</label>
+          <input class="form-control admin-input" id="totp" name="totp" type="text"
+                 inputmode="numeric" autocomplete="one-time-code" required>
+        </div>
+        {% endif %}
         <button type="submit" class="btn btn-primary w-100">{{ _("Sign in") }}</button>
       </form>
       {% if reset_enabled %}

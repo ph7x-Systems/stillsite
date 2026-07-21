@@ -121,7 +121,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | User management UI | ✅ Users screen (admin role): create, role change, delete — self and last-admin safeguards; CLI stays the bootstrap | — |
 | Admin panel in the editor's language | ✅ gettext i18n (ADR-0022): PT-PT/ES/FR/DE shipped, per-user preference + browser fallback, completeness enforced by tests | — |
 | Password reset | ✅ ADR-0032: enumeration-safe request, hashed single-use 30-min tokens, session revocation; pluggable mail transports (`smtp` baseline, extensions for passwordless APIs) | — |
-| Two-factor authentication | ❌ | 🔜 TOTP (M7) |
+| Two-factor authentication | ✅ TOTP ([ADR-0035](adr/0035-totp.md)): self-service confirmed enrolment, single-use codes, shared login rate budget; recovery via `create-user --force` | — |
 | Notifications (review requested…) | ✅ ADR-0032: review-requested (reviewers and above) + published (last editing author), localized, fire-and-forget off the request path | — |
 
 ### Platform and operations

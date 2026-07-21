@@ -281,7 +281,9 @@ tests, docs and wiki updates, per the standing gates.
       the actor) + published (newest revision author) notifications —
       localized per recipient, fire-and-forget, failures recorded,
       byte-for-byte no-op without a configured transport
-- [ ] TOTP two-factor authentication
+- [x] TOTP two-factor authentication ([ADR-0035](adr/0035-totp.md)):
+      RFC 6238 in the standard library, migration 17, confirmed
+      enrolment, single-use codes, limiter-covered, i18n complete
 - [ ] On-publish webhook (trigger the host's build)
 - [ ] `cms doctor`: storage, media, config, environment diagnostics
 - [x] Documented backup/restore and scheduled-build recipes

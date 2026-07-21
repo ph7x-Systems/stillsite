@@ -932,3 +932,33 @@ msgstr ""
 "%(title)s wurde von %(actor)s veröffentlicht:\n"
 "\n"
 "%(link)s"
+
+msgid "Two-factor authentication"
+msgstr "Zwei-Faktor-Authentifizierung"
+
+msgid "Two-factor authentication is enabled."
+msgstr "Die Zwei-Faktor-Authentifizierung ist aktiviert."
+
+msgid "Enter this key in your authenticator app, then confirm with a code:"
+msgstr "Geben Sie diesen Schlüssel in Ihre Authenticator-App ein und bestätigen Sie mit einem Code:"
+
+msgid "Manual key"
+msgstr "Manueller Schlüssel"
+
+msgid "Setup link"
+msgstr "Einrichtungslink"
+
+msgid "Authentication code"
+msgstr "Authentifizierungscode"
+
+msgid "Authentication code required."
+msgstr "Der Authentifizierungscode ist erforderlich."
+
+msgid "Wrong authentication code."
+msgstr "Falscher Authentifizierungscode."
+
+msgid "Verify and enable"
+msgstr "Prüfen und aktivieren"
+
+msgid "Disable two-factor authentication"
+msgstr "Zwei-Faktor-Authentifizierung deaktivieren"

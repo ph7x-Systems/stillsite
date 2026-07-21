@@ -163,4 +163,8 @@ MIGRATIONS: tuple[str, ...] = (
         expires_at TEXT NOT NULL
     );
     """,
+    """
+    ALTER TABLE users ADD COLUMN totp_secret TEXT;
+    ALTER TABLE users ADD COLUMN totp_step INTEGER;
+    """,
 )

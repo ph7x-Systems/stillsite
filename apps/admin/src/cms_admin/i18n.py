@@ -40,6 +40,17 @@ LOCALE_DIR = Path(__file__).parent / "locale"
 RUNTIME_MSGIDS: tuple[str, ...] = (
     # login route
     "Wrong username or password.",
+    # two-factor authentication (ADR-0035)
+    "Two-factor authentication",
+    "Two-factor authentication is enabled.",
+    "Enter this key in your authenticator app, then confirm with a code:",
+    "Manual key",
+    "Setup link",
+    "Authentication code",
+    "Authentication code required.",
+    "Wrong authentication code.",
+    "Verify and enable",
+    "Disable two-factor authentication",
     # notifications (ADR-0032 phase 2)
     "Review requested: %(title)s",
     "%(actor)s sent %(title)s to review. Open it in the panel:\n\n%(link)s",

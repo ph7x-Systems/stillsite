@@ -474,11 +474,14 @@ class PostgresBackend(StorageBackend):
     def save_user(self, user: User) -> None:
         with self._connection.transaction():
             self._connection.execute(
-                "INSERT INTO users (username, password_hash, role, created_at, language, email)"
-                " VALUES (%s, %s, %s, %s, %s, %s)"
+                "INSERT INTO users"
+                " (username, password_hash, role, created_at, language, email,"
+                " totp_secret, totp_step)"
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                 " ON CONFLICT (username) DO UPDATE SET"
                 " password_hash = excluded.password_hash, role = excluded.role,"
-                " language = excluded.language, email = excluded.email",
+                " language = excluded.language, email = excluded.email,"
+                " totp_secret = excluded.totp_secret, totp_step = excluded.totp_step",
                 (
                     user.username,
                     user.password_hash,
@@ -486,12 +489,15 @@ class PostgresBackend(StorageBackend):
                     user.created_at.isoformat(),
                     user.language.value if user.language else None,
                     user.email,
+                    user.totp_secret,
+                    user.totp_step,
                 ),
             )
 
     def load_user(self, username: str) -> User | None:
         row = self._connection.execute(
-            "SELECT username, password_hash, role, created_at, language, email"
+            "SELECT username, password_hash, role, created_at, language, email,"
+            " totp_secret, totp_step"
             " FROM users WHERE username = %s",
             (username,),
         ).fetchone()
@@ -504,6 +510,8 @@ class PostgresBackend(StorageBackend):
             created_at=datetime.fromisoformat(row[3]),
             language=Language(row[4]) if row[4] else None,
             email=row[5],
+            totp_secret=row[6],
+            totp_step=row[7],
         )
 
     def delete_user(self, username: str) -> bool:

@@ -169,6 +169,7 @@ async def login_submit(
     username: str = Form(...),
     password: str = Form(...),
     login_csrf: str = Form(...),
+    totp: str = Form(""),
 ) -> object:
     settings = request.app.state.settings
     login_cookie = request.cookies.get(login_csrf_cookie_name(request))
@@ -221,6 +222,39 @@ async def login_submit(
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
         return response
+    # ADR-0035: valid credentials alone never create a session when the
+    # account carries a second factor. Wrong or replayed codes spend the
+    # same rate-limit budget as wrong passwords.
+    if user.totp_secret is not None:
+        from cms_admin.totp import verify as verify_totp
+
+        accepted = (
+            verify_totp(user.totp_secret, totp.strip(), now, user.totp_step)
+            if totp.strip()
+            else None
+        )
+        if accepted is None:
+            limiter.record_failure(client_key, now)
+            limiter.record_failure(account_key, now)
+            if totp.strip():
+                error = "Wrong authentication code."
+            else:
+                error = "Authentication code required."
+            return request.app.state.templates.TemplateResponse(
+                request,
+                "login.html.j2",
+                {
+                    "error": error,
+                    "login_csrf": login_csrf,
+                    "reset_enabled": _reset_enabled(request),
+                    "totp_required": True,
+                    "username_value": username,
+                },
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
+        confirmed = user.model_copy(update={"totp_step": accepted})
+        user = confirmed
+        await db.run(lambda storage: storage.save_user(confirmed))
     # A valid account clears its own failures, but not the client-wide
     # history: otherwise any known low-privilege account could reset the
     # limiter between guesses against a privileged account.
@@ -470,3 +504,91 @@ async def reset_submit(
     return request.app.state.templates.TemplateResponse(
         request, "reset_done.html.j2", {"login_csrf": login_csrf}
     )
+
+
+# Two-factor authentication (ADR-0035): self-service, confirmed by code.
+
+
+@router.get("/profile/2fa")
+async def two_factor_page(
+    request: Request,
+    user_session: tuple[User, AdminSession] = Depends(current_session),
+) -> object:
+    from cms_admin.totp import generate_secret, provisioning_uri
+
+    user, session = user_session
+    context: dict[str, object] = {
+        "user": user,
+        "csrf_token": session.csrf_token,
+        "enabled": user.totp_secret is not None,
+        "error": None,
+    }
+    if user.totp_secret is None:
+        secret = generate_secret()
+        context["secret"] = secret
+        context["uri"] = provisioning_uri(secret, user.username)
+    return request.app.state.templates.TemplateResponse(request, "two_factor.html.j2", context)
+
+
+@router.post("/profile/2fa/enable")
+async def two_factor_enable(
+    request: Request,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+    secret: str = Form(""),
+    code: str = Form(""),
+) -> object:
+    from cms_admin.totp import provisioning_uri
+    from cms_admin.totp import verify as verify_totp
+
+    user, session = user_session
+    now = datetime.now(UTC)
+    accepted = verify_totp(secret, code.strip(), now, None) if secret and code.strip() else None
+    if accepted is None:
+        return request.app.state.templates.TemplateResponse(
+            request,
+            "two_factor.html.j2",
+            {
+                "user": user,
+                "csrf_token": session.csrf_token,
+                "enabled": False,
+                "error": "Wrong authentication code.",
+                "secret": secret,
+                "uri": provisioning_uri(secret, user.username) if secret else "",
+            },
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        )
+    updated = user.model_copy(update={"totp_secret": secret, "totp_step": accepted})
+    await get_db(request).run(lambda storage: storage.save_user(updated))
+    return RedirectResponse("/profile/2fa", status_code=status.HTTP_303_SEE_OTHER)
+
+
+@router.post("/profile/2fa/disable")
+async def two_factor_disable(
+    request: Request,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+    code: str = Form(""),
+) -> object:
+    from cms_admin.totp import verify as verify_totp
+
+    user, session = user_session
+    now = datetime.now(UTC)
+    accepted = (
+        verify_totp(user.totp_secret, code.strip(), now, user.totp_step)
+        if user.totp_secret and code.strip()
+        else None
+    )
+    if accepted is None:
+        return request.app.state.templates.TemplateResponse(
+            request,
+            "two_factor.html.j2",
+            {
+                "user": user,
+                "csrf_token": session.csrf_token,
+                "enabled": True,
+                "error": "Wrong authentication code.",
+            },
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        )
+    updated = user.model_copy(update={"totp_secret": None, "totp_step": None})
+    await get_db(request).run(lambda storage: storage.save_user(updated))
+    return RedirectResponse("/profile/2fa", status_code=status.HTTP_303_SEE_OTHER)
