@@ -1223,3 +1223,39 @@ msgstr "Veröffentlichungsschranke: %(count)s Validierungsfehler"
 
 msgid "referenced by %(count)s entr(ies)"
 msgstr "referenziert von %(count)s Eintrag/Einträgen"
+
+msgid "%(total)s pair(s) waiting overall"
+msgstr "%(total)s Paar(e) insgesamt ausstehend"
+
+msgid "All caught up — every configured language is complete."
+msgstr "Alles erledigt — jede konfigurierte Sprache ist vollständig."
+
+msgid "Article"
+msgstr "Artikel"
+
+msgid "Articles and pages"
+msgstr "Artikel und Seiten"
+
+msgid "Entry"
+msgstr "Eintrag"
+
+msgid "Every entry"
+msgstr "Alle Einträge"
+
+msgid "Every language"
+msgstr "Alle Sprachen"
+
+msgid "Missing and outdated"
+msgstr "Fehlend und veraltet"
+
+msgid "Needs translation into"
+msgstr "Braucht Übersetzung nach"
+
+msgid "Page"
+msgstr "Seite"
+
+msgid "Translate"
+msgstr "Übersetzen"
+
+msgid "missing %(tag)s"
+msgstr "%(tag)s fehlt"

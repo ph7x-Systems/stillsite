@@ -20,11 +20,12 @@ from cms_core import (
     Language,
     Role,
     StorageBackend,
+    TranslationState,
     User,
     new_article,
 )
 from cms_validation import SiteContent
-from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import ValidationError
 
@@ -136,11 +137,24 @@ def _page(
 async def articles_list(
     request: Request,
     user_session: tuple[User, AdminSession] = Depends(current_session),
+    needs: str = Query(""),
 ) -> object:
     user, session = user_session
     everything = await get_db(request).run(lambda storage: storage.load_all_articles())
     articles = [a for a in everything if a.deleted_at is None]
     trashed_count = len(everything) - len(articles)
+    project = _project(request)
+    targets = _site_targets(project)
+    # #131: "entries missing «tag»" — keep only entries whose state for
+    # the picked language is not complete.
+    if needs and needs in {str(target) for target in targets}:
+        source = _site_source(project)
+        articles = [
+            article
+            for article in articles
+            if article.translation_state(Language(needs), source=source)
+            is not TranslationState.COMPLETE
+        ]
     row_actions_map = {
         article.id: available_transitions(article.status, user.role) for article in articles
     }
@@ -153,7 +167,8 @@ async def articles_list(
             "articles": articles,
             "trashed_count": trashed_count,
             "row_actions_map": row_actions_map,
-            "target_languages": _site_targets(_project(request)),
+            "target_languages": targets,
+            "needs": needs,
         },
     )
 

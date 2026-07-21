@@ -332,6 +332,18 @@ what the build includes. The choice is remembered in `sardine.toml`
 successful build answers *what now*: where the files are and the one
 action that puts them live for the chosen target.
 
+## Translations (#131)
+
+**Translations** in the sidebar is the translator's worklist: every
+entry-language pair that is missing or outdated for the project's
+configured language set (pack tags included), filterable by language,
+state and content type, each row linking straight to the side-by-side
+editor. Zero rows is a real statement — everything is caught up.
+States come from the model's checksums, so the queue can never
+disagree with the editors. The content lists carry the same power as a
+filter: "missing «tag»" keeps only entries whose state for that
+language is not complete.
+
 ## Bulk actions (#130)
 
 The content lists select with checkboxes (plain forms — no JavaScript

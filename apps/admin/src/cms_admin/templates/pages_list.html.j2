@@ -8,6 +8,21 @@
 </div>
 {% endblock %}
 {% block content %}
+{% if target_languages %}
+<form method="get" action="/pages" class="mb-3 d-flex gap-2 align-items-center">
+  <label class="mb-0">
+    <span class="visually-hidden admin-visually-hidden">{{ _("Needs translation into") }}</span>
+    <select class="form-select form-select-sm admin-input" name="needs">
+      <option value="">{{ _("Every entry") }}</option>
+      {% for target in target_languages %}
+      <option value="{{ target }}" {% if needs == target | string %}selected{% endif %}>
+        {{ _("missing %(tag)s") | format(tag=target | upper) }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <button type="submit" class="btn btn-outline-secondary btn-sm">{{ _("Filter") }}</button>
+</form>
+{% endif %}
 {% if pages %}
 <div class="card">
   <div class="card-body p-0 table-responsive admin-table-wrap">

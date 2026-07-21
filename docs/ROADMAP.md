@@ -111,8 +111,8 @@ paid add-ons, it is this product's core — the bar is to stay ahead.
 | Configurable source language | ✅ `[site] source_language` (default `en`): any pack tag can be the source — URL root, hreflang x-default, validation parity and label fallbacks all follow it; the source never doubles as a target | — |
 | Admin panel languages from packs | ✅ catalogs live in `LanguagePack.admin_catalog` (bundled four included); the panel offers every registered pack with a catalog by its native name, mirrors RTL packs, and the editors' source/target sets come from the project | — |
 | RTL end to end | ✅ `dir="rtl"` on the markup and flow-relative CSS throughout both themes and the panel chrome — conformance-tested (no physical property can return) | — |
-| Translation queue | ❌ | 🔜 one screen of every entry×language pair missing or outdated — the translator's worklist (M8) |
-| List filters by translation state | ❌ | 🔜 "entries missing «tag»" filters on the content lists (M8) |
+| Translation queue | ✅ the Translations screen: every missing/outdated entry-language pair for the configured set (pack tags included), filtered by language/state/type, linking to the side-by-side editors | — |
+| List filters by translation state | ✅ "missing «tag»" filter on the articles and pages lists | — |
 | Fallback policy per language (publish partial vs block) | ❌ parity blocks today | 🧭 needs an ADR — per-language policy, never silent |
 | Machine-translation assist | ❌ | 🧭 provider-neutral contract (ADR-0028 pattern), post-M8 |
 | Data-only language packs | ❌ packs are Python objects today | 🔜 authorable as a pure data bundle (labels + months + `.po` + direction) — contributing a language must need zero code (ADR-0034 ecosystem phase) |

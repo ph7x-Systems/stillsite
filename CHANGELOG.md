@@ -5,6 +5,17 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **The translator gets a worklist** (#131): the new Translations
+  screen lists every entry-language pair that is missing or outdated —
+  for the project's configured language set, pack tags included —
+  filterable by language, state and content type, each row linking
+  straight to the side-by-side editor; zero rows is a real
+  "all caught up". The content lists gain the same power as a filter:
+  "missing «tag»" keeps only entries incomplete in that language.
+  States come from the model's checksums, so the queue can never
+  disagree with the editors. Twelve new panel strings in the four
+  bundled catalogs.
+
 - **Bulk actions with per-entry honesty** (#130): the content lists
   select with checkboxes (plain forms, no JavaScript — the checkboxes
   attach to an external form so row actions stay valid HTML) and apply

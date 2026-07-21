@@ -1223,3 +1223,39 @@ msgstr "puerta de publicación: %(count)s error(es) de validación"
 
 msgid "referenced by %(count)s entr(ies)"
 msgstr "referenciado por %(count)s entrada(s)"
+
+msgid "%(total)s pair(s) waiting overall"
+msgstr "%(total)s par(es) en espera en total"
+
+msgid "All caught up — every configured language is complete."
+msgstr "Todo al día — todos los idiomas configurados están completos."
+
+msgid "Article"
+msgstr "Artículo"
+
+msgid "Articles and pages"
+msgstr "Artículos y páginas"
+
+msgid "Entry"
+msgstr "Entrada"
+
+msgid "Every entry"
+msgstr "Todas las entradas"
+
+msgid "Every language"
+msgstr "Todos los idiomas"
+
+msgid "Missing and outdated"
+msgstr "Faltantes y desactualizadas"
+
+msgid "Needs translation into"
+msgstr "Necesita traducción a"
+
+msgid "Page"
+msgstr "Página"
+
+msgid "Translate"
+msgstr "Traducir"
+
+msgid "missing %(tag)s"
+msgstr "falta %(tag)s"

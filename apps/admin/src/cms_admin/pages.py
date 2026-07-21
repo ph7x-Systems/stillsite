@@ -36,7 +36,7 @@ from cms_core.languages import TARGET_LANGUAGES
 from cms_core.portable import section_from_portable
 from cms_core.translatable import TranslatableModel
 from cms_validation import SiteContent
-from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import ValidationError
 from starlette.datastructures import FormData
@@ -156,11 +156,22 @@ def own_states(
 async def pages_list(
     request: Request,
     user_session: tuple[User, AdminSession] = Depends(current_session),
+    needs: str = Query(""),
 ) -> object:
     user, session = user_session
     everything = await get_db(request).run(lambda storage: storage.load_all_pages())
     pages = [p for p in everything if p.deleted_at is None]
     trashed_count = len(everything) - len(pages)
+    project = _project(request)
+    targets = _site_targets(project)
+    if needs and needs in {str(target) for target in targets}:
+        source = _site_source(project)
+        pages = [
+            page
+            for page in pages
+            if page.translation_state(Language(needs), source=source)
+            is not TranslationState.COMPLETE
+        ]
     row_actions_map = {page.id: available_transitions(page.status, user.role) for page in pages}
     return _page_response(
         request,
@@ -171,7 +182,8 @@ async def pages_list(
             "pages": pages,
             "trashed_count": trashed_count,
             "row_actions_map": row_actions_map,
-            "target_languages": _site_targets(_project(request)),
+            "target_languages": targets,
+            "needs": needs,
         },
     )
 
