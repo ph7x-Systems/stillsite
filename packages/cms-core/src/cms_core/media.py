@@ -8,7 +8,7 @@ from pathlib import PurePosixPath, PureWindowsPath
 
 from pydantic import BaseModel, Field, model_validator
 
-from cms_core.languages import SOURCE_LANGUAGE, TARGET_LANGUAGES, Language
+from cms_core.languages import TARGET_LANGUAGES, Language
 from cms_core.models import SLUG_PATTERN
 
 
@@ -39,11 +39,11 @@ class MediaAsset(BaseModel):
             raise ValueError("media path must be relative and must not traverse upwards")
         if self.is_image and (self.width is None or self.height is None):
             raise ValueError("images must declare width and height")
-        if not self.alt.get(SOURCE_LANGUAGE, "").strip():
-            raise ValueError(f"alt text in the source language ({SOURCE_LANGUAGE}) is mandatory")
+        if not any(text.strip() for text in self.alt.values()):
+            raise ValueError("alt text in the source language is mandatory")
         return self
 
-    def missing_alt_languages(self) -> tuple[Language, ...]:
-        return tuple(
-            language for language in TARGET_LANGUAGES if not self.alt.get(language, "").strip()
-        )
+    def missing_alt_languages(
+        self, languages: tuple[Language, ...] = TARGET_LANGUAGES
+    ) -> tuple[Language, ...]:
+        return tuple(language for language in languages if not self.alt.get(language, "").strip())

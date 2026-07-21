@@ -49,13 +49,23 @@ class TranslatableModel[ContentT: ChecksummedContent](BaseModel):
             return TranslationState.COMPLETE
         return TranslationState.MISSING
 
-    def translation_states(self) -> dict[Language, TranslationState]:
-        return {language: self.translation_state(language) for language in TARGET_LANGUAGES}
+    def translation_states(
+        self,
+        languages: tuple[Language, ...] = TARGET_LANGUAGES,
+        *,
+        source: Language | None = None,
+    ) -> dict[Language, TranslationState]:
+        return {language: self.translation_state(language, source=source) for language in languages}
 
-    def incomplete_languages(self) -> tuple[Language, ...]:
+    def incomplete_languages(
+        self,
+        languages: tuple[Language, ...] = TARGET_LANGUAGES,
+        *,
+        source: Language | None = None,
+    ) -> tuple[Language, ...]:
         return tuple(
             language
-            for language, state in self.translation_states().items()
+            for language, state in self.translation_states(languages, source=source).items()
             if state is not TranslationState.COMPLETE
         )
 

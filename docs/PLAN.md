@@ -321,9 +321,13 @@ Ordered by dependency; every 🧭 item begins with its ADR:
       flow-relative properties only, enforced by conformance tests that
       also catch asymmetric four-value shorthands (third-party themes
       inherit the gate); DESIGN_RULES gains the non-negotiable
-- [ ] ADR-0034 remaining phases: admin catalogs from packs (+ panel
-      target set from the project) → ecosystem pack guide + data-only
-      packs
+- [x] ADR-0034 admin phase: panel catalogs live in the packs (the
+      bundled four moved into cms-core; an extension pack with a
+      catalog becomes a panel language, listed by native name), the
+      panel chrome mirrors RTL packs, and every editor surface reads
+      the project's source/target sets — the media model now requires
+      alt text in *some* language rather than hardcoding one
+- [ ] ADR-0034 remaining phase: ecosystem pack guide + data-only packs
 - [ ] Bulk actions on the content lists (multi-select workflow + trash)
 - [ ] Admin-wide search (articles, pages, media from one box)
 - [ ] Scheduled unpublish: `unpublish_at` mirroring ADR-0024's contract

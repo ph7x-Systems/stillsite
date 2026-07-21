@@ -8,7 +8,7 @@ same rules the CLI and the builder apply, through the same public API.
 """
 
 from cms_core import Article, ContentStatus, Page, Role
-from cms_core.languages import TARGET_LANGUAGES
+from cms_core.languages import SOURCE_LANGUAGE, TARGET_LANGUAGES, Language
 from cms_validation import RuleSet, SiteContent, ValidationContext, default_ruleset
 
 from cms_admin.auth import ROLE_ORDER
@@ -50,7 +50,13 @@ def transition_minimum(source: ContentStatus, target: ContentStatus) -> Role | N
     return TRANSITIONS.get((source, target))
 
 
-def publish_blockers(entity: Article | Page, content: SiteContent) -> list[str]:
+def publish_blockers(
+    entity: Article | Page,
+    content: SiteContent,
+    *,
+    required_languages: tuple[Language, ...] = TARGET_LANGUAGES,
+    source: Language = SOURCE_LANGUAGE,
+) -> list[str]:
     """Validation errors that block publishing this entity, human-readable.
 
     The entity is validated in its would-be published state alongside the
@@ -66,6 +72,7 @@ def publish_blockers(entity: Article | Page, content: SiteContent) -> list[str]:
         pages = [p for p in content.pages if p.id != entity.id] + [would_be]
         content = SiteContent(articles=content.articles, pages=pages, media=content.media)
     report = RuleSet(rules=default_ruleset()).run(
-        content, ValidationContext(required_languages=TARGET_LANGUAGES)
+        content,
+        ValidationContext(required_languages=required_languages, source_language=source),
     )
     return [str(issue) for issue in report.errors if issue.subject == subject]

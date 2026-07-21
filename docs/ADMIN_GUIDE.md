@@ -289,16 +289,22 @@ credentials.
 
 ## Panel language (i18n)
 
-The panel speaks the editor's language (ADR-0022). Resolution order per
-request: the signed-in user's stored preference (the **Language** selector
-in the navbar user menu) → the browser's `Accept-Language` → English.
-`cms admin create-user --language pt-pt` seeds the preference. Catalogs
-are gettext `.po` files under `cms_admin/locale/` (EN msgids; PT-PT, ES,
-FR and DE shipped), compiled in memory at startup — no binary files, no
-build step. Adding a language = one new `.po` plus one entry in
-`cms_admin.i18n.LOCALES`; an anti-drift test fails if any msgid is
-missing or untranslated in any shipped catalog. Editorial content is
-never touched by panel i18n.
+The panel speaks the editor's language (ADR-0022 + ADR-0034).
+Resolution order per request: the signed-in user's stored preference
+(the **Language** selector in the navbar user menu) → the browser's
+`Accept-Language` → English. `cms admin create-user --language pt-pt`
+seeds the preference. Catalogs are gettext `.po` text carried by
+language packs (`LanguagePack.admin_catalog`; EN msgids are the source
+text and need no catalog), compiled in memory at startup — no binary
+files, no build step. The bundled four ship inside cms-core's packs;
+an extension pack that carries a catalog makes its language a panel
+language the moment the pack is activated — the selector lists every
+registered pack with a catalog under the pack's own `native_name`, and
+the panel chrome renders `dir="rtl"` when the pack says so. An
+anti-drift test fails if any msgid is missing or untranslated in any
+bundled catalog. The editors' source and target language sets come
+from the project's `sardine.toml` (`source_language`, `languages`).
+Editorial content is never touched by panel i18n.
 
 ## Security model
 

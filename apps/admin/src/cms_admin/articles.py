@@ -13,7 +13,6 @@ from pathlib import Path
 
 from cms_build import render_markdown, urls
 from cms_core import (
-    SOURCE_LANGUAGE,
     AdminSession,
     Article,
     ArticleContent,
@@ -24,7 +23,6 @@ from cms_core import (
     User,
     new_article,
 )
-from cms_core.languages import TARGET_LANGUAGES
 from cms_validation import SiteContent
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -32,7 +30,7 @@ from pydantic import ValidationError
 
 from cms_admin.auth import current_session, enforce_csrf, get_db
 from cms_admin.notifications import notify_transition
-from cms_admin.publishing import _project, refresh_entry_preview
+from cms_admin.publishing import _project, _site_source, _site_targets, refresh_entry_preview
 from cms_admin.security import admin_path
 from cms_admin.webhooks import emit_transition
 from cms_admin.workflow import (
@@ -88,14 +86,14 @@ def content_form(content: ArticleContent | None) -> dict[str, str]:
     }
 
 
-def _target_language(code: str) -> Language:
+def _target_language(request: Request, code: str) -> Language:
     try:
         language = Language(code)
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="unknown language"
         ) from None
-    if language is SOURCE_LANGUAGE:
+    if language is _site_source(_project(request)):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="the source language is edited on the article page",
@@ -155,7 +153,7 @@ async def articles_list(
             "articles": articles,
             "trashed_count": trashed_count,
             "row_actions_map": row_actions_map,
-            "target_languages": TARGET_LANGUAGES,
+            "target_languages": _site_targets(_project(request)),
         },
     )
 
@@ -257,14 +255,20 @@ def _custom_rows(article: Article) -> list[dict[str, str]]:
 
 
 def _editor_context(
-    article: Article, form: dict[str, str] | None = None, role: Role | None = None
+    request: Request,
+    article: Article,
+    form: dict[str, str] | None = None,
+    role: Role | None = None,
 ) -> dict[str, object]:
+    project = _project(request)
+    targets = _site_targets(project)
+    source = _site_source(project)
     return {
         "custom_rows": _custom_rows(article),
         "article": article,
         "transitions": available_transitions(article.status, role) if role else [],
-        "states": article.translation_states(),
-        "target_languages": TARGET_LANGUAGES,
+        "states": article.translation_states(targets, source=source),
+        "target_languages": targets,
         "preview_html": render_markdown(article.source.body_markdown),
         "form": form
         or {
@@ -293,7 +297,9 @@ async def article_edit_form(
     notes = await get_db(request).run(lambda storage: storage.list_notes("article", article_id))
     project = _project(request)
     preview_path = (
-        "/preview" + urls.article_path(project.site, article, SOURCE_LANGUAGE) if project else None
+        "/preview" + urls.article_path(project.site, article, _site_source(project))
+        if project
+        else None
     )
     preview_ready = bool(
         preview_path
@@ -316,7 +322,7 @@ async def article_edit_form(
             "entity_id": article_id,
             "preview_path": preview_path,
             "preview_ready": preview_ready,
-            **_editor_context(article, role=user.role),
+            **_editor_context(request, article, role=user.role),
         },
     )
 
@@ -370,7 +376,7 @@ async def article_edit_save(
                 "user": user,
                 "csrf_token": session.csrf_token,
                 "errors": _form_error_list(error),
-                **_editor_context(article, form, role=user.role),
+                **_editor_context(request, article, form, role=user.role),
             },
             status_code=HTTP_422,
         )
@@ -452,7 +458,7 @@ async def translation_form(
     user_session: tuple[User, AdminSession] = Depends(current_session),
 ) -> object:
     user, session = user_session
-    language = _target_language(language_code)
+    language = _target_language(request, language_code)
     article = await _load_article(request, article_id)
     return _page(
         request,
@@ -478,7 +484,7 @@ async def translation_save(
     slug: str = Form(""),
 ) -> object:
     user, session = user_session
-    language = _target_language(language_code)
+    language = _target_language(request, language_code)
     article = await _load_article(request, article_id)
     form = {"title": title, "summary": summary, "body_markdown": body_markdown, "slug": slug}
     try:
@@ -536,7 +542,13 @@ async def article_status(
             pages=[entry for entry in all_pages if entry.deleted_at is None],
             media=await db.run(lambda storage: storage.load_all_media_assets()),
         )
-        blockers = publish_blockers(article, content)
+        gate_project = _project(request)
+        blockers = publish_blockers(
+            article,
+            content,
+            required_languages=_site_targets(gate_project),
+            source=_site_source(gate_project),
+        )
         if blockers:
             return _page(
                 request,
@@ -545,7 +557,7 @@ async def article_status(
                     "user": user,
                     "csrf_token": session.csrf_token,
                     "errors": blockers,
-                    **_editor_context(article, role=user.role),
+                    **_editor_context(request, article, role=user.role),
                 },
                 status_code=HTTP_422,
             )

@@ -24,6 +24,7 @@ from cms_validation import SiteContent
 from fastapi import APIRouter, Depends, Request
 
 from cms_admin.auth import current_session
+from cms_admin.publishing import _project, _site_source, _site_targets
 from cms_admin.validation_report import report_context
 
 router = APIRouter()
@@ -38,10 +39,12 @@ def status_counts(entries: Sequence[Article | Page]) -> dict[ContentStatus, int]
 
 def translation_matrix(
     entries: Sequence[Article | Page],
+    languages: tuple[Language, ...] = TARGET_LANGUAGES,
+    source: Language | None = None,
 ) -> dict[Language, dict[TranslationState, int]]:
-    matrix = {language: dict.fromkeys(TranslationState, 0) for language in TARGET_LANGUAGES}
+    matrix = {language: dict.fromkeys(TranslationState, 0) for language in languages}
     for entry in entries:
-        for language, state in entry.translation_states().items():
+        for language, state in entry.translation_states(languages, source=source).items():
             matrix[language][state] += 1
     return matrix
 
@@ -70,7 +73,8 @@ async def dashboard(
     user, session = user_session
     content: SiteContent = await request.app.state.db.run(_load_content)
     entries: list[Article | Page] = [*content.articles, *content.pages]
-    matrix = translation_matrix(entries)
+    project = _project(request)
+    matrix = translation_matrix(entries, _site_targets(project), _site_source(project))
     return request.app.state.templates.TemplateResponse(
         request,
         "dashboard.html.j2",
@@ -88,7 +92,9 @@ async def dashboard(
                 "pages": len(content.pages),
                 "media": len(content.media),
             },
-            **report_context(content),
+            **report_context(
+                content, _site_targets(project), source_language=_site_source(project)
+            ),
             "last_build": getattr(request.app.state, "last_build", None),
         },
     )

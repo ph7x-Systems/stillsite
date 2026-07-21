@@ -38,11 +38,13 @@ def test_non_images_do_not_require_dimensions() -> None:
     assert not asset.is_image
 
 
-def test_source_alt_text_is_mandatory() -> None:
+def test_alt_text_in_some_language_is_mandatory() -> None:
+    """ADR-0034: the source is configurable, so the model requires alt
+    text in at least one language — which one is the validation
+    context's business, not the model's."""
     with pytest.raises(ValueError, match="alt text"):
         make_image(alt={Language.EN: "   "})
-    with pytest.raises(ValueError, match="alt text"):
-        make_image(alt={Language.PT_PT: "Um nascer do sol"})
+    assert make_image(alt={Language.PT_PT: "Um nascer do sol"}).alt[Language.PT_PT]
 
 
 def test_media_path_must_be_relative_and_safe() -> None:
