@@ -333,6 +333,16 @@ Ordered by dependency; every 🧭 item begins with its ADR:
       suite, and an RTL build through the CI accessibility gate — which
       caught the builder skipping source-language pages, now fixed and
       regression-tested
+- [ ] ADR-0037 phase 1 (model + storage): `SectionContent.items`,
+      `PageContent.body_markdown`, checksums, migration on all four
+      engines, export/import round-trip
+- [ ] ADR-0037 phase 2 (builder + themes + validation): gallery field
+      specs, Markdown fields, unbounded items in both themes (caps
+      removed), parity over items, conformance for unbounded items
+- [ ] ADR-0037 phase 3 (admin): item add/remove rows, Markdown widgets,
+      translation editors mirror items
+- [ ] ADR-0037 phase 4 (docs): THEME_GUIDE gallery v2, ADMIN_GUIDE,
+      wiki, seed content exercising items
 - [ ] Bulk actions on the content lists (multi-select workflow + trash)
 - [ ] Admin-wide search (articles, pages, media from one box)
 - [ ] Scheduled unpublish: `unpublish_at` mirroring ADR-0024's contract

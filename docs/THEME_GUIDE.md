@@ -91,10 +91,10 @@ kind-specific markup), plus `images` resolved from the section's media list.
 | --- | --- | --- |
 | `hero` | `kicker`, `lead`, `heading`, `accent` | opening statement; `accent` is the emphasized tail of the heading |
 | `story` | `kicker`, `heading`, `body` | narrative block; also renders `meta1k`/`meta1v` … `meta6k`/`meta6v` stat pairs and the section's images |
-| `expertise` | `kicker`, `heading`, `row1no`, `row1t`, `row1d` | numbered capability rows, repeat up to `row8*` |
+| `expertise` | `kicker`, `heading`, `row1no`, `row1t`, `row1d` | numbered capability rows, repeat up to `row8*` — the numbered convention and its cap retire with [ADR-0037](adr/0037-sections-grow-up.md) `items` |
 | `latest-articles` | `kicker`, `heading` | the builder injects the recent-articles list as `latest` |
 | `quote` | `quote`, `attribution`, `role` | a pull quote needs no heading — the quote is the content |
-| `faq` | `kicker`, `heading`, `q1`, `a1` … | question/answer pairs, repeat up to `q6`/`a6`; rendered as native `<details>` (no JS) |
+| `faq` | `kicker`, `heading`, `q1`, `a1` … | question/answer pairs, repeat up to `q6`/`a6`; rendered as native `<details>` (no JS) — the numbered convention and its cap retire with ADR-0037 `items` |
 | `cta` | `kicker`, `heading`, `body`, `button`, `url` | the button renders only when `button` **and** `url` are both set; `url` is per-language content, so each translation can point at its own path |
 | `gallery` | `kicker`, `heading` | renders the section's media list as an image grid (`srcset`-aware) |
 | `contact` | `kicker`, `heading`, `accent`, `button` | closing call to action; the button links to the last menu entry |
