@@ -33,6 +33,7 @@ jobs:
           for pkg in packages/cms-core packages/cms-validation packages/cms-build packages/cms-theme-ph7x-reference packages/cms-cli apps/admin; do
             python -m pip install -e "$pkg"
           done
+          python -m pip install -e "packages/cms-build[images]"
       - name: Build the demo site (seeded SQLite content)
         run: |
           cms seed     -p examples/multilingual-company-site

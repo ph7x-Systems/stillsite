@@ -381,6 +381,14 @@ CATEGORIES: dict[str, dict[Language, str]] = {
     },
 }
 
+HARBOR_ALT: dict[Language, str] = {
+    EN: "The tin-can fleet moored at the harbour at dusk",
+    PT: "A frota de latas atracada no porto ao anoitecer",
+    ES: "La flota de latas amarrada en el puerto al atardecer",
+    FR: "La flotte de boites amarree au port au crepuscule",
+    DE: "Die Dosenflotte am Hafen in der Abenddaemmerung",
+}
+
 MEDIA_ALT: dict[Language, str] = {
     EN: "A tin-can rocket with a sardine at the controls",
     PT: "Um foguetao-lata com uma sardinha aos comandos",

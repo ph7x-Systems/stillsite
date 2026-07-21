@@ -30,6 +30,7 @@ from cms_cli.seed_data import (
     ARTICLES,
     COVER_ALT,
     COVER_SVGS,
+    HARBOR_ALT,
     HOME,
     HOME_ABOUT,
     HOME_CTA,
@@ -81,6 +82,36 @@ def _article(
     return article
 
 
+def _harbor_png(width: int = 1200, height: int = 630) -> bytes:
+    """A fixed dusk-gradient PNG, computed — no binary blob in git and
+    the same bytes on every run."""
+    import struct
+    import zlib
+
+    def chunk(kind: bytes, payload: bytes) -> bytes:
+        return (
+            struct.pack(">I", len(payload))
+            + kind
+            + payload
+            + struct.pack(">I", zlib.crc32(kind + payload))
+        )
+
+    rows = bytearray()
+    for y in range(height):
+        shade = y / (height - 1)
+        red = round(28 + 60 * shade)
+        green = round(36 + 30 * shade)
+        blue = round(66 + 90 * shade)
+        rows += b"\x00" + bytes((red, green, blue)) * width
+    header = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", header)
+        + chunk(b"IDAT", zlib.compress(bytes(rows), level=9))
+        + chunk(b"IEND", b"")
+    )
+
+
 def seed(storage: StorageBackend, project_dir: Path | None = None) -> tuple[int, int, int]:
     """Write the starter content; returns (pages, articles, media) counts."""
     storage.save_page(
@@ -104,6 +135,10 @@ def seed(storage: StorageBackend, project_dir: Path | None = None) -> tuple[int,
     for article_id, (category, tags, days, contents) in ARTICLES.items():
         entry = _article(article_id, category, tags, days, contents)
         entry.cover = f"cover-{category}"
+        if article_id == "commander-sardinha-interview":
+            # The one raster cover: it exercises responsive derivatives
+            # and modern formats end to end in the example site.
+            entry.cover = "harbor-photo"
         storage.save_article(entry)
 
     # Still in review, DE translation deliberately missing: the seeded
@@ -120,6 +155,21 @@ def seed(storage: StorageBackend, project_dir: Path | None = None) -> tuple[int,
     pending.tags = ("training", "parking")
     pending.cover = "cover-missions"
     storage.save_article(pending)
+
+    harbor = MediaAsset(
+        id="harbor-photo",
+        path="images/harbor.png",
+        mime_type="image/png",
+        width=1200,
+        height=630,
+        alt=dict(HARBOR_ALT),
+    )
+    storage.save_media_asset(harbor)
+    if project_dir is not None:
+        harbor_target = project_dir / "media" / "images" / "harbor.png"
+        harbor_target.parent.mkdir(parents=True, exist_ok=True)
+        if not harbor_target.exists():
+            harbor_target.write_bytes(_harbor_png())
 
     rocket = MediaAsset(
         id="rocket",
@@ -152,4 +202,4 @@ def seed(storage: StorageBackend, project_dir: Path | None = None) -> tuple[int,
         if not target.exists():
             target.write_text(ROCKET_SVG, encoding="utf-8")
 
-    return 2, len(ARTICLES) + 1, 1 + len(COVER_SVGS)
+    return 2, len(ARTICLES) + 1, 2 + len(COVER_SVGS)
