@@ -61,6 +61,7 @@ async def _notify_reviewers(
     db = get_db(request)
     usernames = await db.run(lambda storage: storage.list_usernames())
     link = _entry_link(request, section, entity_id)
+
     async def _load(name: str) -> User | None:
         return await db.run(lambda storage: storage.load_user(name))
 
