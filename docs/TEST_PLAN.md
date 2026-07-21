@@ -43,6 +43,10 @@ bare paths, loud failure on unavailable dependencies and custom registration.
 
 - **Determinism**: two builds of the same input are byte-identical (hash the
   whole output tree).
+- **Content API contract** (`tests/test_content_api.py`): the JSON output in
+  `api/v1/` honours the documented consumer contract — publication gates
+  identical to the HTML, sorted keys, no build timestamps, versioned
+  envelope.
 - **Structural parity** with the PoC reference (docs/POC_PLAN.md): expected
   URL-tree shape (localized slugs, pagination, categories, per-language RSS
   and search index, sitemap, legal pages, 404).

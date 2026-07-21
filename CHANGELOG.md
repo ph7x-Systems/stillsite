@@ -70,6 +70,10 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Changed
 
+- The Content API documentation is written for the API consumer:
+  endpoints, response contract, guarantees and a short example;
+  verification detail moved to the test plan (#165).
+
 - Flow-relative CSS only in themes and panel (RTL end to end),
   conformance-enforced.
 - Media alt text requires *some* language, not a hardcoded one.

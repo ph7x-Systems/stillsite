@@ -1,48 +1,73 @@
-# Content API — the headless JSON output
+# Content API
 
-Opt-in (M6): `content_api = true` under `[build]` makes every build also
-emit versioned JSON under `api/v1/`, next to the HTML. It is a build
-output like any other — static files, served by the same host, no server
-component — and it follows exactly the publication rules of the HTML
-pages: published, out of the trash, past their `publish_at` moment, and
-translation-complete per language. The tests in
-[`tests/test_content_api.py`](../tests/test_content_api.py) are the
-public contract.
+Sardine can publish the site's content as static, versioned JSON
+alongside the HTML. There is no server component and no authentication:
+the files are part of the build output and are served by whatever hosts
+the site.
 
-## Files
+## Enabling it
+
+```toml
+[build]
+content_api = true
+```
+
+Every build then also writes the API files under `api/v1/`.
+
+## Endpoints
 
 | Path | Contents |
 | --- | --- |
-| `api/v1/site.json` | `version`, `name`, `base_url`, `blog_path`, `languages` (codes, source first), `categories` (slug → per-language labels) |
-| `api/v1/<lang>/content.json` | `version`, `language`, `articles`, `pages` — one file per configured language |
+| `/api/v1/site.json` | Site metadata: name, base URL, blog path, languages, categories |
+| `/api/v1/<lang>/content.json` | All published articles and pages for one language |
 
-## Article entries
+## Example
 
-`id`, `slug` (per-language), `url` (site-relative, matches the HTML
-page), `title`, `summary`, `body_html` (the same safe rendered Markdown
-the theme receives), `date` (ISO), `author`, `featured`,
-`category` (`{slug, label, url}` or null), `tags` (`[{slug, url}]`),
-`cover` (media metadata: `url`, localized `alt`, `width`, `height`, plus
-`srcset` when `[build] image_widths` is configured — ADR-0029), and
-`fields` (the article's custom fields).
+```text
+GET /api/v1/site.json
+```
 
-## Page entries
+```json
+{
+  "version": 1,
+  "name": "Aurora Cartography",
+  "base_url": "https://example.com/",
+  "blog_path": "blog",
+  "languages": ["en", "pt-pt"],
+  "categories": {"field-notes": {"en": "Field notes", "pt-pt": "Notas de campo"}}
+}
+```
 
-`id`, `slug`, `url`, `title`, `description` and `sections` — each with
-`key`, `kind`, `fields` (the language's resolved field map) and `images`
-(same media metadata as covers).
+## Response contract
+
+Every file carries `version` — the API version it speaks.
+
+**`site.json`** — `name`, `base_url`, `blog_path`, `languages` (codes,
+source language first) and `categories` (slug → per-language labels).
+
+**`<lang>/content.json`** — `language` plus two lists:
+
+- **`articles`**: `id`, `slug` (per-language), `url` (site-relative,
+  matches the HTML page), `title`, `summary`, `body_html` (safe rendered
+  HTML), `date` (ISO 8601), `author`, `featured`, `category`
+  (`{slug, label, url}` or `null`), `tags` (`[{slug, url}]`), `cover`
+  (media metadata: `url`, localized `alt`, `width`, `height`, plus
+  `srcset` when image derivatives are configured) and `fields` (the
+  article's custom fields).
+- **`pages`**: `id`, `slug`, `url`, `title`, `description` and
+  `sections` — each with `key`, `kind`, `fields` (the language's
+  resolved field map) and `images` (the same media metadata as covers).
 
 ## Guarantees
 
-- **Deterministic**: same content, same configuration, same `now` →
-  byte-identical JSON (keys sorted, UTF-8, no timestamps of the build
-  itself).
-- **Versioned**: the envelope carries `version`; additive fields may
-  join within a version, renames or removals move to a new `api/vN/`
-  path.
-- **Same gates as HTML**: nothing appears in the API that the built site
-  does not publish — drafts, trashed and future-scheduled entries stay
-  out, and a language file only lists entries whose translation is
-  complete.
+- **Only published content**: the API lists exactly what the built site
+  publishes — no drafts, trashed entries or entries outside their
+  publication window; a language file only lists entries whose
+  translation is complete.
+- **Stable within a version**: fields may be added within `v1`; renames
+  or removals only ever happen under a new `/api/vN/` path, so a
+  consumer pinned to `/api/v1/` keeps working.
+- **Static and cacheable**: plain UTF-8 JSON files on the same host as
+  the site — cache and CDN them like any other static asset.
 
 Live example: <https://sardine.ph7x.com/api/v1/site.json>.
