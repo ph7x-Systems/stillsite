@@ -122,3 +122,17 @@ site-search { display: block; margin-block: 1rem; }
 @media (max-width: 820px) {
   .site-nav { flex-wrap: wrap; }
 }
+
+/* The form kind: stacked labels, token-driven fields. */
+.form-section form { max-width: 36rem; margin-top: 1rem; }
+.form-section form p { margin: 0 0 1rem; }
+.form-section label { display: block; font-weight: 600; margin-bottom: 0.3rem; }
+.form-section input[type="text"], .form-section input[type="email"], .form-section textarea {
+  width: 100%; padding: 0.55em 0.7em; font: inherit; color: inherit;
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.form-section input:focus, .form-section textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.form-section input[type="checkbox"] { width: auto; display: inline-block; margin-inline-end: 0.5em; }
+.form-section input[type="checkbox"] + label { display: inline; font-weight: 400; }
+.form-section textarea { resize: vertical; min-height: 8em; }
