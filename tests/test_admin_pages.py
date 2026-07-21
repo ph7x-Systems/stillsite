@@ -107,7 +107,8 @@ def test_list_aggregates_the_worst_state_across_sections(tmp_path: Path) -> None
         _sign_in(client)
         listing = client.get("/pages").text
     # the page's own content is complete everywhere, but the hero is not
-    assert "admin-state-missing" in listing
+    assert "admin-coverage" in listing
+    assert "missing" in listing
     assert "admin-state-complete" not in listing
 
 
@@ -207,7 +208,8 @@ def test_page_translation_save_completes_the_own_state(tmp_path: Path) -> None:
         listing = client.get("/pages").text
     assert "admin-state-complete" in translation_page
     # aggregate stays missing: the hero section has no PT-PT translation
-    assert "admin-state-missing" in listing
+    assert "admin-coverage" in listing
+    assert "missing" in listing
     stored = _stored_page(tmp_path, "home")
     assert stored.translations[Language.PT_PT].content.slug == "inicio"
 

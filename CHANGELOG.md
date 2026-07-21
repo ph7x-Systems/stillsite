@@ -5,6 +5,16 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Lists stop growing with languages**: the per-language badge strip in
+  the content lists becomes a constant-width coverage summary
+  (`3/4 · 1 missing`) linking to the editor — with unbounded language
+  packs (ADR-0034), no admin surface may grow horizontally per
+  language. The roadmap gains the full multilingual map: what already
+  leads (checksum states, parity gates, packs end to end) and what
+  ships next (bundled five as full packs, configurable source language,
+  admin catalogs from packs, full RTL, translation queue, state
+  filters).
+
 - **Language packs work end to end** (M8, ADR-0034 phase 1b): a
   `LanguagePack` bundles a locale's identity, text direction, site
   labels, month names and date pattern; extensions contribute packs via

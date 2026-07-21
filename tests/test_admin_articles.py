@@ -88,9 +88,11 @@ def test_list_shows_articles_with_translation_states(tmp_path: Path) -> None:
         _sign_in(client)
         page = client.get("/articles").text
     assert "first-post" in page
-    assert "admin-state-complete" in page  # PT-PT
-    assert "admin-state-missing" in page  # the other languages
-    assert "/articles/first-post/translations/pt-pt" in page
+    # constant-width coverage cell (ADR-0034: languages are unbounded):
+    # one complete translation of four, the rest missing
+    assert "admin-coverage" in page
+    assert "1/4" in page
+    assert "3 missing" in page
 
 
 def test_list_empty_state(tmp_path: Path) -> None:

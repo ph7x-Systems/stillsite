@@ -73,23 +73,31 @@
 {% endmacro %}
 
 {% macro translation_badges(entry, target_languages, base_url=None) %}
-{# Compact per-language states for list rows: one cell instead of one
-   column per language — the state is in the color, the title and the
-   hidden text (never color alone). #}
-<span class="d-inline-flex flex-wrap gap-1 admin-lang-badges">
-  {% for language in target_languages %}
-  {% set state = entry.translation_state(language) %}
-  {% set tone = {"complete": "text-bg-success", "outdated": "text-bg-warning", "missing": "text-bg-danger"}[state.value] %}
-  {% if base_url %}
-  <a href="{{ base_url }}/translations/{{ language.value }}"
-     class="badge {{ tone }} admin-state admin-state-{{ state.value }} text-decoration-none"
-     title="{{ language.value | upper }}: {{ _(state.value) }}">{{ language.value | upper }}<span class="visually-hidden">: {{ _(state.value) }}</span></a>
-  {% else %}
-  <span class="badge {{ tone }} admin-state admin-state-{{ state.value }}"
-        title="{{ language.value | upper }}: {{ _(state.value) }}">{{ language.value | upper }}<span class="visually-hidden">: {{ _(state.value) }}</span></span>
-  {% endif %}
-  {% endfor %}
-</span>
+{# Constant-width coverage for list rows (ADR-0034 invariant: language
+   sets are unbounded — lists must never grow horizontally per
+   language). The aggregate is the cell; the per-language detail lives
+   in the editor. State is in text and title, never color alone. #}
+{% set ns = namespace(complete=0, missing=0, outdated=0) %}
+{% for language in target_languages %}
+{% set state = entry.translation_state(language) %}
+{% if state.value == "complete" %}{% set ns.complete = ns.complete + 1 %}
+{% elif state.value == "missing" %}{% set ns.missing = ns.missing + 1 %}
+{% else %}{% set ns.outdated = ns.outdated + 1 %}{% endif %}
+{% endfor %}
+{% set complete = ns.complete %}{% set missing = ns.missing %}{% set outdated = ns.outdated %}
+{% set total = target_languages | length %}
+{% set tone = "text-bg-success" if complete == total else ("text-bg-danger" if missing else "text-bg-warning") %}
+{% set detail = [] %}
+{% if missing %}{% set discard = detail.append(missing ~ " " ~ _("missing")) %}{% endif %}
+{% if outdated %}{% set discard = detail.append(outdated ~ " " ~ _("outdated")) %}{% endif %}
+{% set summary = complete ~ "/" ~ total %}
+{% set label = summary if not detail else summary ~ " · " ~ detail | join(" · ") %}
+{% if base_url %}
+<a href="{{ base_url }}" class="badge {{ tone }} admin-coverage text-decoration-none"
+   title="{{ _("Translations") }}: {{ label }}">{{ label }}</a>
+{% else %}
+<span class="badge {{ tone }} admin-coverage" title="{{ _("Translations") }}: {{ label }}">{{ label }}</span>
+{% endif %}
 {% endmacro %}
 
 {% macro row_actions(kind, entity_id, transitions) %}

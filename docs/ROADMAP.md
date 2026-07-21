@@ -80,11 +80,38 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Navigation menus | ✅ explicit menu manager (per-language labels, ordering, external links) with automatic-menu fallback | — |
 | Reusable blocks | ✅ the section-kind gallery is a tested contract: nine bundled kinds (incl. quote, FAQ, CTA, image gallery), both themes, admin field suggestions, extension-added kinds, THEME_GUIDE authoring table | — |
 | Design-aware editing | ✅ themed side-preview plus debounced live refresh through the scoped real builder (ADR-0027) | — |
-| Multilingual | ✅ **core strength**: EN source + per-language states, parity gates | — |
+| Multilingual | ✅ **core strength** — the dedicated map below tells the whole story | — |
 | Authors / bylines | ✅ editorial byline on articles, rendered by the themes | — |
 | Custom taxonomies | ❌ category + tags | 🧭 arbitrary taxonomy definitions need an ADR (M8) |
 | Content relations | ❌ | 🧭 typed entry-to-entry links (related articles) need an ADR (M8) |
 | Arbitrary locale sets + language packs | ❌ the five supported languages are fixed | 🔜 contract fixed by [ADR-0034](adr/0034-language-packs.md) (proposed): tag-based locales, contributable packs, RTL/LTR — phased execution opens M8 |
+
+### Multilingual — the full map
+
+The founding principle (owner directive): **every language is a pack —
+the bundled five included**. Nothing about a locale lives outside its
+pack once the migration completes; "EN is the source" is a factory
+default, never a law. Where the mature systems leave multilingualism to
+paid add-ons, it is this product's core — the bar is to stay ahead.
+
+| Capability | Today | Gap → where |
+| --- | --- | --- |
+| Translation states from checksums (missing/outdated/complete) | ✅ automatic, per language — no manual "needs update" flags, ever | — |
+| Parity gates (missing translation blocks publish) | ✅ configurable rules | — |
+| Per-language slugs, hreflang cluster, localized feeds + search indexes | ✅ in every build | — |
+| Language packs end to end | ✅ ADR-0034: an extension pack's tag is a full content language (config, build, labels, dates, RTL `dir`) | — |
+| Side-by-side translation editing | ✅ EN source next to each translation, per field | — |
+| Language switcher stays on page | ✅ falls back to that language's home | — |
+| Scalable coverage in lists | ✅ constant-width summary (`3/4 · 1 missing`) — lists never grow horizontally per language | — |
+| Bundled five as full packs | 🟡 identity + direction are packs; labels/months/dates still hardcoded in `cms_build.ui` | 🔜 dissolve the tables into the five packs (next ADR-0034 slice) |
+| Configurable source language | ❌ EN is the source today | 🔜 `[site] source_language`, default `en` (ADR-0034 slice) |
+| Admin panel languages from packs | ❌ four shipped catalogs are repository files | 🔜 packs carry admin catalogs; the panel offers every activated pack's language (ADR-0034 admin phase) |
+| RTL end to end | 🟡 `dir="rtl"` on the markup | 🔜 logical-CSS migration in themes + admin, RTL pack through the a11y gate (ADR-0034 theme phase) |
+| Translation queue | ❌ | 🔜 one screen of every entry×language pair missing or outdated — the translator's worklist (M8) |
+| List filters by translation state | ❌ | 🔜 "entries missing «tag»" filters on the content lists (M8) |
+| Fallback policy per language (publish partial vs block) | ❌ parity blocks today | 🧭 needs an ADR — per-language policy, never silent |
+| Machine-translation assist | ❌ | 🧭 provider-neutral contract (ADR-0028 pattern), post-M8 |
+| Data-only language packs | ❌ packs are Python objects today | 🔜 authorable as a pure data bundle (labels + months + `.po` + direction) — contributing a language must need zero code (ADR-0034 ecosystem phase) |
 
 ### Media
 
