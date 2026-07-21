@@ -5,7 +5,7 @@
 # Sardine CMS
 
 [![CI](https://github.com/ph7x-Systems/sardine-cms/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ph7x-Systems/sardine-cms/actions/workflows/ci.yml)
-[![PyPI](https://img.shields.io/pypi/v/sardine-cms-cli?label=pypi&cacheSeconds=3600)](https://pypi.org/project/sardine-cms-cli/)
+[![PyPI](https://img.shields.io/pypi/v/sardine-cms-cli?label=pypi&cacheSeconds=600)](https://pypi.org/project/sardine-cms-cli/)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](pyproject.toml)
 [![Checked with mypy (strict)](https://img.shields.io/badge/mypy-strict-blue.svg)](pyproject.toml)
