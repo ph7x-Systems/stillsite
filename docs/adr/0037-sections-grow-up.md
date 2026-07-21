@@ -1,8 +1,7 @@
 # ADR-0037 — Sections grow up: repeating groups, rich text and long-form pages
 
-- Status: accepted
-- Date: 2026-07-21
-- Deciders: pH7x Systems
+- **Status:** accepted
+- **Date:** 2026-07-21
 
 ## Context
 
