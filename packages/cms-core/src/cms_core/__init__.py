@@ -12,6 +12,11 @@ from cms_core.extensions import (
     load_extensions,
 )
 from cms_core.foreign import WxrImport, import_wxr
+from cms_core.language_packs import (
+    LanguagePack,
+    language_pack,
+    register_language_pack,
+)
 from cms_core.languages import SOURCE_LANGUAGE, TARGET_LANGUAGES, Language
 from cms_core.media import MediaAsset
 from cms_core.menus import MenuItem
@@ -51,6 +56,7 @@ __all__ = [
     "Extension",
     "ExtensionError",
     "Language",
+    "LanguagePack",
     "MediaAsset",
     "MenuItem",
     "Page",
@@ -68,8 +74,10 @@ __all__ = [
     "create_storage",
     "import_content_json",
     "import_wxr",
+    "language_pack",
     "load_extensions",
     "new_article",
     "new_page",
+    "register_language_pack",
     "worst_state",
 ]

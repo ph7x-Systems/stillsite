@@ -9,6 +9,7 @@ render it; they never assemble it.
 from dataclasses import dataclass, field
 
 from cms_core import SOURCE_LANGUAGE, Language
+from cms_core.language_packs import direction
 
 from cms_build.config import SiteConfig
 from cms_build.urls import absolute
@@ -20,6 +21,18 @@ _OG_LOCALES: dict[Language, str] = {
     Language.FR: "fr_FR",
     Language.DE: "de_DE",
 }
+
+
+def _og_locale(language: Language) -> str:
+    """Bundled tags keep their curated Open Graph locales; pack tags
+    derive one from the tag itself (ADR-0034)."""
+    curated = _OG_LOCALES.get(language)
+    if curated is not None:
+        return curated
+    parts = str(language).split("-")
+    if len(parts) >= 2:
+        return f"{parts[0]}_{parts[-1].upper()}"
+    return parts[0]
 
 
 @dataclass(frozen=True, slots=True)
@@ -40,6 +53,9 @@ class Head:
     og_locale: str
     og_locale_alternates: tuple[str, ...]
     json_ld: str | None = None
+    direction: str = "ltr"
+    """Text direction of the page language (ADR-0034); themes put
+    dir="rtl" on <html> when it says so."""
     paths_by_language: dict[Language, str] = field(default_factory=dict)
     """Site-relative path of this page in every language it exists in —
     the language switcher uses it to stay on the current page."""
@@ -79,8 +95,9 @@ def build_head(
         site_name=config.name,
         og_type=og_type,
         alternates=tuple(alternates),
-        og_locale=_OG_LOCALES[language],
-        og_locale_alternates=tuple(_OG_LOCALES[lang] for lang in ordered if lang is not language),
+        og_locale=_og_locale(language),
+        og_locale_alternates=tuple(_og_locale(lang) for lang in ordered if lang is not language),
         json_ld=json_ld,
+        direction=direction(language),
         paths_by_language=dict(paths_by_language),
     )

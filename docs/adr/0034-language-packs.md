@@ -66,13 +66,18 @@ language is ever schema, enumeration or hardcoded string.**
 
 ## Execution (phased, each phase its own PR)
 
-1. **Core** — *executed (phase 1a)*: `Language` is now an interned,
-   validated tag type with the enum's exact surface (identity, `.value`,
-   class iteration, ValueError on unregistered tags) plus
-   `Language.register(tag)` — the entry point packs will use. The whole
-   suite passed unchanged, which is the compatibility proof. Still ahead
-   in this phase: configurable source language and the bundled packs
-   carrying what `cms_build/ui.py` and the admin catalogs hardcode.
+1. **Core** — *executed (phases 1a + 1b)*: `Language` is an interned,
+   validated tag type with the enum's exact surface plus
+   `Language.register(tag)` (1a). `LanguagePack` exists as the contract
+   — tag, direction, site labels, month names, date pattern, optional
+   admin catalog — with a registry, the five bundled tags registered,
+   and `Extension.language_packs` wiring so an activated extension's
+   pack makes its tag a full content language: configurable in
+   `sardine.toml`, built, labeled, date-formatted and rendered with
+   `dir="rtl"` when the pack says so (1b, tested end to end with a
+   fictional RTL pack). Still ahead: configurable source language (its
+   own slice — it touches model semantics) and migrating the bundled
+   five's labels/dates/catalogs into their packs.
 2. **Builder + themes**: labels/dates resolved from packs; `dir`
    attribute; logical-properties migration with conformance coverage.
 3. **Admin**: catalogs loaded from bundled + extension packs; panel

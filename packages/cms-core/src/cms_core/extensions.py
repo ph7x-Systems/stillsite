@@ -62,6 +62,9 @@ class Extension:
     mail_transports: Mapping[str, Callable[[], MailSender]] = field(default_factory=dict)
     """name -> factory building a configured sender (ADR-0032); selected
     by ``SARDINE_MAIL_TRANSPORT``, never active by mere installation."""
+    language_packs: Sequence[object] = ()
+    """``LanguagePack`` contributions (ADR-0034); registered on project
+    load — the tag becomes a valid content language for the project."""
 
 
 class ExtensionError(RuntimeError):

@@ -6,7 +6,13 @@ from pathlib import Path
 import pytest
 from cms_build.builder import Artifact
 from cms_cli.app import app
-from cms_core import CommentsProvider, Extension, ExtensionError, load_extensions
+from cms_core import (
+    CommentsProvider,
+    Extension,
+    ExtensionError,
+    LanguagePack,
+    load_extensions,
+)
 from cms_validation import Issue, Severity, SiteContent
 from typer.testing import CliRunner
 
@@ -77,6 +83,15 @@ extension = Extension(
         "fishbowl": CommentsProvider(island_js=FISHBOWL_ISLAND, thread_url=_fishbowl_thread_url)
     },
     mail_transports={"fishmail": _fishmail_factory},
+    language_packs=(
+        LanguagePack(
+            tag="tin",
+            direction="rtl",
+            site_labels={"blog": "TinBlog", "min-read": "tin-min"},
+            month_names=tuple(f"tinmonth{i}" for i in range(1, 13)),
+            date_pattern="{year}/{month}/{day}",
+        ),
+    ),
 )
 
 
@@ -193,3 +208,63 @@ def test_without_comments_table_the_build_is_unchanged(tmp_path: Path) -> None:
         counterpart = without / path.relative_to(activated / "_site")
         assert counterpart.read_bytes() == path.read_bytes(), path
     assert not (without / "assets" / "comments-island.js").exists()
+
+
+def test_language_pack_makes_a_new_language_work_end_to_end(tmp_path: Path) -> None:
+    """ADR-0034 phase 1b: a pack-provided tag is a full content language —
+    configurable, buildable, labeled and direction-aware."""
+    (tmp_path / "sardine.toml").write_text(
+        'extensions = ["test_extensions:extension"]\n'
+        '[site]\nname = "T"\nbase_url = "https://t.example"\nlanguages = ["pt-pt", "tin"]\n',
+        encoding="utf-8",
+    )
+    from datetime import UTC, datetime
+
+    from cms_cli.project import load_project
+    from cms_core import ArticleContent, ContentStatus, Language, new_article
+
+    project = load_project(tmp_path)
+    assert "tin" in [str(lang) for lang in project.site.languages]
+
+    from cms_build import build_site
+
+    now = datetime(2026, 1, 15, 9, 0, tzinfo=UTC)
+    article = new_article(
+        "hello", ArticleContent(title="Hello", summary="S", body_markdown="B"), now=now
+    )
+    article.set_translation(
+        Language("pt-pt"), ArticleContent(title="Olá", summary="S", body_markdown="B")
+    )
+    article.set_translation(
+        Language("tin"), ArticleContent(title="Tin hello", summary="S", body_markdown="B")
+    )
+    article.status = ContentStatus.PUBLISHED
+    from cms_validation import SiteContent
+
+    artifact = build_site(project.site, SiteContent(articles=[article]), now=now)
+    page = artifact.files["tin/blog/hello/index.html"].decode("utf-8")
+    assert 'lang="tin"' in page
+    assert 'dir="rtl"' in page  # the pack's direction reaches the markup
+    assert "TinBlog" in page  # pack labels drive the chrome (nav)
+    # pack month names and pattern drive date formatting for the new tag
+    from cms_build.ui import format_date
+
+    assert format_date(15, 1, 2026, Language("tin")) == "2026/tinmonth1/15"
+    # bundled languages keep their curated data and LTR default
+    pt = artifact.files["pt-pt/blog/hello/index.html"].decode("utf-8")
+    assert 'dir="rtl"' not in pt
+    assert format_date(15, 1, 2026, Language("pt-pt")) == "15 de janeiro de 2026"
+
+
+def test_a_pack_language_without_the_extension_fails_loudly(tmp_path: Path) -> None:
+    (tmp_path / "sardine.toml").write_text(
+        '[site]\nname = "T"\nbase_url = "https://t.example"\nlanguages = ["tin-alone"]\n',
+        encoding="utf-8",
+    )
+    from cms_cli.project import load_project
+
+    try:
+        load_project(tmp_path)
+        raise AssertionError("expected ValueError")
+    except ValueError as error:
+        assert "tin-alone" in str(error)

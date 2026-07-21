@@ -7,6 +7,7 @@ from pathlib import Path
 from cms_build import CommentsSettings, SiteConfig, register_target, register_theme
 from cms_core import Language
 from cms_core.extensions import CommentsProvider, Extension, ExtensionError, load_extensions
+from cms_core.language_packs import register_language_pack
 from cms_core.storage import StorageBackend, create_storage, register_backend
 from cms_validation import SiteContent
 
@@ -35,6 +36,8 @@ class Project:
                 register_target(name, factory)  # type: ignore[arg-type]
             for name, factory in extension.themes.items():
                 register_theme(name, factory)  # type: ignore[arg-type]
+            for pack in extension.language_packs:
+                register_language_pack(pack)  # type: ignore[arg-type]
         return extensions
 
     def resolve_comments_provider(self) -> CommentsProvider | None:
@@ -92,6 +95,18 @@ def load_project(directory: Path) -> Project:
             raise FileNotFoundError(f"{PROJECT_FILE} not found in {directory}")
     data = tomllib.loads(config_path.read_text(encoding="utf-8"))
 
+    # ADR-0034: extension language packs must register before the site's
+    # language list is parsed, or a pack-provided tag would be refused.
+    # A broken extension is tolerated HERE only — the commands' own
+    # load_extensions() call reports it loudly (doctor shows the FAIL).
+    extension_names = tuple(data.get("extensions", []))
+    try:
+        for extension in load_extensions(extension_names):
+            for pack in extension.language_packs:
+                register_language_pack(pack)  # type: ignore[arg-type]
+    except ExtensionError:
+        pass
+
     site_data = data.get("site", {})
     site = SiteConfig(
         name=site_data["name"],
@@ -129,5 +144,5 @@ def load_project(directory: Path) -> Project:
         site=site,
         storage_url=storage_url,
         output=output,
-        extension_names=tuple(data.get("extensions", [])),
+        extension_names=extension_names,
     )

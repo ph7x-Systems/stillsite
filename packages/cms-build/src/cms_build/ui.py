@@ -5,7 +5,7 @@ per language; projects override any of them via ``[site.labels]`` in
 configuration — templates and builder code never hardcode UI text.
 """
 
-from cms_core import SOURCE_LANGUAGE, Language
+from cms_core import SOURCE_LANGUAGE, Language, language_pack
 
 from cms_build.config import SiteConfig
 
@@ -187,6 +187,13 @@ MONTHS: dict[Language, tuple[str, ...]] = {
 
 
 def format_date(day: int, month: int, year: int, language: Language) -> str:
+    if language not in MONTHS:
+        # ADR-0034: tags beyond the bundled five format through their
+        # language pack; without months the EN table is the fallback.
+        pack = language_pack(language)
+        if pack is not None and pack.month_names:
+            name = pack.month_names[month - 1]
+            return pack.date_pattern.format(day=day, month=name, year=year)
     name = MONTHS.get(language, MONTHS[SOURCE_LANGUAGE])[month - 1]
     if language is Language.EN:
         return f"{day} {name} {year}"
@@ -198,10 +205,13 @@ def format_date(day: int, month: int, year: int, language: Language) -> str:
 def ui_label(config: SiteConfig, key: str, language: Language) -> str:
     overrides = config.labels.get(key, {})
     defaults = DEFAULT_LABELS.get(key, {})
+    pack = language_pack(language) if language not in defaults else None
+    pack_label = pack.site_labels.get(key) if pack is not None else None
     return (
         overrides.get(language)
         or overrides.get(SOURCE_LANGUAGE)
         or defaults.get(language)
+        or pack_label
         or defaults.get(SOURCE_LANGUAGE)
         or key
     )

@@ -304,10 +304,14 @@ Ordered by dependency; every 🧭 item begins with its ADR:
 - [x] ADR-0034 phase 1a: `Language` opens — interned validated tags
       behind the enum's exact surface, `Language.register` for packs;
       full suite green with zero call-site changes
-- [ ] ADR-0034 remaining phases: configurable source language + bundled
-      packs → builder/themes (labels, dates, dir, logical CSS) → admin
-      catalogs → ecosystem pack guide + fictional RTL pack through the
-      gates
+- [x] ADR-0034 phase 1b: `LanguagePack` contract + registry +
+      `Extension.language_packs` — a pack-provided tag is a full content
+      language end to end (config, build, labels, dates, `dir="rtl"`),
+      proven with a fictional RTL pack; loud failure without the
+      extension
+- [ ] ADR-0034 remaining phases: configurable source language → bundled
+      five's data migrates into packs (+ logical CSS in themes) → admin
+      catalogs from packs → ecosystem pack guide
 - [ ] Bulk actions on the content lists (multi-select workflow + trash)
 - [ ] Admin-wide search (articles, pages, media from one box)
 - [ ] Scheduled unpublish: `unpublish_at` mirroring ADR-0024's contract

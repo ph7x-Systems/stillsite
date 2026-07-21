@@ -5,6 +5,17 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Language packs work end to end** (M8, ADR-0034 phase 1b): a
+  `LanguagePack` bundles a locale's identity, text direction, site
+  labels, month names and date pattern; extensions contribute packs via
+  `Extension.language_packs`, and an activated pack's tag becomes a
+  full content language — configurable in `sardine.toml`, built,
+  labeled, date-formatted and rendered with `dir="rtl"` on `<html>`
+  when the pack says so, in both bundled themes. A configured tag
+  without its pack still fails loudly. The five bundled languages are
+  now packs too (direction; their labels and date tables migrate in the
+  next phase).
+
 - **The locale set opens** (M8, ADR-0034 phase 1a): `Language` is no
   longer a closed five-member enum but an interned, validated tag type
   with the exact same surface — identity comparisons, `.value`, class

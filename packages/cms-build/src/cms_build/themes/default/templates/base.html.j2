@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ head.language.value }}">
+<html lang="{{ head.language.value }}"{% if head.direction == "rtl" %} dir="rtl"{% endif %}>
 <head>
 {% include "_head.html.j2" %}
 {% block fonts %}{% endblock %}
