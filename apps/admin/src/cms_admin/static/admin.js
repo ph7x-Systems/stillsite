@@ -213,3 +213,25 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 });
+
+/* Editorial calendar (#132): drag a scheduled chip onto a day cell to
+   reschedule; the entry editor's date field remains the no-JS path. */
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.querySelector('[data-calendar-form]');
+  if (!form) return;
+  let dragged = null;
+  document.querySelectorAll('.admin-calendar-chip[draggable]').forEach(function (chip) {
+    chip.addEventListener('dragstart', function () { dragged = chip; });
+  });
+  document.querySelectorAll('[data-calendar-day]').forEach(function (cell) {
+    cell.addEventListener('dragover', function (event) { if (dragged) event.preventDefault(); });
+    cell.addEventListener('drop', function (event) {
+      event.preventDefault();
+      if (!dragged) return;
+      form.querySelector('[name=kind]').value = dragged.dataset.chipKind;
+      form.querySelector('[name=entity_id]').value = dragged.dataset.chipId;
+      form.querySelector('[name=day]').value = cell.dataset.calendarDay;
+      form.submit();
+    });
+  });
+});

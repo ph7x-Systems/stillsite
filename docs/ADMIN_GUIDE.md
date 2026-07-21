@@ -332,6 +332,16 @@ what the build includes. The choice is remembered in `sardine.toml`
 successful build answers *what now*: where the files are and the one
 action that puts them live for the chosen target.
 
+## Calendar (#132)
+
+**Calendar** shows the month as the panel sees time: published entries
+on their publication day, scheduled entries on the day their
+`publish_at` will fire — in UTC, exactly as the panel schedules
+(ADR-0024; the screen says so). Scheduled chips drag to another day
+(keeping their time of day; the server refuses to move published
+history), and every chip links to its editor, where the date field
+remains the precise no-JS path.
+
 ## Translations (#131)
 
 **Translations** in the sidebar is the translator's worklist: every

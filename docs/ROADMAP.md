@@ -65,7 +65,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Bulk actions on content lists | ✅ checkbox selection on articles/pages/media; transitions, trash, category assignment, unreferenced-media delete — per-entry rules enforced, per-entry outcome report, no JavaScript required | — |
 | Admin-wide search | ✅ navbar box on every screen; grouped results over articles, pages, sections and media, every language, straight to each editor; storage-level queries ([ADR-0038](adr/0038-admin-search-in-storage.md)) | — |
 | Scheduled unpublish | ❌ `publish_at` only | 🔜 `unpublish_at` mirror of the scheduling contract (M8) |
-| Editorial calendar | ❌ | 🔜 month view of scheduled/published entries (M8) |
+| Editorial calendar | ✅ month view (UTC, as the panel schedules): published on their day, scheduled on their firing day, drag-to-reschedule keeping the time of day, editors one click away | — |
 | Audit log | ❌ revisions cover content only | 🔜 who-did-what trail for accounts and workflow (M8) |
 | Autosave while editing | ✅ valid article/page source edits persist on a debounce without flooding revisions | — |
 

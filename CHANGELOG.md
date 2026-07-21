@@ -5,6 +5,15 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **The month has a face** (#132): the Calendar screen shows published
+  entries on their publication day and scheduled entries on the day
+  their `publish_at` will fire — in UTC, exactly as the panel
+  schedules, and the screen says so. Scheduled chips drag to another
+  day (a progressive enhancement posting a server-validated move that
+  keeps the time of day; published history refuses to move), and every
+  chip links to its editor, where the date field stays the precise
+  no-JS path. Eleven new panel strings in the four bundled catalogs.
+
 - **The translator gets a worklist** (#131): the new Translations
   screen lists every entry-language pair that is missing or outdated —
   for the project's configured language set, pack tags included —

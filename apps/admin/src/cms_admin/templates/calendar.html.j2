@@ -1,0 +1,56 @@
+{% extends "shell.html.j2" %}
+{% block title %}{{ _("Calendar") }} — Sardine CMS admin{% endblock %}
+{% block header %}
+<div class="d-flex justify-content-between align-items-center">
+  <h1 class="h3 mb-0">{{ _("Calendar") }} — {{ "%04d-%02d" | format(year, month) }}</h1>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary btn-sm" href="/calendar?month={{ previous }}">&larr; {{ previous }}</a>
+    <a class="btn btn-outline-secondary btn-sm" href="/calendar?month={{ next }}">{{ next }} &rarr;</a>
+  </div>
+</div>
+{% endblock %}
+{% block content %}
+<p class="form-text">{{ _("Published entries on their publication day, scheduled entries on the day they will fire. Times are UTC, exactly as the panel schedules.") }}
+  {{ _("Drag a scheduled chip to another day, or set the exact moment in its editor.") }}</p>
+<div class="card">
+  <div class="card-body p-0 table-responsive admin-table-wrap">
+    <table class="table table-bordered mb-0 admin-table admin-calendar">
+      <thead>
+        <tr>
+          {% for weekday in [_("Mon"), _("Tue"), _("Wed"), _("Thu"), _("Fri"), _("Sat"), _("Sun")] %}
+          <th scope="col">{{ weekday }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for week in weeks %}
+        <tr>
+          {% for day in week %}
+          {% if day == 0 %}
+          <td class="admin-calendar-empty"></td>
+          {% else %}
+          <td class="align-top admin-calendar-day{% if day == today %} admin-calendar-today{% endif %}"
+              data-calendar-day="{{ "%04d-%02d-%02d" | format(year, month, day) }}">
+            <div class="fw-semibold">{{ day }}</div>
+            {% for chip in chips.get(day, []) %}
+            <div class="admin-calendar-chip{% if chip.scheduled %} admin-calendar-scheduled{% endif %}"
+                 {% if chip.scheduled %}draggable="true" data-chip-kind="{{ chip.kind }}" data-chip-id="{{ chip.id }}"{% endif %}>
+              <a href="{{ chip.url }}" title="{{ chip.time }} UTC">
+                {% if chip.scheduled %}<span class="badge text-bg-warning">{{ _("scheduled") }}</span>{% endif %}
+                {{ chip.title }}</a>
+            </div>
+            {% endfor %}
+          </td>
+          {% endif %}
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <form method="post" action="/calendar/reschedule" data-calendar-form hidden>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="kind"><input type="hidden" name="entity_id"><input type="hidden" name="day">
+    </form>
+  </div>
+</div>
+{% endblock %}
