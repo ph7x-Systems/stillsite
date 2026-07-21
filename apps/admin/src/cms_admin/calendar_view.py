@@ -17,9 +17,12 @@ from fastapi.responses import RedirectResponse
 
 from cms_admin.articles import _load_article, _save_article
 from cms_admin.auth import current_session, enforce_csrf, get_db
+from cms_admin.navigation import AdminScreen, register_screen
 from cms_admin.pages import _load_page, _save_page
 
 router = APIRouter()
+
+register_screen(AdminScreen("calendar", "/calendar", "Calendar", "bi-calendar3", 60))
 
 
 def _month_argument(raw: str) -> tuple[int, int]:

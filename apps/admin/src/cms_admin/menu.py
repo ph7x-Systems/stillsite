@@ -12,8 +12,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 
 from cms_admin.auth import current_session, enforce_csrf, get_db, require_at_least
+from cms_admin.navigation import AdminScreen, register_screen
 
 router = APIRouter(prefix="/menu")
+
+register_screen(AdminScreen("menu", "/menu", "Menu", "bi-list-nested", 140))
 
 _REQUIRE_PUBLISHER = require_at_least(Role.PUBLISHER)
 

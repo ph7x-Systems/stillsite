@@ -25,11 +25,18 @@ from fastapi.responses import RedirectResponse
 
 from cms_admin.audit import record as audit_record
 from cms_admin.auth import current_session, enforce_csrf, get_db, require_at_least
+from cms_admin.navigation import AdminScreen, register_screen
 from cms_admin.validation_report import report_context, run_report
 
 logger = logging.getLogger("cms_admin.publishing")
 
 router = APIRouter(prefix="/publishing")
+
+register_screen(
+    AdminScreen(
+        "publishing", "/publishing", "Publishing", "bi-rocket-takeoff", 160, group="PIPELINE"
+    )
+)
 
 TARGETS = ("generic", "swa", "nginx")
 

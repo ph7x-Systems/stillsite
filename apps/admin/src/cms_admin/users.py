@@ -16,9 +16,12 @@ from fastapi.responses import RedirectResponse
 
 from cms_admin.audit import record as audit_record
 from cms_admin.auth import ROLE_ORDER, current_session, enforce_csrf, get_db, require_at_least
+from cms_admin.navigation import AdminScreen, register_screen
 from cms_admin.security import MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH, hash_password
 
 router = APIRouter(prefix="/users")
+
+register_screen(AdminScreen("users", "/users", "Users", "bi-people", 150, Role.ADMIN))
 
 _REQUIRE_ADMIN = require_at_least(Role.ADMIN)
 

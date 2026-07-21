@@ -26,9 +26,20 @@ from fastapi import Request
 
 SOURCE = Language.EN
 
+
 # Msgids that reach templates through variables (``{{ _(variable) }}``), so
 # the template scan cannot see them. The anti-drift test enforces catalog
 # completeness for these exactly like for template literals.
+def _navigation_msgids() -> tuple[str, ...]:
+    """Sidebar labels and group headers render as ``_(screen.label)`` —
+    dynamic to the template scan, so they join the runtime inventory."""
+    from cms_admin.navigation import _SCREENS
+
+    labels = {screen.label for screen in _SCREENS.values()}
+    labels.update(screen.group for screen in _SCREENS.values() if screen.group)
+    return tuple(sorted(labels))
+
+
 RUNTIME_MSGIDS: tuple[str, ...] = (
     # login route
     "Wrong username or password.",
@@ -121,6 +132,7 @@ RUNTIME_MSGIDS: tuple[str, ...] = (
     "file: image dimensions exceed the pixel limit",
     "file: a file already exists at the generated path",
 )
+RUNTIME_MSGIDS = RUNTIME_MSGIDS + _navigation_msgids()
 
 
 def load_catalogs() -> dict[Language, gettext.NullTranslations]:

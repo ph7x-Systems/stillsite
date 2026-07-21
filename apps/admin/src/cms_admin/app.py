@@ -121,11 +121,16 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
     app.state.settings = resolved
     # autoescape must be forced on: the stock select_autoescape does not
     # recognize the .html.j2 extension and would render templates unescaped.
+    template_env = Environment(
+        loader=FileSystemLoader(Path(__file__).parent / "templates"),
+        autoescape=select_autoescape(default=True, default_for_string=True),
+    )
+    from cms_admin.navigation import section_labels, sidebar_screens
+
+    template_env.globals["sidebar_screens"] = sidebar_screens
+    template_env.globals["section_label"] = lambda key: section_labels().get(key, "")
     app.state.templates = Jinja2Templates(
-        env=Environment(
-            loader=FileSystemLoader(Path(__file__).parent / "templates"),
-            autoescape=select_autoescape(default=True, default_for_string=True),
-        ),
+        env=template_env,
         # ADR-0022: gettext callables enter each render's context — never
         # the shared environment, which serves all languages at once.
         context_processors=[i18n_context],

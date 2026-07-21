@@ -17,10 +17,13 @@ from fastapi.responses import RedirectResponse
 from cms_admin.articles import _save_article
 from cms_admin.audit import record as audit_record
 from cms_admin.auth import current_session, enforce_csrf, get_db, require_at_least
+from cms_admin.navigation import AdminScreen, register_screen
 from cms_admin.pages import _save_page
 from cms_admin.security import admin_path
 
 router = APIRouter(prefix="/trash")
+
+register_screen(AdminScreen("trash", "/trash", "Trash", "bi-trash3", 130))
 
 _REQUIRE_ADMIN = require_at_least(Role.ADMIN)
 

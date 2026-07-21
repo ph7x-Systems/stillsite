@@ -11,8 +11,13 @@ from cms_core import AdminSession, Role, User
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
 from cms_admin.auth import current_session, get_db
+from cms_admin.navigation import AdminScreen, register_screen
 
 router = APIRouter()
+
+register_screen(
+    AdminScreen("activity", "/activity", "Activity", "bi-clock-history", 70, Role.ADMIN)
+)
 
 
 def _parse_day(raw: str, *, end: bool = False) -> datetime | None:

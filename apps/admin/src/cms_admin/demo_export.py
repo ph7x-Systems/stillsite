@@ -61,24 +61,11 @@ def neutralize(html: str) -> str:
 
 def _demo_paths(storage_path: Path) -> list[str]:
     """Every page worth capturing, enumerated from the content itself."""
-    paths = [
-        "/login",
-        "/",
-        "/articles",
-        "/articles/new",
-        "/pages",
-        "/pages/new",
-        "/media",
-        "/translations",
-        "/calendar",
-        "/activity",
-        "/submissions",
-        "/media/new",
-        "/publishing",
-        "/trash",
-        "/users",
-        "/menu",
-    ]
+    from cms_admin.navigation import snapshot_paths
+
+    # Screens come from the registry (one registration per module);
+    # only the non-screen entry forms are enumerated here.
+    paths = ["/login", *snapshot_paths(), "/articles/new", "/pages/new", "/media/new"]
     with create_storage(f"sqlite:///{storage_path}") as storage:
         paths.extend(f"/media/{asset_id}" for asset_id in storage.list_media_ids())
         for article_id in storage.list_article_ids():

@@ -14,8 +14,13 @@ from fastapi.responses import RedirectResponse
 
 from cms_admin.audit import record as audit_record
 from cms_admin.auth import current_session, enforce_csrf, get_db
+from cms_admin.navigation import AdminScreen, register_screen
 
 router = APIRouter()
+
+register_screen(
+    AdminScreen("submissions", "/submissions", "Submissions", "bi-inbox", 80, Role.ADMIN)
+)
 
 
 def _parse_day(raw: str, *, end: bool = False) -> datetime | None:

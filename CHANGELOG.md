@@ -112,6 +112,12 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Changed
 
+- The admin sidebar, section labels and demo-snapshot capture list all
+  derive from one navigation registry — each screen registers once in
+  its module (key, path, label, icon, order, minimum role, optional
+  group), and extensions can register screens through the same call
+  (#177).
+
 - Deployment documentation split by audience: a short Deployment Guide
   for operators (operating models, configuration reference, complete
   examples, one consolidated troubleshooting table), a Deployment

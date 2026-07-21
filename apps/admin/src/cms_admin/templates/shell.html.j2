@@ -5,24 +5,9 @@
    are simply not used. Pages set `active_section` so the sidebar and the
    breadcrumb mark the current page. #}
 {% extends "base.html.j2" %}
-{% set nav_items = [
-  ("dashboard", "/", _("Dashboard"), "bi-speedometer"),
-  ("articles", "/articles", _("Articles"), "bi-journal-text"),
-  ("pages", "/pages", _("Pages"), "bi-file-earmark-text"),
-  ("media", "/media", _("Media"), "bi-image"),
-  ("translations", "/translations", _("Translations"), "bi-translate"),
-  ("calendar", "/calendar", _("Calendar"), "bi-calendar3"),
-] %}
-{% if user and user.role.value == "admin" %}
-{% set nav_items = nav_items + [("activity", "/activity", _("Activity"), "bi-clock-history"), ("submissions", "/submissions", _("Submissions"), "bi-inbox")] %}
-{% endif %}
-{% set section_labels = {
-  "dashboard": _("Dashboard"), "articles": _("Articles"), "pages": _("Pages"),
-  "media": _("Media"), "translations": _("Translations"), "calendar": _("Calendar"),
-  "activity": _("Activity"), "submissions": _("Submissions"),
-  "publishing": _("Publishing"), "trash": _("Trash"),
-  "users": _("Users"), "menu": _("Menu"),
-} %}
+{# The registry (cms_admin.navigation) is the single source of truth:
+   each screen registers once in its module; the sidebar, the section
+   labels and the demo snapshot all derive from it. #}
 {% block body %}
 <a class="admin-skip" href="#main">{{ _("Skip to content") }}</a>
 <div class="app-wrapper">
@@ -142,46 +127,18 @@
     <div class="sidebar-wrapper">
       <nav aria-label="{{ _('Admin sections') }}">
         <ul class="nav sidebar-menu flex-column">
-          {% for section, url, label, icon in nav_items %}
+          {% for screen in sidebar_screens(user.role if user else none) %}
+          {% if screen.group and (loop.first or loop.previtem.group != screen.group) %}
+          <li class="nav-header">{{ _(screen.group) }}</li>
+          {% endif %}
           <li class="nav-item">
-            <a href="{{ url }}" class="nav-link{% if active_section == section %} active{% endif %}"
-               {% if active_section == section %}aria-current="page"{% endif %}>
-              <i class="nav-icon bi {{ icon }}" aria-hidden="true"></i>
-              <p>{{ label }}</p>
+            <a href="{{ screen.path }}" class="nav-link{% if active_section == screen.key %} active{% endif %}"
+               {% if active_section == screen.key %}aria-current="page"{% endif %}>
+              <i class="nav-icon bi {{ screen.icon }}" aria-hidden="true"></i>
+              <p>{{ _(screen.label) }}</p>
             </a>
           </li>
           {% endfor %}
-          <li class="nav-item">
-            <a href="/trash" class="nav-link{% if active_section == "trash" %} active{% endif %}"
-               {% if active_section == "trash" %}aria-current="page"{% endif %}>
-              <i class="nav-icon bi bi-trash3" aria-hidden="true"></i>
-              <p>{{ _("Trash") }}</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="/menu" class="nav-link{% if active_section == "menu" %} active{% endif %}"
-               {% if active_section == "menu" %}aria-current="page"{% endif %}>
-              <i class="nav-icon bi bi-list-nested" aria-hidden="true"></i>
-              <p>{{ _("Menu") }}</p>
-            </a>
-          </li>
-          {% if user.role.value == "admin" %}
-          <li class="nav-item">
-            <a href="/users" class="nav-link{% if active_section == "users" %} active{% endif %}"
-               {% if active_section == "users" %}aria-current="page"{% endif %}>
-              <i class="nav-icon bi bi-people" aria-hidden="true"></i>
-              <p>{{ _("Users") }}</p>
-            </a>
-          </li>
-          {% endif %}
-          <li class="nav-header">{{ _("PIPELINE") }}</li>
-          <li class="nav-item">
-            <a href="/publishing" class="nav-link{% if active_section == "publishing" %} active{% endif %}"
-               {% if active_section == "publishing" %}aria-current="page"{% endif %}>
-              <i class="nav-icon bi bi-rocket-takeoff" aria-hidden="true"></i>
-              <p>{{ _("Publishing") }}</p>
-            </a>
-          </li>
         </ul>
       </nav>
     </div>
@@ -197,7 +154,7 @@
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb float-sm-end">
                 <li class="breadcrumb-item"><a href="/">{{ _("Home") }}</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ section_labels.get(active_section, _("Admin")) }}</li>
+                <li class="breadcrumb-item active" aria-current="page">{{ _(section_label(active_section)) if section_label(active_section) else _("Admin") }}</li>
               </ol>
             </nav>
           </div>

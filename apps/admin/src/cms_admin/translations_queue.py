@@ -13,9 +13,12 @@ from cms_core import AdminSession, Article, Page, TranslationState, User
 from fastapi import APIRouter, Depends, Query, Request
 
 from cms_admin.auth import current_session, get_db
+from cms_admin.navigation import AdminScreen, register_screen
 from cms_admin.publishing import _project, _site_source, _site_targets
 
 router = APIRouter()
+
+register_screen(AdminScreen("translations", "/translations", "Translations", "bi-translate", 50))
 
 QUEUE_STATES = (TranslationState.MISSING, TranslationState.OUTDATED)
 

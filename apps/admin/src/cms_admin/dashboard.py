@@ -26,11 +26,14 @@ from cms_validation import SiteContent
 from fastapi import APIRouter, Depends, Request
 
 from cms_admin.auth import current_session
+from cms_admin.navigation import AdminScreen, register_screen
 from cms_admin.publishing import _project, _site_source, _site_targets
 from cms_admin.validation_report import report_context
 from cms_admin.workflow import allowed
 
 router = APIRouter()
+
+register_screen(AdminScreen("dashboard", "/", "Dashboard", "bi-speedometer", 10))
 
 
 def status_counts(entries: Sequence[Article | Page]) -> dict[ContentStatus, int]:

@@ -51,6 +51,7 @@ from cms_admin.articles import (
 )
 from cms_admin.audit import record as audit_record
 from cms_admin.auth import current_session, enforce_csrf, get_db
+from cms_admin.navigation import AdminScreen, register_screen
 from cms_admin.notifications import notify_transition
 from cms_admin.publishing import _project, _site_source, _site_targets, refresh_entry_preview
 from cms_admin.security import admin_path
@@ -63,6 +64,8 @@ from cms_admin.workflow import (
 )
 
 router = APIRouter(prefix="/pages")
+
+register_screen(AdminScreen("pages", "/pages", "Pages", "bi-file-earmark-text", 30))
 
 HTTP_422 = status.HTTP_422_UNPROCESSABLE_CONTENT
 
