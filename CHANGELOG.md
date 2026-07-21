@@ -5,6 +5,17 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **The roadmap became a product plan** (2026-07-21 product review):
+  the stale execution queue is gone — the queue now lives in the issue
+  tracker (#126–#141), one issue per capability with user problem,
+  scope and acceptance criteria, prioritized P0 (non-technical editor
+  usability) → P3 (scale). The definition of done is explicit — admin
+  flow, E2E, both themes, two languages, empty/error states, docs,
+  public demo — and "contract shipped" without a usable bundled
+  implementation is now marked 🟡, never ✅ (comments included).
+  Product metrics (first site < 10 minutes, landing page < 15 minutes,
+  search < 300 ms on 10k entries) are recorded as pre-1.0 targets.
+
 - **The editors caught up with the model** (M8, ADR-0037 phase 3): the
   section editor grows a per-column items table (blank rows add, a
   cleared row removes — the same server-rendered pattern the fields
