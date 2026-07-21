@@ -361,3 +361,18 @@ def test_a_data_only_pack_extension_is_a_valid_extension(tmp_path: Path) -> None
     project = load_project(tmp_path)
     assert "dat" in [str(lang) for lang in project.site.languages]
     assert ui_label(project.site, "blog", Language("dat")) == "DatBlog"
+
+
+def test_kind_specs_accept_v1_tuples_and_v2_specs() -> None:
+    """Gallery v2 (ADR-0037): extensions keep working with bare field
+    tuples; full specs unlock markdown fields and item columns."""
+    from cms_build.themes import SectionKindSpec, resolve_kind_spec
+
+    assert resolve_kind_spec("faq", {}).items == ("question", "answer")
+    assert resolve_kind_spec("timeline", {"timeline": ("year", "event")}).fields == (
+        "year",
+        "event",
+    )
+    spec = SectionKindSpec(fields=("body",), markdown=("body",))
+    assert resolve_kind_spec("prose", {"prose": spec}) is spec
+    assert resolve_kind_spec("never-heard-of-it", {}) == SectionKindSpec()

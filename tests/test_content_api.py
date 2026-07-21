@@ -145,7 +145,13 @@ def test_pages_carry_their_typed_sections() -> None:
     entry = _api(artifact, "api/v1/en/content.json")["pages"][0]
     assert entry["id"] == "about"
     assert entry["sections"] == [
-        {"key": "story", "kind": "story", "fields": {"body": "Text", "heading": "Us"}, "images": []}
+        {
+            "key": "story",
+            "kind": "story",
+            "fields": {"body": "Text", "heading": "Us"},
+            "items": [],
+            "images": [],
+        }
     ]
 
 

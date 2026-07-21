@@ -144,6 +144,9 @@ def _build_artifact(project: Project) -> Artifact:
     except ExtensionError as error:
         typer.echo(f"error: {error}", err=True)
         raise typer.Exit(code=2) from error
+    section_kinds: dict[str, object] = {}
+    for extension in sorted(project.load_extensions(), key=lambda e: e.name):
+        section_kinds.update(extension.section_kinds)
     artifact = build_site(
         project.site,
         content,
@@ -151,6 +154,7 @@ def _build_artifact(project: Project) -> Artifact:
         media_files=project.collect_media_files(),
         now=datetime.now(tz=UTC),
         comments_provider=comments_provider,
+        section_kinds=section_kinds,  # type: ignore[arg-type]
     )
     # ADR-0028: deterministic post-artifact steps, ordered by extension name.
     for extension in sorted(extensions, key=lambda e: e.name):

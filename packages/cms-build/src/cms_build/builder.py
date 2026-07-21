@@ -30,7 +30,7 @@ from cms_build.config import SiteConfig
 from cms_build.head import Head, build_head, hreflang_code
 from cms_build.images import generate_derivatives
 from cms_build.markdown import render_markdown
-from cms_build.themes import Theme, create_theme
+from cms_build.themes import SectionKindSpec, Theme, create_theme, resolve_kind_spec
 from cms_build.ui import format_date, ui_label
 
 MEDIA_PREFIX = "media"
@@ -113,6 +113,32 @@ def _chunk[T](items: list[T], size: int) -> list[list[T]]:
     return [items[start : start + size] for start in range(0, len(items), size)] or [[]]
 
 
+def _legacy_items(kind: str, fields: Mapping[str, str]) -> list[dict[str, str]]:
+    """ADR-0037: the retired numbered-field convention (``q1``/``a1``…,
+    ``row1no/row1t/row1d``…), mapped into the items group at render time
+    so pre-items content keeps rendering — unbounded, no template caps."""
+    items: list[dict[str, str]] = []
+    if kind == "faq":
+        for index in range(1, len(fields) + 2):
+            question = fields.get(f"q{index}", "")
+            if not question:
+                break
+            items.append({"question": question, "answer": fields.get(f"a{index}", "")})
+    elif kind == "expertise":
+        for index in range(1, len(fields) + 2):
+            title = fields.get(f"row{index}t", "")
+            if not title:
+                break
+            items.append(
+                {
+                    "no": fields.get(f"row{index}no", ""),
+                    "title": title,
+                    "detail": fields.get(f"row{index}d", ""),
+                }
+            )
+    return items
+
+
 COMMENTS_ISLAND_PATH = "assets/comments-island.js"
 """ADR-0031: where the provider's vendored island ships in the artifact."""
 
@@ -131,8 +157,10 @@ class _SiteBuilder:
         media_files: Mapping[str, bytes],
         now: datetime,
         comments_provider: CommentsProvider | None = None,
+        section_kinds: Mapping[str, tuple[str, ...] | SectionKindSpec] | None = None,
     ) -> None:
         self.config = config
+        self.section_kinds: Mapping[str, tuple[str, ...] | SectionKindSpec] = section_kinds or {}
         self.theme = theme
         self.artifact = Artifact()
         self.sitemap_urls: list[str] = []
@@ -312,12 +340,21 @@ class _SiteBuilder:
                 if image is None:
                     continue
                 images.append(image)
+            spec = resolve_kind_spec(section.kind, self.section_kinds)
+            data = dict(body.fields)
+            for name in spec.markdown:
+                if data.get(name):
+                    data[name] = _SafeHtml(render_markdown(data[name]))
+            items = [dict(item) for item in body.items] or _legacy_items(section.kind, body.fields)
             contexts.append(
                 {
                     "key": section.key,
                     "kind": section.kind,
                     "fields": sorted(body.fields.items()),
-                    "data": dict(body.fields),
+                    "data": data,
+                    # "rows", not "items": on a dict context, Jinja's
+                    # attribute lookup would hit dict.items() first.
+                    "rows": items,
                     "images": images,
                 }
             )
@@ -686,11 +723,15 @@ class _SiteBuilder:
             "url": urls.page_path(page, language, source=self.config.source_language),
             "title": body.title,
             "description": body.description,
+            "body_markdown": body.body_markdown,
+            # Raw source data on purpose: the API carries content, never
+            # theme-rendered HTML ("data" holds rendered Markdown fields).
             "sections": [
                 {
                     "key": section["key"],
                     "kind": section["kind"],
-                    "fields": section["data"],
+                    "fields": dict(section["fields"]),
+                    "items": section["rows"],
                     "images": section["images"],
                 }
                 for section in self._section_contexts(page, language)
@@ -744,6 +785,7 @@ def build_site(
     media_files: Mapping[str, bytes] | None = None,
     now: datetime | None = None,
     comments_provider: CommentsProvider | None = None,
+    section_kinds: Mapping[str, tuple[str, ...] | SectionKindSpec] | None = None,
 ) -> Artifact:
     """Build the site. ``now`` is the scheduling clock (ADR-0024): the
     build stays deterministic for the same content and the same ``now``.
@@ -753,7 +795,13 @@ def build_site(
     active_theme = theme or create_theme(config.theme)
     moment = now or datetime.now(tz=UTC)
     return _SiteBuilder(
-        config, content, active_theme, media_files or {}, moment, comments_provider
+        config,
+        content,
+        active_theme,
+        media_files or {},
+        moment,
+        comments_provider,
+        section_kinds=section_kinds,
     ).build()
 
 
@@ -767,6 +815,7 @@ def build_entry_preview(
     media_files: Mapping[str, bytes] | None = None,
     now: datetime | None = None,
     comments_provider: CommentsProvider | None = None,
+    section_kinds: Mapping[str, tuple[str, ...] | SectionKindSpec] | None = None,
 ) -> Artifact:
     """Render one saved or unsaved entry through the active real theme.
 
@@ -777,7 +826,13 @@ def build_entry_preview(
     active_theme = theme or create_theme(config.theme)
     moment = now or datetime.now(tz=UTC)
     return _SiteBuilder(
-        config, content, active_theme, media_files or {}, moment, comments_provider
+        config,
+        content,
+        active_theme,
+        media_files or {},
+        moment,
+        comments_provider,
+        section_kinds=section_kinds,
     ).preview_entry(entry, language)
 
 
@@ -811,7 +866,11 @@ def _page_context(
     page: Page, language: Language, source: Language = SOURCE_LANGUAGE
 ) -> dict[str, str]:
     body = page.source if language == source else page.translations[language].content
-    return {"title": body.title, "description": body.description}
+    context = {"title": body.title, "description": body.description}
+    if body.body_markdown:
+        # ADR-0037: a page can be a document — safe Markdown, raw HTML off.
+        context["body_html"] = _SafeHtml(render_markdown(body.body_markdown))
+    return context
 
 
 def _rss(config: SiteConfig, language: Language, articles: list[Article]) -> str:

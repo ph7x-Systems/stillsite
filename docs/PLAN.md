@@ -338,9 +338,14 @@ Ordered by dependency; every 🧭 item begins with its ADR:
       values keep the legacy checksum — no translation flips), storage
       migration 18 on all four engines, portable export/import
       round-trip, conformance tests
-- [ ] ADR-0037 phase 2 (builder + themes + validation): gallery field
-      specs, Markdown fields, unbounded items in both themes (caps
-      removed), parity over items, conformance for unbounded items
+- [x] ADR-0037 phase 2: gallery v2 (`SectionKindSpec` in cms-core —
+      fields, Markdown fields, item columns; extensions keep working
+      with bare tuples), the builder renders items (`section.rows` in
+      templates), declared Markdown fields and `page.body_html` through
+      the safe renderer, both themes drop their `q6`/`row8` caps,
+      legacy numbered fields map into items at render time, and the
+      conformance suite pins it all (10-item FAQ, 7-question legacy
+      content, script-stripping, page prose) for every theme
 - [ ] ADR-0037 phase 3 (admin): item add/remove rows, Markdown widgets,
       translation editors mirror items
 - [ ] ADR-0037 phase 4 (docs): THEME_GUIDE gallery v2, ADMIN_GUIDE,

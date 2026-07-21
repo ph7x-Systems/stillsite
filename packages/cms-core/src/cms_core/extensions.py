@@ -15,6 +15,8 @@ from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from importlib import import_module, metadata
 
+from cms_core.section_kinds import SectionKindSpec
+
 ENTRY_POINT_GROUP = "sardine.extensions"
 
 # Loose on purpose (ADR-0028): contributions are consumed by the layers
@@ -54,7 +56,7 @@ class Extension:
     themes: Mapping[str, Callable[[], object]] = field(default_factory=dict)
     cli: object | None = None
     """A ``typer.Typer`` mounted as ``cms x <name>``."""
-    section_kinds: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
+    section_kinds: Mapping[str, tuple[str, ...] | SectionKindSpec] = field(default_factory=dict)
     """kind -> suggested field names, advertised in the admin editor."""
     comments_providers: Mapping[str, CommentsProvider] = field(default_factory=dict)
     """name -> provider (ADR-0031); selected by ``[comments]`` in

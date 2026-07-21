@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 from cms_build import build_site, create_theme
 from cms_build.themes import Theme
+from cms_core.pages import Section
 from test_output_integrity import CONFIG, make_content
 
 THEMES = ("default", "ph7x-reference")
@@ -237,3 +238,82 @@ def test_admin_css_is_flow_relative() -> None:
     found = _physical_offenders(css_path.read_text(encoding="utf-8"))
     offenders = [offender for offender in found if offender not in allowed]
     assert not offenders, offenders
+
+
+def _built_page(theme: Theme, section: "Section | None", body_markdown: str = "") -> str:
+    from cms_core import ContentStatus
+    from cms_core.pages import PageContent, new_page
+    from cms_validation import SiteContent
+    from test_output_integrity import NOW
+
+    page = new_page(
+        "probe",
+        PageContent(title="Probe", slug="probe", body_markdown=body_markdown),
+        now=NOW,
+    )
+    if section is not None:
+        page.sections.append(section)
+    page.status = ContentStatus.PUBLISHED
+    base = make_content()
+    content = SiteContent(
+        articles=base.articles, pages=[*base.pages, page], media=base.media, menu=base.menu
+    )
+    artifact = build_site(CONFIG, content, theme=theme)
+    return artifact.files["probe/index.html"].decode("utf-8")
+
+
+def test_section_items_render_unbounded(theme: Theme) -> None:
+    """ADR-0037: repetition has no cap — a 10-item FAQ renders all 10.
+    The old numbered convention stopped at six."""
+    from cms_core.pages import Section, SectionContent
+
+    faq = Section(
+        key="faq",
+        kind="faq",
+        source=SectionContent(
+            fields={"heading": "Questions"},
+            items=[{"question": f"Question {n}?", "answer": f"Answer {n}."} for n in range(1, 11)],
+        ),
+    )
+    html = _built_page(theme, faq)
+    for n in range(1, 11):
+        assert f"Question {n}?" in html, (theme.name, n)
+
+
+def test_legacy_numbered_fields_still_render(theme: Theme) -> None:
+    """Pre-items content keeps rendering: numbered fields map into the
+    items group at render time — beyond the old template caps too."""
+    from cms_core.pages import Section, SectionContent
+
+    fields = {"heading": "Questions"}
+    for n in range(1, 8):
+        fields[f"q{n}"] = f"Old question {n}?"
+        fields[f"a{n}"] = f"Old answer {n}."
+    html = _built_page(theme, Section(key="faq", kind="faq", source=SectionContent(fields=fields)))
+    for n in range(1, 8):
+        assert f"Old question {n}?" in html, (theme.name, n)
+
+
+def test_markdown_fields_render_safely(theme: Theme) -> None:
+    """A kind's declared Markdown fields render through the safe
+    renderer: emphasis works, raw HTML never survives."""
+    from cms_core.pages import Section, SectionContent
+
+    story = Section(
+        key="story",
+        kind="story",
+        source=SectionContent(
+            fields={"heading": "H", "body": "A **bold** [link](/x) <script>alert(1)</script>"}
+        ),
+    )
+    html = _built_page(theme, story)
+    assert "<strong>bold</strong>" in html, theme.name
+    assert '<a href="/x">link</a>' in html, theme.name
+    assert "<script>alert(1)</script>" not in html, theme.name
+
+
+def test_page_body_renders_as_prose(theme: Theme) -> None:
+    """ADR-0037: a page can be a document — body_markdown renders
+    between the header and the sections."""
+    html = _built_page(theme, None, body_markdown="Long-form **prose** here.")
+    assert "<strong>prose</strong>" in html, theme.name

@@ -5,6 +5,19 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Sections render without caps, fields speak Markdown, pages render
+  as documents** (M8, ADR-0037 phase 2): the section-kind gallery
+  becomes spec-based (`SectionKindSpec`: fields, Markdown-capable
+  fields, item columns — extension kinds keep working as bare tuples),
+  both bundled themes render the unbounded `items` group (`q6`/`row8`
+  template caps are gone; legacy numbered fields map into items at
+  render time so nothing existing breaks), declared Markdown fields
+  and the page body render through the same safe renderer as article
+  bodies (raw HTML off), and the theme conformance suite pins all of
+  it — a 10-item FAQ, seven-question legacy content, script stripping
+  and page prose must render in every theme, third-party ones
+  included.
+
 - **Sections can repeat and pages can be documents** (M8, ADR-0037
   phase 1): `SectionContent.items` — an ordered, unbounded repeating
   group — and `PageContent.body_markdown` join the model, the

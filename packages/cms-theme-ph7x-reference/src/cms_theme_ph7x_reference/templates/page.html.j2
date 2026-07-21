@@ -5,6 +5,7 @@
 <div class="wrap page">
   <h1 class="page-title">{{ page.title }}</h1>
   {% if page.description %}<p class="lead">{{ page.description }}</p>{% endif %}
+  {% if page.body_html %}<div class="page-body">{{ page.body_html }}</div>{% endif %}
 </div>
 {% endif %}
 {% for section in sections %}
@@ -61,7 +62,7 @@
     </div>
     <div>
       <h2>{{ section.data.heading }}</h2>
-      <p>{{ section.data.body }}</p>
+      <div class="body">{{ section.data.body }}</div>
       {% for image in section.images %}
       <img src="{{ image.url }}"{% if image.srcset %} srcset="{{ image.srcset }}" sizes="100vw"{% endif %} alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}">
       {% endfor %}
@@ -84,15 +85,12 @@
     {% if section.data.kicker %}<span class="kick">{{ section.data.kicker }}</span>{% endif %}
     <h2>{{ section.data.heading }}</h2>
     <div class="exp">
-      {% for i in range(1, 9) %}
-      {% set title = section.data.get("row" ~ i ~ "t") %}
-      {% if title %}
+      {% for item in section.rows %}
       <div class="row">
-        <span class="no">{{ section.data.get("row" ~ i ~ "no") }}</span>
-        <h3>{{ title }}</h3>
-        <p>{{ section.data.get("row" ~ i ~ "d") }}</p>
+        <span class="no">{{ item.no }}</span>
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.detail }}</p>
       </div>
-      {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -124,14 +122,11 @@
     {% if section.data.kicker %}<span class="kick">{{ section.data.kicker }}</span>{% endif %}
     {% if section.data.heading %}<h2>{{ section.data.heading }}</h2>{% endif %}
     <div class="faq-list">
-      {% for i in range(1, 7) %}
-      {% set question = section.data.get("q" ~ i) %}
-      {% if question %}
+      {% for item in section.rows %}
       <details class="faq-item">
-        <summary>{{ question }}</summary>
-        <p>{{ section.data.get("a" ~ i) }}</p>
+        <summary>{{ item.question }}</summary>
+        <p>{{ item.answer }}</p>
       </details>
-      {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -141,7 +136,7 @@
   <div class="wrap">
     {% if section.data.kicker %}<span class="kick kick-center">{{ section.data.kicker }}</span>{% endif %}
     <p class="big">{{ section.data.heading }}</p>
-    {% if section.data.body %}<p class="cta-body">{{ section.data.body }}</p>{% endif %}
+    {% if section.data.body %}<div class="cta-body">{{ section.data.body }}</div>{% endif %}
     {% if section.data.button and section.data.url %}
     <p class="cta-row"><a class="btn btn-lg" href="{{ section.data.url }}">{{ section.data.button }} <span class="ar">&rarr;</span></a></p>
     {% endif %}
@@ -162,7 +157,7 @@
 {% else %}
 <section class="sec section-{{ section.kind }}" id="{{ section.key }}">
   <div class="wrap">
-    {% for name, value in section.fields %}
+    {% for name, value in section.data | dictsort %}
     <div class="field field-{{ name }}">{{ value }}</div>
     {% endfor %}
     {% for image in section.images %}

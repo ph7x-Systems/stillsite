@@ -15,7 +15,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from cms_build import urls
-from cms_build.themes import SECTION_KIND_GALLERY
+from cms_build.themes import SECTION_KIND_GALLERY, SectionKindSpec
 from cms_core import (
     AdminSession,
     ContentStatus,
@@ -71,8 +71,13 @@ def _kind_hints(request: Request) -> dict[str, tuple[str, ...]]:
     project = _project(request)
     if project is not None:
         for extension in sorted(project.load_extensions(), key=lambda e: e.name):
-            for kind, fields in extension.section_kinds.items():
-                hints.setdefault(kind, tuple(fields))
+            for kind, contributed in extension.section_kinds.items():
+                fields = (
+                    contributed.fields
+                    if isinstance(contributed, SectionKindSpec)
+                    else tuple(contributed)
+                )
+                hints.setdefault(kind, fields)
     return hints
 
 

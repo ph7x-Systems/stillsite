@@ -5,6 +5,9 @@
   {% if page.description %}
   <p class="lead">{{ page.description }}</p>
   {% endif %}
+  {% if page.body_html %}
+  <div class="page-body">{{ page.body_html }}</div>
+  {% endif %}
   {% for section in sections %}
   {% if section.kind == "latest-articles" %}
   <section class="section latest" id="{{ section.key }}">
@@ -34,21 +37,18 @@
   <section class="section faq" id="{{ section.key }}">
     {% if section.data.kicker %}<p class="kicker">{{ section.data.kicker }}</p>{% endif %}
     {% if section.data.heading %}<h2>{{ section.data.heading }}</h2>{% endif %}
-    {% for i in range(1, 7) %}
-    {% set question = section.data.get("q" ~ i) %}
-    {% if question %}
+    {% for item in section.rows %}
     <details>
-      <summary>{{ question }}</summary>
-      <p>{{ section.data.get("a" ~ i) }}</p>
+      <summary>{{ item.question }}</summary>
+      <p>{{ item.answer }}</p>
     </details>
-    {% endif %}
     {% endfor %}
   </section>
   {% elif section.kind == "cta" %}
   <section class="section cta" id="{{ section.key }}">
     {% if section.data.kicker %}<p class="kicker">{{ section.data.kicker }}</p>{% endif %}
     {% if section.data.heading %}<h2>{{ section.data.heading }}</h2>{% endif %}
-    {% if section.data.body %}<p>{{ section.data.body }}</p>{% endif %}
+    {% if section.data.body %}<div class="body">{{ section.data.body }}</div>{% endif %}
     {% if section.data.button and section.data.url %}
     <p><a class="button" href="{{ section.data.url }}">{{ section.data.button }}</a></p>
     {% endif %}
@@ -65,8 +65,15 @@
   </section>
   {% else %}
   <section class="section section-{{ section.kind }}" id="{{ section.key }}">
-    {% for name, value in section.fields %}
+    {% for name, value in section.data | dictsort %}
     <div class="field field-{{ name }}">{{ value }}</div>
+    {% endfor %}
+    {% for item in section.rows %}
+    <div class="item">
+      {% for name, value in item | dictsort %}
+      <div class="field field-{{ name }}">{{ value }}</div>
+      {% endfor %}
+    </div>
     {% endfor %}
     {% for image in section.images %}
     <img src="{{ image.url }}"{% if image.srcset %} srcset="{{ image.srcset }}" sizes="100vw"{% endif %} alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}">
