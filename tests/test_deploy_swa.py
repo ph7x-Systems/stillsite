@@ -1,4 +1,4 @@
-"""#156 slice 2: the Azure Static Web Apps provider, mock-verified.
+"""The Azure Static Web Apps provider (#156), mock-verified.
 
 The mock endpoint implements the transport contract (authenticated
 upload, status polling) so every failure mode runs in CI: rejected

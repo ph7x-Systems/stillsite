@@ -1,4 +1,4 @@
-"""Panel deployment (#156, slice 1): publish ends on the public site.
+"""Panel deployment (#156): publish ends on the public site.
 
 With ``[deploy] root`` configured, every workflow transition into or
 out of ``published`` runs the full flow — build, validate, immutable
@@ -10,11 +10,18 @@ release without rebuilding. Everything lands in the audit trail.
 
 import asyncio
 import contextlib
+import logging
 from datetime import UTC, datetime
 from typing import Annotated
 
 from cms_build import build_site
-from cms_build.deploy import DeployLocked, DeployState, FilesystemDeployer, SwaDeployer
+from cms_build.deploy import (
+    DeployError,
+    DeployLocked,
+    DeployProvider,
+    DeployState,
+    create_deploy_provider,
+)
 from cms_cli.project import Project
 from cms_core import AdminSession, Article, Page, StorageBackend, User
 from fastapi import APIRouter, Depends, FastAPI, Form, HTTPException, Request, status
@@ -32,37 +39,32 @@ from cms_admin.publishing import (
 )
 from cms_admin.validation_report import run_report
 
+logger = logging.getLogger("cms_admin.deploy")
+
 router = APIRouter()
 
 
-def build_deployer(project: "Project | None") -> "FilesystemDeployer | SwaDeployer | None":
-    """The configured provider — the editor never knows which (#156).
-    ``filesystem`` needs ``root``; ``swa`` needs ``root`` (the local
-    release store that makes rollback possible) plus ``deploy_url``;
-    its token comes from the environment at deploy time, never from
-    configuration."""
-    if project is None or project.deploy_root is None:
+def build_deployer(project: "Project | None") -> "DeployProvider | None":
+    """The configured provider, resolved through the registry — the
+    editor never knows which (#156). Extensions register additional
+    destinations on activation; the contract version is validated at
+    selection, never at deploy time."""
+    if project is None or not project.deploy_settings.get("root"):
         return None
-    if project.deploy_provider == "swa":
-        if not project.deploy_url:
-            return None
-        return SwaDeployer(
-            project.deploy_root,
-            deploy_url=project.deploy_url,
-            health_url=project.deploy_health_url,
-            keep=project.deploy_keep,
-            timeout=project.deploy_timeout,
+    with contextlib.suppress(Exception):
+        project.load_extensions()  # extension providers register here
+    try:
+        return create_deploy_provider(
+            project.deploy_provider, project.deploy_settings, project.directory
         )
-    return FilesystemDeployer(
-        project.deploy_root,
-        health_url=project.deploy_health_url,
-        keep=project.deploy_keep,
-    )
+    except DeployError:
+        logger.exception("deploy provider misconfigured")
+        return None
 
 
 def deployer_for(
     request: Request,
-) -> tuple["FilesystemDeployer | SwaDeployer | None", "Project | None"]:
+) -> tuple["DeployProvider | None", "Project | None"]:
     project = _project(request)
     return build_deployer(project), project
 
@@ -142,6 +144,11 @@ async def rollback_now(
     deployer, _project_obj = deployer_for(request)
     if deployer is None:
         raise HTTPException(status_code=404, detail="no [deploy] configuration")
+    if "rollback" not in deployer.capabilities:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="the configured provider does not support rollback",
+        )
     try:
         state = await asyncio.to_thread(deployer.rollback, release_id, user.username)
     except DeployLocked:

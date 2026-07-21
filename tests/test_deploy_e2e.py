@@ -1,4 +1,4 @@
-"""#156 slice 1, end to end over the real admin surface:
+"""#156, end to end over the real admin surface:
 
 Edit -> Publish -> site updated. Unpublish -> site updated. A failure
 keeps the healthy version with retry offered; rollback needs no

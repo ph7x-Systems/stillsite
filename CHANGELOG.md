@@ -10,18 +10,25 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Deployment provider framework: a versioned `DeployProvider` contract
+  with a registry (`register_deploy_provider`), per-provider settings
+  from the raw `[deploy]` table, capability declaration the panel
+  adapts to, selection-time validation, a conformance suite any
+  provider can run, and extension registration
+  (`Extension.deploy_providers`) — a third destination needs zero core
+  changes (#156).
+
 - Azure Static Web Apps deployment provider behind the same contract:
   authenticated upload of immutable releases, deployment tracking with
   transient panel phases, health verification, rollback by re-sending
   a kept release — with the token read from the environment at deploy
-  time and never stored, logged, audited or echoed (#156 slice 2).
+  time and never stored, logged, audited or echoed (#156).
 
 - Automated deployment, filesystem/Nginx reference provider: publish
   and unpublish end on the public site through immutable releases,
   atomic symlink activation, health checks with automatic rollback,
   panel-side manual rollback without rebuild, concurrency locking, a
-  scheduled-window watcher and full audit-trail coverage (#156
-  slice 1).
+  scheduled-window watcher and full audit-trail coverage (#156).
 
 - Needs-attention dashboard: review queue, pending translations,
   scheduled changes within 7 days and stale drafts — each card linking

@@ -33,7 +33,7 @@ grant — see ADR-0011):
 ```text
 sardine-theme-<name>        sardine-target-<name>
 sardine-backend-<engine>    sardine-plugin-<name>
-sardine-lang-<tag>
+sardine-lang-<tag>          sardine-deploy-<name>
 ```
 
 Not permitted: the Sardine CMS logos, "official" claims, or names implying

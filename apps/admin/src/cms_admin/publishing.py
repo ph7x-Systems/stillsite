@@ -98,6 +98,7 @@ def _deploy_view(request: Request) -> dict[str, object] | None:
         "error": state.error,
         "phase": state.phase,
         "releases": deployer.releases(),
+        "can_rollback": "rollback" in deployer.capabilities,
     }
 
 

@@ -1,4 +1,4 @@
-"""The filesystem deployment provider (#156 slice 1): the rules, not
+"""The filesystem deployment provider (#156): the rules, not
 the happy path — a failure never removes the healthy version."""
 
 from pathlib import Path

@@ -53,7 +53,7 @@
           <span><code>{{ release.release_id }}</code>
             {% if release.active %}<span class="badge text-bg-success">{{ _("active") }}</span>{% endif %}
             <span class="form-text">{{ release.at }} · {{ release.actor }}</span></span>
-          {% if not release.active %}
+          {% if not release.active and deploy_state.can_rollback %}
           <form method="post" action="/publishing/rollback" class="mb-0">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <input type="hidden" name="release_id" value="{{ release.release_id }}">

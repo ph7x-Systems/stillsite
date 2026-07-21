@@ -33,7 +33,7 @@ truth for content itself.
 
 ## Supported operating models
 
-### 1. Local directory served by Nginx — automated (#156 slice 1)
+### 1. Local directory served by Nginx — automated (#156)
 
 With one table in `sardine.toml`, editorial actions end on the public
 site — publish and unpublish redeploy automatically, and nobody runs a
@@ -132,7 +132,7 @@ every merge and is honest about privilege separation:
 The same pattern works with real content: point the workflow at your
 storage URL instead of seeding.
 
-## Azure Static Web Apps — automated (#156 slice 2)
+## Azure Static Web Apps — automated (#156)
 
 The same contract and the same panel experience as the filesystem
 provider — the editor never knows which provider runs:
@@ -203,26 +203,87 @@ prebuilt artifact only (see model 4).
 
 ## The deployment provider contract
 
-Today's contract (`cms_build.targets`, ADR-0005) covers **generation**:
+Two contracts cooperate, both extension-registerable with no core
+changes (ADR-0028):
+
+- **Generation** (`cms_build.targets`, ADR-0005): `Target.extra_files`
+  adds host-specific files to the artifact; `register_target(name,
+  factory)`.
+- **Deployment** (`cms_build.deploy`, #156): a `DeployProvider` moves a
+  built release to its destination and reports one truthful state.
 
 ```python
-class Target(Protocol):
-    name: str
-    def extra_files(self, config: SiteConfig, artifact: Artifact) -> Mapping[str, bytes]: ...
+class DeployProvider(Protocol):
+    contract_version: int              # must equal DEPLOY_CONTRACT_VERSION
+    capabilities: frozenset[str]       # of {"rollback", "health", "remote"}
+
+    def deploy(self, files: dict[str, bytes], digest: str, actor: str) -> DeployState: ...
+    def record_failure(self, error: str, phase: str, actor: str) -> DeployState: ...
+    def rollback(self, release_id: str, actor: str) -> DeployState: ...
+    def state(self) -> DeployState: ...
+    def releases(self) -> list[ReleaseInfo]: ...
 ```
 
-Extensions register new destinations with `register_target(name,
-factory)` (ADR-0028) — no core changes; `sardine-target-<name>` is the
-ecosystem naming (ECOSYSTEM.md).
+Providers resolve through a registry: `[deploy] provider = "<name>"`
+selects one, `create_deploy_provider(name, settings, project_dir)`
+builds it, validating the contract version and the interface **at
+selection time** — a misconfigured provider refuses loudly before
+anything runs. The bundled providers are `filesystem` and `swa`; the
+panel adapts to `capabilities` (for example, rollback controls appear
+only when the provider declares `"rollback"`).
 
-The full provider model separates five phases — the vocabulary #152's
-implementation follows, so a provider for any host slots in without
-touching the core:
+## Writing a deployment provider
 
-| Phase | Meaning | Status |
-| --- | --- | --- |
-| Generation | build + target extras | ✅ shipped (`extra_files`) |
-| Transport | move the artifact to the host | 🔜 #156 (today: your pipeline/CLI) |
-| Activation | the new version goes live atomically | 🔜 #156 (host-native or symlink) |
-| Health check | the destination serves the new version | 🔜 #156 |
-| Rollback | return to the last valid version | 🔜 #156 |
+A new destination (S3, SSH/rsync, any static host) is one factory —
+the CMS core, the editor and the publish flow never change:
+
+```python
+from cms_build.deploy import DEPLOY_CONTRACT_VERSION, DeployError, FilesystemDeployer
+from cms_core.extensions import Extension
+
+class RsyncDeployer:
+    contract_version = DEPLOY_CONTRACT_VERSION
+    capabilities = frozenset({"rollback", "remote"})
+
+    def __init__(self, root, destination):
+        self._store = FilesystemDeployer(root)   # immutable releases,
+        self._destination = destination          # locking and rollback for free
+    # deploy() / rollback() delegate to the store, then sync the
+    # activated release to the destination; state()/releases()/
+    # record_failure() delegate directly.
+
+def factory(settings: dict[str, str], project_dir):
+    if not settings.get("destination"):
+        raise DeployError("the rsync provider needs [deploy] destination")
+    return RsyncDeployer(project_dir / settings["root"], settings["destination"])
+
+extension = Extension(name="rsync-deploy", deploy_providers={"rsync": factory})
+```
+
+The project activates it like any extension and selects it:
+
+```toml
+extensions = ["sardine_deploy_rsync:extension"]
+
+[deploy]
+provider = "rsync"
+root = "deploy"                 # the local release store
+destination = "user@host:/srv/site"
+```
+
+Rules a provider must keep (`tests/test_deploy_conformance.py` runs
+them against every provider, including a fictional extension-registered
+one — run it against yours):
+
+- The factory reads its own keys from the raw `[deploy]` table and
+  raises `DeployError` with an actionable message when one is missing.
+- A failed deployment never touches the previously published version;
+  `state()` reports it with `status="failed"` and a real `error`.
+- Kept releases survive process restarts; `rollback` re-activates one
+  without rebuilding.
+- Concurrent deployments are refused (`DeployLocked`); composing
+  `FilesystemDeployer` as the local store provides this.
+- Credentials come from the environment at deploy time — never from
+  configuration, and never into logs, state, errors or the audit trail.
+
+Ecosystem naming: `sardine-deploy-<name>` (ECOSYSTEM.md).
