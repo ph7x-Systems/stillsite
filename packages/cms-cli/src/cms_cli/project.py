@@ -160,6 +160,9 @@ def load_project(directory: Path) -> Project:
         build_updates["content_api"] = bool(build_data["content_api"])
     if "modern_image_formats" in build_data:
         build_updates["modern_image_formats"] = bool(build_data["modern_image_formats"])
+    forms_data = data.get("forms", {})
+    if forms_data.get("endpoint"):
+        build_updates["forms_endpoint"] = str(forms_data["endpoint"])
     site = site.model_copy(update=build_updates) if build_updates else site
     output = directory / build_data.get("output", "_site")
     return Project(

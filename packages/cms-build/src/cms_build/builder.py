@@ -373,18 +373,26 @@ class _SiteBuilder:
                 if data.get(name):
                     data[name] = _SafeHtml(render_markdown(data[name]))
             items = [dict(item) for item in body.items] or _legacy_items(section.kind, body.fields)
-            contexts.append(
-                {
-                    "key": section.key,
-                    "kind": section.kind,
-                    "fields": sorted(body.fields.items()),
-                    "data": data,
-                    # "rows", not "items": on a dict context, Jinja's
-                    # attribute lookup would hit dict.items() first.
-                    "rows": items,
-                    "images": images,
+            context: dict[str, object] = {
+                "key": section.key,
+                "kind": section.kind,
+                "fields": sorted(body.fields.items()),
+                "data": data,
+                # "rows", not "items": on a dict context, Jinja's
+                # attribute lookup would hit dict.items() first.
+                "rows": items,
+                "images": images,
+            }
+            if section.kind == "form" and self.config.forms_endpoint:
+                # ADR-0039: the form addresses itself (page, section,
+                # language) so the endpoint validates against the
+                # declared field set, never against what arrives.
+                context["form"] = {
+                    "endpoint": self.config.forms_endpoint,
+                    "page_id": page.id,
+                    "language": language.value,
                 }
-            )
+            contexts.append(context)
         return contexts
 
     # Articles

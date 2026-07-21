@@ -49,6 +49,10 @@ class SiteConfig(BaseModel):
     admin_url: str | None = None
     image_widths: tuple[int, ...] = ()
     """Responsive derivative widths (ADR-0029); empty disables."""
+    forms_endpoint: str = ""
+    """``[forms] endpoint``: where published forms submit. Empty means
+    no endpoint — form sections render their content but no ``<form>``
+    (a form that cannot submit anywhere is not shown as if it could)."""
     modern_image_formats: bool = True
     """Emit WebP/AVIF variants of raster images when Pillow supports
     them (#136). On by default; without Pillow nothing is emitted and

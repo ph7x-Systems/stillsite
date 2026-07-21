@@ -10,6 +10,12 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Form section kind: both bundled themes render visitor forms declared
+  as section items (text, email, textarea, checkbox), with accessible
+  labels, a honeypot, an enhancement-filled elapsed-time field and an
+  optional required consent checkbox; the form renders only when
+  `[forms] endpoint` is configured (#137).
+
 - In-editor media picker: covers and section media are chosen from a
   visual library grid (thumbnails, dimensions, undersized-image flag)
   with no script required; the ID inputs remain the precise path

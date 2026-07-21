@@ -33,6 +33,43 @@
       {% endif %}
     </figure>
   </section>
+  {% elif section.kind == "form" %}
+  <section class="section form-section" id="{{ section.key }}">
+    {% if section.data.heading %}<h2>{{ section.data.heading }}</h2>{% endif %}
+    {% if section.data.intro %}<div class="body">{{ section.data.intro }}</div>{% endif %}
+    {% if section.form %}
+    <form method="post" action="{{ section.form.endpoint }}">
+      <input type="hidden" name="form_page" value="{{ section.form.page_id }}">
+      <input type="hidden" name="form_section" value="{{ section.key }}">
+      <input type="hidden" name="form_language" value="{{ section.form.language }}">
+      <input type="hidden" name="form_elapsed" value="">
+      <div hidden aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+      {% for field in section.rows %}{% set input_id = section.key ~ "-" ~ field.key %}
+      {% if field.type == "checkbox" %}
+      <p><input type="checkbox" id="{{ input_id }}" name="field_{{ field.key }}" value="1"{% if field.required %} required aria-required="true"{% endif %}>
+        <label for="{{ input_id }}">{{ field.label }}</label></p>
+      {% elif field.type == "textarea" %}
+      <p><label for="{{ input_id }}">{{ field.label }}</label>
+        <textarea id="{{ input_id }}" name="field_{{ field.key }}" rows="5"{% if field.required %} required aria-required="true"{% endif %}></textarea></p>
+      {% else %}
+      <p><label for="{{ input_id }}">{{ field.label }}</label>
+        <input type="{{ "email" if field.type == "email" else "text" }}" id="{{ input_id }}" name="field_{{ field.key }}"{% if field.required %} required aria-required="true"{% endif %}></p>
+      {% endif %}
+      {% endfor %}
+      {% if section.data.consent_label %}
+      <p><input type="checkbox" id="{{ section.key }}-consent" name="consent" value="1" required aria-required="true">
+        <label for="{{ section.key }}-consent">{{ section.data.consent_label }}</label></p>
+      {% endif %}
+      {% if section.data.submit_label %}<p><button type="submit">{{ section.data.submit_label }}</button></p>{% endif %}
+    </form>
+    {% if section.data.success_heading or section.data.success_text %}
+    <div hidden data-form-success>
+      {% if section.data.success_heading %}<h3>{{ section.data.success_heading }}</h3>{% endif %}
+      {% if section.data.success_text %}<p>{{ section.data.success_text }}</p>{% endif %}
+    </div>
+    {% endif %}
+    {% endif %}
+  </section>
   {% elif section.kind == "faq" %}
   <section class="section faq" id="{{ section.key }}">
     {% if section.data.kicker %}<p class="kicker">{{ section.data.kicker }}</p>{% endif %}

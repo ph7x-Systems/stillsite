@@ -109,6 +109,7 @@ too.
 | `faq` | `kicker`, `heading` | — | `question`, `answer` | rendered as native `<details>` (no JS) — unbounded |
 | `cta` | `kicker`, `heading`, `body`, `button`, `url` | `body` | — | the button renders only when `button` **and** `url` are both set; `url` is per-language content, so each translation can point at its own path |
 | `gallery` | `kicker`, `heading` | — | — | renders the section's media list as an image grid (`srcset`-aware) |
+| `form` | `heading`, `intro`, `submit_label`, `consent_label`, `success_heading`, `success_text` | `intro` | `key`, `type`, `label`, `required` | each item is one input (`text`, `email`, `textarea`, `checkbox`; unknown types render as `text`); the `<form>` renders only when the project configures `[forms] endpoint`, with a honeypot and an enhancement-filled elapsed-time field; a non-empty `consent_label` adds a required consent checkbox |
 | `contact` | `kicker`, `heading`, `accent`, `button` | — | — | closing call to action; the button links to the last menu entry |
 
 Rules for theme authors:

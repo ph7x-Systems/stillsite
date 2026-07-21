@@ -20,6 +20,18 @@ SECTION_KIND_SPECS: dict[str, SectionKindSpec] = {
     ),
     "expertise": SectionKindSpec(fields=("kicker", "heading"), items=("no", "title", "detail")),
     "faq": SectionKindSpec(fields=("kicker", "heading"), items=("question", "answer")),
+    "form": SectionKindSpec(
+        fields=(
+            "heading",
+            "intro",
+            "submit_label",
+            "consent_label",
+            "success_heading",
+            "success_text",
+        ),
+        markdown=("intro",),
+        items=("key", "type", "label", "required"),
+    ),
     "gallery": SectionKindSpec(fields=("kicker", "heading")),
     "hero": SectionKindSpec(fields=("kicker", "lead", "heading", "accent")),
     "latest-articles": SectionKindSpec(fields=("kicker", "heading")),

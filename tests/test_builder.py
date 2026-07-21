@@ -415,3 +415,48 @@ def test_modern_image_formats_ship_by_default() -> None:
     without = build_site(off, content, media_files={"images/wide.png": png}, now=NOW)
     assert "media/images/wide.webp" not in without.files
     assert "<source" not in without.files["index.html"].decode("utf-8")
+
+
+def test_form_sections_render_accessibly_and_only_with_an_endpoint() -> None:
+    """ADR-0039: the form kind renders labeled, aria-annotated inputs
+    with the spam fields, addressed to the configured endpoint — and
+    without an endpoint the content shows but no form does."""
+    home = new_page("home", PageContent(title="Home", slug="home"), now=NOW)
+    home.status = ContentStatus.PUBLISHED
+    home.sections.append(
+        Section(
+            key="contact-us",
+            kind="form",
+            source=SectionContent(
+                fields={
+                    "heading": "Write to the fleet",
+                    "submit_label": "Send",
+                    "consent_label": "I agree to be contacted",
+                },
+                items=[
+                    {"key": "name", "type": "text", "label": "Your name", "required": "1"},
+                    {"key": "email", "type": "email", "label": "Your e-mail", "required": "1"},
+                    {"key": "message", "type": "textarea", "label": "Message", "required": ""},
+                    {"key": "mystery", "type": "hologram", "label": "Mystery", "required": ""},
+                ],
+            ),
+        )
+    )
+    content = SiteContent(pages=[home])
+    config = CONFIG.model_copy(update={"forms_endpoint": "https://panel.example/forms/submit"})
+    html = build_site(config, content, now=NOW).files["index.html"].decode("utf-8")
+    assert '<form method="post" action="https://panel.example/forms/submit"' in html
+    assert 'name="form_page" value="home"' in html
+    assert 'name="form_section" value="contact-us"' in html
+    assert '<label for="contact-us-name">Your name</label>' in html
+    assert 'type="email" id="contact-us-email"' in html
+    assert 'required aria-required="true"' in html
+    assert 'name="website" tabindex="-1"' in html  # honeypot
+    assert 'name="form_elapsed"' in html  # time trap, enhancement-filled
+    assert 'name="consent"' in html
+    assert 'type="text" id="contact-us-mystery"' in html  # unknown type degrades to text
+    assert ">Send</button>" in html
+
+    plain = build_site(CONFIG, content, now=NOW).files["index.html"].decode("utf-8")
+    assert "Write to the fleet" in plain  # the content still shows
+    assert "<form" not in plain  # nowhere to submit — no form pretends otherwise

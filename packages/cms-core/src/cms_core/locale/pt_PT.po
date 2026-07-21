@@ -1442,3 +1442,6 @@ msgstr "Todas as imagens da biblioteca já estão nesta secção."
 
 msgid "below the widest configured size"
 msgstr "abaixo do maior tamanho configurado"
+
+msgid "A visitor form; its items declare the inputs."
+msgstr "Um formulário para visitantes; os itens declaram os campos."

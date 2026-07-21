@@ -31,6 +31,7 @@ CONFIG = SiteConfig(
     page_size=1,
     categories={"field-notes": {Language.EN: "Field notes"}},
     organization={"@type": "Organization", "name": "Aurora"},
+    forms_endpoint="https://forms.example/submit",
 )
 
 _LOCAL_REF = re.compile(r'(?:href|src)="(/[^"]*)"')

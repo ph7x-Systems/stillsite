@@ -8,6 +8,17 @@ changes live in [CHANGELOG.md](CHANGELOG.md); the product map in
 
 ## Unreleased (towards 0.3.0)
 
+- **Sites can ask something back** (#137, first part): the `form`
+  section kind. Editors declare a form's inputs as section items —
+  key, type (text, email, textarea, checkbox), label, required — with
+  every visitor-facing word being editorial content, translated like
+  any other section. Both bundled themes render it accessibly (labels,
+  `aria-required`, keyboard-only, no JavaScript) with a honeypot and
+  an enhancement-filled elapsed-time field; a non-empty consent label
+  adds a required consent checkbox. The `<form>` appears only when the
+  project configures `[forms] endpoint` — the official reference
+  endpoint is the next part of this work.
+
 - **Editors pick images, they don't type IDs** (#136): the article
   metadata card and the section editor gain a library picker —
   thumbnail tiles with each image's dimensions, radio choice for the
