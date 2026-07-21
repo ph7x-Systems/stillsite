@@ -335,6 +335,8 @@ class _SiteBuilder:
     def _section_contexts(self, page: Page, language: Language) -> list[dict[str, object]]:
         contexts: list[dict[str, object]] = []
         for section in page.sections:
+            if section.hidden:
+                continue
             if language == self.config.source_language:
                 body = section.source
             else:

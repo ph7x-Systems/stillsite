@@ -5,6 +5,18 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **The page editor speaks editor, not framework** (#127): sections
+  add from a visual block gallery (a card per kind with a plain-words
+  description; extension kinds included), keys derive from the kind —
+  editors never invent slugs — and rows duplicate, hide/show, delete
+  **with undo** and reorder by drag-and-drop (progressive: the up/down
+  buttons remain the keyboard and no-JS path). Hidden sections keep
+  their content and translations but leave every build and never block
+  parity (model + migration 19 on all four engines + portable format).
+  The per-section language columns became the constant-width coverage
+  cell — the last admin table that grew with the language count. All
+  new panel strings ship in the four bundled catalogs.
+
 - **ADR-0037 closes vertically** (#126): the seed and public demo now
   exercise `items` (FAQ, expertise and story stat pairs — zero numbered
   fields left in seed data, and the story kind's stat pairs joined the

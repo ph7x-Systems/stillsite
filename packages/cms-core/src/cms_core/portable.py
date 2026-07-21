@@ -96,6 +96,7 @@ def section_from_portable(data: dict[str, Any]) -> Section:
     return Section(
         key=data["key"],
         kind=data["kind"],
+        hidden=bool(data.get("hidden", False)),
         source=SectionContent(
             fields=dict(source_raw["fields"]),
             media=list(source_raw.get("media", [])),

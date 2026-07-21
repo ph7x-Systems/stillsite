@@ -180,3 +180,36 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 });
+
+/* Section drag-and-drop reorder (#127): progressive enhancement over the
+   up/down buttons, which remain the keyboard and no-JS path. On drop the
+   full order posts to the order endpoint — the server validates it is a
+   permutation. */
+document.addEventListener('DOMContentLoaded', function () {
+  const orderForm = document.querySelector('[data-section-order-form]');
+  if (!orderForm) return;
+  const tbody = document.querySelector('tr[data-section-key]')?.closest('tbody');
+  if (!tbody) return;
+  let dragged = null;
+  tbody.querySelectorAll('tr[data-section-key]').forEach(function (row) {
+    row.addEventListener('dragstart', function () { dragged = row; row.classList.add('admin-dragging'); });
+    row.addEventListener('dragend', function () { row.classList.remove('admin-dragging'); });
+    row.addEventListener('dragover', function (event) {
+      event.preventDefault();
+      if (!dragged || dragged === row) return;
+      const after = (event.clientY - row.getBoundingClientRect().top) > row.offsetHeight / 2;
+      row.parentNode.insertBefore(dragged, after ? row.nextSibling : row);
+    });
+    row.addEventListener('drop', function (event) {
+      event.preventDefault();
+      tbody.querySelectorAll('tr[data-section-key]').forEach(function (item) {
+        const field = document.createElement('input');
+        field.type = 'hidden';
+        field.name = 'key_order';
+        field.value = item.dataset.sectionKey;
+        orderForm.appendChild(field);
+      });
+      orderForm.submit();
+    });
+  });
+});

@@ -137,6 +137,17 @@ with that entity's errors listed (the publish gate; disable only with
   what publishes), and a side-by-side editor per translation. Editing the
   source marks its translations `outdated` automatically — states derive
   from content checksums, never from flags.
+- **Page building (#127)**: sections add from a visual **block
+  gallery** — one card per kind (bundled and extension-contributed)
+  with a description; keys derive from the kind automatically (a
+  custom-kind form stays behind "advanced"). Rows **duplicate**
+  (content, translations and visibility copied), **hide/show** (hidden
+  sections keep everything but leave every build and never block
+  translation parity), **delete with undo** (the flash restores the
+  section, translations included), and reorder by **drag-and-drop** —
+  a progressive enhancement; the up/down buttons remain the keyboard
+  and no-JS path. Sections whose kind the theme does not implement are
+  badged as rendering generically.
 - **Pages**: metadata, an optional long-form Markdown body (rendered
   between the header and the sections — a page can be a document, a
   zone composition, or both), plus ordered typed sections translated

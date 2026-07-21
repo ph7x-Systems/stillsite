@@ -69,7 +69,12 @@ def section_to_portable(section: Section) -> dict[str, object]:
             "items": [dict(sorted(item.items())) for item in translation.content.items],
             "source_checksum": translation.source_checksum,
         }
-    return {"key": section.key, "kind": section.kind, "languages": languages}
+    return {
+        "key": section.key,
+        "kind": section.kind,
+        "hidden": section.hidden,
+        "languages": languages,
+    }
 
 
 def page_to_portable(page: Page) -> dict[str, object]:

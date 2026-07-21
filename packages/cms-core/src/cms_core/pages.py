@@ -56,6 +56,9 @@ class SectionContent(ChecksummedContent):
 class Section(TranslatableModel[SectionContent]):
     key: str = Field(pattern=SLUG_PATTERN)
     kind: str = Field(pattern=SLUG_PATTERN)
+    hidden: bool = False
+    """Kept but not rendered (#127): the builder skips hidden sections
+    entirely; the editor toggles them without losing content."""
 
 
 class Page(TranslatableModel[PageContent]):
@@ -75,10 +78,16 @@ class Page(TranslatableModel[PageContent]):
         self, language: Language, *, source: Language | None = None
     ) -> TranslationState:
         own = super().translation_state(language, source=source)
+        # Hidden sections are not rendered, so they never block parity
+        # (#127); their states return with them when unhidden.
         return worst_state(
             (
                 own,
-                *(section.translation_state(language, source=source) for section in self.sections),
+                *(
+                    section.translation_state(language, source=source)
+                    for section in self.sections
+                    if not section.hidden
+                ),
             )
         )
 

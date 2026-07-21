@@ -983,3 +983,75 @@ msgstr "Une ligne par élément — videz toute la ligne pour la supprimer."
 
 msgid "Source"
 msgstr "Source"
+
+msgid "A call to action with a button."
+msgstr "Un appel à l'action avec un bouton."
+
+msgid "A pull quote with attribution."
+msgstr "Une citation mise en avant avec attribution."
+
+msgid "Add a block"
+msgstr "Ajouter un bloc"
+
+msgid "An image grid from the section's media."
+msgstr "Une grille d'images à partir des médias de la section."
+
+msgid "Closing call to action."
+msgstr "Appel à l'action de clôture."
+
+msgid "Contributed by an extension; renders by its own template or generically."
+msgstr "Fourni par une extension ; rendu par son propre gabarit ou de façon générique."
+
+msgid "Custom kind (advanced)"
+msgstr "Type personnalisé (avancé)"
+
+msgid "Duplicate"
+msgstr "Dupliquer"
+
+msgid "Duplicate section %(key)s"
+msgstr "Dupliquer la section %(key)s"
+
+msgid "Hidden"
+msgstr "Masquée"
+
+msgid "Hide"
+msgstr "Masquer"
+
+msgid "Hide section %(key)s"
+msgstr "Masquer la section %(key)s"
+
+msgid "Narrative prose with stat pairs and images."
+msgstr "Prose narrative avec paires de statistiques et images."
+
+msgid "Numbered capability rows."
+msgstr "Lignes de compétences numérotées."
+
+msgid "Opening statement with a large heading."
+msgstr "Déclaration d'ouverture avec un grand titre."
+
+msgid "Questions and answers as native disclosures."
+msgstr "Questions et réponses en éléments dépliables natifs."
+
+msgid "Renders generically in the current theme."
+msgstr "Rendu générique dans le thème actuel."
+
+msgid "Section %(key)s was deleted."
+msgstr "La section %(key)s a été supprimée."
+
+msgid "Show section %(key)s"
+msgstr "Afficher la section %(key)s"
+
+msgid "The most recent blog entries, automatic."
+msgstr "Les entrées les plus récentes du blog, automatique."
+
+msgid "Undo"
+msgstr "Annuler"
+
+msgid "generic"
+msgstr "générique"
+
+msgid "optional — derived from the kind when empty"
+msgstr "optionnel — dérivée du type si vide"
+
+msgid "the theme template that renders it — unknown kinds render generically"
+msgstr "le gabarit du thème qui la rend — les types inconnus sont rendus de façon générique"

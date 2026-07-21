@@ -223,8 +223,8 @@ class SQLiteBackend(StorageBackend):
             for position, section in enumerate(page.sections):
                 connection.execute(
                     "INSERT INTO sections (page_id, key, position, kind, fields_json, media_json,"
-                    "  items_json)"
-                    " VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    "  items_json, hidden)"
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     (
                         page.id,
                         section.key,
@@ -233,6 +233,7 @@ class SQLiteBackend(StorageBackend):
                         json.dumps(section.source.fields, sort_keys=True),
                         json.dumps(section.source.media),
                         json.dumps(section.source.items, sort_keys=True),
+                        1 if section.hidden else 0,
                     ),
                 )
                 connection.executemany(
@@ -259,7 +260,7 @@ class SQLiteBackend(StorageBackend):
     def _load_sections(self, page_id: str) -> list[Section]:
         sections: list[Section] = []
         for row in self._connection.execute(
-            "SELECT key, kind, fields_json, media_json, items_json FROM sections"
+            "SELECT key, kind, fields_json, media_json, items_json, hidden FROM sections"
             " WHERE page_id = ? ORDER BY position",
             (page_id,),
         ):
@@ -282,6 +283,7 @@ class SQLiteBackend(StorageBackend):
                 Section(
                     key=row[0],
                     kind=row[1],
+                    hidden=bool(row[5]),
                     source=SectionContent(
                         fields=json.loads(row[2]),
                         media=json.loads(row[3]),

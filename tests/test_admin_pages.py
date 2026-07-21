@@ -521,3 +521,134 @@ def test_page_body_saves_and_translates(tmp_path: Path) -> None:
     stored = _stored_page(tmp_path, "home")
     assert stored.source.body_markdown == "A **document** page."
     assert stored.translations[Language.PT_PT].content.body_markdown == "Uma página **documento**."
+
+
+def test_block_gallery_adds_with_an_auto_key(tmp_path: Path) -> None:
+    """#127: editors never invent slugs — a gallery card posts only the
+    kind; keys derive from it and stay unique."""
+    app = _app(tmp_path, _page("home", _hero()))
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        editor = client.get("/pages/home").text
+        assert "admin-block-gallery" in editor
+        for expected_key in ("faq", "faq-2"):
+            response = client.post(
+                "/pages/home/sections",
+                data={"csrf_token": csrf, "kind": "faq"},
+                follow_redirects=False,
+            )
+            assert response.status_code == 303
+            assert response.headers["location"].endswith(f"/sections/{expected_key}")
+
+
+def test_duplicate_copies_content_translations_and_position(tmp_path: Path) -> None:
+    hero = _hero(heading="Welcome")
+    hero.set_translation(Language.PT_PT, SectionContent(fields={"heading": "Bem-vindo"}))
+    page = _page("home", hero)
+    page.sections.append(Section(key="tail", kind="cta", source=SectionContent()))
+    app = _app(tmp_path, page)
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        response = client.post(
+            "/pages/home/sections/hero-main/duplicate",
+            data={"csrf_token": csrf},
+            follow_redirects=False,
+        )
+        assert response.status_code == 303
+    stored = _stored_page(tmp_path, "home")
+    assert [section.key for section in stored.sections] == ["hero-main", "hero", "tail"]
+    copy = stored.sections[1]
+    assert copy.source.fields == {"heading": "Welcome"}
+    assert copy.translations[Language.PT_PT].content.fields == {"heading": "Bem-vindo"}
+
+
+def test_hidden_sections_skip_builds_and_never_block_parity(tmp_path: Path) -> None:
+    """#127: hide keeps the content but drops it from the artifact, and
+    an untranslated hidden section does not block the page's parity."""
+    from cms_build import build_site
+    from cms_core import ContentStatus, TranslationState
+    from cms_validation import SiteContent
+
+    page = _page("home", _hero(heading="Visible welcome"))
+    page.sections.append(
+        Section(key="wip", kind="story", source=SectionContent(fields={"body": "Unfinished"}))
+    )
+    app = _app(tmp_path, page)
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        response = client.post(
+            "/pages/home/sections/wip/visibility",
+            data={"csrf_token": csrf, "action": "hide"},
+            follow_redirects=False,
+        )
+        assert response.status_code == 303
+        listing = client.get("/pages/home").text
+        assert "Hidden" in listing
+    stored = _stored_page(tmp_path, "home")
+    assert stored.sections[1].hidden
+    # parity: only the visible hero counts
+    stored.sections[0].set_translation(
+        Language.PT_PT, SectionContent(fields={"heading": "Bem-vindo"})
+    )
+    stored.set_translation(Language.PT_PT, PageContent(title="Início", slug="inicio"))
+    assert stored.translation_state(Language.PT_PT) is TranslationState.COMPLETE
+    # builds: the hidden body never renders
+    stored.status = ContentStatus.PUBLISHED
+    from cms_build import SiteConfig
+
+    artifact = build_site(
+        SiteConfig(name="T", base_url="https://t.example", languages=(Language.PT_PT,)),
+        SiteContent(pages=[stored], articles=[], media=[]),
+        now=NOW,
+    )
+    html = artifact.files["index.html"].decode("utf-8")  # id "home" is the root page
+    assert "Visible welcome" in html
+    assert "Unfinished" not in html
+
+
+def test_delete_offers_undo_and_restore_brings_everything_back(tmp_path: Path) -> None:
+    hero = _hero(heading="Welcome")
+    hero.set_translation(Language.PT_PT, SectionContent(fields={"heading": "Bem-vindo"}))
+    app = _app(tmp_path, _page("home", hero))
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        deleted = client.post("/pages/home/sections/hero-main/delete", data={"csrf_token": csrf})
+        assert deleted.status_code == 200
+        assert "was deleted" in deleted.text and 'name="payload"' in deleted.text
+        assert _stored_page(tmp_path, "home").sections == []
+        payload = deleted.text.split('name="payload" value="')[1].split('"')[0]
+        import html as html_lib
+
+        restored = client.post(
+            "/pages/home/sections/restore",
+            data={"csrf_token": csrf, "payload": html_lib.unescape(payload), "position": "0"},
+            follow_redirects=False,
+        )
+        assert restored.status_code == 303
+    stored = _stored_page(tmp_path, "home")
+    assert stored.sections[0].key == "hero-main"
+    assert stored.sections[0].translations[Language.PT_PT].content.fields == {
+        "heading": "Bem-vindo"
+    }
+
+
+def test_drag_order_endpoint_applies_a_full_permutation(tmp_path: Path) -> None:
+    page = _page("home", _hero())
+    page.sections.append(Section(key="middle", kind="story", source=SectionContent()))
+    page.sections.append(Section(key="tail", kind="cta", source=SectionContent()))
+    app = _app(tmp_path, page)
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        response = client.post(
+            "/pages/home/sections/order",
+            data={"csrf_token": csrf, "key_order": ["tail", "hero-main", "middle"]},
+            follow_redirects=False,
+        )
+        assert response.status_code == 303
+        partial = client.post(
+            "/pages/home/sections/order",
+            data={"csrf_token": csrf, "key_order": ["tail"]},
+        )
+        assert partial.status_code == 400
+    stored = _stored_page(tmp_path, "home")
+    assert [section.key for section in stored.sections] == ["tail", "hero-main", "middle"]

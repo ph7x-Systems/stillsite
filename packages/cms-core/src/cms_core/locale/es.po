@@ -983,3 +983,75 @@ msgstr "Una fila por elemento — vacíe toda la fila para eliminarla."
 
 msgid "Source"
 msgstr "Origen"
+
+msgid "A call to action with a button."
+msgstr "Una llamada a la acción con un botón."
+
+msgid "A pull quote with attribution."
+msgstr "Una cita destacada con atribución."
+
+msgid "Add a block"
+msgstr "Añadir un bloque"
+
+msgid "An image grid from the section's media."
+msgstr "Una cuadrícula de imágenes a partir de los medios de la sección."
+
+msgid "Closing call to action."
+msgstr "Llamada a la acción de cierre."
+
+msgid "Contributed by an extension; renders by its own template or generically."
+msgstr "Aportado por una extensión; se renderiza con su propia plantilla o de forma genérica."
+
+msgid "Custom kind (advanced)"
+msgstr "Tipo personalizado (avanzado)"
+
+msgid "Duplicate"
+msgstr "Duplicar"
+
+msgid "Duplicate section %(key)s"
+msgstr "Duplicar la sección %(key)s"
+
+msgid "Hidden"
+msgstr "Oculta"
+
+msgid "Hide"
+msgstr "Ocultar"
+
+msgid "Hide section %(key)s"
+msgstr "Ocultar la sección %(key)s"
+
+msgid "Narrative prose with stat pairs and images."
+msgstr "Prosa narrativa con pares de estadísticas e imágenes."
+
+msgid "Numbered capability rows."
+msgstr "Filas de capacidades numeradas."
+
+msgid "Opening statement with a large heading."
+msgstr "Declaración de apertura con un título grande."
+
+msgid "Questions and answers as native disclosures."
+msgstr "Preguntas y respuestas como elementos desplegables nativos."
+
+msgid "Renders generically in the current theme."
+msgstr "Se renderiza de forma genérica en el tema actual."
+
+msgid "Section %(key)s was deleted."
+msgstr "La sección %(key)s fue eliminada."
+
+msgid "Show section %(key)s"
+msgstr "Mostrar la sección %(key)s"
+
+msgid "The most recent blog entries, automatic."
+msgstr "Las entradas más recientes del blog, automático."
+
+msgid "Undo"
+msgstr "Deshacer"
+
+msgid "generic"
+msgstr "genérico"
+
+msgid "optional — derived from the kind when empty"
+msgstr "opcional — derivada del tipo cuando está vacía"
+
+msgid "the theme template that renders it — unknown kinds render generically"
+msgstr "la plantilla del tema que la renderiza — los tipos desconocidos se renderizan de forma genérica"

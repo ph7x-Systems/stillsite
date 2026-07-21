@@ -173,4 +173,7 @@ MIGRATIONS: tuple[str, ...] = (
     ALTER TABLE pages ADD COLUMN body_markdown TEXT NOT NULL DEFAULT '';
     ALTER TABLE page_translations ADD COLUMN body_markdown TEXT NOT NULL DEFAULT '';
     """,
+    """
+    ALTER TABLE sections ADD COLUMN hidden INTEGER NOT NULL DEFAULT 0;
+    """,
 )

@@ -102,3 +102,10 @@
   height: 70vh;
   border: 0;
 }
+
+/* Page editor (#127): block gallery cards and draggable section rows. */
+.admin-block-card { cursor: pointer; }
+.admin-block-card:hover, .admin-block-card:focus-visible { border-color: var(--bs-primary); }
+.admin-drag-handle { cursor: grab; color: var(--bs-secondary-color); user-select: none; }
+.admin-dragging { opacity: 0.5; }
+.admin-section-hidden > * { opacity: 0.6; }

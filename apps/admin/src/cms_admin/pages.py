@@ -11,6 +11,7 @@ field at a time.
 """
 
 import difflib
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -30,7 +31,9 @@ from cms_core import (
     User,
     new_page,
 )
+from cms_core.export import section_to_portable
 from cms_core.languages import TARGET_LANGUAGES
+from cms_core.portable import section_from_portable
 from cms_core.translatable import TranslatableModel
 from cms_validation import SiteContent
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
@@ -234,6 +237,9 @@ def _editor_context(
         "own_states": own_states(page, targets, source),
         "target_languages": targets,
         "kind_hints": sorted(_kind_hints(request)),
+        "generic_kinds": {
+            section.kind for section in page.sections if section.kind not in _kind_hints(request)
+        },
         "form": form
         or {
             "title": page.source.title,
@@ -362,6 +368,7 @@ async def section_add(
     user, session = user_session
     page = await _load_page(request, page_id)
     errors: list[str] = []
+    key = key.strip() or (_next_section_key(page, kind) if kind.strip() else "")
     if page.section(key) is not None:
         errors = [f"key: a section with key {key!r} already exists on this page"]
     else:
@@ -407,6 +414,86 @@ async def section_move(
     return RedirectResponse(admin_path("pages", page.id), status_code=status.HTTP_303_SEE_OTHER)
 
 
+@router.post("/{page_id}/sections/{key}/duplicate")
+async def section_duplicate(
+    request: Request,
+    page_id: str,
+    key: str,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+) -> object:
+    """Copy a section — content, translations and visibility — right
+    after the original, under a derived key (#127)."""
+    user, _ = user_session
+    page = await _load_page(request, page_id)
+    section = _section_or_404(page, key)
+    copy = section.model_copy(deep=True, update={"key": _next_section_key(page, section.kind)})
+    index = next(i for i, candidate in enumerate(page.sections) if candidate.key == key)
+    page.sections.insert(index + 1, copy)
+    await _save_page(request, page, user.username)
+    return RedirectResponse(admin_path("pages", page.id), status_code=status.HTTP_303_SEE_OTHER)
+
+
+@router.post("/{page_id}/sections/{key}/visibility")
+async def section_visibility(
+    request: Request,
+    page_id: str,
+    key: str,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+    action: str = Form(...),
+) -> object:
+    """Hide keeps the section and its translations but drops it from
+    every build; hidden sections never block parity (#127)."""
+    user, _ = user_session
+    page = await _load_page(request, page_id)
+    section = _section_or_404(page, key)
+    section.hidden = action == "hide"
+    await _save_page(request, page, user.username)
+    return RedirectResponse(admin_path("pages", page.id), status_code=status.HTTP_303_SEE_OTHER)
+
+
+@router.post("/{page_id}/sections/order")
+async def section_order(
+    request: Request,
+    page_id: str,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+) -> object:
+    """Apply a full ordering (drag-and-drop posts it; the up/down
+    buttons remain the no-JS path). The order must be a permutation."""
+    user, _ = user_session
+    page = await _load_page(request, page_id)
+    form = await request.form()
+    order = [str(value) for value in form.getlist("key_order")]
+    if sorted(order) != sorted(section.key for section in page.sections):
+        raise HTTPException(status_code=400, detail="order must list every section exactly once")
+    by_key = {section.key: section for section in page.sections}
+    page.sections = [by_key[key] for key in order]
+    await _save_page(request, page, user.username)
+    return RedirectResponse(admin_path("pages", page.id), status_code=status.HTTP_303_SEE_OTHER)
+
+
+@router.post("/{page_id}/sections/restore")
+async def section_restore(
+    request: Request,
+    page_id: str,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+    payload: str = Form(...),
+    position: int = Form(0),
+) -> object:
+    """Undo for delete (#127): the flash carries the removed section in
+    the portable format; restoring re-validates it through the model."""
+    user, _ = user_session
+    page = await _load_page(request, page_id)
+    try:
+        section = section_from_portable(json.loads(payload))
+    except (ValueError, KeyError, ValidationError) as error:
+        raise HTTPException(status_code=400, detail="unrestorable payload") from error
+    if page.section(section.key) is not None:
+        section = section.model_copy(update={"key": _next_section_key(page, section.kind)})
+    page.sections.insert(min(max(position, 0), len(page.sections)), section)
+    await _save_page(request, page, user.username)
+    return RedirectResponse(admin_path("pages", page.id), status_code=status.HTTP_303_SEE_OTHER)
+
+
 @router.post("/{page_id}/sections/{key}/delete")
 async def section_delete(
     request: Request,
@@ -414,12 +501,28 @@ async def section_delete(
     key: str,
     user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
 ) -> object:
-    user, _ = user_session
+    user, session = user_session
     page = await _load_page(request, page_id)
-    _section_or_404(page, key)
+    removed = _section_or_404(page, key)
+    position = next(i for i, section in enumerate(page.sections) if section.key == key)
     page.sections = [section for section in page.sections if section.key != key]
     await _save_page(request, page, user.username)
-    return RedirectResponse(admin_path("pages", page.id), status_code=status.HTTP_303_SEE_OTHER)
+    # Render (not redirect) so the undo form can carry the removed
+    # section back in the portable format (#127).
+    return _page_response(
+        request,
+        "page_edit.html.j2",
+        {
+            "user": user,
+            "csrf_token": session.csrf_token,
+            "undo_delete": {
+                "key": removed.key,
+                "payload": json.dumps(section_to_portable(removed), ensure_ascii=False),
+                "position": position,
+            },
+            **_editor_context(request, page, role=user.role),
+        },
+    )
 
 
 def _field_rows(
@@ -440,6 +543,17 @@ def _field_rows(
 
 
 BLANK_ITEM_ROWS = 2
+
+
+def _next_section_key(page: Page, kind: str) -> str:
+    """Editors never invent slugs (#127): keys derive from the kind."""
+    existing = {section.key for section in page.sections}
+    if kind not in existing:
+        return kind
+    suffix = 2
+    while f"{kind}-{suffix}" in existing:
+        suffix += 1
+    return f"{kind}-{suffix}"
 
 
 def _section_spec(request: Request, section: Section) -> SectionKindSpec:

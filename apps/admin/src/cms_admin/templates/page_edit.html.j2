@@ -1,5 +1,5 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import text_field, textarea_field, datetime_field, errors_block, state_badge, status_tag with context %}
+{% from "_fields.html.j2" import text_field, textarea_field, datetime_field, errors_block, state_badge, status_tag, translation_badges with context %}
 {% block title %}{{ page.id }} — Sardine CMS admin{% endblock %}
 {% block header %}
 <nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/pages">&larr; {{ _("Pages") }}</a></nav>
@@ -7,6 +7,17 @@
 {% endblock %}
 {% block content %}
 {{ errors_block(errors) }}
+{% if undo_delete %}
+<div class="alert alert-warning d-flex align-items-center justify-content-between" role="status">
+  <span>{{ _("Section %(key)s was deleted.") | format(key=undo_delete.key) }}</span>
+  <form method="post" action="/pages/{{ page.id }}/sections/restore" class="mb-0">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="payload" value="{{ undo_delete.payload }}">
+    <input type="hidden" name="position" value="{{ undo_delete.position }}">
+    <button type="submit" class="btn btn-outline-dark btn-sm">{{ _("Undo") }}</button>
+  </form>
+</div>
+{% endif %}
 <div class="d-flex gap-2 mb-3">
   <form method="post" action="/pages/{{ page.id }}/duplicate" class="mb-0">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
@@ -84,20 +95,19 @@
           <th scope="col">#</th>
           <th scope="col">{{ _("Key") }}</th>
           <th scope="col">{{ _("Kind") }}</th>
-          {% for language in target_languages %}<th scope="col">{{ language.value | upper }}</th>{% endfor %}
+          <th scope="col">{{ _("Translations") }}</th>
           <th scope="col">{{ _("Actions") }}</th>
         </tr>
       </thead>
       <tbody>
         {% for section in page.sections %}
-        <tr>
-          <td class="text-end">{{ loop.index }}</td>
+        <tr draggable="true" data-section-key="{{ section.key }}" class="admin-draggable{% if section.hidden %} admin-section-hidden{% endif %}">
+          <td class="text-end"><span class="admin-drag-handle" aria-hidden="true">&#8942;&#8942;</span> {{ loop.index }}</td>
           <th scope="row"><a href="/pages/{{ page.id }}/sections/{{ section.key }}">{{ section.key }}</a></th>
-          <td>{{ section.kind }}</td>
-          {% for language in target_languages %}
-          <td><a href="/pages/{{ page.id }}/sections/{{ section.key }}/translations/{{ language.value }}" class="text-decoration-none">
-            {{ state_badge(section.translation_state(language)) }}</a></td>
-          {% endfor %}
+          <td>{{ section.kind }}
+            {% if section.hidden %}<span class="badge text-bg-secondary">{{ _("Hidden") }}</span>{% endif %}
+            {% if section.kind in generic_kinds %}<span class="badge text-bg-light border" title="{{ _("Renders generically in the current theme.") }}">{{ _("generic") }}</span>{% endif %}</td>
+          <td>{{ translation_badges(section, target_languages) }}</td>
           <td class="admin-row-actions d-flex gap-1">
             <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}/move" class="mb-0">
               <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
@@ -111,6 +121,18 @@
               <button type="submit" class="btn btn-outline-secondary btn-sm" {% if loop.last %}disabled{% endif %}
                       aria-label="{{ _('Move %(key)s down') | format(key=section.key) }}">&darr;</button>
             </form>
+            <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}/duplicate" class="mb-0">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button type="submit" class="btn btn-outline-secondary btn-sm"
+                      aria-label="{{ _('Duplicate section %(key)s') | format(key=section.key) }}">{{ _("Duplicate") }}</button>
+            </form>
+            <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}/visibility" class="mb-0">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <input type="hidden" name="action" value="{{ 'show' if section.hidden else 'hide' }}">
+              <button type="submit" class="btn btn-outline-secondary btn-sm"
+                      aria-label="{{ (_('Show section %(key)s') if section.hidden else _('Hide section %(key)s')) | format(key=section.key) }}">
+                {{ _("Show") if section.hidden else _("Hide") }}</button>
+            </form>
             <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}/delete" class="mb-0">
               <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
               <button type="submit" class="btn btn-outline-danger btn-sm"
@@ -121,21 +143,55 @@
         {% endfor %}
       </tbody>
     </table>
+    <form method="post" action="/pages/{{ page.id }}/sections/order" class="mb-0" data-section-order-form hidden>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    </form>
   </div>
   {% else %}
   <div class="card-body"><p class="admin-empty mb-0">{{ _("No sections yet.") }}</p></div>
   {% endif %}
 </div>
 <div class="card">
-  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Add a section") }}</h2></div>
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Add a block") }}</h2></div>
   <div class="card-body">
-    <form method="post" action="/pages/{{ page.id }}/sections" class="admin-form">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-      {{ text_field("key", _("Key"), "", required=true, hint=_("unique on this page, lowercase-with-dashes")) }}
-      {{ text_field("kind", _("Kind"), "", required=true,
-                    hint=_("the theme template that renders it — bundled kinds:") + " " + kind_hints | join(", ")) }}
-      <button type="submit" class="btn btn-primary">{{ _("Add section") }}</button>
-    </form>
+    {% set gallery_meta = {
+      "hero": ("bi-fonts", _("Opening statement with a large heading.")),
+      "story": ("bi-body-text", _("Narrative prose with stat pairs and images.")),
+      "expertise": ("bi-list-ol", _("Numbered capability rows.")),
+      "latest-articles": ("bi-newspaper", _("The most recent blog entries, automatic.")),
+      "quote": ("bi-quote", _("A pull quote with attribution.")),
+      "faq": ("bi-patch-question", _("Questions and answers as native disclosures.")),
+      "cta": ("bi-megaphone", _("A call to action with a button.")),
+      "gallery": ("bi-images", _("An image grid from the section's media.")),
+      "contact": ("bi-envelope", _("Closing call to action.")),
+    } %}
+    <div class="row g-2 admin-block-gallery">
+      {% for kind in kind_hints %}
+      {% set meta = gallery_meta.get(kind) %}
+      <div class="col-12 col-sm-6 col-lg-4">
+        <form method="post" action="/pages/{{ page.id }}/sections" class="mb-0 h-100">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="kind" value="{{ kind }}">
+          <button type="submit" class="card h-100 w-100 text-start admin-block-card">
+            <span class="card-body d-block">
+              <span class="d-block fw-semibold"><i class="bi {{ meta[0] if meta else 'bi-puzzle' }}" aria-hidden="true"></i> {{ kind }}</span>
+              <span class="d-block form-text">{{ meta[1] if meta else _("Contributed by an extension; renders by its own template or generically.") }}</span>
+            </span>
+          </button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+    <details class="mt-3">
+      <summary class="form-text">{{ _("Custom kind (advanced)") }}</summary>
+      <form method="post" action="/pages/{{ page.id }}/sections" class="admin-form mt-2">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        {{ text_field("kind", _("Kind"), "", required=true,
+                      hint=_("the theme template that renders it — unknown kinds render generically")) }}
+        {{ text_field("key", _("Key"), "", hint=_("optional — derived from the kind when empty")) }}
+        <button type="submit" class="btn btn-primary">{{ _("Add section") }}</button>
+      </form>
+    </details>
   </div>
 </div>
 {% include "_notes.html.j2" %}
