@@ -114,6 +114,8 @@ def _alt_form(asset: MediaAsset | None) -> dict[str, str]:
     alts = asset.alt if asset else {}
     form = {f"alt_{language.value}": alts.get(language, "") for language in Language}
     form["collection"] = asset.collection if asset else ""
+    form["crop"] = asset.crop if asset else ""
+    form["focal"] = asset.focal if asset else ""
     return form
 
 
@@ -341,13 +343,19 @@ async def media_alt_save(
         if str(form.get(f"alt_{language.value}", "")).strip()
     }
     collection = str(form.get("collection", "")).strip()
+    crop = str(form.get("crop", "")).strip()
+    focal = str(form.get("focal", "")).strip()
     try:
-        updated = asset.model_copy(update={"alt": alts, "collection": collection})
+        updated = asset.model_copy(
+            update={"alt": alts, "collection": collection, "crop": crop, "focal": focal}
+        )
         MediaAsset.model_validate(updated.model_dump())
     except ValidationError as error:
         context = await _asset_context(request, asset_id)
         context["form"] = {f"alt_{lang.value}": alts.get(lang, "") for lang in Language} | {
-            "collection": collection
+            "collection": collection,
+            "crop": crop,
+            "focal": focal,
         }
         return _page(
             request,

@@ -113,3 +113,39 @@ def test_content_hash_is_sha256_hex_or_empty() -> None:
             alt={Language.EN: "A pic"},
             content_hash="not-a-hash",
         )
+
+
+def test_crop_must_stay_inside_the_image() -> None:
+    ok = MediaAsset(
+        id="pic",
+        path="pic.png",
+        mime_type="image/png",
+        width=100,
+        height=80,
+        alt={Language.EN: "A pic"},
+        crop="10,10,50,40",
+        focal="0.5,0.25",
+    )
+    assert ok.crop_box == (10, 10, 50, 40)
+    assert ok.focal_point == (0.5, 0.25)
+    assert ok.display_size == (50, 40)
+    with pytest.raises(ValidationError):
+        MediaAsset(
+            id="pic",
+            path="pic.png",
+            mime_type="image/png",
+            width=100,
+            height=80,
+            alt={Language.EN: "A pic"},
+            crop="60,10,50,40",  # 60+50 > 100
+        )
+    with pytest.raises(ValidationError):
+        MediaAsset(
+            id="pic",
+            path="pic.png",
+            mime_type="image/png",
+            width=100,
+            height=80,
+            alt={Language.EN: "A pic"},
+            focal="1.5,0.5",  # outside 0..1
+        )

@@ -154,6 +154,8 @@ def test_media_round_trip_and_delete(backend: StorageBackend) -> None:
         alt={Language.EN: "Company logo", Language.PT_PT: "Logótipo da empresa"},
         collection="brand",
         content_hash="ab" * 32,
+        crop="1,1,30,30",
+        focal="0.5,0.5",
     )
     backend.save_media_asset(asset)
     assert backend.load_media_asset("logo") == asset

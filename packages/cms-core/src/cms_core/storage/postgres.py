@@ -415,12 +415,13 @@ class PostgresBackend(StorageBackend):
         with self._connection.transaction():
             self._connection.execute(
                 "INSERT INTO media_assets (id, path, mime_type, width, height,"
-                " collection, content_hash)"
-                " VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                " collection, content_hash, crop, focal)"
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 " ON CONFLICT (id) DO UPDATE SET"
                 " path = excluded.path, mime_type = excluded.mime_type,"
                 " width = excluded.width, height = excluded.height,"
-                " collection = excluded.collection, content_hash = excluded.content_hash",
+                " collection = excluded.collection, content_hash = excluded.content_hash,"
+                " crop = excluded.crop, focal = excluded.focal",
                 (
                     asset.id,
                     asset.path,
@@ -429,6 +430,8 @@ class PostgresBackend(StorageBackend):
                     asset.height,
                     asset.collection,
                     asset.content_hash,
+                    asset.crop,
+                    asset.focal,
                 ),
             )
             self._connection.execute("DELETE FROM media_alt_texts WHERE media_id = %s", (asset.id,))
@@ -440,7 +443,7 @@ class PostgresBackend(StorageBackend):
 
     def load_media_asset(self, asset_id: str) -> MediaAsset | None:
         row = self._connection.execute(
-            "SELECT id, path, mime_type, width, height, collection, content_hash"
+            "SELECT id, path, mime_type, width, height, collection, content_hash, crop, focal"
             " FROM media_assets WHERE id = %s",
             (asset_id,),
         ).fetchone()
@@ -462,6 +465,8 @@ class PostgresBackend(StorageBackend):
             alt=alt,
             collection=str(row[5] or ""),
             content_hash=str(row[6] or ""),
+            crop=str(row[7] or ""),
+            focal=str(row[8] or ""),
         )
 
     def delete_media_asset(self, asset_id: str) -> bool:
