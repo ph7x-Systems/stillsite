@@ -2,6 +2,14 @@
 
 ## Workflow
 
+0. Before every commit run the local gate — after **any** edit, however
+   small (a one-line fix after a green run invalidates the run):
+
+   ```bash
+   ./scripts/gate.sh          # lint, format, types, full test suite
+   FAST=1 ./scripts/gate.sh   # docs-only changes
+   ```
+
 1. Create a branch off `main` (`feature/...`, `fix/...`, `docs/...`).
    The project is deliberately trunk-based
    ([ADR-0033](docs/adr/0033-trunk-based-development.md)): one protected
