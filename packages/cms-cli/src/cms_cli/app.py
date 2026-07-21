@@ -179,16 +179,17 @@ def build(project_dir: ProjectDir = Path()) -> None:
 @app.command()
 def export(
     project_dir: ProjectDir = Path(),
-    target: Annotated[str, typer.Option(help="Deployment target adapter")] = "generic",
+    target: Annotated[str, typer.Option(help="Deployment target adapter")] = "",
 ) -> None:
-    """Build plus the deployment target's configuration files."""
+    """Build plus the deployment target's configuration files. Without
+    --target, the project's configured ``[build] target`` applies."""
     project = _project(project_dir)
     report = _validate(project)
     if not report.ok:
         _report(report)
         raise typer.Exit(code=1)
     artifact = _build_artifact(project)
-    adapter = create_target(target)
+    adapter = create_target(target or project.target)
     for path, data in sorted(adapter.extra_files(project.site, artifact).items()):
         artifact.add(path, data)
     written = _write_artifact(artifact, project.output)

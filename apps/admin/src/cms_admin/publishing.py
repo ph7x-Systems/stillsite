@@ -29,6 +29,30 @@ router = APIRouter(prefix="/publishing")
 
 TARGETS = ("generic", "swa", "nginx")
 
+
+def persist_target(project_file: Path, target: str) -> None:
+    """Remember the chosen deployment target in ``sardine.toml``
+    (format-preserving: only the ``target`` line changes)."""
+    text = project_file.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    in_build = False
+    for index, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith("["):
+            in_build = stripped == "[build]"
+            continue
+        if in_build and stripped.startswith("target"):
+            lines[index] = f'target = "{target}"'
+            break
+    else:
+        if "[build]" in {line.strip() for line in lines}:
+            at = next(i for i, line in enumerate(lines) if line.strip() == "[build]")
+            lines.insert(at + 1, f'target = "{target}"')
+        else:
+            lines.extend(["", "[build]", f'target = "{target}"'])
+    project_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 _REQUIRE_EDITOR = require_at_least(Role.EDITOR)
 _REQUIRE_PUBLISHER = require_at_least(Role.PUBLISHER)
 
@@ -149,6 +173,7 @@ async def publishing_home(
                 source_language=_site_source(project),
             ),
             "targets": TARGETS,
+            "current_target": project.target if project else "generic",
             "last_build": getattr(request.app.state, "last_build", None),
         },
     )
@@ -201,12 +226,13 @@ async def run_build(
     request: Request,
     _role: Annotated[User, Depends(_REQUIRE_PUBLISHER)],
     user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
-    target: str = Form("generic"),
+    target: str = Form(""),
 ) -> object:
     project = _project(request)
     if project is None:
         _record(request, "build", ok=False, detail="no sardine.toml in the project directory")
         return _redirect()
+    target = target or project.target
     if target not in TARGETS:
         _record(request, "build", ok=False, detail=f"unknown target {target!r}")
         return _redirect()
@@ -239,9 +265,14 @@ async def run_build(
     extras = create_target(target).extra_files(project.site, artifact)
     files = {**artifact.files, **dict(extras)}
     pages = _write_artifact(files, project.output)
+    if target != project.target:
+        # An explicit choice is remembered — the CLI shares it.
+        persist_target(project.directory / "sardine.toml", target)
     _record(
         request,
         f"build ({target})",
+        target=target,
+        output=str(project.output),
         ok=True,
         files=pages,
         digest=artifact.digest()[:12],

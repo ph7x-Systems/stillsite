@@ -24,6 +24,9 @@ class Project:
     storage_url: str
     output: Path
     extension_names: tuple[str, ...] = ()
+    target: str = "generic"
+    """The project's deployment target (``[build] target``): the admin's
+    publish flow and ``cms export`` default to it (#128)."""
 
     def load_extensions(self) -> list[Extension]:
         """The extensions this project explicitly trusts (ADR-0028); their
@@ -146,4 +149,5 @@ def load_project(directory: Path) -> Project:
         storage_url=storage_url,
         output=output,
         extension_names=extension_names,
+        target=str(build_data.get("target", "generic")),
     )

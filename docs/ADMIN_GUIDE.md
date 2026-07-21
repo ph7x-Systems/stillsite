@@ -322,6 +322,16 @@ first-steps checklist (create a page → preview → publish). The wizard
 disappears permanently the moment any account exists. `cms admin
 create-user` remains the scripted path.
 
+## Publishing and deployment (#128)
+
+The Publishing panel's build form asks one plain question — *where
+will the site live?* — with a card per deployment target (any static
+host, Azure Static Web Apps, your own nginx server), each explaining
+what the build includes. The choice is remembered in `sardine.toml`
+(`[build] target`), and `cms export` without `--target` uses it too. A
+successful build answers *what now*: where the files are and the one
+action that puts them live for the chosen target.
+
 ## Panel language (i18n)
 
 The panel speaks the editor's language (ADR-0022 + ADR-0034).

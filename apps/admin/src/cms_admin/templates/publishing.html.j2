@@ -22,14 +22,34 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <button type="submit" class="btn btn-outline-secondary">{{ _("Preview build") }}</button>
           </form>
-          <form method="post" action="/publishing/build" class="mb-0 d-flex gap-2 align-items-center">
+          <form method="post" action="/publishing/build" class="mb-0 w-100" id="build-form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-            <label class="mb-0">
-              <span class="visually-hidden admin-visually-hidden">{{ _("Target") }}</span>
-              <select class="form-select admin-input admin-target-pick" name="target">
-                {% for target in targets %}<option value="{{ target }}">{{ target }}</option>{% endfor %}
-              </select>
-            </label>
+            {% set target_meta = {
+              "generic": (_("Any static host"), _("A plain folder of files — upload the output directory to any static host or shared hosting.")),
+              "swa": (_("Azure Static Web Apps"), _("Includes staticwebapp.config.json with your redirects and headers — deploy the output with the SWA CLI or a GitHub Action.")),
+              "nginx": (_("Your own nginx server"), _("Includes an nginx.conf snippet with redirects and caching — copy the output to the server and include the snippet.")),
+            } %}
+            <fieldset class="mb-2">
+              <legend class="h6 fs-6">{{ _("Where will the site live?") }}</legend>
+              <div class="row g-2">
+                {% for target in targets %}
+                {% set meta = target_meta.get(target, (target, "")) %}
+                <div class="col-12">
+                  <label class="card admin-block-card w-100 mb-0 {% if target == current_target %}border-primary{% endif %}">
+                    <span class="card-body d-flex gap-2 align-items-start py-2">
+                      <input class="form-check-input mt-1" type="radio" name="target" value="{{ target }}"
+                             {% if target == current_target %}checked{% endif %}>
+                      <span>
+                        <span class="d-block fw-semibold">{{ meta[0] }}</span>
+                        <span class="d-block form-text">{{ meta[1] }}</span>
+                      </span>
+                    </span>
+                  </label>
+                </div>
+                {% endfor %}
+              </div>
+              <p class="form-text mb-0 mt-1">{{ _("Your choice is remembered in the project — the cms command line uses it too.") }}</p>
+            </fieldset>
             <button type="submit" class="btn btn-primary">{{ _("Build & export") }}</button>
           </form>
         </div>
@@ -52,6 +72,17 @@
           {% if last_build.digest %}<dt>{{ _("Digest") }}</dt><dd><code>{{ last_build.digest }}</code></dd>{% endif %}
           {% if last_build.detail %}<dt>{{ _("Detail") }}</dt><dd class="mb-0">{{ last_build.detail }}</dd>{% endif %}
         </dl>
+        {% if last_build.ok and last_build.target %}
+        <div class="alert alert-success mt-3 mb-0">
+          <p class="fw-semibold mb-1">{{ _("Your site is built and ready to go live.") }}</p>
+          <p class="mb-1">{{ _("The files are in") }} <code>{{ last_build.output }}</code>.</p>
+          <p class="mb-0">
+            {% if last_build.target == "swa" %}{{ _("Deploy that directory with the SWA CLI or your GitHub Action — the configuration file is already inside.") }}
+            {% elif last_build.target == "nginx" %}{{ _("Copy that directory to your server and include the generated nginx.conf snippet.") }}
+            {% else %}{{ _("Upload everything inside that directory to your host — that is the whole site.") }}{% endif %}
+          </p>
+        </div>
+        {% endif %}
         {% else %}
         <p class="admin-empty mb-0">{{ _("Nothing has run from this panel yet.") }}</p>
         {% endif %}

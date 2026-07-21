@@ -1115,3 +1115,42 @@ msgstr "wählen Sie Blöcke aus der Galerie und füllen Sie sie aus."
 
 msgid "the validation report tells you if anything is missing."
 msgstr "der Validierungsbericht sagt Ihnen, ob etwas fehlt."
+
+msgid "A plain folder of files — upload the output directory to any static host or shared hosting."
+msgstr "Ein einfacher Dateiordner — laden Sie das Ausgabeverzeichnis auf beliebiges statisches oder Shared Hosting."
+
+msgid "Any static host"
+msgstr "Beliebiges statisches Hosting"
+
+msgid "Azure Static Web Apps"
+msgstr "Azure Static Web Apps"
+
+msgid "Copy that directory to your server and include the generated nginx.conf snippet."
+msgstr "Kopieren Sie das Verzeichnis auf Ihren Server und binden Sie den erzeugten nginx.conf-Ausschnitt ein."
+
+msgid "Deploy that directory with the SWA CLI or your GitHub Action — the configuration file is already inside."
+msgstr "Stellen Sie das Verzeichnis mit der SWA CLI oder Ihrer GitHub Action bereit — die Konfigurationsdatei liegt bereits darin."
+
+msgid "Includes an nginx.conf snippet with redirects and caching — copy the output to the server and include the snippet."
+msgstr "Enthält einen nginx.conf-Ausschnitt mit Weiterleitungen und Caching — kopieren Sie die Ausgabe auf den Server und binden Sie den Ausschnitt ein."
+
+msgid "Includes staticwebapp.config.json with your redirects and headers — deploy the output with the SWA CLI or a GitHub Action."
+msgstr "Enthält staticwebapp.config.json mit Ihren Weiterleitungen und Headern — stellen Sie die Ausgabe mit der SWA CLI oder einer GitHub Action bereit."
+
+msgid "The files are in"
+msgstr "Die Dateien liegen in"
+
+msgid "Upload everything inside that directory to your host — that is the whole site."
+msgstr "Laden Sie alles in diesem Verzeichnis zu Ihrem Hosting hoch — das ist die ganze Website."
+
+msgid "Where will the site live?"
+msgstr "Wo wird die Website leben?"
+
+msgid "Your choice is remembered in the project — the cms command line uses it too."
+msgstr "Ihre Wahl wird im Projekt gespeichert — die cms-Befehlszeile nutzt sie ebenfalls."
+
+msgid "Your own nginx server"
+msgstr "Ihr eigener nginx-Server"
+
+msgid "Your site is built and ready to go live."
+msgstr "Ihre Website ist gebaut und bereit, live zu gehen."

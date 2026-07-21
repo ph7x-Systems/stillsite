@@ -1115,3 +1115,42 @@ msgstr "elija bloques de la galería y rellénelos."
 
 msgid "the validation report tells you if anything is missing."
 msgstr "el informe de validación le dice si falta algo."
+
+msgid "A plain folder of files — upload the output directory to any static host or shared hosting."
+msgstr "Una simple carpeta de archivos — suba el directorio de salida a cualquier alojamiento estático o compartido."
+
+msgid "Any static host"
+msgstr "Cualquier alojamiento estático"
+
+msgid "Azure Static Web Apps"
+msgstr "Azure Static Web Apps"
+
+msgid "Copy that directory to your server and include the generated nginx.conf snippet."
+msgstr "Copie ese directorio a su servidor e incluya el fragmento nginx.conf generado."
+
+msgid "Deploy that directory with the SWA CLI or your GitHub Action — the configuration file is already inside."
+msgstr "Despliegue ese directorio con la SWA CLI o su GitHub Action — el archivo de configuración ya está dentro."
+
+msgid "Includes an nginx.conf snippet with redirects and caching — copy the output to the server and include the snippet."
+msgstr "Incluye un fragmento nginx.conf con redirecciones y caché — copie la salida al servidor e incluya el fragmento."
+
+msgid "Includes staticwebapp.config.json with your redirects and headers — deploy the output with the SWA CLI or a GitHub Action."
+msgstr "Incluye staticwebapp.config.json con sus redirecciones y cabeceras — despliegue la salida con la SWA CLI o una GitHub Action."
+
+msgid "The files are in"
+msgstr "Los archivos están en"
+
+msgid "Upload everything inside that directory to your host — that is the whole site."
+msgstr "Suba todo lo que hay dentro de ese directorio a su alojamiento — ese es todo el sitio."
+
+msgid "Where will the site live?"
+msgstr "¿Dónde vivirá el sitio?"
+
+msgid "Your choice is remembered in the project — the cms command line uses it too."
+msgstr "Su elección queda registrada en el proyecto — la línea de comandos cms también la usa."
+
+msgid "Your own nginx server"
+msgstr "Su propio servidor nginx"
+
+msgid "Your site is built and ready to go live."
+msgstr "Su sitio está construido y listo para publicarse."
