@@ -362,6 +362,34 @@ what the build includes. The choice is remembered in `sardine.toml`
 successful build answers *what now*: where the files are and the one
 action that puts them live for the chosen target.
 
+## Forms
+
+A page section of kind **form** turns into a working visitor form.
+Editors declare the inputs as the section's items (`key`, `type` —
+`text`, `email`, `textarea`, `checkbox` — `label`, `required`) and the
+form's texts as its fields; every visitor-facing word is editorial
+content, translated like any other section.
+
+Configuration in `sardine.toml`:
+
+```toml
+[forms]
+endpoint = "https://panel.example.com/forms/submit"  # where forms submit
+notify = "owner@example.com"                          # notification address
+```
+
+The published form submits to the panel's endpoint, which validates
+server-side against the declared inputs (the HTML's hints are a
+convenience, never the source of truth), applies layered spam
+protection (honeypot, elapsed-time check when present, per-address
+rate limiting, origin allowlist against the site's `base_url`) and
+answers with a localized, accessible page — success shows the
+section's own success texts. With `notify` set and the panel's mail
+transport configured, each submission is delivered as a plain-text
+message; a delivery failure is recorded in the Activity trail and
+never shown to the visitor as an error. Without `endpoint`, published
+pages render the form's content but no form.
+
 With `[deploy]` configured (DEPLOYMENT.md), the flow goes further —
 **editorial actions end on the public site**: publishing or
 unpublishing content rebuilds, validates, writes an immutable release,

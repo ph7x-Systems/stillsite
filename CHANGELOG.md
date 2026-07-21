@@ -10,6 +10,13 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Official forms endpoint (`POST /forms/submit` on the panel):
+  server-side validation against the declared inputs, layered spam
+  protection (honeypot, elapsed-time, per-address rate limiting,
+  origin allowlist), deterministic status codes, localized accessible
+  responses, and contained mail notification via `[forms] notify`;
+  the example site ships a working contact form (#137).
+
 - Form section kind: both bundled themes render visitor forms declared
   as section items (text, email, textarea, checkbox), with accessible
   labels, a honeypot, an enhancement-filled elapsed-time field and an
