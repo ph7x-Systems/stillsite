@@ -8,6 +8,7 @@ can trigger builds (phase 8); until then the dashboard shows an empty state.
 """
 
 from collections.abc import Sequence
+from datetime import UTC, datetime, timedelta
 
 from cms_core import (
     TARGET_LANGUAGES,
@@ -16,6 +17,7 @@ from cms_core import (
     ContentStatus,
     Language,
     Page,
+    Role,
     StorageBackend,
     TranslationState,
     User,
@@ -26,6 +28,7 @@ from fastapi import APIRouter, Depends, Request
 from cms_admin.auth import current_session
 from cms_admin.publishing import _project, _site_source, _site_targets
 from cms_admin.validation_report import report_context
+from cms_admin.workflow import allowed
 
 router = APIRouter()
 
@@ -74,7 +77,35 @@ async def dashboard(
     content: SiteContent = await request.app.state.db.run(_load_content)
     entries: list[Article | Page] = [*content.articles, *content.pages]
     project = _project(request)
-    matrix = translation_matrix(entries, _site_targets(project), _site_source(project))
+    targets = _site_targets(project)
+    source = _site_source(project)
+    matrix = translation_matrix(entries, targets, source)
+    now = datetime.now(tz=UTC)
+    week_ahead = now + timedelta(days=7)
+    stale_cutoff = now - timedelta(days=30)
+    # The needs-attention cards (#135): work, not totals — every number
+    # links to where it gets done, and zero renders a real empty state.
+    attention = {
+        "in_review": sum(1 for entry in entries if entry.status is ContentStatus.REVIEW),
+        "can_publish": allowed(user.role, Role.PUBLISHER),
+        "pending_translations": sum(
+            1
+            for entry in entries
+            for language in targets
+            if entry.translation_state(language, source=source) is not TranslationState.COMPLETE
+        ),
+        "upcoming": sum(
+            1
+            for entry in entries
+            for moment in (entry.publish_at, entry.unpublish_at)
+            if moment is not None and now < moment <= week_ahead
+        ),
+        "stale_drafts": sum(
+            1
+            for entry in entries
+            if entry.status is ContentStatus.DRAFT and entry.updated_at < stale_cutoff
+        ),
+    }
     return request.app.state.templates.TemplateResponse(
         request,
         "dashboard.html.j2",
@@ -95,6 +126,7 @@ async def dashboard(
             **report_context(
                 content, _site_targets(project), source_language=_site_source(project)
             ),
+            "attention": attention,
             "last_build": getattr(request.app.state, "last_build", None),
         },
     )

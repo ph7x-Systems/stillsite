@@ -2,6 +2,59 @@
 {% block title %}{{ _("Dashboard") }} — Sardine CMS admin{% endblock %}
 {% block header %}<h1 class="h3 mb-0">{{ _("Dashboard") }}</h1>{% endblock %}
 {% block content %}
+{% set has_attention = attention.in_review or attention.pending_translations or attention.upcoming or attention.stale_drafts %}
+<div class="card mb-3">
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Needs attention") }}</h2></div>
+  {% if has_attention %}
+  <div class="card-body">
+    <div class="row g-2">
+      {% if attention.in_review %}
+      <div class="col-12 col-md-6 col-xl-3">
+        <a class="card h-100 text-decoration-none admin-block-card" href="/articles">
+          <span class="card-body d-block">
+            <span class="d-block fs-4 fw-semibold">{{ attention.in_review }}</span>
+            <span class="d-block">{{ _("in review") }}</span>
+            {% if attention.can_publish %}<span class="form-text">{{ _("waiting for your decision") }}</span>{% endif %}
+          </span>
+        </a>
+      </div>
+      {% endif %}
+      {% if attention.pending_translations %}
+      <div class="col-12 col-md-6 col-xl-3">
+        <a class="card h-100 text-decoration-none admin-block-card" href="/translations">
+          <span class="card-body d-block">
+            <span class="d-block fs-4 fw-semibold">{{ attention.pending_translations }}</span>
+            <span class="d-block">{{ _("translation pair(s) pending") }}</span>
+          </span>
+        </a>
+      </div>
+      {% endif %}
+      {% if attention.upcoming %}
+      <div class="col-12 col-md-6 col-xl-3">
+        <a class="card h-100 text-decoration-none admin-block-card" href="/calendar">
+          <span class="card-body d-block">
+            <span class="d-block fs-4 fw-semibold">{{ attention.upcoming }}</span>
+            <span class="d-block">{{ _("scheduled change(s) in the next 7 days") }}</span>
+          </span>
+        </a>
+      </div>
+      {% endif %}
+      {% if attention.stale_drafts %}
+      <div class="col-12 col-md-6 col-xl-3">
+        <a class="card h-100 text-decoration-none admin-block-card" href="/pages">
+          <span class="card-body d-block">
+            <span class="d-block fs-4 fw-semibold">{{ attention.stale_drafts }}</span>
+            <span class="d-block">{{ _("draft(s) untouched for 30 days") }}</span>
+          </span>
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% else %}
+  <div class="card-body"><p class="admin-empty mb-0">{{ _("Nothing is waiting for you.") }}</p></div>
+  {% endif %}
+</div>
 {% if totals.articles == 0 and totals.pages == 0 %}
 <div class="card mb-3">
   <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("First steps") }}</h2></div>

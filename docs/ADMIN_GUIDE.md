@@ -345,6 +345,15 @@ republish to the same destination
 the transport leg, status, failure preservation and rollback fully
 into the panel).
 
+## Needs attention (#135)
+
+The dashboard opens with work, not totals: entries in review (with
+"waiting for your decision" for roles that can publish), translation
+pairs pending in the configured languages, scheduled changes firing in
+the next 7 days (publish and unpublish windows both), and drafts
+untouched for 30 days. Every card links to where the work gets done;
+when nothing waits, the panel says so plainly.
+
 ## Activity (#134)
 
 **Activity** (admin role only) is the audit trail, readable: who did

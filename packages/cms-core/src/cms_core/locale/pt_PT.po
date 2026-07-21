@@ -1322,3 +1322,24 @@ msgstr "Até"
 
 msgid "anyone"
 msgstr "qualquer pessoa"
+
+msgid "Needs attention"
+msgstr "Precisa de atenção"
+
+msgid "Nothing is waiting for you."
+msgstr "Nada está à sua espera."
+
+msgid "draft(s) untouched for 30 days"
+msgstr "rascunho(s) sem alterações há 30 dias"
+
+msgid "in review"
+msgstr "em revisão"
+
+msgid "scheduled change(s) in the next 7 days"
+msgstr "alteração(ões) agendada(s) nos próximos 7 dias"
+
+msgid "translation pair(s) pending"
+msgstr "par(es) de tradução pendente(s)"
+
+msgid "waiting for your decision"
+msgstr "à espera da sua decisão"

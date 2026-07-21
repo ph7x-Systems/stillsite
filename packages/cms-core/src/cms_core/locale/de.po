@@ -1322,3 +1322,24 @@ msgstr "Bis"
 
 msgid "anyone"
 msgstr "beliebige Person"
+
+msgid "Needs attention"
+msgstr "Braucht Aufmerksamkeit"
+
+msgid "Nothing is waiting for you."
+msgstr "Nichts wartet auf Sie."
+
+msgid "draft(s) untouched for 30 days"
+msgstr "Entwurf/Entwürfe seit 30 Tagen unverändert"
+
+msgid "in review"
+msgstr "in Prüfung"
+
+msgid "scheduled change(s) in the next 7 days"
+msgstr "geplante Änderung(en) in den nächsten 7 Tagen"
+
+msgid "translation pair(s) pending"
+msgstr "ausstehende(s) Übersetzungspaar(e)"
+
+msgid "waiting for your decision"
+msgstr "wartet auf Ihre Entscheidung"

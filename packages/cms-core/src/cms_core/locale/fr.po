@@ -1322,3 +1322,24 @@ msgstr "Jusqu'au"
 
 msgid "anyone"
 msgstr "n'importe qui"
+
+msgid "Needs attention"
+msgstr "À traiter"
+
+msgid "Nothing is waiting for you."
+msgstr "Rien ne vous attend."
+
+msgid "draft(s) untouched for 30 days"
+msgstr "brouillon(s) inchangé(s) depuis 30 jours"
+
+msgid "in review"
+msgstr "en relecture"
+
+msgid "scheduled change(s) in the next 7 days"
+msgstr "changement(s) programmé(s) dans les 7 prochains jours"
+
+msgid "translation pair(s) pending"
+msgstr "paire(s) de traduction en attente"
+
+msgid "waiting for your decision"
+msgstr "en attente de votre décision"

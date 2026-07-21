@@ -109,3 +109,53 @@ def test_activity_screen_is_admin_only_and_filters(tmp_path: Path) -> None:
         _sign_in(client)
         assert client.get("/activity").status_code == 403
         assert "/activity" not in client.get("/").text  # link hidden below admin
+
+
+def test_dashboard_needs_attention_cards_and_empty_state(tmp_path: Path) -> None:
+    """#135: the dashboard reports work, not totals — with a real empty
+    state when nothing waits."""
+    from datetime import timedelta
+
+    from cms_core import ContentStatus
+
+    url = f"sqlite:///{tmp_path / 'attention.db'}"
+    with create_storage(url) as storage:
+        storage.save_user(
+            User(
+                username="ana",
+                password_hash=hash_password(PASSWORD),
+                role=Role.ADMIN,
+                created_at=NOW,
+            )
+        )
+    app = create_app(AdminSettings(storage_url=url, media_dir=tmp_path / "m1"))
+    with TestClient(app, base_url="https://testserver") as client:
+        _sign_in(client)
+        empty = client.get("/").text
+    assert "Nothing is waiting for you" in empty
+
+    with create_storage(url) as storage:
+        reviewing = new_article(
+            "pitch", ArticleContent(title="Pitch", summary="S", body_markdown="B"), now=NOW
+        )
+        reviewing.status = ContentStatus.REVIEW
+        storage.save_article(reviewing)
+        scheduled = new_article(
+            "soon", ArticleContent(title="Soon", summary="S", body_markdown="B"), now=NOW
+        )
+        scheduled.status = ContentStatus.PUBLISHED
+        scheduled.publish_at = datetime.now(tz=UTC) + timedelta(days=2)
+        storage.save_article(scheduled)
+        stale = new_article(
+            "dusty", ArticleContent(title="Dusty", summary="S", body_markdown="B"), now=NOW
+        )
+        stale.updated_at = datetime.now(tz=UTC) - timedelta(days=45)
+        storage.save_article(stale)
+    app = create_app(AdminSettings(storage_url=url, media_dir=tmp_path / "m2"))
+    with TestClient(app, base_url="https://testserver") as client:
+        _sign_in(client)
+        dashboard = client.get("/").text
+    assert "in review" in dashboard and "waiting for your decision" in dashboard
+    assert "scheduled change(s) in the next 7 days" in dashboard
+    assert "untouched for 30 days" in dashboard
+    assert 'href="/translations"' in dashboard  # missing translations card links

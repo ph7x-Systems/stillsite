@@ -10,6 +10,10 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Needs-attention dashboard: review queue, pending translations,
+  scheduled changes within 7 days and stale drafts — each card linking
+  to its work, with a real all-clear state (#135).
+
 - Audit trail: append-only activity records for sign-ins, transitions,
   trash/purge, media, user/role/2FA changes and builds, with an
   admin-only Activity screen and startup retention pruning (#134;
