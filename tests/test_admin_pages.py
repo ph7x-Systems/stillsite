@@ -18,6 +18,7 @@ from cms_core import (
     Role,
     Section,
     SectionContent,
+    TranslationState,
     User,
     create_storage,
     new_page,
@@ -397,3 +398,126 @@ def test_extension_section_kinds_join_the_editor_hints(tmp_path: Path) -> None:
     # the extension's advertised fields become suggested empty rows
     assert 'value="heading"' in section
     assert 'value="moments"' in section
+
+
+def _faq(items: list[dict[str, str]] | None = None) -> Section:
+    return Section(
+        key="faq-main",
+        kind="faq",
+        source=SectionContent(fields={"heading": "Questions"}, items=items or []),
+    )
+
+
+def test_section_items_edit_add_and_remove(tmp_path: Path) -> None:
+    """ADR-0037 phase 3: item rows save from per-column inputs; a fully
+    cleared row is a removal, blank trailing rows add."""
+    app = _app(tmp_path, _page("home", _faq([{"question": "Old?", "answer": "Yes."}])))
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        editor = client.get("/pages/home/sections/faq-main").text
+        assert 'name="item_question"' in editor and "Old?" in editor
+        response = client.post(
+            "/pages/home/sections/faq-main",
+            data={
+                "csrf_token": csrf,
+                "field_name": ["heading"],
+                "field_value": ["Questions"],
+                "item_question": ["Old?", "New?", ""],
+                "item_answer": ["", "Indeed.", ""],
+                "media": "",
+            },
+            follow_redirects=False,
+        )
+        assert response.status_code == 303
+    stored = _stored_page(tmp_path, "home").sections[0]
+    assert stored.source.items == [
+        {"question": "Old?"},
+        {"question": "New?", "answer": "Indeed."},
+    ]
+
+
+def test_section_markdown_field_saves_from_its_own_widget(tmp_path: Path) -> None:
+    """A kind's declared Markdown field leaves the generic table and
+    saves from its md_ textarea."""
+    story = Section(key="story-main", kind="story", source=SectionContent(fields={"heading": "H"}))
+    app = _app(tmp_path, _page("home", story))
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        editor = client.get("/pages/home/sections/story-main").text
+        assert 'name="md_body"' in editor
+        response = client.post(
+            "/pages/home/sections/story-main",
+            data={
+                "csrf_token": csrf,
+                "field_name": ["heading"],
+                "field_value": ["H"],
+                "md_body": "Some **bold** prose.",
+                "media": "",
+            },
+            follow_redirects=False,
+        )
+        assert response.status_code == 303
+    stored = _stored_page(tmp_path, "home").sections[0]
+    assert stored.source.fields["body"] == "Some **bold** prose."
+
+
+def test_section_items_translate_row_aligned(tmp_path: Path) -> None:
+    app = _app(
+        tmp_path,
+        _page("home", _faq([{"question": "What?", "answer": "This."}])),
+    )
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        editor = client.get("/pages/home/sections/faq-main/translations/pt-pt").text
+        assert "What?" in editor  # the source shows beside the inputs
+        response = client.post(
+            "/pages/home/sections/faq-main/translations/pt-pt",
+            data={
+                "csrf_token": csrf,
+                "field__heading": "Perguntas",
+                "item_question": ["O quê?"],
+                "item_answer": ["Isto."],
+                "media": "",
+            },
+            follow_redirects=False,
+        )
+        assert response.status_code == 303
+    stored = _stored_page(tmp_path, "home").sections[0]
+    translated = stored.translations[Language.PT_PT].content
+    assert translated.items == [{"question": "O quê?", "answer": "Isto."}]
+    assert stored.translation_state(Language.PT_PT) is TranslationState.COMPLETE
+
+
+def test_page_body_saves_and_translates(tmp_path: Path) -> None:
+    """ADR-0037 phase 3: the long-form page body edits and translates."""
+    app = _app(tmp_path, _page("home"))
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        response = client.post(
+            "/pages/home",
+            data={
+                "csrf_token": csrf,
+                "title": "Home",
+                "description": "",
+                "slug": "home",
+                "body_markdown": "A **document** page.",
+                "publish_at": "",
+            },
+            follow_redirects=False,
+        )
+        assert response.status_code == 303
+        response = client.post(
+            "/pages/home/translations/pt-pt",
+            data={
+                "csrf_token": csrf,
+                "title": "Início",
+                "description": "",
+                "slug": "inicio",
+                "body_markdown": "Uma página **documento**.",
+            },
+            follow_redirects=False,
+        )
+        assert response.status_code == 303
+    stored = _stored_page(tmp_path, "home")
+    assert stored.source.body_markdown == "A **document** page."
+    assert stored.translations[Language.PT_PT].content.body_markdown == "Uma página **documento**."

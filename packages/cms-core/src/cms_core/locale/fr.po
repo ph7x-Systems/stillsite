@@ -968,3 +968,18 @@ msgstr "L'authentification à deux facteurs est obligatoire pour votre rôle. Ac
 
 msgid "Two-factor authentication is required for your role and cannot be disabled."
 msgstr "L'authentification à deux facteurs est obligatoire pour votre rôle et ne peut pas être désactivée."
+
+msgid "Fields (source)"
+msgstr "Champs (source)"
+
+msgid "Markdown fields"
+msgstr "Champs Markdown"
+
+msgid "Items"
+msgstr "Éléments"
+
+msgid "One row per item — clear a whole row to remove it."
+msgstr "Une ligne par élément — videz toute la ligne pour la supprimer."
+
+msgid "Source"
+msgstr "Source"

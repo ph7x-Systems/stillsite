@@ -346,8 +346,13 @@ Ordered by dependency; every 🧭 item begins with its ADR:
       legacy numbered fields map into items at render time, and the
       conformance suite pins it all (10-item FAQ, 7-question legacy
       content, script-stripping, page prose) for every theme
-- [ ] ADR-0037 phase 3 (admin): item add/remove rows, Markdown widgets,
-      translation editors mirror items
+- [x] ADR-0037 phase 3 (admin): the section editor gains a per-column
+      item table (blank rows add, a cleared row removes — the same
+      server-rendered pattern fields use), declared Markdown fields get
+      the article-body editor widget, pages and their translations gain
+      the long-form body, the translation editors mirror items
+      row-aligned beside the source — and the editors' hardcoded
+      "(EN)" labels became source-neutral
 - [ ] ADR-0037 phase 4 (docs): THEME_GUIDE gallery v2, ADMIN_GUIDE,
       wiki, seed content exercising items
 - [ ] Bulk actions on the content lists (multi-select workflow + trash)

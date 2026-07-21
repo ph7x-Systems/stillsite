@@ -8,7 +8,7 @@
 {% endblock %}
 {% block content %}
 {{ errors_block(errors) }}
-{% if source_fields %}
+{% if source_fields or markdown_fields or item_pairs %}
 <form method="post"
       action="/pages/{{ page.id }}/sections/{{ section.key }}/translations/{{ language.value }}"
       class="admin-form">
@@ -20,7 +20,7 @@
         <thead>
           <tr>
             <th scope="col">{{ _("Field") }}</th>
-            <th scope="col">{{ _("Source (EN)") }}</th>
+            <th scope="col">{{ _("Source") }}</th>
             <th scope="col">{{ _("Translation") }} ({{ language.value | upper }})</th>
           </tr>
         </thead>
@@ -39,6 +39,48 @@
       </table>
     </div>
   </div>
+  {% if markdown_fields %}
+  <div class="card mb-3">
+    <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Markdown fields") }}</h2></div>
+    <div class="card-body">
+      {% for name, source_value, translated_value in markdown_fields %}
+      <div class="mb-2">
+        <div class="form-text">{{ _("Source") }} — {{ name }}</div>
+        <div class="border rounded p-2 mb-2 admin-source-text">{{ source_value }}</div>
+        {{ textarea_field("md_" ~ name, _("%(name)s translation") | format(name=name), translated_value, rows=6, markdown=true) }}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% if item_pairs %}
+  <div class="card mb-3">
+    <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Items") }}</h2></div>
+    <div class="card-body p-0 table-responsive admin-table-wrap">
+      <table class="table table-striped mb-0 admin-table">
+        <thead>
+          <tr>
+            <th scope="col">{{ _("Source") }}</th>
+            <th scope="col">{{ _("Translation") }} ({{ language.value | upper }})</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for source_row, translated_row in item_pairs %}
+          {% for column in item_columns %}
+          <tr>
+            <td><span class="form-text">{{ column }}</span> {{ source_row[loop.index0] }}</td>
+            <td><label class="mb-0 w-100">
+              <span class="visually-hidden admin-visually-hidden">{{ column }}</span>
+              <input class="form-control form-control-sm admin-input" name="item_{{ column }}"
+                     value="{{ translated_row[loop.index0] }}"></label></td>
+          </tr>
+          {% endfor %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
   <div class="card mb-3"><div class="card-body">
     {{ textarea_field("media", _("Media asset IDs (one per line)"), media_text, rows=3) }}
   </div></div>
