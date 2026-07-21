@@ -22,6 +22,7 @@ import json
 import os
 import shutil
 import tempfile
+import urllib.error
 import urllib.request
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
@@ -75,6 +76,44 @@ class DeployProvider(Protocol):
     def state(self) -> DeployState: ...
 
     def releases(self) -> list[ReleaseInfo]: ...
+
+
+def write_release(
+    releases_dir: Path, files: dict[str, bytes], digest: str, actor: str, now: datetime
+) -> tuple[str, Path]:
+    """Write an immutable release; refuse incomplete payloads. Shared by
+    every provider — remote ones keep the same local store, which is
+    what makes rollback-without-rebuild possible anywhere."""
+    release_id = f"{now.strftime('%Y%m%d%H%M%S')}-{digest[:8]}"
+    release_dir = releases_dir / release_id
+    try:
+        site_dir = release_dir / "site"
+        for path, data in files.items():
+            target = site_dir / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        (release_dir / "release.json").write_text(
+            json.dumps(
+                {
+                    "release_id": release_id,
+                    "digest": digest,
+                    "at": now.isoformat(),
+                    "actor": actor,
+                },
+                ensure_ascii=False,
+                sort_keys=True,
+            ),
+            encoding="utf-8",
+        )
+        if not (site_dir / "sitemap.xml").is_file():
+            # every complete build emits a sitemap; its absence means a
+            # broken or empty payload, never a real site
+            raise DeployError("the release has no sitemap.xml — not a complete build")
+    except DeployError:
+        raise
+    except OSError as error:
+        raise DeployError(f"writing the release failed: {error}") from error
+    return release_id, site_dir
 
 
 class FilesystemDeployer:
@@ -161,35 +200,7 @@ class FilesystemDeployer:
         try:
             previous = self._active_release_id()
             now = datetime.now(tz=UTC)
-            release_id = f"{now.strftime('%Y%m%d%H%M%S')}-{digest[:8]}"
-            release_dir = self._releases_dir / release_id
-            try:
-                site_dir = release_dir / "site"
-                for path, data in files.items():
-                    target = site_dir / path
-                    target.parent.mkdir(parents=True, exist_ok=True)
-                    target.write_bytes(data)
-                (release_dir / "release.json").write_text(
-                    json.dumps(
-                        {
-                            "release_id": release_id,
-                            "digest": digest,
-                            "at": now.isoformat(),
-                            "actor": actor,
-                        },
-                        ensure_ascii=False,
-                        sort_keys=True,
-                    ),
-                    encoding="utf-8",
-                )
-                if not (site_dir / "sitemap.xml").is_file():
-                    # every complete build emits a sitemap; its absence
-                    # means a broken or empty payload, never a real site
-                    raise DeployError("the release has no sitemap.xml — not a complete build")
-            except DeployError:
-                raise
-            except OSError as error:
-                raise DeployError(f"writing the release failed: {error}") from error
+            release_id, site_dir = write_release(self._releases_dir, files, digest, actor, now)
 
             self._activate(site_dir)
             if not self._healthy():
@@ -319,3 +330,198 @@ class FilesystemDeployer:
             if kept <= self.keep or release_id in (active, keep_also):
                 continue
             shutil.rmtree(marker.parent, ignore_errors=True)
+
+
+TOKEN_ENV = "SARDINE_SWA_DEPLOY_TOKEN"  # nosec B105 - an env var name, not a secret
+POLL_INTERVAL_SECONDS = 2.0
+
+
+class SwaDeployer:
+    """Azure Static Web Apps provider (#156 slice 2): the same contract,
+    a remote activation.
+
+    The local release store is identical to the filesystem provider's —
+    that is what makes rollback-without-rebuild possible on a remote
+    destination. Activation is transport: the release is packed and sent
+    to the configured deployment endpoint with a bearer token read from
+    the environment at deploy time. The token is never stored, never
+    logged, never audited, never part of any error message — it travels
+    in one request header and nowhere else. A failure at any phase
+    leaves the previously published version serving: the host keeps its
+    last successful deployment until a new one succeeds.
+    """
+
+    def __init__(
+        self,
+        root: Path,
+        deploy_url: str,
+        health_url: str = "",
+        keep: int = 5,
+        timeout: int = 300,
+        token_env: str = TOKEN_ENV,
+    ) -> None:
+        self._store = FilesystemDeployer(root, health_url="", keep=keep)
+        self.deploy_url = deploy_url
+        self.health_url = health_url
+        self.timeout = max(int(timeout), 5)
+        self.token_env = token_env
+
+    # The read surface delegates to the shared store.
+
+    def state(self) -> DeployState:
+        return self._store.state()
+
+    def releases(self) -> list[ReleaseInfo]:
+        return self._store.releases()
+
+    def record_failure(self, error: str, phase: str, actor: str) -> DeployState:
+        return self._store.record_failure(error, phase, actor)
+
+    # Flows
+
+    def deploy(self, files: dict[str, bytes], digest: str, actor: str) -> DeployState:
+        self._store._acquire_lock()
+        now = datetime.now(tz=UTC)
+        try:
+            self._phase("queued", actor, now)
+            try:
+                release_id, site_dir = write_release(
+                    self._store._releases_dir, files, digest, actor, now
+                )
+            except DeployError as error:
+                return self._store.record_failure(str(error), "building", actor)
+            return self._transport(release_id, site_dir, actor)
+        finally:
+            self._store._release_lock()
+
+    def rollback(self, release_id: str, actor: str) -> DeployState:
+        """Re-send a kept release — no rebuild anywhere."""
+        self._store._acquire_lock()
+        try:
+            site_dir = self._store._releases_dir / release_id / "site"
+            if not site_dir.is_dir():
+                raise DeployError(f"release {release_id!r} is not kept here")
+            return self._transport(release_id, site_dir, actor)
+        finally:
+            self._store._release_lock()
+
+    # Pieces
+
+    def _phase(self, phase: str, actor: str, now: datetime, release_id: str = "") -> None:
+        self._store._write_state(
+            DeployState(
+                status=phase,
+                release_id=release_id,
+                at=now.isoformat(),
+                actor=actor,
+                phase=phase,
+            )
+        )
+
+    def _transport(self, release_id: str, site_dir: Path, actor: str) -> DeployState:
+        import io
+        import tarfile
+        import time
+
+        now = datetime.now(tz=UTC)
+        token = os.environ.get(self.token_env, "")
+        if not token:
+            return self._store.record_failure(
+                f"deployment token missing — set {self.token_env}", "uploading", actor
+            )
+
+        self._phase("uploading", actor, now, release_id)
+        buffer = io.BytesIO()
+        with tarfile.open(fileobj=buffer, mode="w:gz") as archive:
+            archive.add(site_dir, arcname=".")
+        payload = buffer.getvalue()
+
+        request = urllib.request.Request(
+            self.deploy_url,
+            data=payload,
+            method="POST",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/gzip",
+                "X-Release-Id": release_id,
+            },
+        )
+        if not self.deploy_url.startswith(("http://", "https://")):
+            return self._store.record_failure("deploy_url must be http(s)", "uploading", actor)
+        try:
+            with urllib.request.urlopen(  # nosec B310 - scheme checked above
+                request, timeout=self.timeout
+            ) as response:
+                status_url = response.headers.get("Location", "")
+                body = response.read(65536).decode("utf-8", errors="replace")
+        except urllib.error.HTTPError as error:
+            if error.code in (401, 403):
+                message = "deployment token rejected by the endpoint"
+            else:
+                message = f"the endpoint answered HTTP {error.code}"
+            return self._store.record_failure(message, "uploading", actor)
+        except OSError:
+            return self._store.record_failure(
+                "upload failed — endpoint unreachable or timed out", "uploading", actor
+            )
+
+        self._phase("waiting", actor, now, release_id)
+        deadline = time.monotonic() + self.timeout
+        remote_status = self._parse_status(body)
+        while remote_status not in ("succeeded", "failed") and status_url:
+            if time.monotonic() > deadline:
+                return self._store.record_failure(
+                    f"timed out after {self.timeout}s waiting for the deployment",
+                    "waiting",
+                    actor,
+                )
+            time.sleep(POLL_INTERVAL_SECONDS)
+            try:
+                with urllib.request.urlopen(  # nosec B310 - same-origin status URL
+                    urllib.request.Request(
+                        status_url, headers={"Authorization": f"Bearer {token}"}
+                    ),
+                    timeout=self.timeout,
+                ) as response:
+                    remote_status = self._parse_status(
+                        response.read(65536).decode("utf-8", errors="replace")
+                    )
+            except OSError:
+                return self._store.record_failure(
+                    "lost contact with the deployment endpoint", "waiting", actor
+                )
+        if remote_status == "failed":
+            return self._store.record_failure(
+                "the endpoint rejected the deployment", "waiting", actor
+            )
+
+        self._phase("verifying", actor, now, release_id)
+        if self.health_url and not self._healthy():
+            return self._store.record_failure(
+                "health check failed — the previous publication remains live",
+                "health",
+                actor,
+            )
+        self._store._prune(keep_also=release_id)
+        return self._store._write_state(
+            DeployState(status="active", release_id=release_id, at=now.isoformat(), actor=actor)
+        )
+
+    @staticmethod
+    def _parse_status(body: str) -> str:
+        try:
+            data = json.loads(body or "{}")
+        except ValueError:
+            return ""
+        return str(data.get("status", ""))
+
+    def _healthy(self) -> bool:
+        if not self.health_url.startswith(("http://", "https://")):
+            return False
+        try:
+            with urllib.request.urlopen(  # nosec B310 - scheme checked above
+                self.health_url, timeout=HEALTH_TIMEOUT_SECONDS
+            ) as response:
+                return bool(200 <= response.status < 300)
+        except OSError:
+            return False

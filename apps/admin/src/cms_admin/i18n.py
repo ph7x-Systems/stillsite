@@ -102,6 +102,11 @@ RUNTIME_MSGIDS: tuple[str, ...] = (
     "delete: the last admin cannot be deleted",
     # menu manager route error
     "menu: id is lowercase-with-dashes, url and position are required",
+    # deployment transient phases (#156)
+    "queued",
+    "uploading",
+    "waiting",
+    "verifying",
     # bulk actions (#130) route outcomes
     "not found",
     "category: lowercase-with-dashes",
