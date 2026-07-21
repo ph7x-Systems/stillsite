@@ -44,6 +44,7 @@ from starlette.datastructures import FormData
 from cms_admin.articles import (
     _copy_id,
     _form_error_list,
+    _picker_context,
     form_errors,
     parse_publish_at,
     publish_at_form,
@@ -676,6 +677,7 @@ async def section_edit_form(
             "csrf_token": session.csrf_token,
             "errors": [],
             **_section_context(request, page, section),
+            **await _picker_context(request),
         },
     )
 
@@ -703,9 +705,13 @@ async def section_edit_save(
         value = str(form.get(f"md_{name}", "")).strip()
         if value:
             fields[name] = value
+    media = parse_media(str(form.get("media", "")))
+    for added in form.getlist("media_add"):
+        if str(added) and str(added) not in media:
+            media.append(str(added))  # the picker appends, order-preserving (#136)
     section.source = SectionContent(
         fields=fields,
-        media=parse_media(str(form.get("media", ""))),
+        media=media,
         items=_parse_items(form, _item_columns(spec, section)),
     )
     await _save_page(request, page, user.username)

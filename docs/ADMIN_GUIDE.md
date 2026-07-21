@@ -178,6 +178,13 @@ with that entity's errors listed (the publish gate; disable only with
 - **Duplicate prevention**: each upload records the file's SHA-256;
   uploading bytes identical to an existing asset is refused with a
   message naming the asset that already holds them.
+- **Picking images in the editors**: the article metadata card and the
+  section editor offer a library picker — thumbnails with dimensions,
+  chosen by radio (cover: pick, keep, or none) or checkbox (section
+  media: append to the ordered list). No script is required; the ID
+  text inputs remain the precise path. Images narrower than the widest
+  configured responsive width are flagged so editors see when a source
+  is too small for the site's layouts.
 - **Replace file**: the asset page swaps the file behind an asset
   while the ID — and therefore every reference from covers and
   sections — stays valid. Alt texts, collection and focal point carry

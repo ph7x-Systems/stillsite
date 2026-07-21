@@ -1424,3 +1424,21 @@ msgstr "Ersetzen"
 
 msgid "the asset keeps its ID — every reference stays valid; the new file goes live on the next publish"
 msgstr "das Medium behält seine ID — alle Verweise bleiben gültig; die neue Datei erscheint mit der nächsten Veröffentlichung"
+
+msgid "Choose from the library"
+msgstr "Aus der Mediathek wählen"
+
+msgid "Keep current"
+msgstr "Aktuelles behalten"
+
+msgid "No cover"
+msgstr "Kein Titelbild"
+
+msgid "Add from the library"
+msgstr "Aus der Mediathek hinzufügen"
+
+msgid "Every library image is already in this section."
+msgstr "Alle Bilder der Mediathek sind bereits in diesem Abschnitt."
+
+msgid "below the widest configured size"
+msgstr "unter der größten konfigurierten Größe"

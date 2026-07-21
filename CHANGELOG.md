@@ -10,6 +10,11 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- In-editor media picker: covers and section media are chosen from a
+  visual library grid (thumbnails, dimensions, undersized-image flag)
+  with no script required; the ID inputs remain the precise path
+  (#136).
+
 - Media replace-file flow: swap the file behind an asset while the ID
   and every reference stay valid; alt texts, collection and focal
   carry over, an out-of-bounds crop is cleared, and duplicate bytes

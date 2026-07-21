@@ -463,3 +463,96 @@ def test_list_quick_actions_transition_without_the_editor(tmp_path: Path) -> Non
         )
         assert moved.status_code == 303
         assert "review" in client.get("/articles").text
+
+
+def _with_media(tmp_path: Path, *articles: Article) -> FastAPI:
+    from cms_core import Language, MediaAsset
+
+    app = _app(tmp_path, *articles)
+    url = f"sqlite:///{tmp_path / 'content.db'}"
+    with create_storage(url) as storage:
+        for asset_id, width in (("harbor-shot", 1600), ("tiny-icon", 200)):
+            storage.save_media_asset(
+                MediaAsset(
+                    id=asset_id,
+                    path=f"{asset_id}.png",
+                    mime_type="image/png",
+                    width=width,
+                    height=width // 2,
+                    alt={Language.EN: f"The {asset_id}"},
+                )
+            )
+    return app
+
+
+def test_the_cover_picker_selects_clears_and_keeps(tmp_path: Path) -> None:
+    """#136: covers come from a visual picker — no typed IDs needed;
+    the text field stays the precise no-JS path and 'keep' leaves it
+    alone."""
+    article = new_article("launch", ArticleContent(title="Launch"), now=NOW)
+    app = _with_media(tmp_path, article)
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        editor = client.get("/articles/launch").text
+        assert 'name="cover_pick"' in editor
+        assert "harbor-shot" in editor and "tiny-icon" in editor
+        client.post(
+            "/articles/launch",
+            data={"csrf_token": csrf, "title": "Launch", "cover_pick": "harbor-shot"},
+            follow_redirects=False,
+        )
+        with create_storage(f"sqlite:///{tmp_path / 'content.db'}") as storage:
+            picked = storage.load_article("launch")
+        assert picked is not None and picked.cover == "harbor-shot"
+        # keep: the sentinel leaves the stored cover untouched
+        client.post(
+            "/articles/launch",
+            data={
+                "csrf_token": csrf,
+                "title": "Launch",
+                "cover": "harbor-shot",
+                "cover_pick": "__keep__",
+            },
+            follow_redirects=False,
+        )
+        with create_storage(f"sqlite:///{tmp_path / 'content.db'}") as storage:
+            kept = storage.load_article("launch")
+        assert kept is not None and kept.cover == "harbor-shot"
+        # explicit none clears it even though the text field still says otherwise
+        client.post(
+            "/articles/launch",
+            data={
+                "csrf_token": csrf,
+                "title": "Launch",
+                "cover": "harbor-shot",
+                "cover_pick": "__none__",
+            },
+            follow_redirects=False,
+        )
+        with create_storage(f"sqlite:///{tmp_path / 'content.db'}") as storage:
+            cleared = storage.load_article("launch")
+    assert cleared is not None and cleared.cover is None
+
+
+def test_the_picker_flags_images_below_the_configured_widths(tmp_path: Path) -> None:
+    article = new_article("launch", ArticleContent(title="Launch"), now=NOW)
+    (tmp_path / "sardine.toml").write_text(
+        '[site]\nname = "S"\nbase_url = "https://s.example"\nlanguages = []\n'
+        "\n[build]\nimage_widths = [480, 960]\n",
+        encoding="utf-8",
+    )
+    _with_media(tmp_path, article)  # seeds the database
+    app = create_app(
+        AdminSettings(
+            storage_url=f"sqlite:///{tmp_path / 'content.db'}",
+            media_dir=tmp_path / "media",
+            project_dir=tmp_path,
+        )
+    )
+    with _client(app) as client:
+        _sign_in(client)
+        editor = client.get("/articles/launch").text
+    flagged = editor.split("tiny-icon.png")[1].split("</label>")[0]
+    assert "below the widest configured size" in flagged
+    unflagged = editor.split("harbor-shot.png")[1].split("</label>")[0]
+    assert "below the widest configured size" not in unflagged

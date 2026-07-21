@@ -38,10 +38,60 @@
 </div>
 {% endmacro %}
 
+{% macro picker_tile_meta(asset, widest) %}
+<span class="d-block"><code>{{ asset.id }}</code></span>
+<span class="form-text d-block">{{ asset.display_size[0] }}&times;{{ asset.display_size[1] }}{% if widest and asset.display_size[0] and asset.display_size[0] < widest %} &middot; {{ _("below the widest configured size") }}{% endif %}</span>
+{% endmacro %}
+
+{% macro cover_picker(assets, current, widest) %}
+{% if assets %}
+<details class="mb-2">
+  <summary class="form-text">{{ _("Choose from the library") }}</summary>
+  <div class="d-flex flex-wrap gap-2 mt-2" role="radiogroup" aria-label="{{ _("Cover") }}">
+    <label class="border rounded p-2">
+      <input class="form-check-input" type="radio" name="cover_pick" value="__keep__" checked>
+      {{ _("Keep current") }}
+    </label>
+    <label class="border rounded p-2">
+      <input class="form-check-input" type="radio" name="cover_pick" value="__none__">
+      {{ _("No cover") }}
+    </label>
+    {% for asset in assets %}
+    <label class="border rounded p-2{% if asset.id == current %} border-primary{% endif %}">
+      <input class="form-check-input" type="radio" name="cover_pick" value="{{ asset.id }}">
+      <img class="admin-thumb rounded border d-block my-1" src="/media-files/{{ asset.path }}" alt="" width="96" height="64" loading="lazy">
+      {{ picker_tile_meta(asset, widest) }}
+    </label>
+    {% endfor %}
+  </div>
+</details>
+{% endif %}
+{% endmacro %}
+
+{% macro media_adder(assets, existing, widest) %}
+{% if assets %}
+<details class="mb-2">
+  <summary class="form-text">{{ _("Add from the library") }}</summary>
+  <div class="d-flex flex-wrap gap-2 mt-2">
+    {% for asset in assets if asset.id not in existing %}
+    <label class="border rounded p-2">
+      <input class="form-check-input" type="checkbox" name="media_add" value="{{ asset.id }}">
+      <img class="admin-thumb rounded border d-block my-1" src="/media-files/{{ asset.path }}" alt="" width="96" height="64" loading="lazy">
+      {{ picker_tile_meta(asset, widest) }}
+    </label>
+    {% else %}
+    <span class="form-text">{{ _("Every library image is already in this section.") }}</span>
+    {% endfor %}
+  </div>
+</details>
+{% endif %}
+{% endmacro %}
+
 {% macro metadata_fields(form) %}
 {{ text_field("category", _("Category"), form.category, hint=_("a category slug, or empty")) }}
 {{ text_field("tags", _("Tags"), form.tags, hint=_("comma-separated slugs")) }}
 {{ text_field("cover", _("Cover"), form.cover, hint=_("a media asset id, or empty")) }}
+{{ cover_picker(image_assets | default([]), form.cover, picker_widest | default(0)) }}
 {{ text_field("author", _("Author"), form.author, hint=_("editorial byline; empty shows the site name")) }}
 <div class="mb-1 form-check admin-field">
   <input class="form-check-input" type="checkbox" id="featured" name="featured" value="1"

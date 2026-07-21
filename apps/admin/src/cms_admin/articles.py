@@ -126,6 +126,18 @@ async def _load_article(request: Request, article_id: str) -> Article:
     return article
 
 
+async def _picker_context(request: Request) -> dict[str, object]:
+    """Library images for the cover picker (#136), with the widest
+    configured responsive width so undersized sources are flagged."""
+    assets = await get_db(request).run(lambda storage: storage.load_all_media_assets())
+    project = _project(request)
+    widths = project.site.image_widths if project else ()
+    return {
+        "image_assets": [asset for asset in assets if asset.is_image],
+        "picker_widest": max(widths) if widths else 0,
+    }
+
+
 def _page(
     request: Request, template: str, context: dict[str, object], status_code: int = 200
 ) -> object:
@@ -184,7 +196,8 @@ async def article_new_form(
     return _page(
         request,
         "article_new.html.j2",
-        {"user": user, "csrf_token": session.csrf_token, "errors": [], "form": form},
+        {"user": user, "csrf_token": session.csrf_token, "errors": [], "form": form}
+        | await _picker_context(request),
     )
 
 
@@ -222,6 +235,7 @@ async def article_create(
     category: str = Form(""),
     tags: str = Form(""),
     cover: str = Form(""),
+    cover_pick: str = Form("__keep__"),
     publish_at: str = Form(""),
     unpublish_at: str = Form(""),
     author: str = Form(""),
@@ -229,6 +243,10 @@ async def article_create(
 ) -> object:
     user, session = user_session
     db = get_db(request)
+    if cover_pick == "__none__":
+        cover = ""  # the picker's explicit clear (#136)
+    elif cover_pick != "__keep__":
+        cover = cover_pick  # the picker wins over the text field (#136)
     form = {
         "id": article_id,
         "title": title,
@@ -259,7 +277,8 @@ async def article_create(
     return _page(
         request,
         "article_new.html.j2",
-        {"user": user, "csrf_token": session.csrf_token, "errors": errors, "form": form},
+        {"user": user, "csrf_token": session.csrf_token, "errors": errors, "form": form}
+        | await _picker_context(request),
         status_code=HTTP_422,
     )
 
@@ -343,6 +362,7 @@ async def article_edit_form(
             "preview_path": preview_path,
             "preview_ready": preview_ready,
             **_editor_context(request, article, role=user.role),
+            **await _picker_context(request),
         },
     )
 
@@ -359,6 +379,7 @@ async def article_edit_save(
     category: str = Form(""),
     tags: str = Form(""),
     cover: str = Form(""),
+    cover_pick: str = Form("__keep__"),
     publish_at: str = Form(""),
     unpublish_at: str = Form(""),
     author: str = Form(""),
@@ -374,6 +395,10 @@ async def article_edit_save(
         for name, value in zip(names, values, strict=False)
         if name.strip() and value
     }
+    if cover_pick == "__none__":
+        cover = ""  # the picker's explicit clear (#136)
+    elif cover_pick != "__keep__":
+        cover = cover_pick  # the picker wins over the text field (#136)
     form = {
         "title": title,
         "summary": summary,
@@ -399,6 +424,7 @@ async def article_edit_save(
                 "csrf_token": session.csrf_token,
                 "errors": _form_error_list(error),
                 **_editor_context(request, article, form, role=user.role),
+                **await _picker_context(request),
             },
             status_code=HTTP_422,
         )
@@ -420,6 +446,7 @@ async def article_autosave(
     category: str = Form(""),
     tags: str = Form(""),
     cover: str = Form(""),
+    cover_pick: str = Form("__keep__"),
     publish_at: str = Form(""),
     unpublish_at: str = Form(""),
     author: str = Form(""),
@@ -436,6 +463,10 @@ async def article_autosave(
         for name, value in zip(names, values, strict=False)
         if name.strip() and value
     }
+    if cover_pick == "__none__":
+        cover = ""  # the picker's explicit clear (#136)
+    elif cover_pick != "__keep__":
+        cover = cover_pick  # the picker wins over the text field (#136)
     form = {
         "title": title,
         "summary": summary,
