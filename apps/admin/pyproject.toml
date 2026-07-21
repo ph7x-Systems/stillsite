@@ -18,6 +18,12 @@ dependencies = [
     "babel>=2.14",
 ]
 
+[project.urls]
+Homepage = "https://sardine.ph7x.com"
+Repository = "https://github.com/ph7x-Systems/sardine-cms"
+Documentation = "https://github.com/ph7x-Systems/sardine-cms/wiki"
+Changelog = "https://github.com/ph7x-Systems/sardine-cms/blob/main/CHANGELOG.md"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"

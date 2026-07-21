@@ -10,6 +10,12 @@ dependencies = ["sardine-cms-build>=0.2.0,<0.3"]
 [project.entry-points."sardine.themes"]
 ph7x-reference = "cms_theme_ph7x_reference:ReferenceTheme"
 
+[project.urls]
+Homepage = "https://sardine.ph7x.com"
+Repository = "https://github.com/ph7x-Systems/sardine-cms"
+Documentation = "https://github.com/ph7x-Systems/sardine-cms/wiki"
+Changelog = "https://github.com/ph7x-Systems/sardine-cms/blob/main/CHANGELOG.md"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
