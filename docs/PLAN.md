@@ -280,10 +280,40 @@ tests, docs and wiki updates, per the standing gates.
 - [ ] `cms doctor`: storage, media, config, environment diagnostics
 - [x] Documented backup/restore and scheduled-build recipes
 
+## Milestone 8 — Editorial power and content depth (scoped)
+
+Ordered by dependency; every 🧭 item begins with its ADR:
+
+- [ ] Bulk actions on the content lists (multi-select workflow + trash)
+- [ ] Admin-wide search (articles, pages, media from one box)
+- [ ] Scheduled unpublish: `unpublish_at` mirroring ADR-0024's contract
+- [ ] Editorial calendar (month view of scheduled/published entries)
+- [ ] Audit log (accounts + workflow events; content stays with revisions)
+- [ ] Custom taxonomies ADR → implementation
+- [ ] Content relations ADR → implementation (related entries, themed)
+- [ ] Media: crop/focal-point ADR; WebP/AVIF derivative formats; library
+      organization (folders or collections)
+- [ ] Embeds contract ADR (consent-first islands, ADR-0031 pattern)
+- [ ] Forms contract ADR (static page, provider-neutral submission)
+- [ ] Per-entry SEO controls (noindex, meta overrides)
+
+## Milestone 9 — Platform, measurement and ecosystem (scoped)
+
+- [ ] Privacy-first analytics contract ADR (provider-neutral, like
+      comments)
+- [ ] External review links ADR (expiring shareable previews)
+- [ ] Incremental builds: content-hash build cache once site scale
+      demands it (determinism contract unchanged)
+- [ ] Ecosystem catalog: published index of themes/extensions once
+      third-party packages exist (ECOSYSTEM.md policy applies)
+
 ## Current execution queue
 
-1. **Milestone 7 operations** — email/notifications, TOTP, on-publish
+1. **Milestone 7 operations** — implement ADR-0032, then TOTP, on-publish
    webhooks and `cms doctor`, in that order.
+2. **Milestone 8, by ADR** — the editorial-power scope above, ADRs first.
+3. **Milestone 9** — platform and ecosystem scope, after M8 or as
+   adoption pulls items forward.
 
 Acceptance criteria and capability gaps are maintained in
 [ROADMAP.md](ROADMAP.md). External owner action still pending: upload the

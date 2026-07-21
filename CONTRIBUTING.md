@@ -3,6 +3,12 @@
 ## Workflow
 
 1. Create a branch off `main` (`feature/...`, `fix/...`, `docs/...`).
+   The project is deliberately trunk-based
+   ([ADR-0033](docs/adr/0033-trunk-based-development.md)): one protected
+   `main`, short-lived branches, squash-only merges, releases as
+   protected `v*` tags. No `develop` branch exists; `release/N.x`
+   maintenance branches appear only when a released version first
+   needs an isolated patch.
 2. Small increments, clear imperative commits (`Add page schema validation`).
 3. Before opening a PR: lint, type checking and tests must pass locally.
 4. `main` is fully protected, **admins included**: no direct pushes, no

@@ -5,6 +5,18 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **The scope is written down**: the roadmap now carries the full
+  capability map toward a complete static-first CMS — new scheduled rows
+  (bulk actions, admin-wide search, scheduled unpublish, editorial
+  calendar, audit log, WebP/AVIF derivatives, media organization,
+  per-entry SEO controls) and ADR-first items (custom taxonomies,
+  content relations, crop/focal point, embeds, forms, analytics,
+  external review links, arbitrary locales, SSO) organized into
+  Milestones 8 and 9 with plans in PLAN.md. ADR-0033 records the
+  branching strategy: trunk-based, one protected main, squash-only,
+  protected release tags — maintenance branches cut from tags only when
+  first needed.
+
 - **The content API closes M6**: `content_api = true` under `[build]`
   makes every build also emit versioned JSON under `api/v1/` —
   `site.json` plus one `content.json` per language with articles
