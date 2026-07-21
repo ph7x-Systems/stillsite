@@ -14,7 +14,7 @@ from typing import Annotated
 
 from cms_build import build_entry_preview, build_site, create_target, urls
 from cms_cli.project import Project, load_project
-from cms_core import SOURCE_LANGUAGE, Article, Page, Role, StorageBackend, User
+from cms_core import SOURCE_LANGUAGE, Article, Language, Page, Role, StorageBackend, User
 from cms_core.accounts import AdminSession
 from cms_core.extensions import ExtensionError
 from cms_core.languages import TARGET_LANGUAGES
@@ -60,6 +60,16 @@ def _project(request: Request) -> Project | None:
         return None
 
 
+def _site_source(project: Project | None) -> Language:
+    """ADR-0034: the project's configured source; the constant is only
+    the no-project fallback."""
+    return project.site.source_language if project is not None else SOURCE_LANGUAGE
+
+
+def _site_targets(project: Project | None) -> tuple[Language, ...]:
+    return tuple(project.site.languages) if project is not None else TARGET_LANGUAGES
+
+
 def _extension_rules(project: Project | None) -> tuple[object, ...]:
     if project is None:
         return ()
@@ -92,12 +102,14 @@ async def refresh_entry_preview(request: Request, entry: Article | Page) -> str 
                 (item for item in content.articles if item.id == entry.id), entry
             )
             preview_path = "/preview" + urls.article_path(
-                project.site, current_article, SOURCE_LANGUAGE
+                project.site, current_article, _site_source(project)
             )
             preview_entry: Article | Page = current_article
         else:
             current_page = next((item for item in content.pages if item.id == entry.id), entry)
-            preview_path = "/preview" + urls.page_path(current_page, SOURCE_LANGUAGE)
+            preview_path = "/preview" + urls.page_path(
+                current_page, _site_source(project), source=_site_source(project)
+            )
             preview_entry = current_page
         artifact = await asyncio.to_thread(
             build_entry_preview,
@@ -120,7 +132,7 @@ async def publishing_home(
     user, session = user_session
     project = _project(request)
     content = await _site_content(request)
-    languages = project.site.languages if project else TARGET_LANGUAGES
+    languages = _site_targets(project)
     return request.app.state.templates.TemplateResponse(
         request,
         "publishing.html.j2",
@@ -130,7 +142,12 @@ async def publishing_home(
             "csrf_token": session.csrf_token,
             "project": project,
             "project_dir": str(request.app.state.settings.project_dir.resolve()),
-            **report_context(content, tuple(languages), _extension_rules(project)),
+            **report_context(
+                content,
+                tuple(languages),
+                _extension_rules(project),
+                source_language=_site_source(project),
+            ),
             "targets": TARGETS,
             "last_build": getattr(request.app.state, "last_build", None),
         },

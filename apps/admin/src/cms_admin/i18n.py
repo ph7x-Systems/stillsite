@@ -1,11 +1,15 @@
-"""Admin-panel i18n (ADR-0022): gettext catalogs, per-request resolution.
+"""Admin-panel i18n (ADR-0022 + ADR-0034): pack catalogs, per-request
+resolution.
 
-The catalogs are ``.po`` text files in git (``locale/<locale>/LC_MESSAGES/
-messages.po``); at startup each is compiled in memory to a
-``gettext.GNUTranslations`` — no binary files, no build step. Translations
-are injected into every render context (``_``, ``gettext``, ``ngettext``)
-by a context processor, never installed globally on the shared Jinja
-environment: one process serves users in different languages concurrently.
+The catalogs are gettext ``.po`` text carried by language packs
+(``LanguagePack.admin_catalog``) — the bundled five's live in cms-core,
+an extension pack brings its own, and activating a pack is the whole
+job of adding a panel language. At startup every registered pack's
+catalog is compiled in memory to a ``gettext.GNUTranslations`` — no
+binary files, no build step. Translations are injected into every
+render context (``_``, ``gettext``, ``ngettext``) by a context
+processor, never installed globally on the shared Jinja environment:
+one process serves users in different languages concurrently.
 
 Resolution order: the signed-in user's stored preference (set on
 ``request.state`` by the session dependency) → ``Accept-Language`` → EN.
@@ -13,26 +17,14 @@ Resolution order: the signed-in user's stored preference (set on
 
 import gettext
 from io import BytesIO
-from pathlib import Path
 
 from babel.messages.mofile import write_mo
 from babel.messages.pofile import read_po
 from cms_core import Language
+from cms_core.language_packs import direction, registered_language_packs
 from fastapi import Request
 
 SOURCE = Language.EN
-
-# Admin languages and their catalog directories. The same set as the site's
-# languages today, decoupled by design — adding one here (plus its .po)
-# is the whole job; the anti-drift test enforces completeness.
-LOCALES: dict[Language, str] = {
-    Language.PT_PT: "pt_PT",
-    Language.ES: "es",
-    Language.FR: "fr",
-    Language.DE: "de",
-}
-
-LOCALE_DIR = Path(__file__).parent / "locale"
 
 # Msgids that reach templates through variables (``{{ _(variable) }}``), so
 # the template scan cannot see them. The anti-drift test enforces catalog
@@ -120,17 +112,35 @@ RUNTIME_MSGIDS: tuple[str, ...] = (
 
 
 def load_catalogs() -> dict[Language, gettext.NullTranslations]:
-    """Compile every .po catalog to in-memory translations at startup."""
+    """Compile every registered pack's catalog to in-memory translations.
+
+    Runs after the project's extensions register their packs, so an
+    activated pack's panel language is simply there. The source (EN)
+    needs no catalog: the msgids are its text.
+    """
     catalogs: dict[Language, gettext.NullTranslations] = {SOURCE: gettext.NullTranslations()}
-    for language, locale in LOCALES.items():
-        po_path = LOCALE_DIR / locale / "LC_MESSAGES" / "messages.po"
-        with po_path.open("rb") as handle:
-            catalog = read_po(handle, locale=locale)
+    for pack in registered_language_packs():
+        if pack.admin_catalog is None:
+            continue
+        catalog = read_po(BytesIO(pack.admin_catalog))
         buffer = BytesIO()
         write_mo(buffer, catalog)
         buffer.seek(0)
-        catalogs[language] = gettext.GNUTranslations(buffer)
+        catalogs[Language(pack.tag)] = gettext.GNUTranslations(buffer)
     return catalogs
+
+
+def panel_languages() -> tuple[tuple[Language, str], ...]:
+    """The panel-language choices: the source plus every registered pack
+    carrying an admin catalog, labeled by the pack's own native name."""
+    choices: dict[Language, str] = {SOURCE: "English"}
+    for pack in registered_language_packs():
+        language = Language(pack.tag)
+        if language is SOURCE:
+            choices[language] = pack.native_name or "English"
+        elif pack.admin_catalog is not None:
+            choices[language] = pack.native_name or pack.tag
+    return tuple(sorted(choices.items(), key=lambda item: str(item[0])))
 
 
 def negotiate(accept_language: str | None) -> Language:
@@ -145,7 +155,7 @@ def negotiate(accept_language: str | None) -> Language:
         except ValueError:
             quality = 0.0
         ranked.append((-quality, piece.strip().lower()))
-    known = {language.value: language for language in (SOURCE, *LOCALES)}
+    known = {str(language): language for language, _name in panel_languages()}
     for _, tag in sorted(ranked):
         if tag in known:
             return known[tag]
@@ -169,12 +179,18 @@ def translations_for(request: Request) -> gettext.NullTranslations:
 
 
 def i18n_context(request: Request) -> dict[str, object]:
-    """Jinja context processor: per-request gettext callables."""
+    """Jinja context processor: per-request gettext callables, plus the
+    resolved panel language and its text direction (ADR-0034: the panel
+    mirrors for RTL packs like any page)."""
     translations = translations_for(request)
+    language = resolve_language(request)
     return {
         "_": translations.gettext,
         "gettext": translations.gettext,
         "ngettext": translations.ngettext,
+        "panel_language": language,
+        "panel_dir": direction(language),
+        "panel_language_choices": panel_languages(),
     }
 
 

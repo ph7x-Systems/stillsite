@@ -113,8 +113,12 @@ implicit at the boundaries, and that is where the change lives:
    source language (its own slice) and admin catalogs in packs.
 2. **Builder + themes**: labels/dates resolved from packs; `dir`
    attribute; logical-properties migration with conformance coverage.
-3. **Admin**: catalogs loaded from bundled + extension packs; panel
-   `dir`; language selectors list the project's configured set.
+3. **Admin** — *executed*: catalogs live in the packs
+   (`LanguagePack.admin_catalog`, the bundled four moved into
+   cms-core), the panel offers every registered pack carrying a
+   catalog by its `native_name`, the chrome renders the resolved
+   language's `dir`, and the editors' source/target sets come from the
+   project's configuration.
 4. **Ecosystem**: pack authoring guide (wiki + THEME_GUIDE-style doc),
    `sardine-lang-<tag>` naming in ECOSYSTEM.md, a fictional example
    pack in the test suite proving the contract end to end (including

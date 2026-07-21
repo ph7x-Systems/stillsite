@@ -12,13 +12,13 @@ import struct
 
 from cms_core import Article, Language, MediaAsset, Page, StorageBackend, User
 from cms_core.accounts import AdminSession
-from cms_core.languages import SOURCE_LANGUAGE, TARGET_LANGUAGES
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, UploadFile, status
 from fastapi.responses import RedirectResponse
 from pydantic import ValidationError
 
 from cms_admin.articles import form_errors
 from cms_admin.auth import current_session, enforce_csrf, get_db
+from cms_admin.publishing import _project, _site_source, _site_targets
 from cms_admin.security import admin_path
 
 router = APIRouter(prefix="/media")
@@ -150,6 +150,7 @@ async def media_list(
         assets = [asset for asset in assets if asset.is_image]
     elif show == "missing-alt":
         assets = [asset for asset in assets if asset.missing_alt_languages()]
+    project = _project(request)
     return _page(
         request,
         "media_list.html.j2",
@@ -160,8 +161,8 @@ async def media_list(
             "total": total,
             "q": q,
             "show": show if show in ("all", "images", "missing-alt") else "all",
-            "target_languages": TARGET_LANGUAGES,
-            "source_language": SOURCE_LANGUAGE,
+            "target_languages": _site_targets(project),
+            "source_language": _site_source(project),
         },
     )
 
@@ -226,7 +227,7 @@ async def media_upload(
                     mime_type=mime,
                     width=size[0],
                     height=size[1],
-                    alt={SOURCE_LANGUAGE: alt},
+                    alt={_site_source(_project(request)): alt},
                 )
             except ValidationError as error:
                 errors.extend(form_errors(error))
@@ -275,7 +276,7 @@ async def _asset_context(request: Request, asset_id: str) -> dict[str, object]:
     return {
         "asset": asset,
         "references": asset_references(asset.id, articles, pages),
-        "target_languages": TARGET_LANGUAGES,
+        "target_languages": _site_targets(_project(request)),
         "form": _alt_form(asset),
     }
 

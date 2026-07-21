@@ -17,7 +17,6 @@ from pathlib import Path
 from cms_build import urls
 from cms_build.themes import SECTION_KIND_GALLERY
 from cms_core import (
-    SOURCE_LANGUAGE,
     AdminSession,
     ContentStatus,
     Language,
@@ -47,7 +46,7 @@ from cms_admin.articles import (
 )
 from cms_admin.auth import current_session, enforce_csrf, get_db
 from cms_admin.notifications import notify_transition
-from cms_admin.publishing import _project, refresh_entry_preview
+from cms_admin.publishing import _project, _site_source, _site_targets, refresh_entry_preview
 from cms_admin.security import admin_path
 from cms_admin.webhooks import emit_transition
 from cms_admin.workflow import (
@@ -81,14 +80,14 @@ def parse_media(raw: str) -> list[str]:
     return [line.strip() for line in raw.splitlines() if line.strip()]
 
 
-def _target_language(code: str) -> Language:
+def _target_language(request: Request, code: str) -> Language:
     try:
         language = Language(code)
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="unknown language"
         ) from None
-    if language is SOURCE_LANGUAGE:
+    if language is _site_source(_project(request)):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="the source language is edited on the page itself",
@@ -132,11 +131,15 @@ def _page_response(
     )
 
 
-def own_states(page: Page) -> dict[Language, TranslationState]:
+def own_states(
+    page: Page,
+    languages: tuple[Language, ...] = TARGET_LANGUAGES,
+    source: Language | None = None,
+) -> dict[Language, TranslationState]:
     """The page's own content state, without the section aggregation."""
     return {
-        language: TranslatableModel.translation_state(page, language)
-        for language in TARGET_LANGUAGES
+        language: TranslatableModel.translation_state(page, language, source=source)
+        for language in languages
     }
 
 
@@ -159,7 +162,7 @@ async def pages_list(
             "pages": pages,
             "trashed_count": trashed_count,
             "row_actions_map": row_actions_map,
-            "target_languages": TARGET_LANGUAGES,
+            "target_languages": _site_targets(_project(request)),
         },
     )
 
@@ -213,12 +216,17 @@ async def page_create(
 def _editor_context(
     request: Request, page: Page, form: dict[str, str] | None = None, role: Role | None = None
 ) -> dict[str, object]:
+    project = _project(request)
+    targets = _site_targets(project)
+    source = _site_source(project)
     return {
         "page": page,
         "transitions": available_transitions(page.status, role) if role else [],
-        "states": {language: page.translation_state(language) for language in TARGET_LANGUAGES},
-        "own_states": own_states(page),
-        "target_languages": TARGET_LANGUAGES,
+        "states": {
+            language: page.translation_state(language, source=source) for language in targets
+        },
+        "own_states": own_states(page, targets, source),
+        "target_languages": targets,
         "kind_hints": sorted(_kind_hints(request)),
         "form": form
         or {
@@ -241,7 +249,11 @@ async def page_edit_form(
     revisions = await get_db(request).run(lambda storage: storage.list_revisions("page", page_id))
     notes = await get_db(request).run(lambda storage: storage.list_notes("page", page_id))
     project = _project(request)
-    preview_path = "/preview" + urls.page_path(page, SOURCE_LANGUAGE) if project else None
+    preview_path = (
+        "/preview" + urls.page_path(page, _site_source(project), source=_site_source(project))
+        if project
+        else None
+    )
     preview_target = (preview_path or "").removeprefix("/preview/").rstrip("/")
     preview_ready = bool(
         preview_path
@@ -401,13 +413,18 @@ def _field_rows(section: Section, hints: dict[str, tuple[str, ...]]) -> list[dic
 
 
 def _section_context(request: Request, page: Page, section: Section) -> dict[str, object]:
+    project = _project(request)
+    targets = _site_targets(project)
+    source = _site_source(project)
     return {
         "page": page,
         "section": section,
         "rows": _field_rows(section, _kind_hints(request)),
         "media_text": "\n".join(section.source.media),
-        "states": {language: section.translation_state(language) for language in TARGET_LANGUAGES},
-        "target_languages": TARGET_LANGUAGES,
+        "states": {
+            language: section.translation_state(language, source=source) for language in targets
+        },
+        "target_languages": targets,
     }
 
 
@@ -485,7 +502,7 @@ async def page_translation_form(
     user_session: tuple[User, AdminSession] = Depends(current_session),
 ) -> object:
     user, session = user_session
-    language = _target_language(language_code)
+    language = _target_language(request, language_code)
     page = await _load_page(request, page_id)
     return _page_response(
         request,
@@ -510,7 +527,7 @@ async def page_translation_save(
     slug: str = Form(""),
 ) -> object:
     user, session = user_session
-    language = _target_language(language_code)
+    language = _target_language(request, language_code)
     page = await _load_page(request, page_id)
     form = {"title": title, "description": description, "slug": slug}
     try:
@@ -561,7 +578,7 @@ async def section_translation_form(
     user_session: tuple[User, AdminSession] = Depends(current_session),
 ) -> object:
     user, session = user_session
-    language = _target_language(language_code)
+    language = _target_language(request, language_code)
     page = await _load_page(request, page_id)
     section = _section_or_404(page, key)
     return _page_response(
@@ -585,7 +602,7 @@ async def section_translation_save(
     user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
 ) -> object:
     user, _ = user_session
-    language = _target_language(language_code)
+    language = _target_language(request, language_code)
     page = await _load_page(request, page_id)
     section = _section_or_404(page, key)
     form = await request.form()
@@ -633,7 +650,13 @@ async def page_status(
             pages=[entry for entry in all_pages if entry.deleted_at is None],
             media=await db.run(lambda storage: storage.load_all_media_assets()),
         )
-        blockers = publish_blockers(page, content)
+        gate_project = _project(request)
+        blockers = publish_blockers(
+            page,
+            content,
+            required_languages=_site_targets(gate_project),
+            source=_site_source(gate_project),
+        )
         if blockers:
             return _page_response(
                 request,

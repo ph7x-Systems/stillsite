@@ -558,7 +558,7 @@ class _SiteBuilder:
             "url": f"/{MEDIA_PREFIX}/{asset.path}",
             "alt": asset.alt.get(language)
             or asset.alt.get(self.config.source_language)
-            or asset.alt[SOURCE_LANGUAGE],
+            or next((text for text in asset.alt.values() if text.strip()), ""),
             "width": asset.width,
             "height": asset.height,
         }

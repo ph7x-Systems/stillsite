@@ -117,6 +117,16 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
         # the shared environment, which serves all languages at once.
         context_processors=[i18n_context],
     )
+    # ADR-0034: the project's extensions may register language packs;
+    # loading the project here (tolerantly — the panel must start without
+    # one) registers them before the catalogs compile, so an activated
+    # pack's language is simply offered.
+    try:
+        from cms_cli.project import load_project as _load_project
+
+        _load_project(resolved.project_dir)
+    except FileNotFoundError:
+        pass
     app.state.translations = load_catalogs()
     app.state.login_limiter = LoginRateLimiter()
     # ADR-0032: outbound email is optional and transport-pluggable; a

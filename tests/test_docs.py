@@ -8,7 +8,7 @@ fact in one authoritative place and link to it from everywhere else.
 import re
 from pathlib import Path
 
-from cms_core import SOURCE_LANGUAGE, Language
+from cms_core import SOURCE_LANGUAGE, TARGET_LANGUAGES, Language
 from cms_core.storage import available_schemes
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -56,9 +56,11 @@ def test_readme_structure_matches_real_directories() -> None:
         assert (REPO_ROOT / directory).is_dir(), f"README lists missing directory {directory}/"
 
 
-def test_readme_languages_match_the_language_enum() -> None:
+def test_readme_languages_match_the_bundled_defaults() -> None:
+    """The README documents the shipped defaults — not the open registry,
+    which any test or extension may extend with fictional packs."""
     readme_lower = README.lower()
-    for language in Language:
+    for language in (SOURCE_LANGUAGE, *TARGET_LANGUAGES):
         assert language.value in readme_lower, f"README does not mention language {language.value}"
     assert SOURCE_LANGUAGE is Language.EN
 

@@ -95,8 +95,8 @@
                 <div class="d-flex gap-2">
                   <select class="form-select form-select-sm" id="admin-language" name="language">
                     <option value="" {% if not user.language %}selected{% endif %}>{{ _("Browser default") }}</option>
-                    {% for code, label in [("en", "English"), ("pt-pt", "Português"), ("es", "Español"), ("fr", "Français"), ("de", "Deutsch")] %}
-                    <option value="{{ code }}" {% if user.language and user.language.value == code %}selected{% endif %}>{{ label }}</option>
+                    {% for language, label in panel_language_choices %}
+                    <option value="{{ language }}" {% if user.language and user.language == language %}selected{% endif %}>{{ label }}</option>
                     {% endfor %}
                   </select>
                   <button type="submit" class="btn btn-outline-secondary btn-sm">{{ _("Save") }}</button>

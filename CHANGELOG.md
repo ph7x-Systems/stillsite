@@ -5,6 +5,19 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **The panel's languages come from packs too** (M8, ADR-0034 admin
+  phase): the four shipped gettext catalogs moved out of the admin's
+  file tree into their language packs (`LanguagePack.admin_catalog`,
+  with a `native_name` for selectors) — activating an extension pack
+  that carries a catalog is now the whole job of adding a panel
+  language, offered in the switcher by its own name and mirrored
+  (`dir="rtl"`) when the pack says so. Every editor surface — lists,
+  editors, dashboard matrix, media alt coverage, the publish gate and
+  the validation report — now reads the project's configured source
+  and target languages instead of module constants, and the media
+  model requires alt text in *some* language rather than hardcoding
+  which one.
+
 - **RTL is real, permanently** (M8, ADR-0034): every physical CSS
   property in the bundled themes and the panel stylesheet became its
   flow-relative twin (`margin-inline-start`, `padding-inline`,

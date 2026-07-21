@@ -28,14 +28,15 @@ def report_context(
     content: SiteContent,
     languages: tuple[Language, ...] | None = None,
     extra_rules: tuple[object, ...] = (),
+    source_language: Language = SOURCE_LANGUAGE,
 ) -> dict[str, object]:
     required = languages or TARGET_LANGUAGES
-    report = run_report(content, tuple(required), extra_rules)
+    report = run_report(content, tuple(required), extra_rules, source_language=source_language)
     scope = {
         "articles": len(content.articles),
         "pages": len(content.pages),
         "media": len(content.media),
-        # +1: EN is the source language on top of the required translations.
+        # +1: the source language on top of the required translations.
         "languages": len(required) + 1,
     }
     subject_links: dict[str, str] = {}
