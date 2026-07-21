@@ -8,6 +8,18 @@ changes live in [CHANGELOG.md](CHANGELOG.md); the product map in
 
 ## Unreleased (towards 0.3.0)
 
+- **Forms submit somewhere real** (#137, second part): the official
+  reference endpoint. Published forms POST to the panel's
+  `/forms/submit`, which validates server-side against the form's
+  declared inputs, applies layered spam protection — honeypot,
+  elapsed-time check when present, per-address rate limiting, origin
+  allowlist — and answers deterministically (200/422/403/429/404) with
+  a localized, accessible page; success speaks the section's own
+  success texts. With `[forms] notify` set, submissions arrive as
+  plain-text mail through the existing transports; a delivery failure
+  is audited, never shown to the visitor. The example site's About
+  page now carries a five-language contact form.
+
 - **Sites can ask something back** (#137, first part): the `form`
   section kind. Editors declare a form's inputs as section items —
   key, type (text, email, textarea, checkbox), label, required — with

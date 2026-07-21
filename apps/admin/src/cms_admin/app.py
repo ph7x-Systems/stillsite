@@ -23,6 +23,7 @@ from cms_admin.auth import current_session, get_db
 from cms_admin.auth import router as auth_router
 from cms_admin.dashboard import router as dashboard_router
 from cms_admin.db import StorageExecutor
+from cms_admin.forms_endpoint import router as forms_router
 from cms_admin.i18n import i18n_context, load_catalogs
 from cms_admin.mail import resolve_mailer
 from cms_admin.media import router as media_router
@@ -159,6 +160,7 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
     from cms_admin.setup import router as setup_router
 
     app.include_router(setup_router)
+    app.include_router(forms_router)
     from cms_admin.search import router as search_router
 
     app.include_router(search_router)

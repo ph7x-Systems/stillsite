@@ -314,6 +314,94 @@ HOME_FAQ: dict[Language, SectionContent] = {
     ),
 }
 
+
+def _form_content(
+    heading: str,
+    intro: str,
+    submit: str,
+    consent: str,
+    ok_head: str,
+    ok_text: str,
+    name: str,
+    email: str,
+    message: str,
+) -> SectionContent:
+    return SectionContent(
+        fields={
+            "heading": heading,
+            "intro": intro,
+            "submit_label": submit,
+            "consent_label": consent,
+            "success_heading": ok_head,
+            "success_text": ok_text,
+        },
+        items=[
+            {"key": "name", "type": "text", "label": name, "required": "1"},
+            {"key": "email", "type": "email", "label": email, "required": "1"},
+            {"key": "message", "type": "textarea", "label": message, "required": "1"},
+        ],
+    )
+
+
+ABOUT_FORM: dict[Language, SectionContent] = {
+    EN: _form_content(
+        "Write to the fleet",
+        "Questions, mission proposals or canning tips - the crew reads everything.",
+        "Send the message",
+        "I agree to be contacted about my message.",
+        "Message received",
+        "The crew answers within two tides.",
+        "Your name",
+        "Your e-mail",
+        "Your message",
+    ),
+    PT: _form_content(
+        "Escreva a frota",
+        "Duvidas, propostas de missao ou dicas de conserva - a tripulacao le tudo.",
+        "Enviar a mensagem",
+        "Aceito ser contactado sobre a minha mensagem.",
+        "Mensagem recebida",
+        "A tripulacao responde em duas mares.",
+        "O seu nome",
+        "O seu e-mail",
+        "A sua mensagem",
+    ),
+    ES: _form_content(
+        "Escriba a la flota",
+        "Dudas, propuestas de mision o consejos de conserva - la tripulacion lo lee todo.",
+        "Enviar el mensaje",
+        "Acepto ser contactado sobre mi mensaje.",
+        "Mensaje recibido",
+        "La tripulacion responde en dos mareas.",
+        "Su nombre",
+        "Su correo",
+        "Su mensaje",
+    ),
+    FR: _form_content(
+        "Ecrivez a la flotte",
+        "Questions, propositions de mission ou astuces de conserve - l'equipage lit tout.",
+        "Envoyer le message",
+        "J'accepte d'etre contacte au sujet de mon message.",
+        "Message recu",
+        "L'equipage repond en deux marees.",
+        "Votre nom",
+        "Votre e-mail",
+        "Votre message",
+    ),
+    DE: _form_content(
+        "Schreiben Sie der Flotte",
+        "Fragen, Missionsvorschlaege oder Konserventipps - die Crew liest alles.",
+        "Nachricht senden",
+        "Ich stimme zu, zu meiner Nachricht kontaktiert zu werden.",
+        "Nachricht erhalten",
+        "Die Crew antwortet innerhalb von zwei Tiden.",
+        "Ihr Name",
+        "Ihre E-Mail",
+        "Ihre Nachricht",
+    ),
+}
+
+
 ABOUT_QUOTE: dict[Language, SectionContent] = {
     EN: SectionContent(
         fields={

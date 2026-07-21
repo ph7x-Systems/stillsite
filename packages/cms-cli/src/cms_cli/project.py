@@ -41,6 +41,9 @@ class Project:
     deploy_timeout: int = 300
     deploy_settings: dict[str, str] = field(default_factory=dict)
     """The raw ``[deploy]`` table — providers read their own keys."""
+    forms_notify: str = ""
+    """``[forms] notify``: where submission notifications go; empty
+    disables the mail leg (the endpoint still validates and answers)."""
 
     def load_extensions(self) -> list[Extension]:
         """The extensions this project explicitly trusts (ADR-0028); their
@@ -183,4 +186,5 @@ def load_project(directory: Path) -> Project:
         deploy_url=str(deploy_data.get("deploy_url", "")),
         deploy_timeout=int(deploy_data.get("timeout", 300)),
         deploy_settings={str(k): str(v) for k, v in deploy_data.items()},
+        forms_notify=str(data.get("forms", {}).get("notify", "")),
     )

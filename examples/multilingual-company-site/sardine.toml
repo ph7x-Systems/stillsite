@@ -7,6 +7,11 @@ theme = "ph7x-reference"
 footer_text = "© 2026 Sardine Aerospace"
 admin_url = "/admin/"
 
+[forms]
+# Forms submit to the panel origin; point this at the URL where the
+# admin application runs. The demo renders the form with this dry value.
+endpoint = "/forms/submit"
+
 [site.categories.missions]
 en = "Missions"
 pt-pt = "Missões"
