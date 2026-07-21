@@ -1445,3 +1445,21 @@ msgstr "por debajo del mayor tamaño configurado"
 
 msgid "A visitor form; its items declare the inputs."
 msgstr "Un formulario para visitantes; los ítems declaran los campos."
+
+msgid "Submissions"
+msgstr "Envíos"
+
+msgid "Form"
+msgstr "Formulario"
+
+msgid "page/section — any form"
+msgstr "página/sección — cualquier formulario"
+
+msgid "Newest first, 100 at a time. Deletion is definitive; retention prunes at startup."
+msgstr "Más recientes primero, 100 cada vez. La eliminación es definitiva; la retención limpia al arrancar."
+
+msgid "Delete submission"
+msgstr "Eliminar envío"
+
+msgid "No submissions in this window."
+msgstr "Sin envíos en este intervalo."

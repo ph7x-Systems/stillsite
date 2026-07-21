@@ -14,12 +14,12 @@
   ("calendar", "/calendar", _("Calendar"), "bi-calendar3"),
 ] %}
 {% if user and user.role.value == "admin" %}
-{% set nav_items = nav_items + [("activity", "/activity", _("Activity"), "bi-clock-history")] %}
+{% set nav_items = nav_items + [("activity", "/activity", _("Activity"), "bi-clock-history"), ("submissions", "/submissions", _("Submissions"), "bi-inbox")] %}
 {% endif %}
 {% set section_labels = {
   "dashboard": _("Dashboard"), "articles": _("Articles"), "pages": _("Pages"),
   "media": _("Media"), "translations": _("Translations"), "calendar": _("Calendar"),
-  "activity": _("Activity"),
+  "activity": _("Activity"), "submissions": _("Submissions"),
   "publishing": _("Publishing"), "trash": _("Trash"),
   "users": _("Users"), "menu": _("Menu"),
 } %}

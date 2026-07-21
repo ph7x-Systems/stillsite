@@ -32,6 +32,8 @@ from cms_admin.notes import router as notes_router
 from cms_admin.pages import router as pages_router
 from cms_admin.publishing import router as publishing_router
 from cms_admin.settings import AdminSettings
+from cms_admin.submissions_view import apply_forms_retention
+from cms_admin.submissions_view import router as submissions_router
 from cms_admin.trash import router as trash_router
 from cms_admin.users import router as users_router
 
@@ -43,6 +45,7 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     from cms_admin.audit import prune_on_startup
 
     await prune_on_startup(app.state.db, settings.activity_retention_days)
+    await apply_forms_retention(app)
     import asyncio as _asyncio
 
     from cms_admin.deploy import run_scheduled_deploys
@@ -161,6 +164,7 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
 
     app.include_router(setup_router)
     app.include_router(forms_router)
+    app.include_router(submissions_router)
     from cms_admin.search import router as search_router
 
     app.include_router(search_router)

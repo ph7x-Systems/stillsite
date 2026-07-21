@@ -44,6 +44,12 @@ class Project:
     forms_notify: str = ""
     """``[forms] notify``: where submission notifications go; empty
     disables the mail leg (the endpoint still validates and answers)."""
+    forms_store: bool = False
+    """``[forms] store``: persist accepted submissions. Off by default;
+    the endpoint never depends on it."""
+    forms_retention_days: int = 0
+    """``[forms] retention_days``: stored submissions older than this
+    are pruned at panel startup; 0 keeps everything until deleted."""
 
     def load_extensions(self) -> list[Extension]:
         """The extensions this project explicitly trusts (ADR-0028); their
@@ -187,4 +193,6 @@ def load_project(directory: Path) -> Project:
         deploy_timeout=int(deploy_data.get("timeout", 300)),
         deploy_settings={str(k): str(v) for k, v in deploy_data.items()},
         forms_notify=str(data.get("forms", {}).get("notify", "")),
+        forms_store=bool(data.get("forms", {}).get("store", False)),
+        forms_retention_days=int(data.get("forms", {}).get("retention_days", 0)),
     )

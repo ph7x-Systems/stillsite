@@ -10,6 +10,12 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Optional form-submission storage: `[forms] store` persists accepted
+  submissions (decoupled from notification — either leg failing never
+  affects the other or the visitor), with an admin-only Submissions
+  screen (filter by form and date, definitive delete) and
+  `retention_days` pruning at startup (#137; migration 24).
+
 - Official forms endpoint (`POST /forms/submit` on the panel):
   server-side validation against the declared inputs, layered spam
   protection (honeypot, elapsed-time, per-address rate limiting,

@@ -376,6 +376,8 @@ Configuration in `sardine.toml`:
 [forms]
 endpoint = "https://panel.example.com/forms/submit"  # where forms submit
 notify = "owner@example.com"                          # notification address
+store = true                                          # optional: keep submissions
+retention_days = 90                                   # optional: prune at startup
 ```
 
 The published form submits to the panel's endpoint, which validates
@@ -389,6 +391,16 @@ transport configured, each submission is delivered as a plain-text
 message; a delivery failure is recorded in the Activity trail and
 never shown to the visitor as an error. Without `endpoint`, published
 pages render the form's content but no form.
+
+With `store = true`, accepted submissions also persist — storage is a
+consumer of the accepted submission, decoupled from the mail leg: a
+storage failure is audited and never affects the visitor's answer or
+the notification, and the endpoint works identically with storage off.
+The admin-only **Submissions** screen lists them newest first,
+filtered by form (`page/section`) and date window; the visitor's
+values display as an opaque payload; deletion is definitive; and
+`retention_days` prunes older submissions at panel startup (0 keeps
+everything until deleted).
 
 With `[deploy]` configured (DEPLOYMENT.md), the flow goes further —
 **editorial actions end on the public site**: publishing or

@@ -545,3 +545,50 @@ def test_writes_survive_the_connection(backend_url: str) -> None:
         loaded = reader.load_article("durable")
         assert loaded is not None and loaded.source.title == "Durable"
         reader.delete_article("durable")
+
+
+def test_form_submissions_round_trip_filter_delete_and_prune(backend: StorageBackend) -> None:
+    """ADR-0039: operational fields are queryable; values are opaque;
+    deletion is definitive and retention pruning works by date."""
+    from cms_core import FormSubmission
+
+    early = FormSubmission(
+        id="sub-1",
+        received_at=datetime(2026, 7, 1, 10, 0, tzinfo=UTC),
+        page_id="about",
+        section_key="write-us",
+        language="en",
+        values={"name": "Ana", "message": "Ahoy"},
+    )
+    late = FormSubmission(
+        id="sub-2",
+        received_at=datetime(2026, 7, 20, 10, 0, tzinfo=UTC),
+        page_id="about",
+        section_key="write-us",
+        language="pt-pt",
+        values={"name": "Rui"},
+    )
+    other = FormSubmission(
+        id="sub-3",
+        received_at=datetime(2026, 7, 21, 10, 0, tzinfo=UTC),
+        page_id="landing",
+        section_key="signup",
+        language="en",
+        values={},
+    )
+    for submission in (early, late, other):
+        backend.save_form_submission(submission)
+
+    everything = backend.list_form_submissions()
+    assert [s.id for s in everything] == ["sub-3", "sub-2", "sub-1"]  # newest first
+    assert everything[-1].values == {"name": "Ana", "message": "Ahoy"}
+
+    one_form = backend.list_form_submissions(page_id="about", section_key="write-us")
+    assert [s.id for s in one_form] == ["sub-2", "sub-1"]
+    recent = backend.list_form_submissions(since=datetime(2026, 7, 15, tzinfo=UTC))
+    assert [s.id for s in recent] == ["sub-3", "sub-2"]
+
+    assert backend.delete_form_submission("sub-2")
+    assert not backend.delete_form_submission("sub-2")  # definitive
+    assert backend.prune_form_submissions(datetime(2026, 7, 15, tzinfo=UTC)) == 1  # sub-1
+    assert [s.id for s in backend.list_form_submissions()] == ["sub-3"]

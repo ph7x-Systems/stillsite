@@ -12,6 +12,7 @@ from types import TracebackType
 
 from cms_core.accounts import AdminSession, PasswordReset, User
 from cms_core.activity import ActivityRecord
+from cms_core.forms import FormSubmission
 from cms_core.media import MediaAsset
 from cms_core.menus import MenuItem
 from cms_core.models import Article
@@ -57,6 +58,25 @@ class StorageBackend(ABC):
 
     @abstractmethod
     def prune_activity(self, before: datetime) -> int: ...
+
+    @abstractmethod
+    def save_form_submission(self, submission: FormSubmission) -> None: ...
+
+    @abstractmethod
+    def list_form_submissions(
+        self,
+        limit: int = 100,
+        page_id: str | None = None,
+        section_key: str | None = None,
+        since: datetime | None = None,
+        until: datetime | None = None,
+    ) -> list[FormSubmission]: ...
+
+    @abstractmethod
+    def delete_form_submission(self, submission_id: str) -> bool: ...
+
+    @abstractmethod
+    def prune_form_submissions(self, before: datetime) -> int: ...
 
     def search_content(self, needle: str, limit: int = 20) -> list[SearchHit]:
         """Find articles, pages, sections and media whose text contains

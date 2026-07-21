@@ -12,6 +12,7 @@ from cms_core.extensions import (
     load_extensions,
 )
 from cms_core.foreign import WxrImport, import_wxr
+from cms_core.forms import FormSubmission
 from cms_core.language_packs import (
     LanguagePack,
     language_pack,
@@ -56,6 +57,7 @@ __all__ = [
     "ContentStatus",
     "Extension",
     "ExtensionError",
+    "FormSubmission",
     "Language",
     "LanguagePack",
     "MediaAsset",

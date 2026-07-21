@@ -1,0 +1,47 @@
+{% extends "shell.html.j2" %}
+{% block title %}{{ _("Submissions") }} — Sardine CMS admin{% endblock %}
+{% block header %}<h1 class="h3 mb-0">{{ _("Submissions") }}</h1>{% endblock %}
+{% block content %}
+<form method="get" action="/submissions" class="card mb-3">
+  <div class="card-body d-flex flex-wrap gap-2 align-items-center">
+    <label class="mb-0">
+      <span class="visually-hidden admin-visually-hidden">{{ _("Form") }}</span>
+      <input class="form-control admin-input" name="form_id" value="{{ form_id }}" placeholder="{{ _('page/section — any form') }}">
+    </label>
+    <label class="mb-0">
+      <span class="visually-hidden admin-visually-hidden">{{ _("From") }}</span>
+      <input class="form-control admin-input" type="date" name="since" value="{{ since }}">
+    </label>
+    <label class="mb-0">
+      <span class="visually-hidden admin-visually-hidden">{{ _("Until") }}</span>
+      <input class="form-control admin-input" type="date" name="until" value="{{ until }}">
+    </label>
+    <button type="submit" class="btn btn-outline-primary">{{ _("Filter") }}</button>
+    <span class="form-text mb-0">{{ _("Newest first, 100 at a time. Deletion is definitive; retention prunes at startup.") }}</span>
+  </div>
+</form>
+{% if submissions %}
+{% for submission in submissions %}
+<div class="card mb-3">
+  <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <h2 class="card-title h6 mb-0">{{ submission.page_id }}/{{ submission.section_key }}
+      <span class="badge text-bg-light border admin-tag">{{ submission.language }}</span></h2>
+    <span class="form-text mb-0">{{ submission.received_at.strftime("%Y-%m-%d %H:%M") }} UTC</span>
+  </div>
+  <div class="card-body">
+    <dl class="admin-source mb-3">
+      {% for key, value in submission.values.items() if value %}
+      <dt>{{ key }}</dt><dd>{{ value }}</dd>
+      {% endfor %}
+    </dl>
+    <form method="post" action="/submissions/{{ submission.id }}/delete" class="mb-0">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button type="submit" class="btn btn-outline-danger btn-sm">{{ _("Delete submission") }}</button>
+    </form>
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<p class="admin-empty">{{ _("No submissions in this window.") }}</p>
+{% endif %}
+{% endblock %}

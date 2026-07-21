@@ -167,7 +167,31 @@ async def submit(request: Request) -> HTMLResponse:
             lang,
         )
 
-    # Notification: contained — a mail failure is reported, never a crash.
+    # Storage first (a consumer of the accepted submission, never part
+    # of the HTTP decision), then notification — each contained, each
+    # audited on failure, neither ever visitor-facing (ADR-0039).
+    if project.forms_store:
+        import uuid
+        from datetime import UTC, datetime
+
+        from cms_core import FormSubmission
+
+        submission = FormSubmission(
+            id=str(uuid.uuid4()),
+            received_at=datetime.now(tz=UTC),
+            page_id=page_id,
+            section_key=section_key,
+            language=lang,
+            values=values,
+        )
+        try:
+            await db.run(lambda storage: storage.save_form_submission(submission))
+        except Exception:
+            logger.exception("form submission storage failed")
+            await audit_record(
+                request, "visitor", "form-store-failed", "form", f"{page_id}/{section_key}", ""
+            )
+
     delivered = False
     if project.forms_notify:
         try:
@@ -181,10 +205,12 @@ async def submit(request: Request) -> HTMLResponse:
                 delivered = True
         except Exception:
             logger.exception("form notification failed")
+    mail_ok = delivered or not project.forms_notify
+    # A storage failure was already audited above on its own record.
     await audit_record(
         request,
         "visitor",
-        "form-received" if delivered or not project.forms_notify else "form-mail-failed",
+        "form-received" if mail_ok else "form-mail-failed",
         "form",
         f"{page_id}/{section_key}",
         "",

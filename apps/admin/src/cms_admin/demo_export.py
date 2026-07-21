@@ -72,6 +72,7 @@ def _demo_paths(storage_path: Path) -> list[str]:
         "/translations",
         "/calendar",
         "/activity",
+        "/submissions",
         "/media/new",
         "/publishing",
         "/trash",

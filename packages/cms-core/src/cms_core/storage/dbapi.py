@@ -20,6 +20,7 @@ from typing import Any
 
 from cms_core.accounts import AdminSession, PasswordReset, Role, User
 from cms_core.activity import ActivityRecord
+from cms_core.forms import FormSubmission
 from cms_core.languages import Language
 from cms_core.media import MediaAsset
 from cms_core.menus import MenuItem
@@ -772,6 +773,81 @@ class DbApiBackend(StorageBackend):
     def prune_activity(self, before: datetime) -> int:
         with self._tx():
             cursor = self._execute("DELETE FROM activity WHERE at < %s", (before.isoformat(),))
+            count = int(cursor.rowcount)
+        return count
+
+    # Form submissions (ADR-0039): optional persistence, opaque values.
+
+    def save_form_submission(self, submission: FormSubmission) -> None:
+        with self._tx():
+            self._execute(
+                "INSERT INTO form_submissions"
+                " (id, received_at, page_id, section_key, language, values_json)"
+                " VALUES (%s, %s, %s, %s, %s, %s)",
+                (
+                    submission.id,
+                    submission.received_at.isoformat(),
+                    submission.page_id,
+                    submission.section_key,
+                    submission.language,
+                    json.dumps(submission.values, ensure_ascii=False, sort_keys=True),
+                ),
+            )
+
+    def list_form_submissions(
+        self,
+        limit: int = 100,
+        page_id: str | None = None,
+        section_key: str | None = None,
+        since: datetime | None = None,
+        until: datetime | None = None,
+    ) -> list[FormSubmission]:
+        clauses = []
+        params: list[object] = []
+        if page_id:
+            clauses.append("page_id = %s")
+            params.append(page_id)
+        if section_key:
+            clauses.append("section_key = %s")
+            params.append(section_key)
+        if since:
+            clauses.append("received_at >= %s")
+            params.append(since.isoformat())
+        if until:
+            clauses.append("received_at < %s")
+            params.append(until.isoformat())
+        where = f" WHERE {' AND '.join(clauses)}" if clauses else ""
+        rows = self._fetchall(
+            # Literal fragments only; values are bound parameters. The
+            # row cap is applied client-side for engine portability.
+            "SELECT id, received_at, page_id, section_key, language, values_json"
+            f" FROM form_submissions{where}"  # nosec B608
+            " ORDER BY received_at DESC",
+            tuple(params),
+        )
+        return [
+            FormSubmission(
+                id=row[0],
+                received_at=datetime.fromisoformat(row[1]),
+                page_id=row[2],
+                section_key=row[3],
+                language=row[4],
+                values=json.loads(row[5]),
+            )
+            for row in rows[:limit]
+        ]
+
+    def delete_form_submission(self, submission_id: str) -> bool:
+        with self._tx():
+            cursor = self._execute("DELETE FROM form_submissions WHERE id = %s", (submission_id,))
+            count = int(cursor.rowcount)
+        return count > 0
+
+    def prune_form_submissions(self, before: datetime) -> int:
+        with self._tx():
+            cursor = self._execute(
+                "DELETE FROM form_submissions WHERE received_at < %s", (before.isoformat(),)
+            )
             count = int(cursor.rowcount)
         return count
 

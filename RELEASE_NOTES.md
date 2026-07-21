@@ -8,6 +8,17 @@ changes live in [CHANGELOG.md](CHANGELOG.md); the product map in
 
 ## Unreleased (towards 0.3.0)
 
+- **Submissions can stay** (#137, third part): `[forms] store = true`
+  persists accepted submissions — storage is a consumer of the
+  accepted submission, never part of the HTTP decision, and fully
+  decoupled from the notification mail: either leg failing is audited
+  on its own record and never reaches the visitor. The admin-only
+  Submissions screen lists them newest first with operational filters
+  (which form, date window), shows the visitor's values as an opaque
+  payload, and deletes definitively; `retention_days` prunes at panel
+  startup. Storage migration 24 on all four engines; the endpoint
+  works identically with storage off.
+
 - **Forms submit somewhere real** (#137, second part): the official
   reference endpoint. Published forms POST to the panel's
   `/forms/submit`, which validates server-side against the form's

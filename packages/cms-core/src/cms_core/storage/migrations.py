@@ -198,4 +198,14 @@ MIGRATIONS: tuple[str, ...] = (
     ALTER TABLE media_assets ADD COLUMN crop TEXT NOT NULL DEFAULT '';
     ALTER TABLE media_assets ADD COLUMN focal TEXT NOT NULL DEFAULT '';
     """,
+    """
+    CREATE TABLE form_submissions (
+        id TEXT PRIMARY KEY,
+        received_at TEXT NOT NULL,
+        page_id TEXT NOT NULL,
+        section_key TEXT NOT NULL,
+        language TEXT NOT NULL,
+        values_json TEXT NOT NULL
+    );
+    """,
 )

@@ -36,6 +36,7 @@ def _wipe_mysql(url: str) -> None:
 
 
 MSSQL_DROP_ORDER = (
+    "form_submissions",
     "activity",
     "password_resets",
     "menu_items",
