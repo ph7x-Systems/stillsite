@@ -6,7 +6,7 @@ changes live in [CHANGELOG.md](CHANGELOG.md); the product map in
 [docs/ROADMAP.md](docs/ROADMAP.md); decision evolution in
 [docs/PRODUCT_HISTORY.md](docs/PRODUCT_HISTORY.md).
 
-## Unreleased (towards 0.3.0)
+## 0.3.0 — 2026-07-22
 
 - **Send a preview link** (#139): editorial approval no longer needs
   an account. Each article and page editor carries an External preview

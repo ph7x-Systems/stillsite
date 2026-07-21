@@ -6,7 +6,7 @@ release in lockstep under one `vX.Y.Z` tag. Narrative release notes —
 features with their PRs, breaking changes and migrations — live in
 [RELEASE_NOTES.md](RELEASE_NOTES.md).
 
-## Unreleased
+## 0.3.0 — 2026-07-22
 
 ### Added
 
