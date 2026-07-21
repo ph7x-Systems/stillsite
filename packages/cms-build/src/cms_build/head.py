@@ -8,7 +8,7 @@ render it; they never assemble it.
 
 from dataclasses import dataclass, field
 
-from cms_core import SOURCE_LANGUAGE, Language
+from cms_core import Language
 from cms_core.language_packs import direction
 
 from cms_build.config import SiteConfig
@@ -80,11 +80,11 @@ def build_head(
         Alternate(hreflang=hreflang_code(lang), href=absolute(config, paths_by_language[lang]))
         for lang in ordered
     ]
-    if SOURCE_LANGUAGE in paths_by_language:
+    if config.source_language in paths_by_language:
         alternates.append(
             Alternate(
                 hreflang="x-default",
-                href=absolute(config, paths_by_language[SOURCE_LANGUAGE]),
+                href=absolute(config, paths_by_language[config.source_language]),
             )
         )
     return Head(

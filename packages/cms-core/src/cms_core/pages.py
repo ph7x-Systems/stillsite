@@ -53,10 +53,15 @@ class Page(TranslatableModel[PageContent]):
     export and the admin lists until restored or purged."""
     sections: list[Section] = Field(default_factory=list)
 
-    def translation_state(self, language: Language) -> TranslationState:
-        own = super().translation_state(language)
+    def translation_state(
+        self, language: Language, *, source: Language | None = None
+    ) -> TranslationState:
+        own = super().translation_state(language, source=source)
         return worst_state(
-            (own, *(section.translation_state(language) for section in self.sections))
+            (
+                own,
+                *(section.translation_state(language, source=source) for section in self.sections),
+            )
         )
 
     def section(self, key: str) -> Section | None:

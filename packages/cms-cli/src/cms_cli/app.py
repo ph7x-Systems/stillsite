@@ -39,6 +39,7 @@ def _validate(project: Project) -> Report:
     ruleset = RuleSet(rules=rules)
     context = ValidationContext(
         required_languages=project.site.languages,
+        source_language=project.site.source_language,
         known_categories=(
             tuple(sorted(project.site.categories)) if project.site.categories else None
         ),

@@ -312,9 +312,14 @@ Ordered by dependency; every 🧭 item begins with its ADR:
 - [x] ADR-0034: the bundled five dissolve into their packs — labels,
       months and date patterns live in `cms_core.language_packs`, the
       `cms_build.ui` tables are gone, resolution is one uniform path
-- [ ] ADR-0034 remaining phases: configurable source language →
-      logical CSS in themes → admin catalogs from packs → ecosystem
-      pack guide + data-only packs
+- [x] ADR-0034: configurable source language — `[site] source_language`
+      threaded through URLs, builder, validation and menu labels; a
+      stored translation now always beats the source shortcut, so a
+      non-`en` source can still target `en`; e2e test with a pack tag
+      as source (root URLs, RTL, no `en` output unless targeted)
+- [ ] ADR-0034 remaining phases: logical CSS in themes → admin catalogs
+      from packs (+ panel target set from the project) → ecosystem pack
+      guide + data-only packs
 - [ ] Bulk actions on the content lists (multi-select workflow + trash)
 - [ ] Admin-wide search (articles, pages, media from one box)
 - [ ] Scheduled unpublish: `unpublish_at` mirroring ADR-0024's contract

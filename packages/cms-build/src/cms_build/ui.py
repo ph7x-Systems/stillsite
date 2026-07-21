@@ -31,30 +31,36 @@ language's pack (ADR-0034: no language data outside packs); projects
 override any of them via ``[site.labels]``."""
 
 
-def format_date(day: int, month: int, year: int, language: Language) -> str:
+def format_date(
+    day: int, month: int, year: int, language: Language, source: Language = SOURCE_LANGUAGE
+) -> str:
     """One uniform path (ADR-0034): months and pattern come from the
-    language's pack; a pack without months borrows the source pack's."""
+    language's pack; a pack without months borrows the source pack's
+    (the EN pack backstops a monthless source)."""
     pack = language_pack(language)
     months = pack.month_names if pack is not None and pack.month_names else None
     if months is None:
-        source = language_pack(SOURCE_LANGUAGE)
-        assert source is not None and source.month_names  # bundled EN pack
-        months = source.month_names
-        pattern = source.date_pattern
+        fallback = language_pack(source)
+        if fallback is None or not fallback.month_names:
+            fallback = language_pack(SOURCE_LANGUAGE)
+        assert fallback is not None and fallback.month_names  # bundled EN pack
+        months = fallback.month_names
+        pattern = fallback.date_pattern
     else:
         pattern = pack.date_pattern if pack is not None else "{day} {month} {year}"
     return pattern.format(day=day, month=months[month - 1], year=year)
 
 
 def ui_label(config: SiteConfig, key: str, language: Language) -> str:
-    """Project override wins; then the language's pack; then the source
-    pack; the key itself is the loud last resort."""
+    """Project override wins; then the language's pack; then the
+    project's source pack (EN backstops); the key is the loud last
+    resort."""
     overrides = config.labels.get(key, {})
     pack = language_pack(language)
-    source = language_pack(SOURCE_LANGUAGE)
+    source = language_pack(config.source_language) or language_pack(SOURCE_LANGUAGE)
     return (
         overrides.get(language)
-        or overrides.get(SOURCE_LANGUAGE)
+        or overrides.get(config.source_language)
         or (pack.site_labels.get(key) if pack is not None else None)
         or (source.site_labels.get(key) if source is not None else None)
         or key

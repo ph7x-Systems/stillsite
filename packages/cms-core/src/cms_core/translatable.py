@@ -33,15 +33,21 @@ class TranslatableModel[ContentT: ChecksummedContent](BaseModel):
     source: ContentT
     translations: dict[Language, Translation[ContentT]] = Field(default_factory=dict)
 
-    def translation_state(self, language: Language) -> TranslationState:
-        if language is SOURCE_LANGUAGE:
-            return TranslationState.COMPLETE
+    def translation_state(
+        self, language: Language, *, source: Language | None = None
+    ) -> TranslationState:
+        """``source`` names the language the ``source`` content is in
+        (ADR-0034); None keeps the historical default (``en``). A stored
+        translation always wins over the source shortcut, so a project
+        whose source is not ``en`` can still target ``en`` correctly."""
         translation = self.translations.get(language)
-        if translation is None:
-            return TranslationState.MISSING
-        if translation.source_checksum != self.source.checksum():
-            return TranslationState.OUTDATED
-        return TranslationState.COMPLETE
+        if translation is not None:
+            if translation.source_checksum != self.source.checksum():
+                return TranslationState.OUTDATED
+            return TranslationState.COMPLETE
+        if language == (source if source is not None else SOURCE_LANGUAGE):
+            return TranslationState.COMPLETE
+        return TranslationState.MISSING
 
     def translation_states(self) -> dict[Language, TranslationState]:
         return {language: self.translation_state(language) for language in TARGET_LANGUAGES}
@@ -59,8 +65,10 @@ class TranslatableModel[ContentT: ChecksummedContent](BaseModel):
             for language in required_languages
         )
 
-    def set_translation(self, language: Language, content: ContentT) -> None:
-        if language is SOURCE_LANGUAGE:
+    def set_translation(
+        self, language: Language, content: ContentT, *, source: Language | None = None
+    ) -> None:
+        if language == (source if source is not None else SOURCE_LANGUAGE):
             raise ValueError("the source language is edited through 'source', not as a translation")
         self.translations[language] = Translation[ContentT](
             content=content, source_checksum=self.source.checksum()

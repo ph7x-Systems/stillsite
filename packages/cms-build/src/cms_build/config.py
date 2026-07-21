@@ -10,7 +10,7 @@ from urllib.parse import urlsplit
 
 from cms_core import SOURCE_LANGUAGE, TARGET_LANGUAGES, Language
 from cms_core.menus import validate_navigation_url
-from pydantic import BaseModel, Field, HttpUrl, JsonValue, field_validator
+from pydantic import BaseModel, Field, HttpUrl, JsonValue, field_validator, model_validator
 
 SLUG = r"^[a-z0-9]+(?:-[a-z0-9]+)*$"
 
@@ -34,6 +34,9 @@ class CommentsSettings(BaseModel):
 class SiteConfig(BaseModel):
     name: str = Field(min_length=1)
     base_url: HttpUrl
+    source_language: Language = SOURCE_LANGUAGE
+    """The language of every entry's source content (ADR-0034): a
+    registered pack tag; lives at the URL root. Default ``en``."""
     languages: tuple[Language, ...] = TARGET_LANGUAGES
     blog_path: str = Field(default="blog", pattern=SLUG)
     theme: str = "default"
@@ -60,12 +63,17 @@ class SiteConfig(BaseModel):
 
     def category_label(self, slug: str, language: Language) -> str:
         labels = self.categories.get(slug, {})
-        return labels.get(language) or labels.get(SOURCE_LANGUAGE) or slug
+        return labels.get(language) or labels.get(self.source_language) or slug
 
-    @field_validator("languages")
-    @classmethod
-    def _source_language_not_required(cls, value: tuple[Language, ...]) -> tuple[Language, ...]:
-        return tuple(language for language in value if language is not SOURCE_LANGUAGE)
+    @model_validator(mode="after")
+    def _source_language_not_required(self) -> "SiteConfig":
+        """The source never appears among the targets (ADR-0034)."""
+        filtered = tuple(
+            language for language in self.languages if language is not self.source_language
+        )
+        if filtered != self.languages:
+            object.__setattr__(self, "languages", filtered)
+        return self
 
     @field_validator("admin_url")
     @classmethod
@@ -95,7 +103,7 @@ class SiteConfig(BaseModel):
 
     @property
     def all_languages(self) -> tuple[Language, ...]:
-        return (SOURCE_LANGUAGE, *self.languages)
+        return (self.source_language, *self.languages)
 
     @property
     def root(self) -> str:

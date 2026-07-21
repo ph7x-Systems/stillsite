@@ -82,12 +82,16 @@ def _published_pages(content: SiteContent, now: datetime) -> list[Page]:
     return sorted(pages, key=lambda p: p.id)
 
 
-def _available(entry: Article | Page, language: Language) -> bool:
-    return entry.translation_state(language) is TranslationState.COMPLETE
+def _available(
+    entry: Article | Page, language: Language, source: Language = SOURCE_LANGUAGE
+) -> bool:
+    return entry.translation_state(language, source=source) is TranslationState.COMPLETE
 
 
-def _article_content(article: Article, language: Language) -> ArticleContent:
-    if language is SOURCE_LANGUAGE:
+def _article_content(
+    article: Article, language: Language, source: Language = SOURCE_LANGUAGE
+) -> ArticleContent:
+    if language == source:
         return article.source
     return article.translations[language].content
 
@@ -148,7 +152,7 @@ class _SiteBuilder:
         # ADR-0029: opt-in responsive derivatives extend the media set.
         self.image_variants = generate_derivatives(self.media_files, config.image_widths)
         self.articles_by_language: dict[Language, list[Article]] = {
-            language: [a for a in self.articles if _available(a, language)]
+            language: [a for a in self.articles if _available(a, language, config.source_language)]
             for language in config.all_languages
         }
 
@@ -222,10 +226,10 @@ class _SiteBuilder:
             return [{"label": item.label(language), "url": item.url} for item in self.menu_items]
         entries: list[dict[str, str]] = []
         home = next((p for p in self.pages if p.id == "home"), None)
-        if home is not None and _available(home, language):
+        if home is not None and _available(home, language, self.config.source_language):
             home_path = urls.page_path(home, language)
             for section in home.sections:
-                if language is SOURCE_LANGUAGE:
+                if language == self.config.source_language:
                     fields = section.source.fields
                 else:
                     translation = section.translations.get(language)
@@ -243,7 +247,9 @@ class _SiteBuilder:
             if page.id == "home" or not _available(page, language):
                 continue
             body = (
-                page.source if language is SOURCE_LANGUAGE else page.translations[language].content
+                page.source
+                if language == self.config.source_language
+                else page.translations[language].content
             )
             entries.append({"label": body.title, "url": urls.page_path(page, language)})
         return entries
@@ -260,7 +266,7 @@ class _SiteBuilder:
         path = urls.page_path(page, language)
         head = self._page_head(page, language)
         context = self._base_context(language, head)
-        context["page"] = _page_context(page, language)
+        context["page"] = _page_context(page, language, self.config.source_language)
         context["sections"] = self._section_contexts(page, language)
         # Featured articles lead the home highlight; recency breaks ties
         # (M5). Listings, feeds and pagination keep pure recency.
@@ -272,9 +278,13 @@ class _SiteBuilder:
         paths = {
             lang: urls.page_path(page, lang)
             for lang in self.config.all_languages
-            if _available(page, lang)
+            if _available(page, lang, self.config.source_language)
         }
-        body = page.source if language is SOURCE_LANGUAGE else page.translations[language].content
+        body = (
+            page.source
+            if language == self.config.source_language
+            else page.translations[language].content
+        )
         json_ld = None
         if page.id == "home" and self.config.organization is not None:
             json_ld = _json_ld({"@context": "https://schema.org", **self.config.organization})
@@ -290,7 +300,7 @@ class _SiteBuilder:
     def _section_contexts(self, page: Page, language: Language) -> list[dict[str, object]]:
         contexts: list[dict[str, object]] = []
         for section in page.sections:
-            if language is SOURCE_LANGUAGE:
+            if language == self.config.source_language:
                 body = section.source
             else:
                 translation = section.translations.get(language)
@@ -320,7 +330,7 @@ class _SiteBuilder:
 
     def _render_article(self, article: Article, language: Language) -> None:
         path = urls.article_path(self.config, article, language)
-        body = _article_content(article, language)
+        body = _article_content(article, language, self.config.source_language)
         head = self._article_head(article, language)
         context = self._base_context(language, head)
         context["article"] = {
@@ -372,9 +382,9 @@ class _SiteBuilder:
         paths = {
             lang: urls.article_path(self.config, article, lang)
             for lang in self.config.all_languages
-            if _available(article, lang)
+            if _available(article, lang, self.config.source_language)
         }
-        body = _article_content(article, language)
+        body = _article_content(article, language, self.config.source_language)
         json_ld = _json_ld(
             {
                 "@context": "https://schema.org",
@@ -405,14 +415,16 @@ class _SiteBuilder:
     ) -> list[dict[str, object]]:
         return [
             {
-                "title": _article_content(a, language).title,
-                "summary": _article_content(a, language).summary,
+                "title": _article_content(a, language, self.config.source_language).title,
+                "summary": _article_content(a, language, self.config.source_language).summary,
                 "url": urls.article_path(self.config, a, language),
                 "date_iso": a.created_at.date().isoformat(),
                 "date_human": format_date(
                     a.created_at.day, a.created_at.month, a.created_at.year, language
                 ),
-                "minutes": _reading_minutes(_article_content(a, language).body_markdown),
+                "minutes": _reading_minutes(
+                    _article_content(a, language, self.config.source_language).body_markdown
+                ),
                 "min_read_label": ui_label(self.config, "min-read", language),
                 "category": (
                     self.config.category_label(a.category, language) if a.category else None
@@ -544,7 +556,9 @@ class _SiteBuilder:
             return None
         image = {
             "url": f"/{MEDIA_PREFIX}/{asset.path}",
-            "alt": asset.alt.get(language) or asset.alt[SOURCE_LANGUAGE],
+            "alt": asset.alt.get(language)
+            or asset.alt.get(self.config.source_language)
+            or asset.alt[SOURCE_LANGUAGE],
             "width": asset.width,
             "height": asset.height,
         }
@@ -586,8 +600,8 @@ class _SiteBuilder:
     def _search_index(self, language: Language, articles: list[Article]) -> str:
         entries = [
             {
-                "t": _article_content(a, language).title,
-                "e": _article_content(a, language).summary,
+                "t": _article_content(a, language, self.config.source_language).title,
+                "e": _article_content(a, language, self.config.source_language).summary,
                 "u": urls.article_path(self.config, a, language),
                 "d": a.created_at.date().isoformat(),
                 "c": (
@@ -639,7 +653,7 @@ class _SiteBuilder:
         )
 
     def _content_api_article(self, article: Article, language: Language) -> dict[str, object]:
-        body = _article_content(article, language)
+        body = _article_content(article, language, self.config.source_language)
         return {
             "id": article.id,
             "slug": body.slug,
@@ -660,7 +674,11 @@ class _SiteBuilder:
         }
 
     def _content_api_page(self, page: Page, language: Language) -> dict[str, object]:
-        body = page.source if language is SOURCE_LANGUAGE else page.translations[language].content
+        body = (
+            page.source
+            if language == self.config.source_language
+            else page.translations[language].content
+        )
         return {
             "id": page.id,
             "slug": body.slug,
@@ -704,14 +722,15 @@ class _SiteBuilder:
 
     def _build_not_found(self) -> None:
         for filename, label in self.ERROR_PAGES:
+            source = self.config.source_language
             head = build_head(
                 self.config,
-                title=ui_label(self.config, label, SOURCE_LANGUAGE),
+                title=ui_label(self.config, label, source),
                 description=self.config.name,
-                language=SOURCE_LANGUAGE,
-                paths_by_language={SOURCE_LANGUAGE: f"/{filename}"},
+                language=source,
+                paths_by_language={source: f"/{filename}"},
             )
-            context = self._base_context(SOURCE_LANGUAGE, head)
+            context = self._base_context(source, head)
             context["not_found"] = {"home_url": "/"}
             self.artifact.add(filename, self.theme.render("not_found", context))
 
@@ -787,15 +806,17 @@ def _navigation(
     }
 
 
-def _page_context(page: Page, language: Language) -> dict[str, str]:
-    body = page.source if language is SOURCE_LANGUAGE else page.translations[language].content
+def _page_context(
+    page: Page, language: Language, source: Language = SOURCE_LANGUAGE
+) -> dict[str, str]:
+    body = page.source if language == source else page.translations[language].content
     return {"title": body.title, "description": body.description}
 
 
 def _rss(config: SiteConfig, language: Language, articles: list[Article]) -> str:
     items: list[str] = []
     for article in articles:
-        body = _article_content(article, language)
+        body = _article_content(article, language, config.source_language)
         link = urls.absolute(config, urls.article_path(config, article, language))
         items.append(
             "<item>"

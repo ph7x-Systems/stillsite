@@ -73,7 +73,7 @@ the source" becomes the factory default of `[site] source_language`,
 never a rule. Admin lists obey the same principle spatially: aggregate
 summaries, never horizontal growth per language.
 
-## Design note — configurable source language (before its slice)
+## Design note — configurable source language (*executed as designed*)
 
 The model layer already treats the source correctly: `source` is just
 "the source content", and `translations` map target tags to content —

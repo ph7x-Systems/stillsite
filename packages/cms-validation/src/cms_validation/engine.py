@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Protocol, runtime_checkable
 
-from cms_core import Article, Language, MediaAsset, MenuItem, Page
+from cms_core import SOURCE_LANGUAGE, Article, Language, MediaAsset, MenuItem, Page
 
 
 class Severity(StrEnum):
@@ -47,6 +47,8 @@ class ValidationContext:
     """Configuration a rule may consult; never read from globals."""
 
     required_languages: tuple[Language, ...]
+    source_language: Language = SOURCE_LANGUAGE
+    """The language of every entry's source content (ADR-0034)."""
     known_categories: tuple[str, ...] | None = None
     """None disables the check; a tuple restricts article categories to it."""
 
