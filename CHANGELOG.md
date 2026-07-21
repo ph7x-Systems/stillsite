@@ -76,6 +76,14 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Changed
 
+- Deployment documentation split by audience: a short Deployment Guide
+  for operators (operating models, configuration reference, complete
+  examples, one consolidated troubleshooting table), a Deployment
+  Providers overview, and a Writing a Deployment Provider developer
+  guide (contract, registration, example, conformance rules, store
+  layout). Public pages no longer reference issues or decision
+  records.
+
 - The Content API documentation is written for the API consumer:
   endpoints, response contract, guarantees and a short example;
   verification detail moved to the test plan (#165).
