@@ -5,6 +5,17 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **The editors caught up with the model** (M8, ADR-0037 phase 3): the
+  section editor grows a per-column items table (blank rows add, a
+  cleared row removes — the same server-rendered pattern the fields
+  table uses, no new JavaScript), a kind's declared Markdown fields
+  get the same editor widget as article bodies, pages and their
+  translations gain the long-form body field, and the side-by-side
+  translation editors mirror items row-aligned beside the source. The
+  editors' hardcoded "(EN)" labels became source-neutral — the panel
+  stopped assuming the source language it no longer fixes. Panel
+  strings ship in all four bundled catalogs.
+
 - **Sections render without caps, fields speak Markdown, pages render
   as documents** (M8, ADR-0037 phase 2): the section-kind gallery
   becomes spec-based (`SectionKindSpec`: fields, Markdown-capable

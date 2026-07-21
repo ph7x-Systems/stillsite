@@ -10,7 +10,7 @@
 <form method="post" action="/pages/{{ page.id }}/sections/{{ section.key }}" class="admin-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   <div class="card mb-3">
-    <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Fields (EN)") }}</h2></div>
+    <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Fields (source)") }}</h2></div>
     <div class="card-body">
       <p class="form-text">{{ _("Free-form name/value pairs the theme's") }}
         <code>{{ section.kind }}</code> {{ _("template consumes. Clear a value to drop its field; use the blank rows to add more.") }}</p>
@@ -34,6 +34,41 @@
       </div>
     </div>
   </div>
+  {% if markdown_fields %}
+  <div class="card mb-3">
+    <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Markdown fields") }}</h2></div>
+    <div class="card-body">
+      {% for name, value in markdown_fields %}
+      {{ textarea_field("md_" ~ name, name, value, rows=6, markdown=true) }}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% if item_columns %}
+  <div class="card mb-3">
+    <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Items") }}</h2></div>
+    <div class="card-body">
+      <p class="form-text">{{ _("One row per item — clear a whole row to remove it.") }}</p>
+      <div class="table-responsive admin-table-wrap">
+        <table class="table table-sm mb-0 admin-table">
+          <thead><tr>{% for column in item_columns %}<th scope="col">{{ column }}</th>{% endfor %}</tr></thead>
+          <tbody>
+            {% for row in item_rows %}
+            <tr>
+              {% for column in item_columns %}
+              <td><label class="mb-0 w-100">
+                <span class="visually-hidden admin-visually-hidden">{{ column }}</span>
+                <input class="form-control form-control-sm admin-input" name="item_{{ column }}"
+                       value="{{ row[loop.index0] }}"></label></td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
   <div class="card mb-3"><div class="card-body">
     {{ textarea_field("media", _("Media asset IDs (one per line)"), media_text, rows=3) }}
   </div></div>

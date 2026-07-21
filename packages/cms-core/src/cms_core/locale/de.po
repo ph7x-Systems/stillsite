@@ -968,3 +968,18 @@ msgstr "Die Zwei-Faktor-Authentifizierung ist für Ihre Rolle verpflichtend. Akt
 
 msgid "Two-factor authentication is required for your role and cannot be disabled."
 msgstr "Die Zwei-Faktor-Authentifizierung ist für Ihre Rolle verpflichtend und kann nicht deaktiviert werden."
+
+msgid "Fields (source)"
+msgstr "Felder (Quelle)"
+
+msgid "Markdown fields"
+msgstr "Markdown-Felder"
+
+msgid "Items"
+msgstr "Einträge"
+
+msgid "One row per item — clear a whole row to remove it."
+msgstr "Eine Zeile pro Eintrag — leeren Sie die ganze Zeile, um ihn zu entfernen."
+
+msgid "Source"
+msgstr "Quelle"

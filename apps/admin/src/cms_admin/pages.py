@@ -15,7 +15,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from cms_build import urls
-from cms_build.themes import SECTION_KIND_GALLERY, SectionKindSpec
+from cms_build.themes import SECTION_KIND_GALLERY, SectionKindSpec, resolve_kind_spec
 from cms_core import (
     AdminSession,
     ContentStatus,
@@ -36,6 +36,7 @@ from cms_validation import SiteContent
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import ValidationError
+from starlette.datastructures import FormData
 
 from cms_admin.articles import (
     _copy_id,
@@ -238,6 +239,7 @@ def _editor_context(
             "title": page.source.title,
             "description": page.source.description,
             "slug": page.source.slug,
+            "body_markdown": page.source.body_markdown,
             "publish_at": publish_at_form(page.publish_at),
         },
     }
@@ -290,14 +292,23 @@ async def page_edit_save(
     title: str = Form(""),
     description: str = Form(""),
     slug: str = Form(""),
+    body_markdown: str = Form(""),
     publish_at: str = Form(""),
 ) -> object:
     user, session = user_session
     page = await _load_page(request, page_id)
-    form = {"title": title, "description": description, "slug": slug, "publish_at": publish_at}
+    form = {
+        "title": title,
+        "description": description,
+        "slug": slug,
+        "body_markdown": body_markdown,
+        "publish_at": publish_at,
+    }
     try:
         page.publish_at = parse_publish_at(publish_at)
-        page.source = PageContent(title=title, description=description, slug=slug)
+        page.source = PageContent(
+            title=title, description=description, slug=slug, body_markdown=body_markdown
+        )
     except ValueError as error:
         return _page_response(
             request,
@@ -322,6 +333,7 @@ async def page_autosave(
     title: str = Form(""),
     description: str = Form(""),
     slug: str = Form(""),
+    body_markdown: str = Form(""),
     publish_at: str = Form(""),
 ) -> object:
     """Persist valid page metadata and refresh its scoped themed preview."""
@@ -329,7 +341,9 @@ async def page_autosave(
     page = await _load_page(request, page_id)
     try:
         page.publish_at = parse_publish_at(publish_at)
-        page.source = PageContent(title=title, description=description, slug=slug)
+        page.source = PageContent(
+            title=title, description=description, slug=slug, body_markdown=body_markdown
+        )
     except ValueError as error:
         return JSONResponse({"ok": False, "errors": _form_error_list(error)}, status_code=HTTP_422)
     await _save_page(request, page, user.username, revision=False)
@@ -408,23 +422,101 @@ async def section_delete(
     return RedirectResponse(admin_path("pages", page.id), status_code=status.HTTP_303_SEE_OTHER)
 
 
-def _field_rows(section: Section, hints: dict[str, tuple[str, ...]]) -> list[dict[str, str]]:
-    rows = [{"name": name, "value": value} for name, value in sorted(section.source.fields.items())]
+def _field_rows(
+    section: Section,
+    hints: dict[str, tuple[str, ...]],
+    exclude: tuple[str, ...] = (),
+) -> list[dict[str, str]]:
+    rows = [
+        {"name": name, "value": value}
+        for name, value in sorted(section.source.fields.items())
+        if name not in exclude
+    ]
     for hint in hints.get(section.kind, ()):
-        if hint not in section.source.fields:
+        if hint not in section.source.fields and hint not in exclude:
             rows.append({"name": hint, "value": ""})
     rows.extend({"name": "", "value": ""} for _ in range(BLANK_FIELD_ROWS))
     return rows
+
+
+BLANK_ITEM_ROWS = 2
+
+
+def _section_spec(request: Request, section: Section) -> SectionKindSpec:
+    """The kind's spec, extension-contributed kinds included."""
+    extension_kinds: dict[str, object] = {}
+    project = _project(request)
+    if project is not None:
+        for extension in sorted(project.load_extensions(), key=lambda e: e.name):
+            extension_kinds.update(extension.section_kinds)
+    return resolve_kind_spec(section.kind, extension_kinds)
+
+
+def _item_columns(spec: SectionKindSpec, section: Section) -> tuple[str, ...]:
+    """The spec's item columns, extended by whatever existing items
+    carry — content is never hidden by a narrower spec."""
+    columns = list(spec.items)
+    for item in section.source.items:
+        for name in item:
+            if name not in columns:
+                columns.append(name)
+    return tuple(columns)
+
+
+def _item_rows(section: Section, columns: tuple[str, ...]) -> list[list[str]]:
+    rows = [[item.get(column, "") for column in columns] for item in section.source.items]
+    rows.extend([""] * len(columns) for _ in range(BLANK_ITEM_ROWS))
+    return rows
+
+
+def _item_pairs(
+    source_items: list[dict[str, str]],
+    translated_items: list[dict[str, str]],
+    columns: tuple[str, ...],
+) -> list[tuple[list[str], list[str]]]:
+    """Source item values beside their translations, row-aligned."""
+    pairs: list[tuple[list[str], list[str]]] = []
+    for index, item in enumerate(source_items):
+        translated = translated_items[index] if index < len(translated_items) else {}
+        pairs.append(
+            (
+                [item.get(column, "") for column in columns],
+                [translated.get(column, "") for column in columns],
+            )
+        )
+    return pairs
+
+
+def _parse_items(form: FormData, columns: tuple[str, ...]) -> list[dict[str, str]]:
+    """Rebuild the items group from per-column input lists; a row with
+    every cell empty is a removal."""
+    per_column = {column: form.getlist(f"item_{column}") for column in columns}
+    length = max((len(values) for values in per_column.values()), default=0)
+    items: list[dict[str, str]] = []
+    for index in range(length):
+        item = {
+            column: str(per_column[column][index]).strip()
+            for column in columns
+            if index < len(per_column[column]) and str(per_column[column][index]).strip()
+        }
+        if item:
+            items.append(item)
+    return items
 
 
 def _section_context(request: Request, page: Page, section: Section) -> dict[str, object]:
     project = _project(request)
     targets = _site_targets(project)
     source = _site_source(project)
+    spec = _section_spec(request, section)
+    columns = _item_columns(spec, section)
     return {
         "page": page,
         "section": section,
-        "rows": _field_rows(section, _kind_hints(request)),
+        "rows": _field_rows(section, _kind_hints(request), exclude=spec.markdown),
+        "markdown_fields": [(name, section.source.fields.get(name, "")) for name in spec.markdown],
+        "item_columns": columns,
+        "item_rows": _item_rows(section, columns),
         "media_text": "\n".join(section.source.media),
         "states": {
             language: section.translation_state(language, source=source) for language in targets
@@ -473,7 +565,16 @@ async def section_edit_save(
         for name, value in zip(names, values, strict=False)
         if name.strip() and value
     }
-    section.source = SectionContent(fields=fields, media=parse_media(str(form.get("media", ""))))
+    spec = _section_spec(request, section)
+    for name in spec.markdown:
+        value = str(form.get(f"md_{name}", "")).strip()
+        if value:
+            fields[name] = value
+    section.source = SectionContent(
+        fields=fields,
+        media=parse_media(str(form.get("media", ""))),
+        items=_parse_items(form, _item_columns(spec, section)),
+    )
     await _save_page(request, page, user.username)
     return RedirectResponse(
         admin_path("pages", page.id, "sections", key),
@@ -495,6 +596,7 @@ def _page_translation_context(
             "title": content.title if content else "",
             "description": content.description if content else "",
             "slug": content.slug if content else "",
+            "body_markdown": content.body_markdown if content else "",
         },
     }
 
@@ -530,13 +632,21 @@ async def page_translation_save(
     title: str = Form(""),
     description: str = Form(""),
     slug: str = Form(""),
+    body_markdown: str = Form(""),
 ) -> object:
     user, session = user_session
     language = _target_language(request, language_code)
     page = await _load_page(request, page_id)
-    form = {"title": title, "description": description, "slug": slug}
+    form = {
+        "title": title,
+        "description": description,
+        "slug": slug,
+        "body_markdown": body_markdown,
+    }
     try:
-        content = PageContent(title=title, description=description, slug=slug)
+        content = PageContent(
+            title=title, description=description, slug=slug, body_markdown=body_markdown
+        )
     except ValidationError as error:
         return _page_response(
             request,
@@ -558,17 +668,39 @@ async def page_translation_save(
 
 
 def _section_translation_context(
-    page: Page, section: Section, language: Language, form: dict[str, str] | None = None
+    request: Request,
+    page: Page,
+    section: Section,
+    language: Language,
+    form: dict[str, str] | None = None,
 ) -> dict[str, object]:
     translation = section.translations.get(language)
     content = translation.content if translation else None
     translated = content.fields if content else {}
+    spec = _section_spec(request, section)
+    columns = _item_columns(spec, section)
+    translated_items = content.items if content else []
     return {
         "page": page,
         "section": section,
         "language": language,
         "state": section.translation_state(language),
-        "source_fields": sorted(section.source.fields.items()),
+        "source_fields": sorted(
+            (name, value)
+            for name, value in section.source.fields.items()
+            if name not in spec.markdown
+        ),
+        "markdown_fields": [
+            (
+                name,
+                section.source.fields.get(name, ""),
+                translated.get(name, ""),
+            )
+            for name in spec.markdown
+            if section.source.fields.get(name, "")
+        ],
+        "item_columns": columns,
+        "item_pairs": _item_pairs(section.source.items, translated_items, columns),
         "form": form or {name: translated.get(name, "") for name in section.source.fields},
         "media_text": "\n".join(content.media if content else section.source.media),
     }
@@ -593,7 +725,7 @@ async def section_translation_form(
             "user": user,
             "csrf_token": session.csrf_token,
             "errors": [],
-            **_section_translation_context(page, section, language),
+            **_section_translation_context(request, page, section, language),
         },
     )
 
@@ -616,7 +748,16 @@ async def section_translation_save(
         for name in section.source.fields
         if str(form.get(f"field__{name}", "")).strip()
     }
-    content = SectionContent(fields=fields, media=parse_media(str(form.get("media", ""))))
+    spec = _section_spec(request, section)
+    for name in spec.markdown:
+        value = str(form.get(f"md_{name}", "")).strip()
+        if value:
+            fields[name] = value
+    content = SectionContent(
+        fields=fields,
+        media=parse_media(str(form.get("media", ""))),
+        items=_parse_items(form, _item_columns(spec, section)),
+    )
     section.set_translation(language, content)
     await _save_page(request, page, user.username)
     return RedirectResponse(

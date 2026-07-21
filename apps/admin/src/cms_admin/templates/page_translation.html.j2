@@ -29,6 +29,7 @@
         <div class="card-body">
           {{ text_field("title", _("Title"), form.title, required=true) }}
           {{ textarea_field("description", _("Description"), form.description, rows=3) }}
+          {{ textarea_field("body_markdown", _("Body (Markdown)"), form.body_markdown, rows=8, markdown=true) }}
           {{ text_field("slug", _("Slug"), form.slug, required=true) }}
         </div>
       </div>

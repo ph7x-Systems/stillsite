@@ -968,3 +968,18 @@ msgstr "La autenticación de dos factores es obligatoria para tu rol. Actívala 
 
 msgid "Two-factor authentication is required for your role and cannot be disabled."
 msgstr "La autenticación de dos factores es obligatoria para tu rol y no puede desactivarse."
+
+msgid "Fields (source)"
+msgstr "Campos (origen)"
+
+msgid "Markdown fields"
+msgstr "Campos Markdown"
+
+msgid "Items"
+msgstr "Elementos"
+
+msgid "One row per item — clear a whole row to remove it."
+msgstr "Una fila por elemento — vacíe toda la fila para eliminarla."
+
+msgid "Source"
+msgstr "Origen"
