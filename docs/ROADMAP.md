@@ -1,226 +1,169 @@
 # Roadmap
 
-The outward view: where Sardine CMS is, what ships next, and what "done"
-means at each horizon. Execution detail lives in [PLAN.md](PLAN.md)
-(milestones, checkboxes) — this page points at it. Live demo:
+The product map: what Sardine CMS is for, which capabilities exist,
+and what comes next. This page carries **no execution history** — that
+lives in [RELEASE_NOTES.md](../RELEASE_NOTES.md) (features, PRs,
+migrations), [CHANGELOG.md](../CHANGELOG.md) (per-version changes),
+[PRODUCT_HISTORY.md](PRODUCT_HISTORY.md) (how decisions evolved) and
+the [issue tracker](https://github.com/ph7x-Systems/sardine-cms/issues)
+(the live queue). Execution detail per milestone: [PLAN.md](PLAN.md).
+Operations: [DEPLOYMENT.md](DEPLOYMENT.md). Live demo:
 <https://sardine.ph7x.com>.
 
-Sardine CMS is a **CMS**: the bar for "complete" is the capability set
-editors expect from a mature publishing system. This is a benchmark, not a
-clone target. The inventory below states what works now, what remains and
-which milestone owns each gap. Static-first changes *how* a capability works
-(comments, search and scheduling need no server at request time), never
-whether editors get the capability.
+## Vision
 
-Product direction has three pillars:
+A static-first, multilingual CMS with the capability set editors expect
+from a mature publishing system — a benchmark, never a clone. Three
+pillars:
 
 1. **Editorial confidence** — preview, workflow, revisions, scheduling,
-   accessibility and multilingual parity are visible and enforceable.
-2. **Adoption without lock-in** — themes, extensions, portable content and
-   controlled import paths let a site enter, evolve and leave cleanly.
-3. **Operational completeness** — authentication recovery, notifications,
-   webhooks and diagnostics make the system dependable beyond development.
+   accessibility and multilingual parity, visible and enforceable.
+2. **Adoption without lock-in** — themes, extensions, portable content
+   and controlled import paths: a site enters, evolves and leaves
+   cleanly.
+3. **Operational completeness** — recovery, notifications, webhooks and
+   diagnostics beyond development.
 
-## Where the project stands
+Static-first changes *how* a capability works (comments, search and
+scheduling need no server at request time), never *whether* editors get
+it.
 
-- **Milestones 0–3 shipped**: content core (translation states from
-  checksums, four storage engines behind one factory, conformance-tested),
-  validation engine with per-rule reporting, deterministic builder (SEO
-  head contract, feeds, search indexes, categories/tags/pagination, media
-  pipeline), theme system with overrides, deployment adapters
-  (SWA/nginx/generic), the `cms` CLI, and the **full browser admin** —
-  accounts/roles, dashboard, side-by-side translation editors, media
-  library, editorial workflow, publishing panel, hardening (WCAG 2.2 AA
-  gated in CI). UI is AdminLTE 4, vendored, implemented faithfully
-  (ADR-0017).
-- **v0.1.x on PyPI** — six `sardine-cms-*` packages, lockstep versions,
-  trusted publishing, per-package environments.
-- **Public demo live** at <https://sardine.ph7x.com> (site + read-only
-  admin), auto-deployed from `main`.
-- **Guardrails**: 10 CI checks (including accessibility, markup, dependency
-  audit and static security analysis), docs anti-drift suite, secret
-  scanning, CodeQL, PR-only workflow and mypy strict. All ten contexts are
-  required by branch protection.
+## Milestones
+
+| Milestone | Scope | State |
+| --- | --- | --- |
+| M0–M3 | Repo, content core, validation, builder, themes, targets, CLI, full browser admin | ✅ closed |
+| M4 | Reference theme and example site | ✅ closed |
+| M5 | Editorial completeness (scheduling, revisions, trash, preview, notes…) | ✅ closed |
+| M6 | Extensibility and adoption (extension contract, portable round-trip, content API…) | ✅ closed |
+| M7 | Operations (email, 2FA, webhooks, doctor) | ✅ closed |
+| M8 | Reorganized into P0/P1 issues [#126](https://github.com/ph7x-Systems/sardine-cms/issues/126)–[#139](https://github.com/ph7x-Systems/sardine-cms/issues/139) | 🟡 in execution |
+| M9 | Reorganized into P2/P3 issues [#140](https://github.com/ph7x-Systems/sardine-cms/issues/140)–[#141](https://github.com/ph7x-Systems/sardine-cms/issues/141) + platform depth | 🔜 |
+| 1.0 | M5–M7 shipped, admin stable, two production deployments beyond ph7x.com, deprecation policy, conformance suites documented as public contracts | 🔜 |
 
 ## Capability inventory
 
-Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
-🧭 needs an ADR first.
+Legend: ✅ shipped · 🟡 partial · 🔜 scheduled · 🧭 needs an ADR first.
+References point at the ADR, issue or document that owns the detail.
 
 ### Editorial workflow
 
-| Capability | Today | Gap → where |
+| Capability | State | Reference |
 | --- | --- | --- |
-| Draft / review / publish / archive, role-gated | ✅ | — |
-| Markdown editor with toolbar | ✅ EasyMDE vendored, localized toolbar (ADR-0023); builder preview stays the truth | — |
-| **Unpublish** (published straight back to draft) | ✅ one click, publisher role; the next build drops the entry | — |
-| Scheduled publishing | ✅ `publish_at` on articles/pages (ADR-0024): the build is the clock; documented CI-cron recipe | — |
-| Revisions + restore | ✅ bounded history on every save (ADR-0025), diff view, undoable restore | — |
-| Trash / restore | ✅ reversible deletion (ADR-0026): trash view, exact restore, admin-only purge | — |
-| Duplicate content | ✅ Duplicate as draft on articles and pages, collision-safe ids | — |
-| Per-entry preview | ✅ editors link straight to the entry's URL inside `/preview/` | — |
-| Quick actions from the list | ✅ per-row dropdown: workflow transitions + trash | — |
-| Featured / pinned content | ✅ featured flag: leads the home highlight; listings stay recency | — |
-| Editorial notes on entries | ✅ note trail per article/page (author-or-admin removal); never published | — |
-| Bulk actions on content lists | ✅ checkbox selection on articles/pages/media; transitions, trash, category assignment, unreferenced-media delete — per-entry rules enforced, per-entry outcome report, no JavaScript required | — |
-| Publish to hosting from the panel | 🟡 generation ships (targets `swa`/`nginx`/`generic`, panel Build & export, persisted choice); transport, activation, health and rollback are [#152](https://github.com/ph7x-Systems/sardine-cms/issues/152) — the operational model is documented in [DEPLOYMENT.md](DEPLOYMENT.md) | 🔜 #152 |
-| Admin-wide search | ✅ navbar box on every screen; grouped results over articles, pages, sections and media, every language, straight to each editor; storage-level queries ([ADR-0038](adr/0038-admin-search-in-storage.md)) | — |
-| Scheduled unpublish | ✅ `unpublish_at` on articles and pages: deterministic window end (same clock as ADR-0024), contradictory windows refused at the model, editors carry the field, storage and portable round-trip on all four engines | — |
-| Editorial calendar | ✅ month view (UTC, as the panel schedules): published on their day, scheduled on their firing day, drag-to-reschedule keeping the time of day, editors one click away | — |
-| Audit log | ❌ revisions cover content only | 🔜 who-did-what trail for accounts and workflow (M8) |
-| Autosave while editing | ✅ valid article/page source edits persist on a debounce without flooding revisions | — |
+| Draft / review / publish / archive, role-gated | ✅ | ADMIN_GUIDE.md |
+| Markdown editor with toolbar | ✅ | ADR-0023 |
+| Unpublish (one click) | ✅ | ADMIN_GUIDE.md |
+| Scheduled publishing | ✅ | ADR-0024 |
+| Scheduled unpublish | ✅ | #133 |
+| Revisions + restore | ✅ | ADR-0025 |
+| Trash / restore | ✅ | ADR-0026 |
+| Duplicate content | ✅ | ADMIN_GUIDE.md |
+| Per-entry + design-aware preview, autosave, live refresh | ✅ | ADR-0027 |
+| Quick actions, featured, editorial notes | ✅ | ADMIN_GUIDE.md |
+| Bulk actions on content lists | ✅ | #130 |
+| Admin-wide search | ✅ | #129, ADR-0038 |
+| Editorial calendar | ✅ | #132 |
+| Automated deployment: publish, unpublish, rollback from the admin (P0) | 🟡 generation + guided target choice ship; release/transport/activation/health/rollback | #156, DEPLOYMENT.md |
+| Audit log | 🔜 | #134 |
+| Needs-attention dashboard | 🔜 | #135 |
 
 ### Content model
 
-| Capability | Today | Gap → where |
+| Capability | State | Reference |
 | --- | --- | --- |
-| Articles + pages with typed sections | ✅ open kinds, unlimited reorderable sections; unknown kinds render generically | — |
-| Repeating groups in sections | ✅ unbounded `items` per section — model, storage, both themes, admin table, side-by-side translation; legacy numbered fields keep rendering; behavioral E2E proves the eighth FAQ item end to end ([ADR-0037](adr/0037-sections-grow-up.md)) | — |
-| Rich text inside sections | ✅ kinds declare Markdown fields (`story.body`, `cta.body`; extensions declare their own) — same safe renderer and editor widget as article bodies | — |
-| Long-form pages | ✅ `PageContent.body_markdown` — editor, autosave, translation, both themes render it as prose | — |
-| In-editor visual page building | ❌ form-based section editor (server-rendered) | 🧭 deferred by ADR-0037: needs a client-side island beyond ADR-0010's budget — its own ADR if forms measurably fail editors |
-| Categories, tags, listing pages | ✅ incl. validation rule | — |
-| Custom content types | ❌ deliberate: pages-with-sections + article custom fields cover known cases | 🧭 own ADR when a real case appears (ADR-0028) |
-| Custom fields | ✅ free-form fields on articles (editable, exported, themed) and sections | — |
-| Navigation menus | ✅ explicit menu manager (per-language labels, ordering, external links) with automatic-menu fallback | — |
-| Reusable blocks | ✅ gallery v2 (`SectionKindSpec`): nine bundled kinds with field specs, Markdown fields and item columns; both themes; admin forms built from the spec; extension kinds as tuples or full specs; THEME_GUIDE authoring table | — |
-| Design-aware editing | ✅ themed side-preview plus debounced live refresh through the scoped real builder (ADR-0027) | — |
-| Multilingual | ✅ **core strength** — the dedicated map below tells the whole story | — |
-| Authors / bylines | ✅ editorial byline on articles, rendered by the themes | — |
-| Custom taxonomies | ❌ category + tags | 🧭 arbitrary taxonomy definitions need an ADR (M8) |
-| Content relations | ❌ | 🧭 typed entry-to-entry links (related articles) need an ADR (M8) |
-| Arbitrary locale sets + language packs | ✅ [ADR-0034](adr/0034-language-packs.md) fully executed: tag-based locales, packs carrying everything (site labels, dates, admin catalogs), configurable source, RTL end to end, ecosystem guide + `sardine-lang-<tag>` naming | — |
+| Articles + pages with typed sections (open kinds, unlimited, reorderable) | ✅ | THEME_GUIDE.md |
+| Repeating groups, Markdown fields, long-form pages | ✅ | ADR-0037 |
+| Page editor UX: block gallery, duplicate, hide, undo, drag reorder | ✅ engineering | #127 (open for human validation) |
+| Categories, tags, listing pages | ✅ | — |
+| Custom fields | ✅ | — |
+| Navigation menus | ✅ | — |
+| Reusable blocks (section-kind gallery v2) | ✅ | ADR-0037, THEME_GUIDE.md |
+| Authors / bylines | ✅ | — |
+| In-editor visual page building | 🧭 deferred by ADR-0037 | — |
+| Custom content types | 🧭 when a real case appears | ADR-0028 |
+| Custom taxonomies, content relations | 🔜 P3 | PRODUCT_HISTORY.md |
 
-### Multilingual — the full map
+### Multilingual
 
-The founding principle (owner directive): **every language is a pack —
-the bundled five included**. Nothing about a locale lives outside its
-pack once the migration completes; "EN is the source" is a factory
-default, never a law. Where the mature systems leave multilingualism to
-paid add-ons, it is this product's core — the bar is to stay ahead.
-
-| Capability | Today | Gap → where |
+| Capability | State | Reference |
 | --- | --- | --- |
-| Translation states from checksums (missing/outdated/complete) | ✅ automatic, per language — no manual "needs update" flags, ever | — |
-| Parity gates (missing translation blocks publish) | ✅ configurable rules | — |
-| Per-language slugs, hreflang cluster, localized feeds + search indexes | ✅ in every build | — |
-| Language packs end to end | ✅ ADR-0034: an extension pack's tag is a full content language (config, build, labels, dates, RTL `dir`) | — |
-| Side-by-side translation editing | ✅ EN source next to each translation, per field | — |
-| Language switcher stays on page | ✅ falls back to that language's home | — |
-| Scalable coverage in lists | ✅ constant-width summary (`3/4 · 1 missing`) — lists never grow horizontally per language | — |
-| Bundled five as full packs | ✅ labels, months and date patterns live in each pack; the `cms_build.ui` tables are gone — no language data outside packs (admin catalogs join in the admin phase) | — |
-| Configurable source language | ✅ `[site] source_language` (default `en`): any pack tag can be the source — URL root, hreflang x-default, validation parity and label fallbacks all follow it; the source never doubles as a target | — |
-| Admin panel languages from packs | ✅ catalogs live in `LanguagePack.admin_catalog` (bundled four included); the panel offers every registered pack with a catalog by its native name, mirrors RTL packs, and the editors' source/target sets come from the project | — |
-| RTL end to end | ✅ `dir="rtl"` on the markup and flow-relative CSS throughout both themes and the panel chrome — conformance-tested (no physical property can return) | — |
-| Translation queue | ✅ the Translations screen: every missing/outdated entry-language pair for the configured set (pack tags included), filtered by language/state/type, linking to the side-by-side editors | — |
-| List filters by translation state | ✅ "missing «tag»" filter on the articles and pages lists | — |
-| Fallback policy per language (publish partial vs block) | ❌ parity blocks today | 🧭 needs an ADR — per-language policy, never silent |
-| Machine-translation assist | ❌ | 🧭 provider-neutral contract (ADR-0028 pattern), post-M8 |
-| Data-only language packs | ❌ packs are Python objects today | 🔜 authorable as a pure data bundle (labels + months + `.po` + direction) — contributing a language must need zero code (ADR-0034 ecosystem phase) |
+| Translation states from checksums; parity gates | ✅ | Content-Model (wiki) |
+| Per-language slugs, hreflang, localized feeds + search | ✅ | — |
+| Language packs end to end (bundled five included) | ✅ | ADR-0034 |
+| Configurable source language | ✅ | ADR-0034 |
+| Admin panel languages from packs; RTL end to end | ✅ | ADR-0034 |
+| Side-by-side translation editing | ✅ | ADMIN_GUIDE.md |
+| Translation queue + list filters | ✅ | #131 |
+| Scalable coverage in lists (never a column per language) | ✅ | ADR-0034 |
+| Fallback policy per language | 🧭 | — |
+| Machine-translation assist | 🧭 | — |
+| Data-only language packs | ✅ | LANGUAGE_PACK_GUIDE.md |
 
 ### Media
 
-| Capability | Today | Gap → where |
+| Capability | State | Reference |
 | --- | --- | --- |
-| Library: validated uploads, translatable alt, safe delete | ✅ MIME-sniffed, dimensions parsed | — |
-| Image derivatives / responsive sizes | ✅ opt-in build-time derivatives (ADR-0029): `[build] image_widths`, deterministic, `srcset` in both themes | — |
-| Crop / focal point | ❌ | 🧭 ADR scheduled with the M8 media work |
-| Modern format derivatives (WebP/AVIF) | ❌ derivatives keep the source format | 🔜 opt-in format conversion beside `image_widths` (M8) |
-| Media organization | ❌ flat library with filters | 🔜 folders or collections once libraries grow (M8) |
-| Media search / filters | ✅ server-side search (id/path/type/alt) + quick views (images, missing alt) | — |
+| Library: validated uploads, translatable alt, safe delete, search/filters | ✅ | ADMIN_GUIDE.md |
+| Image derivatives / responsive sizes | ✅ | ADR-0029 |
+| Crop / focal point, WebP/AVIF, organization, picker, replace | 🔜 | #136 |
 
 ### Site features (static-first)
 
-| Capability | Today | Gap → where |
+| Capability | State | Reference |
 | --- | --- | --- |
-| SEO: canonical, hreflang, Open Graph, JSON-LD, sitemap, RSS | ✅ in every build | — |
-| Search | ✅ client-side index island | — |
-| Comments | 🟡 contract + fictional test provider only ([ADR-0031](adr/0031-comments-integration.md)): `[comments]`, consent-first island, no-JS link | An **official usable provider** is the done bar — contract alone is not a feature |
-| Redirects | ✅ `[redirects]` map: real 301s on SWA/nginx + meta-refresh fallback pages for any host | — |
-| Localized 404 / error pages | ✅ | — |
-| Embeds (video, social, maps) | ❌ safe Markdown only | 🧭 static-safe embed contract — consent-first islands like comments (M8) |
-| Forms (contact, signup) | ❌ | 🧭 provider contract like ADR-0031's: static page, consent-first submission (M8) |
-| Per-entry SEO controls | 🟡 summary drives description | 🔜 per-entry noindex + meta overrides (M8) |
-| Analytics | ❌ | 🧭 privacy-first measurement contract, provider-neutral (M9) |
-| External review links | ❌ preview requires an account | 🧭 shareable expiring preview links need an ADR (M9) |
-| Multiple sites per install | ❌ one project = one site | out of scope before 1.0 |
+| SEO: canonical, hreflang, Open Graph, JSON-LD, sitemap, RSS | ✅ | — |
+| Public search (pre-built indexes) | ✅ | — |
+| Comments | 🟡 contract + consent-first island; official provider pending | ADR-0031 |
+| Redirects, localized error pages | ✅ | — |
+| Forms | 🔜 official reference provider | #137 |
+| Per-entry SEO controls | 🔜 | #138 |
+| External review links | 🔜 | #139 |
+| Embeds, analytics | 🧭 | — |
+| Multiple sites per install | 🔜 P3 | — |
 
 ### Users and access
 
-| Capability | Today | Gap → where |
+| Capability | State | Reference |
 | --- | --- | --- |
-| Role ladder | ✅ editor < reviewer < publisher < admin | — |
-| User management UI | ✅ Users screen (admin role): create, role change, delete — self and last-admin safeguards; CLI stays the bootstrap | — |
-| Admin panel in the editor's language | ✅ gettext i18n (ADR-0022): PT-PT/ES/FR/DE shipped, per-user preference + browser fallback, completeness enforced by tests | — |
-| Password reset | ✅ ADR-0032: enumeration-safe request, hashed single-use 30-min tokens, session revocation; pluggable mail transports (`smtp` baseline, extensions for passwordless APIs) | — |
-| Two-factor authentication | ✅ TOTP ([ADR-0035](adr/0035-totp.md)): confirmed enrolment, single-use codes, shared login rate budget, per-role enforcement (`SARDINE_ADMIN_REQUIRE_2FA`, forced enrolment) | — |
-| Notifications (review requested…) | ✅ ADR-0032: review-requested (reviewers and above) + published (last editing author), localized, fire-and-forget off the request path | — |
+| Role ladder, user management UI | ✅ | ADMIN_GUIDE.md |
+| Panel in the editor's language | ✅ | ADR-0022, ADR-0034 |
+| Password reset, notifications | ✅ | ADR-0032 |
+| Two-factor authentication (per-role enforcement) | ✅ | ADR-0035 |
+| Browser onboarding (setup + deployment wizards) | ✅ engineering | #128 (open for human validation) |
+| SSO / OIDC | 🧭 post-1.0 | — |
 
 ### Platform and operations
 
-| Capability | Today | Gap → where |
+| Capability | State | Reference |
 | --- | --- | --- |
-| Plugin system | ✅ ADR-0028: `sardine.extensions` contract — rules, build steps, targets, backends, themes, `cms x` CLI, section-kind hints; explicit activation in `sardine.toml` | — |
-| Themes + per-project overrides | ✅ entry-point discovery | — |
-| Import / restore | ✅ portable JSON/Markdown round-trip plus an offline WXR 1.2 blog adapter ([ADR-0030](adr/0030-foreign-blog-import.md)) | More foreign formats only when a concrete migration requires one |
-| Export / portability | ✅ JSON/Markdown is the source of truth | — |
-| Content API | ✅ opt-in `api/v1/` JSON in every build ([CONTENT_API.md](CONTENT_API.md)): versioned, deterministic, same publication/language gates as the HTML | — |
-| Webhooks (publish → host build) | ✅ [ADR-0036](adr/0036-on-publish-webhooks.md): signed doorbell on publish/unpublish, bounded retries, HTTPS-only, optional | — |
-| Health check | ✅ `cms doctor`: configuration, theme, extensions, comments, storage schema, media files, environment — read-only, exit 1 on failure; `cms validate` keeps the content side | — |
-| Backups | ✅ `cms dump` writes the portable pair, `cms import` restores it — the DB stays disposable | — |
-| Scheduled builds | ✅ recipe in ADMIN_GUIDE (CI `schedule:` + `cms export`); `publish_at`-aware by construction | — |
-| Incremental builds | ❌ full rebuild every time (fast today) | 🔜 content-hash build cache when site size demands it (M9) |
-| Ecosystem catalog | 🟡 ECOSYSTEM.md policy exists | 🔜 published index of themes/extensions once third-party packages exist (M9) |
-| SSO / OIDC sign-in | ❌ local accounts only | 🧭 identity-provider ADR (post-1.0) |
+| Plugin system (explicit activation) | ✅ | ADR-0028 |
+| Themes + per-project overrides | ✅ | THEME_GUIDE.md |
+| Import / export / portability | ✅ | Content-Model (wiki) |
+| Content API (versioned JSON) | ✅ | CONTENT_API.md |
+| Webhooks (on publish) | ✅ | ADR-0036 |
+| Health check (`cms doctor`) | ✅ | — |
+| Theme/extension experience without editing files | 🔜 | #141 |
+| WXR migration flow | 🔜 | #140 |
+| Backups, scheduled builds | 🧭 | — |
+| Incremental builds, ecosystem catalog | 🔜 P3 | — |
 
-## Execution order
+## Priorities
 
-Completed M6 foundation:
+The live queue is the [issue tracker](https://github.com/ph7x-Systems/sardine-cms/issues),
+prioritized P0 (usable by a non-technical editor) → P3 (scale), with
+observation-driven reordering — see
+[PRODUCT_HISTORY.md](PRODUCT_HISTORY.md) for how and why.
 
-`extension contract → menu manager → image derivatives → redirects →
-portable round-trip → external blog adapter → live refresh + autosave →
-reusable-block gallery → comments contract (ADR-0031) → JSON content
-target`
+## Definition of done
 
-The execution queue lives in the
-[issue tracker](https://github.com/ph7x-Systems/sardine-cms/issues) now —
-one issue per capability, each carrying the user problem, scope,
-dependencies and acceptance criteria. **No implementation starts without
-its issue.** The 2026-07-21 product review reset the direction: the
-engineering base (multilingual core, four storage engines, deterministic
-builds, admin, workflows, extensions, operations) outgrew the product
-experience, so the queue is now organized by what an *editor* can do,
-not by which contract exists.
+A capability is ✅ only when all hold: usable in the admin; E2E tested;
+works in both bundled themes; works in at least two languages; has
+empty and error states; documented (repo + wiki); demonstrated on the
+public demo. A contract without a bundled usable implementation is 🟡,
+never ✅. ADRs are reserved for decisions that change public contracts,
+storage, security or extensibility.
 
-## Priorities (P0 → P3)
-
-- **P0 — usable by a non-technical editor** (#126–#135): close ADR-0037
-  vertically, page-editor UX (block gallery, duplicate, drag reorder,
-  hide, delete with undo), browser onboarding wizard, global admin
-  search, bulk actions, translation queue + filters, editorial
-  calendar, scheduled unpublish, audit log, needs-attention dashboard.
-- **P1 — gaps that block real sites** (#136–#139): media maturity
-  (collections, crop, focal point, WebP/AVIF, replace, picker), an
-  **official forms provider** — a contract alone is not a feature —
-  per-entry SEO controls, signed external preview links.
-- **P2 — ecosystem experience** (#140–#141): WXR migration as a real
-  admin flow, theme/extension install-activate-inspect without editing
-  files, three official themes.
-- **P3 — scale and platform**: incremental builds, multisite, SSO/OIDC,
-  custom taxonomies, content relations, analytics — only when real
-  sites surface real problems.
-
-## Definition of done (every feature)
-
-A capability is ✅ only when **all** hold: usable in the admin; E2E
-tested; works in both bundled themes; works in at least two languages;
-has empty and error states; documented (repo + wiki); demonstrated on
-the public demo. "Contract shipped" without a bundled usable
-implementation is 🟡, never ✅. ADRs are reserved for decisions that
-change public contracts, storage, security or extensibility — UX
-details do not need one.
-
-## Product metrics (targets, measured before 1.0)
+## Product metrics (targets)
 
 | Metric | Target |
 | --- | --- |
@@ -228,60 +171,24 @@ details do not need one.
 | First page created | without touching the CLI |
 | Landing page built by a non-technical editor | < 15 minutes |
 | Preview refresh | < 2 seconds |
-| Admin search on 10 000 entries | < 300 ms — **met**: worst case 13.6 ms SQLite / 34.5 ms PostgreSQL (method: `scripts/search_bench.py` — deterministic 10k dataset, worst of 5 runs after warm-up, engine via env) |
+| Admin search on 10 000 entries | < 300 ms |
 | WXR migration of a reference export | explicit fidelity % reported |
 
-Each metric, when first measured, must declare its method: reference
-environment, where measurement starts and ends, dataset, number of
-runs, percentile reported, who performs it (the editor metrics require
-a **real non-technical tester**, never a maintainer) and where the
-result is recorded. A number without its method does not count.
-
-## Milestones ahead
-
-- **M5 — Editorial completeness: CLOSED.** Direct unpublish, scheduling,
-  revisions with restore, trash, duplicates, per-entry and design-aware
-  preview (ADR-0027), quick actions, featured flag, authorship, media
-  filters, users screen, editorial notes — all shipped, all live on the
-  demo. Autosave and live themed refresh shipped immediately after closure
-  as ADR-0027 phase 2.
-- **M6 — Extensibility and adoption: CLOSED.** The extension contract
-  executed (ADR-0028), menu manager, image derivatives, redirects,
-  portable round-trip and external blog import, live refresh/autosave,
-  reusable-block gallery, comments contract (ADR-0031) and the JSON
-  content target — all shipped. (Admin localization shipped early —
-  ADR-0022.)
-- **M7 — Operations: CLOSED.** Pluggable email transports with
-  enumeration-safe password reset and editorial notifications
-  (ADR-0032), TOTP two-factor with per-role enforcement (ADR-0035),
-  signed on-publish webhooks (ADR-0036) and `cms doctor` — all shipped.
-- **M8 → reorganized into P0/P1 issues** (#126–#139): editorial
-  usability first — see Priorities above. Custom taxonomies and content
-  relations moved to P3: they are platform depth, not editor pain.
-- **M9 → reorganized into P2/P3**: ecosystem experience (#140–#141),
-  then incremental builds, analytics, external review links, catalog.
-- **1.0** — criteria: M5–M7 shipped, admin stable, two production
-  deployments beyond ph7x.com, deprecation policy on PyPI, all
-  conformance suites documented as public contracts. M8/M9 continue
-  past 1.0 unless adoption pulls items forward.
-- **Post-1.0 architectural horizon**: SSO/OIDC — it changes core
-  contracts and waits for its own ADR. (Arbitrary locales moved up: the
-  language-pack ADR opens M8.)
-
-The bar stays what it has been since M5: the capability set editors
-expect from the mature publishing systems they come from, delivered
-static-first — the same benchmark, never a clone.
+Each metric, when measured, must declare its method — environment,
+dataset, runs, percentile, tester (editor metrics require a real
+non-technical tester) — and record the result in
+[RELEASE_NOTES.md](../RELEASE_NOTES.md). A number without its method
+does not count.
 
 ## Standing invariants (any horizon)
 
 Language sets are data, never structure: anything per-language is
-modeled as rows, keys or configuration — never as schema columns, fixed
-enumerations in new contracts, or hardcoded strings — so that adding a
-language (packs, RTL scripts included) never alters a table or a code
-path.
+modeled as rows, keys or configuration — never schema columns, fixed
+enumerations or hardcoded strings — so adding a language (packs, RTL
+included) never alters a table or a code path.
 
-Everything lands through the same gates: English-only repo, PR + green CI,
-repository docs and public wiki move with the code (anti-drift enforced for
-the repository set), ADRs for decisions, no secrets/personal data,
-deterministic builds, WCAG 2.2 AA baseline, and the static-first contract —
-the exported site never needs the admin running.
+Everything lands through the same gates: English-only repo, PR + green
+CI, repository docs and wiki move with the code, ADRs for decisions,
+no secrets or personal data, deterministic builds, WCAG 2.2 AA
+baseline, and the static-first contract — the exported site never
+needs the admin running.

@@ -145,3 +145,13 @@ Security work is part of each milestone's definition of done:
   already a theme rule); accessibility (WCAG 2.2 AA) checks in CI.
 - **Go-public:** the checklist in section 4 was executed before visibility
   changed and remains the audit record.
+
+## Deployment credentials (#156)
+
+Deployment providers authenticate with secrets that never enter the
+repository, the artifact, the interface or the logs. The standing
+rules for the automated providers: encrypted at rest, least-privilege
+tokens, configurable timeouts, concurrent-deployment protection, every
+operation audited, and no editor-supplied command execution under any
+circumstance. The demo pipeline already models the separation: the job
+holding the deployment token never executes project code.

@@ -341,7 +341,7 @@ refused — validation errors block the build before anything is
 written, so a failed publish never leaves a half-updated output. The
 editorial flow ends here and starts again here: further changes
 republish to the same destination
-([#152](https://github.com/ph7x-Systems/sardine-cms/issues/152) brings
+([#156](https://github.com/ph7x-Systems/sardine-cms/issues/156) brings
 the transport leg, status, failure preservation and rollback fully
 into the panel).
 

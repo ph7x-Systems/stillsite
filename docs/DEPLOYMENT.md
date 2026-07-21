@@ -21,7 +21,7 @@ supported way of getting a build onto public infrastructure.
   artifact (same content + same clock → same bytes).
 - A **deployment target** shapes the artifact for its host (extra
   files: `staticwebapp.config.json`, an nginx server block, …) and —
-  as [#152](https://github.com/ph7x-Systems/sardine-cms/issues/152)
+  as [#156](https://github.com/ph7x-Systems/sardine-cms/issues/156)
   lands — transports it there from the panel.
 - **Public hosting** serves the result: Azure Static Web Apps, your
   own Nginx, S3/CloudFront, GitHub Pages, Netlify, or any static host.
@@ -115,7 +115,7 @@ prebuilt artifact only (see model 4).
 - **Partial failure**: a build either completes or records a failure —
   the output directory is written only from a finished artifact. For
   the network leg, prefer transports that activate atomically (SWA,
-  Netlify) or the symlink pattern; #152's contract makes
+  Netlify) or the symlink pattern; #156's contract makes
   keep-previous-on-failure and rollback panel-level guarantees.
 
 ## The deployment provider contract
@@ -139,7 +139,7 @@ touching the core:
 | Phase | Meaning | Status |
 | --- | --- | --- |
 | Generation | build + target extras | ✅ shipped (`extra_files`) |
-| Transport | move the artifact to the host | 🔜 #152 (today: your pipeline/CLI) |
-| Activation | the new version goes live atomically | 🔜 #152 (host-native or symlink) |
-| Health check | the destination serves the new version | 🔜 #152 |
-| Rollback | return to the last valid version | 🔜 #152 |
+| Transport | move the artifact to the host | 🔜 #156 (today: your pipeline/CLI) |
+| Activation | the new version goes live atomically | 🔜 #156 (host-native or symlink) |
+| Health check | the destination serves the new version | 🔜 #156 |
+| Rollback | return to the last valid version | 🔜 #156 |

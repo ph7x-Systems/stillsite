@@ -10,7 +10,7 @@ shareable, license it, name it, and get it listed. Policy rationale lives in
 | Kind | Contract | Conformance gate |
 | --- | --- | --- |
 | Theme | `Theme` protocol + `register_theme` ([THEME_GUIDE.md](THEME_GUIDE.md)) | Theme checklist (THEME_GUIDE) + output-integrity suite |
-| Deployment target | `Target` protocol + `register_target` (ADR-0005); the five-phase provider model (generation → transport → activation → health → rollback) is documented in [DEPLOYMENT.md](DEPLOYMENT.md) — generation ships today, the rest is [#152](https://github.com/ph7x-Systems/sardine-cms/issues/152) | Adapter tests over a built artifact |
+| Deployment target | `Target` protocol + `register_target` (ADR-0005); the five-phase provider model (generation → transport → activation → health → rollback) is documented in [DEPLOYMENT.md](DEPLOYMENT.md) — generation ships today, the rest is [#156](https://github.com/ph7x-Systems/sardine-cms/issues/156) | Adapter tests over a built artifact |
 | Storage backend | `StorageBackend` + `register_backend` (ADR-0004) | The storage conformance suite, unchanged |
 | Extensions | `sardine.extensions` (ADR-0028): rules, build steps, registries, CLI and section hints | Explicit activation + relevant conformance suites |
 | Language pack | `LanguagePack` via `Extension.language_packs` (ADR-0034; [LANGUAGE_PACK_GUIDE.md](LANGUAGE_PACK_GUIDE.md)) | End-to-end build with the pack's tag (test-suite pattern); RTL packs ride the CI axe gate |
