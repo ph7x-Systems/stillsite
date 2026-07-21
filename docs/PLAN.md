@@ -309,9 +309,12 @@ Ordered by dependency; every 🧭 item begins with its ADR:
       language end to end (config, build, labels, dates, `dir="rtl"`),
       proven with a fictional RTL pack; loud failure without the
       extension
-- [ ] ADR-0034 remaining phases: configurable source language → bundled
-      five's data migrates into packs (+ logical CSS in themes) → admin
-      catalogs from packs → ecosystem pack guide
+- [x] ADR-0034: the bundled five dissolve into their packs — labels,
+      months and date patterns live in `cms_core.language_packs`, the
+      `cms_build.ui` tables are gone, resolution is one uniform path
+- [ ] ADR-0034 remaining phases: configurable source language →
+      logical CSS in themes → admin catalogs from packs → ecosystem
+      pack guide + data-only packs
 - [ ] Bulk actions on the content lists (multi-select workflow + trash)
 - [ ] Admin-wide search (articles, pages, media from one box)
 - [ ] Scheduled unpublish: `unpublish_at` mirroring ADR-0024's contract

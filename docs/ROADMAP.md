@@ -103,7 +103,7 @@ paid add-ons, it is this product's core — the bar is to stay ahead.
 | Side-by-side translation editing | ✅ EN source next to each translation, per field | — |
 | Language switcher stays on page | ✅ falls back to that language's home | — |
 | Scalable coverage in lists | ✅ constant-width summary (`3/4 · 1 missing`) — lists never grow horizontally per language | — |
-| Bundled five as full packs | 🟡 identity + direction are packs; labels/months/dates still hardcoded in `cms_build.ui` | 🔜 dissolve the tables into the five packs (next ADR-0034 slice) |
+| Bundled five as full packs | ✅ labels, months and date patterns live in each pack; the `cms_build.ui` tables are gone — no language data outside packs (admin catalogs join in the admin phase) | — |
 | Configurable source language | ❌ EN is the source today | 🔜 `[site] source_language`, default `en` (ADR-0034 slice) |
 | Admin panel languages from packs | ❌ four shipped catalogs are repository files | 🔜 packs carry admin catalogs; the panel offers every activated pack's language (ADR-0034 admin phase) |
 | RTL end to end | 🟡 `dir="rtl"` on the markup | 🔜 logical-CSS migration in themes + admin, RTL pack through the a11y gate (ADR-0034 theme phase) |

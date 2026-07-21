@@ -2,11 +2,10 @@
 
 A pack carries the locale's identity (tag), its text direction, the
 site-facing UI labels, deterministic date formatting and optionally an
-admin catalog. The five bundled languages are registered here with
-direction only — their labels and date tables still live where they
-always did (`cms_build.ui`) and migrate into packs in the ADR's theme
-phase; packs already carry the full data for every NEW tag, which is
-what makes a third-party language work end to end today.
+admin catalog. Every language is a pack — the bundled five
+included (ADR-0034 amendment): their labels, month names and date
+patterns live here and nowhere else. Admin catalogs join the packs in
+the ADR's admin phase.
 """
 
 from collections.abc import Mapping
@@ -58,7 +57,191 @@ def direction(tag: str) -> Literal["ltr", "rtl"]:
     return pack.direction if pack is not None else "ltr"
 
 
-# The bundled five: identity and direction here; labels and date tables
-# remain in cms_build.ui until the ADR-0034 theme phase migrates them.
-for _tag in ("en", "pt-pt", "es", "fr", "de"):
-    register_language_pack(LanguagePack(tag=_tag))
+# The bundled five, as full packs (ADR-0034 amendment: no privileged
+# languages) — every label, month name and date pattern lives here,
+# nowhere else. Admin catalogs join in the ADR's admin phase.
+register_language_pack(
+    LanguagePack(
+        tag="en",
+        direction="ltr",
+        site_labels={
+            "blog": "Blog",
+            "search": "Search",
+            "admin": "Admin",
+            "comments": "Join the discussion",
+            "view-cards": "Cards",
+            "view-list": "List",
+            "back": "Back to the blog",
+            "blog-title": "Blog",
+            "blog-eyebrow": "Writing",
+            "min-read": "min read",
+            "not-found": "Page not found",
+            "error-unauthorized": "Sign-in required",
+            "error-forbidden": "Access denied",
+            "error-server": "Something went wrong",
+        },
+        month_names=(
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+        ),
+        date_pattern="{day} {month} {year}",
+    )
+)
+register_language_pack(
+    LanguagePack(
+        tag="pt-pt",
+        direction="ltr",
+        site_labels={
+            "blog": "Blog",
+            "search": "Pesquisar",
+            "admin": "Admin",
+            "comments": "Participar na discussão",
+            "view-cards": "Cartões",
+            "view-list": "Lista",
+            "back": "Voltar ao blog",
+            "blog-title": "Blog",
+            "blog-eyebrow": "Escrita",
+            "min-read": "min de leitura",
+            "not-found": "Página não encontrada",
+            "error-unauthorized": "Autenticação necessária",
+            "error-forbidden": "Acesso negado",
+            "error-server": "Algo correu mal",
+        },
+        month_names=(
+            "janeiro",
+            "fevereiro",
+            "março",
+            "abril",
+            "maio",
+            "junho",
+            "julho",
+            "agosto",
+            "setembro",
+            "outubro",
+            "novembro",
+            "dezembro",
+        ),
+        date_pattern="{day} de {month} de {year}",
+    )
+)
+register_language_pack(
+    LanguagePack(
+        tag="es",
+        direction="ltr",
+        site_labels={
+            "blog": "Blog",
+            "search": "Buscar",
+            "admin": "Admin",
+            "comments": "Únete a la conversación",
+            "view-cards": "Tarjetas",
+            "view-list": "Lista",
+            "back": "Volver al blog",
+            "blog-title": "Blog",
+            "blog-eyebrow": "Escritura",
+            "min-read": "min de lectura",
+            "not-found": "Página no encontrada",
+            "error-unauthorized": "Se requiere iniciar sesión",
+            "error-forbidden": "Acceso denegado",
+            "error-server": "Algo salió mal",
+        },
+        month_names=(
+            "enero",
+            "febrero",
+            "marzo",
+            "abril",
+            "mayo",
+            "junio",
+            "julio",
+            "agosto",
+            "septiembre",
+            "octubre",
+            "noviembre",
+            "diciembre",
+        ),
+        date_pattern="{day} {month} {year}",
+    )
+)
+register_language_pack(
+    LanguagePack(
+        tag="fr",
+        direction="ltr",
+        site_labels={
+            "blog": "Blog",
+            "search": "Rechercher",
+            "admin": "Admin",
+            "comments": "Rejoindre la discussion",
+            "view-cards": "Cartes",
+            "view-list": "Liste",
+            "back": "Retour au blog",
+            "blog-title": "Blog",
+            "blog-eyebrow": "Écrits",
+            "min-read": "min de lecture",
+            "not-found": "Page introuvable",
+            "error-unauthorized": "Connexion requise",
+            "error-forbidden": "Accès refusé",
+            "error-server": "Une erreur est survenue",
+        },
+        month_names=(
+            "janvier",
+            "février",
+            "mars",
+            "avril",
+            "mai",
+            "juin",
+            "juillet",
+            "août",
+            "septembre",
+            "octobre",
+            "novembre",
+            "décembre",
+        ),
+        date_pattern="{day} {month} {year}",
+    )
+)
+register_language_pack(
+    LanguagePack(
+        tag="de",
+        direction="ltr",
+        site_labels={
+            "blog": "Blog",
+            "search": "Suchen",
+            "admin": "Admin",
+            "comments": "An der Diskussion teilnehmen",
+            "view-cards": "Karten",
+            "view-list": "Liste",
+            "back": "Zurueck zum Blog",
+            "blog-title": "Blog",
+            "blog-eyebrow": "Notizen",
+            "min-read": "Min. Lesezeit",
+            "not-found": "Seite nicht gefunden",
+            "error-unauthorized": "Anmeldung erforderlich",
+            "error-forbidden": "Zugriff verweigert",
+            "error-server": "Etwas ist schiefgelaufen",
+        },
+        month_names=(
+            "Januar",
+            "Februar",
+            "März",
+            "April",
+            "Mai",
+            "Juni",
+            "Juli",
+            "August",
+            "September",
+            "Oktober",
+            "November",
+            "Dezember",
+        ),
+        date_pattern="{day}. {month} {year}",
+    )
+)

@@ -5,6 +5,14 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **No language data outside packs** (M8, ADR-0034): the bundled five
+  languages' UI labels, month names and date patterns moved into their
+  `LanguagePack`s and the hardcoded tables in `cms_build.ui` are gone —
+  label and date resolution is now one uniform path (project override →
+  the language's pack → the source pack → the key), identical output
+  proven by the full suite. Contributing a language and shipping the
+  bundled ones now use exactly the same mechanism.
+
 - **Lists stop growing with languages**: the per-language badge strip in
   the content lists becomes a constant-width coverage summary
   (`3/4 · 1 missing`) linking to the editor — with unbounded language
