@@ -7,6 +7,7 @@ one transaction.
 """
 
 import json
+from collections.abc import Callable
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
@@ -18,6 +19,7 @@ from cms_core.media import MediaAsset
 from cms_core.menus import MenuItem
 from cms_core.models import Article, ArticleContent
 from cms_core.pages import Page, PageContent, Section, SectionContent
+from cms_core.preview_links import PreviewLink
 from cms_core.search import SearchHit, like_pattern
 from cms_core.states import ContentStatus
 from cms_core.storage.base import StorageBackend
@@ -849,6 +851,87 @@ class PostgresBackend(StorageBackend):
                 "DELETE FROM form_submissions WHERE received_at < %s", (before.isoformat(),)
             )
         return cursor.rowcount
+
+    # Preview links (ADR-0042)
+
+    def save_preview_link(self, link: PreviewLink) -> None:
+        with self._connection.transaction():
+            self._connection.execute(
+                "INSERT INTO preview_links"
+                " (id, entry_kind, entry_id, created_at, expires_at, revoked)"
+                " VALUES (%s, %s, %s, %s, %s, %s)",
+                (
+                    link.id,
+                    link.entry_kind,
+                    link.entry_id,
+                    link.created_at.isoformat(),
+                    link.expires_at.isoformat(),
+                    1 if link.revoked else 0,
+                ),
+            )
+
+    def load_preview_link(self, link_id: str) -> PreviewLink | None:
+        row = self._connection.execute(
+            "SELECT id, entry_kind, entry_id, created_at, expires_at, revoked"
+            " FROM preview_links WHERE id = %s",
+            (link_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return PreviewLink(
+            id=row[0],
+            entry_kind=row[1],
+            entry_id=row[2],
+            created_at=datetime.fromisoformat(row[3]),
+            expires_at=datetime.fromisoformat(row[4]),
+            revoked=bool(row[5]),
+        )
+
+    def list_preview_links(self, entry_kind: str, entry_id: str) -> list[PreviewLink]:
+        rows = self._connection.execute(
+            "SELECT id, entry_kind, entry_id, created_at, expires_at, revoked"
+            " FROM preview_links WHERE entry_kind = %s AND entry_id = %s"
+            " ORDER BY created_at DESC",
+            (entry_kind, entry_id),
+        ).fetchall()
+        return [
+            PreviewLink(
+                id=row[0],
+                entry_kind=row[1],
+                entry_id=row[2],
+                created_at=datetime.fromisoformat(row[3]),
+                expires_at=datetime.fromisoformat(row[4]),
+                revoked=bool(row[5]),
+            )
+            for row in rows
+        ]
+
+    def revoke_preview_link(self, link_id: str) -> bool:
+        with self._connection.transaction():
+            cursor = self._connection.execute(
+                "UPDATE preview_links SET revoked = 1 WHERE id = %s AND revoked = 0",
+                (link_id,),
+            )
+        return cursor.rowcount > 0
+
+    def get_or_create_secret(self, name: str, factory: Callable[[], str]) -> str:
+        row = self._connection.execute(
+            "SELECT value FROM app_secrets WHERE name = %s", (name,)
+        ).fetchone()
+        if row is not None:
+            return str(row[0])
+        value = factory()
+        with self._connection.transaction():
+            self._connection.execute(
+                "INSERT INTO app_secrets (name, value) VALUES (%s, %s)"
+                " ON CONFLICT (name) DO NOTHING",
+                (name, value),
+            )
+        row = self._connection.execute(
+            "SELECT value FROM app_secrets WHERE name = %s", (name,)
+        ).fetchone()
+        assert row is not None
+        return str(row[0])
 
     def delete_expired_sessions(self, now: datetime) -> int:
         with self._connection.transaction():

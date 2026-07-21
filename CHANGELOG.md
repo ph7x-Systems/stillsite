@@ -10,6 +10,12 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- External preview links: signed (HMAC, per-instance stored key),
+  always expiring, revocable from the entry's editor card,
+  unauthenticated but minimal in scope — one entry through the real
+  theme with a localized draft banner; publication state untouched;
+  creation and revocation audited (migration 26).
+
 - Advisory SEO hints in the validation report (title/description
   length; warnings only, `[validation] disabled` opts out — the new
   per-project rule switch) and automatic redirects when a published

@@ -165,3 +165,19 @@ deletion of their subject, never block the action they observe, and
 are readable only by admins; retention is configurable and pruned at
 startup. This is the auditing layer the automated-deployment work
 (#156) plugs into.
+
+
+## External preview links
+
+Preview links are a deliberate, bounded hole in the authentication
+wall. The token is HMAC-SHA256-signed over the entry, the link id and
+the expiry, keyed by a per-instance secret stored in the database —
+never in configuration or any artifact; a tampered expiry breaks the
+signature. Every link expires (30-day maximum), revocation is stored
+and immediate, and verification is constant-time. A link renders one
+entry only, never listings or other unpublished content, and never
+changes publication state. The residual risk is a leaked link being
+readable until expiry or revocation; mitigations are short default
+lifetimes, one-click revocation on the entry's card and the audit
+trail recording every creation and revocation (link id only, never
+the token).

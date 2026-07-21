@@ -13,7 +13,7 @@ exactly like the PostgreSQL backend.
 import json
 import re
 from abc import abstractmethod
-from collections.abc import Iterator, Sequence
+from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
 from datetime import datetime
 from typing import Any
@@ -26,6 +26,7 @@ from cms_core.media import MediaAsset
 from cms_core.menus import MenuItem
 from cms_core.models import Article, ArticleContent
 from cms_core.pages import Page, PageContent, Section, SectionContent
+from cms_core.preview_links import PreviewLink
 from cms_core.search import SearchHit, like_pattern
 from cms_core.states import ContentStatus
 from cms_core.storage.base import StorageBackend
@@ -47,6 +48,7 @@ KEY_COLUMNS = (
     "key",
     "entity_type",
     "entity_id",
+    "name",
 )
 
 
@@ -882,6 +884,85 @@ class DbApiBackend(StorageBackend):
             )
             count = int(cursor.rowcount)
         return count
+
+    # Preview links (ADR-0042)
+
+    def save_preview_link(self, link: PreviewLink) -> None:
+        with self._tx():
+            self._execute(
+                "INSERT INTO preview_links"
+                " (id, entry_kind, entry_id, created_at, expires_at, revoked)"
+                " VALUES (%s, %s, %s, %s, %s, %s)",
+                (
+                    link.id,
+                    link.entry_kind,
+                    link.entry_id,
+                    link.created_at.isoformat(),
+                    link.expires_at.isoformat(),
+                    1 if link.revoked else 0,
+                ),
+            )
+
+    def load_preview_link(self, link_id: str) -> PreviewLink | None:
+        row = self._fetchone(
+            "SELECT id, entry_kind, entry_id, created_at, expires_at, revoked"
+            " FROM preview_links WHERE id = %s",
+            (link_id,),
+        )
+        if row is None:
+            return None
+        return PreviewLink(
+            id=row[0],
+            entry_kind=row[1],
+            entry_id=row[2],
+            created_at=datetime.fromisoformat(row[3]),
+            expires_at=datetime.fromisoformat(row[4]),
+            revoked=bool(row[5]),
+        )
+
+    def list_preview_links(self, entry_kind: str, entry_id: str) -> list[PreviewLink]:
+        rows = self._fetchall(
+            "SELECT id, entry_kind, entry_id, created_at, expires_at, revoked"
+            " FROM preview_links WHERE entry_kind = %s AND entry_id = %s"
+            " ORDER BY created_at DESC",
+            (entry_kind, entry_id),
+        )
+        return [
+            PreviewLink(
+                id=row[0],
+                entry_kind=row[1],
+                entry_id=row[2],
+                created_at=datetime.fromisoformat(row[3]),
+                expires_at=datetime.fromisoformat(row[4]),
+                revoked=bool(row[5]),
+            )
+            for row in rows
+        ]
+
+    def revoke_preview_link(self, link_id: str) -> bool:
+        with self._tx():
+            cursor = self._execute(
+                "UPDATE preview_links SET revoked = 1 WHERE id = %s AND revoked = 0",
+                (link_id,),
+            )
+            count = int(cursor.rowcount)
+        return count > 0
+
+    def get_or_create_secret(self, name: str, factory: Callable[[], str]) -> str:
+        row = self._fetchone("SELECT value FROM app_secrets WHERE name = %s", (name,))
+        if row is not None:
+            return str(row[0])
+        value = factory()
+        try:
+            with self._tx():
+                self._execute(
+                    "INSERT INTO app_secrets (name, value) VALUES (%s, %s)", (name, value)
+                )
+        except Exception:
+            pass  # another process created it first — read theirs below
+        row = self._fetchone("SELECT value FROM app_secrets WHERE name = %s", (name,))
+        assert row is not None
+        return str(row[0])
 
     def delete_expired_sessions(self, now: datetime) -> int:
         with self._tx():

@@ -102,6 +102,7 @@ register_language_pack(
             "form-field-email": "“{label}” must be a valid e-mail address.",
             "form-back": "Back to the page",
             "form-rate-limited": "Too many submissions — please try again in a moment.",
+            "preview-banner": "Draft preview — not published",
         },
         month_names=(
             "January",
@@ -148,6 +149,7 @@ register_language_pack(
             "form-field-email": "“{label}” tem de ser um endereço de e-mail válido.",
             "form-back": "Voltar à página",
             "form-rate-limited": "Demasiados envios — tente novamente dentro de momentos.",
+            "preview-banner": "Pré-visualização de rascunho — não publicado",
         },
         month_names=(
             "janeiro",
@@ -194,6 +196,7 @@ register_language_pack(
             "form-field-email": "“{label}” debe ser una dirección de correo válida.",
             "form-back": "Volver a la página",
             "form-rate-limited": "Demasiados envíos — inténtelo de nuevo en un momento.",
+            "preview-banner": "Vista previa de borrador — no publicado",
         },
         month_names=(
             "enero",
@@ -240,6 +243,7 @@ register_language_pack(
             "form-field-email": "“{label}” doit être une adresse e-mail valide.",
             "form-back": "Retour à la page",
             "form-rate-limited": "Trop d'envois — veuillez réessayer dans un instant.",
+            "preview-banner": "Aperçu de brouillon — non publié",
         },
         month_names=(
             "janvier",
@@ -286,6 +290,7 @@ register_language_pack(
             "form-field-email": "„{label}“ muss eine gültige E-Mail-Adresse sein.",
             "form-back": "Zurück zur Seite",
             "form-rate-limited": "Zu viele Einsendungen — bitte versuchen Sie es gleich erneut.",
+            "preview-banner": "Entwurfsvorschau — nicht veröffentlicht",
         },
         month_names=(
             "Januar",

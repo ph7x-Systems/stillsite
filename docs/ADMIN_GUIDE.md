@@ -392,6 +392,21 @@ builder keeps emitting fallback pages and target rules from the same
 `[redirects]` table you can also edit by hand. Each recorded redirect
 lands in the Activity trail.
 
+## External preview links
+
+Every article and page editor carries an **External preview links**
+card: create a link with a chosen lifetime (1–30 days), copy it, see
+the active links with their expiry, revoke any of them. Whoever opens
+the link — no account needed — sees exactly that entry rendered by the
+real theme, under a visible draft banner in the viewer's language, in
+any of the site's languages the entry is translated into (missing
+translations fall back to the source). The entry's publication state
+never changes, and creation and revocation land in the Activity trail.
+
+A leaked link is readable until it expires or is revoked — keep
+lifetimes short and revoke from the card when in doubt (the security
+policy documents this surface).
+
 ## Forms
 
 A page section of kind **form** turns into a working visitor form.

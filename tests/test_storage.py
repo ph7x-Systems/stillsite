@@ -625,3 +625,31 @@ def test_seo_round_trips_on_articles_and_pages(backend: StorageBackend) -> None:
     assert loaded_page is not None
     assert loaded_page.source.seo == seo
     assert loaded_page.translations[Language.DE].content.seo.noindex is True
+
+
+def test_preview_links_round_trip_revoke_and_secret(backend: StorageBackend) -> None:
+    """ADR-0042: link records survive restarts, revocation is stored
+    and idempotent, and the signing secret is created exactly once."""
+    from cms_core import PreviewLink
+
+    link = PreviewLink(
+        id="lnk-1",
+        entry_kind="article",
+        entry_id="launch",
+        created_at=datetime(2026, 7, 22, 10, 0, tzinfo=UTC),
+        expires_at=datetime(2026, 7, 29, 10, 0, tzinfo=UTC),
+    )
+    backend.save_preview_link(link)
+    loaded = backend.load_preview_link("lnk-1")
+    assert loaded == link
+    assert backend.list_preview_links("article", "launch") == [link]
+    assert backend.list_preview_links("page", "launch") == []
+
+    assert backend.revoke_preview_link("lnk-1")
+    assert not backend.revoke_preview_link("lnk-1")  # already revoked
+    revoked = backend.load_preview_link("lnk-1")
+    assert revoked is not None and revoked.revoked is True
+
+    first = backend.get_or_create_secret("probe-secret", lambda: "alpha")
+    second = backend.get_or_create_secret("probe-secret", lambda: "beta")
+    assert first == "alpha" and second == "alpha"  # created exactly once

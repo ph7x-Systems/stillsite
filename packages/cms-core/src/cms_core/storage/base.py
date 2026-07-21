@@ -7,6 +7,7 @@ source of truth is the JSON/Markdown export (:mod:`cms_core.export`).
 """
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from datetime import datetime
 from types import TracebackType
 
@@ -17,6 +18,7 @@ from cms_core.media import MediaAsset
 from cms_core.menus import MenuItem
 from cms_core.models import Article
 from cms_core.pages import Page
+from cms_core.preview_links import PreviewLink
 from cms_core.search import SearchHit
 
 
@@ -77,6 +79,21 @@ class StorageBackend(ABC):
 
     @abstractmethod
     def prune_form_submissions(self, before: datetime) -> int: ...
+
+    @abstractmethod
+    def save_preview_link(self, link: PreviewLink) -> None: ...
+
+    @abstractmethod
+    def load_preview_link(self, link_id: str) -> PreviewLink | None: ...
+
+    @abstractmethod
+    def list_preview_links(self, entry_kind: str, entry_id: str) -> list[PreviewLink]: ...
+
+    @abstractmethod
+    def revoke_preview_link(self, link_id: str) -> bool: ...
+
+    @abstractmethod
+    def get_or_create_secret(self, name: str, factory: Callable[[], str]) -> str: ...
 
     def search_content(self, needle: str, limit: int = 20) -> list[SearchHit]:
         """Find articles, pages, sections and media whose text contains

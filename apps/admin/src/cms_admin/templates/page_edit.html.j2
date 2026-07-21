@@ -1,5 +1,5 @@
 {% extends "shell.html.j2" %}
-{% from "_fields.html.j2" import seo_fields, text_field, textarea_field, datetime_field, errors_block, state_badge, status_tag, translation_badges with context %}
+{% from "_fields.html.j2" import preview_links_card, seo_fields, text_field, textarea_field, datetime_field, errors_block, state_badge, status_tag, translation_badges with context %}
 {% block title %}{{ page.id }} — Sardine CMS admin{% endblock %}
 {% block header %}
 <nav aria-label="Breadcrumb" class="admin-breadcrumb"><a href="/pages">&larr; {{ _("Pages") }}</a></nav>
@@ -202,4 +202,5 @@
 {% include "_design_preview.html.j2" %}
 {% set base_url = "/pages/" ~ page.id %}
 {% include "_revisions.html.j2" %}
+{{ preview_links_card(preview_kind, preview_entry_id, preview_links, csrf_token) }}
 {% endblock %}

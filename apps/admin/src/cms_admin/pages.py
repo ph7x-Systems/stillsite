@@ -54,6 +54,7 @@ from cms_admin.audit import record as audit_record
 from cms_admin.auth import current_session, enforce_csrf, get_db
 from cms_admin.navigation import AdminScreen, register_screen
 from cms_admin.notifications import notify_transition
+from cms_admin.preview_links import links_context
 from cms_admin.publishing import _project, _site_source, _site_targets, refresh_entry_preview
 from cms_admin.redirects import record_slug_redirects
 from cms_admin.security import admin_path
@@ -311,6 +312,7 @@ async def page_edit_form(
             "preview_path": preview_path,
             "preview_ready": preview_ready,
             **_editor_context(request, page, role=user.role),
+            **await links_context(request, "page", page_id),
         },
     )
 

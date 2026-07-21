@@ -8,6 +8,19 @@ changes live in [CHANGELOG.md](CHANGELOG.md); the product map in
 
 ## Unreleased (towards 0.3.0)
 
+- **Send a preview link** (#139): editorial approval no longer needs
+  an account. Each article and page editor carries an External preview
+  links card — create with a chosen lifetime (up to 30 days), copy,
+  revoke, active links listed. The link is HMAC-signed over the entry,
+  the link id and the expiry with a per-instance key stored in the
+  database, so a tampered expiry breaks the signature; revocation is
+  stored and immediate; verification injects the clock and is tested
+  clock-independently. The viewer sees exactly one entry through the
+  real theme under a draft banner in their language (translations
+  fall back to the source), publication state never changes, and
+  creation/revocation land in the audit trail with the link id, never
+  the token. The leak surface is documented in the security policy.
+
 - **Links survive renames, and hints stay hints** (#138, final part):
   renaming a published entry's slug records a redirect from every old
   address automatically — per language, flattened to a single hop

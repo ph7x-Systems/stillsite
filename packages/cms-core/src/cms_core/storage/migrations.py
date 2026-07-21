@@ -214,4 +214,18 @@ MIGRATIONS: tuple[str, ...] = (
     ALTER TABLE pages ADD COLUMN seo_json TEXT NOT NULL DEFAULT '{}';
     ALTER TABLE page_translations ADD COLUMN seo_json TEXT NOT NULL DEFAULT '{}';
     """,
+    """
+    CREATE TABLE preview_links (
+        id TEXT PRIMARY KEY,
+        entry_kind TEXT NOT NULL,
+        entry_id TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        expires_at TEXT NOT NULL,
+        revoked INTEGER NOT NULL DEFAULT 0
+    );
+    CREATE TABLE app_secrets (
+        name TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+    );
+    """,
 )

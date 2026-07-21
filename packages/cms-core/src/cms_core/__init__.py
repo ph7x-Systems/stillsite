@@ -29,6 +29,7 @@ from cms_core.models import (
 )
 from cms_core.pages import Page, PageContent, Section, SectionContent, new_page
 from cms_core.portable import import_content_json
+from cms_core.preview_links import PreviewLink
 from cms_core.section_kinds import SectionKindSpec
 from cms_core.states import ContentStatus, TranslationState
 from cms_core.storage import StorageBackend, create_storage
@@ -65,6 +66,7 @@ __all__ = [
     "Page",
     "PageContent",
     "PasswordReset",
+    "PreviewLink",
     "Role",
     "Section",
     "SectionContent",

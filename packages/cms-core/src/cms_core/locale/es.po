@@ -1505,3 +1505,21 @@ msgstr "la longitud de la descripción se lee mal en los resultados de búsqueda
 
 msgid "Search snippets read best with a title under 60 characters and a description between 50 and 160; advisory only"
 msgstr "Los fragmentos de búsqueda se leen mejor con un título de hasta 60 caracteres y una descripción entre 50 y 160; solo orientativo"
+
+msgid "External preview links"
+msgstr "Enlaces de vista previa externos"
+
+msgid "Valid for (days)"
+msgstr "Válido por (días)"
+
+msgid "Create preview link"
+msgstr "Crear enlace de vista previa"
+
+msgid "Anyone with the link sees a draft banner; publication never changes."
+msgstr "Quien tenga el enlace ve una franja de borrador; la publicación nunca cambia."
+
+msgid "Revoke"
+msgstr "Revocar"
+
+msgid "No active preview links."
+msgstr "Sin enlaces de vista previa activos."
