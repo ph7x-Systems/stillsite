@@ -11,7 +11,7 @@ from datetime import UTC, datetime
 from pydantic import Field, field_validator, model_validator
 
 from cms_core.states import ContentStatus
-from cms_core.translatable import ChecksummedContent, TranslatableModel
+from cms_core.translatable import ChecksummedContent, Seo, TranslatableModel
 
 SCHEMA_VERSION = 2
 
@@ -23,9 +23,13 @@ class ArticleContent(ChecksummedContent):
     summary: str = ""
     body_markdown: str = ""
     slug: str | None = Field(default=None, pattern=SLUG_PATTERN)
+    seo: Seo = Field(default_factory=Seo)
 
     def checksum_payload(self) -> tuple[str, ...]:
-        return (self.title, self.summary, self.body_markdown, self.slug or "")
+        base = (self.title, self.summary, self.body_markdown, self.slug or "")
+        # A default Seo keeps the pre-ADR-0041 checksum: adding the
+        # field must not flip existing translations to outdated.
+        return base if self.seo.is_default else (*base, self.seo.checksum_fragment())
 
 
 class Article(TranslatableModel[ArticleContent]):

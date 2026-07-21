@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 
 from cms_core import Language
 from cms_core.language_packs import direction
+from cms_core.translatable import Seo
 
 from cms_build.config import SiteConfig
 from cms_build.urls import absolute
@@ -53,6 +54,11 @@ class Head:
     og_locale: str
     og_locale_alternates: tuple[str, ...]
     json_ld: str | None = None
+    robots: str = "index, follow"
+    """The robots directive — ``noindex, follow`` when the entry says so
+    (ADR-0041); themes render it verbatim, exactly once."""
+    og_image: str = ""
+    """Absolute URL of the social-card image; empty emits no tag."""
     direction: str = "ltr"
     """Text direction of the page language (ADR-0034); themes put
     dir="rtl" on <html> when it says so."""
@@ -74,7 +80,12 @@ def build_head(
     paths_by_language: dict[Language, str],
     og_type: str = "website",
     json_ld: str | None = None,
+    seo: Seo | None = None,
+    og_image_url: str = "",
 ) -> Head:
+    """Derive the head; per-entry SEO overrides (ADR-0041) enter here —
+    one derivation point, every tag emitted exactly once."""
+    overrides = seo or Seo()
     ordered = [lang for lang in config.all_languages if lang in paths_by_language]
     alternates = [
         Alternate(hreflang=hreflang_code(lang), href=absolute(config, paths_by_language[lang]))
@@ -88,9 +99,11 @@ def build_head(
             )
         )
     return Head(
-        title=title,
-        description=description,
-        canonical=absolute(config, paths_by_language[language]),
+        title=overrides.seo_title or title,
+        description=overrides.seo_description or description,
+        canonical=overrides.canonical or absolute(config, paths_by_language[language]),
+        robots="noindex, follow" if overrides.noindex else "index, follow",
+        og_image=og_image_url,
         language=language,
         site_name=config.name,
         og_type=og_type,

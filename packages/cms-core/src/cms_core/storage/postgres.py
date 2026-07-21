@@ -22,7 +22,7 @@ from cms_core.search import SearchHit, like_pattern
 from cms_core.states import ContentStatus
 from cms_core.storage.base import StorageBackend
 from cms_core.storage.migrations import MIGRATIONS
-from cms_core.translatable import Translation
+from cms_core.translatable import Seo, Translation
 
 if TYPE_CHECKING:
     import psycopg
@@ -42,6 +42,13 @@ def _connect(dsn: str) -> "psycopg.Connection[Any]":
     # never committed - writes stayed invisible to other connections
     # and vanished on close (caught by the cross-connection test).
     return psycopg.connect(dsn, autocommit=True)
+
+
+def _seo_from_json(raw: object) -> Seo:
+    """Parse a stored seo_json payload; anything falsy is the default."""
+    if not raw:
+        return Seo()
+    return Seo(**json.loads(str(raw)))
 
 
 class PostgresBackend(StorageBackend):
@@ -80,8 +87,8 @@ class PostgresBackend(StorageBackend):
                 "INSERT INTO articles"
                 " (id, status, created_at, updated_at, title, summary, body_markdown, slug,"
                 "  category, tags_json, cover, publish_at, deleted_at, featured, author,"
-                "  fields_json, unpublish_at)"
-                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                "  fields_json, unpublish_at, seo_json)"
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 " ON CONFLICT (id) DO UPDATE SET"
                 " status = excluded.status, updated_at = excluded.updated_at,"
                 " title = excluded.title, summary = excluded.summary,"
@@ -90,7 +97,7 @@ class PostgresBackend(StorageBackend):
                 " cover = excluded.cover, publish_at = excluded.publish_at,"
                 " deleted_at = excluded.deleted_at, featured = excluded.featured,"
                 " author = excluded.author, fields_json = excluded.fields_json,"
-                " unpublish_at = excluded.unpublish_at",
+                " unpublish_at = excluded.unpublish_at, seo_json = excluded.seo_json",
                 (
                     article.id,
                     article.status.value,
@@ -109,6 +116,7 @@ class PostgresBackend(StorageBackend):
                     article.author,
                     json.dumps(article.fields, sort_keys=True),
                     article.unpublish_at.isoformat() if article.unpublish_at else None,
+                    json.dumps(article.source.seo.model_dump(), sort_keys=True),
                 ),
             )
             self._connection.execute(
@@ -120,8 +128,8 @@ class PostgresBackend(StorageBackend):
                 self._connection.execute(
                     "INSERT INTO translations"
                     " (article_id, language, title, summary, body_markdown, slug,"
-                    "  source_checksum)"
-                    " VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                    "  source_checksum, seo_json)"
+                    " VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
                     (
                         article.id,
                         language.value,
@@ -130,6 +138,7 @@ class PostgresBackend(StorageBackend):
                         translation.content.body_markdown,
                         translation.content.slug,
                         translation.source_checksum,
+                        json.dumps(translation.content.seo.model_dump(), sort_keys=True),
                     ),
                 )
 
@@ -137,20 +146,24 @@ class PostgresBackend(StorageBackend):
         row = self._connection.execute(
             "SELECT id, status, created_at, updated_at, title, summary, body_markdown, slug,"
             " category, tags_json, cover, publish_at, deleted_at, featured, author, fields_json,"
-            " unpublish_at FROM articles WHERE id = %s",
+            " unpublish_at, seo_json FROM articles WHERE id = %s",
             (article_id,),
         ).fetchone()
         if row is None:
             return None
         translations: dict[Language, Translation[ArticleContent]] = {}
         for t_row in self._connection.execute(
-            "SELECT language, title, summary, body_markdown, slug, source_checksum"
+            "SELECT language, title, summary, body_markdown, slug, source_checksum, seo_json"
             " FROM translations WHERE article_id = %s ORDER BY language",
             (article_id,),
         ):
             translations[Language(t_row[0])] = Translation[ArticleContent](
                 content=ArticleContent(
-                    title=t_row[1], summary=t_row[2], body_markdown=t_row[3], slug=t_row[4]
+                    title=t_row[1],
+                    summary=t_row[2],
+                    body_markdown=t_row[3],
+                    slug=t_row[4],
+                    seo=_seo_from_json(t_row[6]),
                 ),
                 source_checksum=t_row[5],
             )
@@ -159,7 +172,13 @@ class PostgresBackend(StorageBackend):
             status=ContentStatus(row[1]),
             created_at=datetime.fromisoformat(row[2]),
             updated_at=datetime.fromisoformat(row[3]),
-            source=ArticleContent(title=row[4], summary=row[5], body_markdown=row[6], slug=row[7]),
+            source=ArticleContent(
+                title=row[4],
+                summary=row[5],
+                body_markdown=row[6],
+                slug=row[7],
+                seo=_seo_from_json(row[17]),
+            ),
             translations=translations,
             category=row[8],
             tags=tuple(json.loads(row[9])),
@@ -188,15 +207,15 @@ class PostgresBackend(StorageBackend):
             self._connection.execute(
                 "INSERT INTO pages"
                 " (id, status, created_at, updated_at, title, description, slug,"
-                "  publish_at, deleted_at, body_markdown, unpublish_at)"
-                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                "  publish_at, deleted_at, body_markdown, unpublish_at, seo_json)"
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 " ON CONFLICT (id) DO UPDATE SET"
                 " status = excluded.status, updated_at = excluded.updated_at,"
                 " title = excluded.title, description = excluded.description,"
                 " slug = excluded.slug, publish_at = excluded.publish_at,"
                 " deleted_at = excluded.deleted_at,"
                 " body_markdown = excluded.body_markdown,"
-                " unpublish_at = excluded.unpublish_at",
+                " unpublish_at = excluded.unpublish_at, seo_json = excluded.seo_json",
                 (
                     page.id,
                     page.status.value,
@@ -209,6 +228,7 @@ class PostgresBackend(StorageBackend):
                     page.deleted_at.isoformat() if page.deleted_at else None,
                     page.source.body_markdown,
                     page.unpublish_at.isoformat() if page.unpublish_at else None,
+                    json.dumps(page.source.seo.model_dump(), sort_keys=True),
                 ),
             )
             self._connection.execute("DELETE FROM page_translations WHERE page_id = %s", (page.id,))
@@ -218,8 +238,8 @@ class PostgresBackend(StorageBackend):
                 self._connection.execute(
                     "INSERT INTO page_translations"
                     " (page_id, language, title, description, slug, source_checksum,"
-                    "  body_markdown)"
-                    " VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                    "  body_markdown, seo_json)"
+                    " VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
                     (
                         page.id,
                         language.value,
@@ -228,6 +248,7 @@ class PostgresBackend(StorageBackend):
                         translation.content.slug,
                         translation.source_checksum,
                         translation.content.body_markdown,
+                        json.dumps(translation.content.seo.model_dump(), sort_keys=True),
                     ),
                 )
             self._connection.execute("DELETE FROM sections WHERE page_id = %s", (page.id,))
@@ -370,7 +391,7 @@ class PostgresBackend(StorageBackend):
     def load_page(self, page_id: str) -> Page | None:
         row = self._connection.execute(
             "SELECT id, status, created_at, updated_at, title, description, slug, publish_at,"
-            " deleted_at, body_markdown, unpublish_at"
+            " deleted_at, body_markdown, unpublish_at, seo_json"
             " FROM pages WHERE id = %s",
             (page_id,),
         ).fetchone()
@@ -378,13 +399,18 @@ class PostgresBackend(StorageBackend):
             return None
         translations: dict[Language, Translation[PageContent]] = {}
         for t_row in self._connection.execute(
-            "SELECT language, title, description, slug, source_checksum, body_markdown"
+            "SELECT language, title, description, slug, source_checksum, body_markdown,"
+            " seo_json"
             " FROM page_translations WHERE page_id = %s ORDER BY language",
             (page_id,),
         ):
             translations[Language(t_row[0])] = Translation[PageContent](
                 content=PageContent(
-                    title=t_row[1], description=t_row[2], slug=t_row[3], body_markdown=t_row[5]
+                    title=t_row[1],
+                    description=t_row[2],
+                    slug=t_row[3],
+                    body_markdown=t_row[5],
+                    seo=_seo_from_json(t_row[6]),
                 ),
                 source_checksum=t_row[4],
             )
@@ -393,7 +419,13 @@ class PostgresBackend(StorageBackend):
             status=ContentStatus(row[1]),
             created_at=datetime.fromisoformat(row[2]),
             updated_at=datetime.fromisoformat(row[3]),
-            source=PageContent(title=row[4], description=row[5], slug=row[6], body_markdown=row[9]),
+            source=PageContent(
+                title=row[4],
+                description=row[5],
+                slug=row[6],
+                body_markdown=row[9],
+                seo=_seo_from_json(row[11]),
+            ),
             translations=translations,
             sections=self._load_sections(row[0]),
             publish_at=datetime.fromisoformat(row[7]) if row[7] else None,

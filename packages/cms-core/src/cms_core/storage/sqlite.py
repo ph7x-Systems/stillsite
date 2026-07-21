@@ -23,7 +23,7 @@ from cms_core.storage.base import StorageBackend
 from cms_core.storage.migrations import MIGRATIONS
 
 __all__ = ["MIGRATIONS", "SQLiteBackend", "sqlite_path_from_location"]
-from cms_core.translatable import Translation
+from cms_core.translatable import Seo, Translation
 
 
 def sqlite_path_from_location(location: str) -> str:
@@ -39,6 +39,13 @@ def sqlite_path_from_location(location: str) -> str:
     if location.startswith("//"):
         return location[1:]
     return path
+
+
+def _seo_from_json(raw: object) -> Seo:
+    """Parse a stored seo_json payload; anything falsy is the default."""
+    if not raw:
+        return Seo()
+    return Seo(**json.loads(str(raw)))
 
 
 class SQLiteBackend(StorageBackend):
@@ -76,8 +83,8 @@ class SQLiteBackend(StorageBackend):
                 "INSERT INTO articles"
                 " (id, status, created_at, updated_at, title, summary, body_markdown, slug,"
                 "  category, tags_json, cover, publish_at, deleted_at, featured, author,"
-                "  fields_json, unpublish_at)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                "  fields_json, unpublish_at, seo_json)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                 " ON CONFLICT(id) DO UPDATE SET"
                 " status = excluded.status, updated_at = excluded.updated_at,"
                 " title = excluded.title, summary = excluded.summary,"
@@ -86,7 +93,7 @@ class SQLiteBackend(StorageBackend):
                 " cover = excluded.cover, publish_at = excluded.publish_at,"
                 " deleted_at = excluded.deleted_at, featured = excluded.featured,"
                 " author = excluded.author, fields_json = excluded.fields_json,"
-                " unpublish_at = excluded.unpublish_at",
+                " unpublish_at = excluded.unpublish_at, seo_json = excluded.seo_json",
                 (
                     article.id,
                     article.status.value,
@@ -105,13 +112,15 @@ class SQLiteBackend(StorageBackend):
                     article.author,
                     json.dumps(article.fields, sort_keys=True),
                     article.unpublish_at.isoformat() if article.unpublish_at else None,
+                    json.dumps(article.source.seo.model_dump(), sort_keys=True),
                 ),
             )
             connection.execute("DELETE FROM translations WHERE article_id = ?", (article.id,))
             connection.executemany(
                 "INSERT INTO translations"
-                " (article_id, language, title, summary, body_markdown, slug, source_checksum)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?)",
+                " (article_id, language, title, summary, body_markdown, slug, source_checksum,"
+                "  seo_json)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 [
                     (
                         article.id,
@@ -121,6 +130,7 @@ class SQLiteBackend(StorageBackend):
                         translation.content.body_markdown,
                         translation.content.slug,
                         translation.source_checksum,
+                        json.dumps(translation.content.seo.model_dump(), sort_keys=True),
                     )
                     for language, translation in sorted(
                         article.translations.items(), key=lambda item: item[0].value
@@ -132,20 +142,24 @@ class SQLiteBackend(StorageBackend):
         row = self._connection.execute(
             "SELECT id, status, created_at, updated_at, title, summary, body_markdown, slug,"
             " category, tags_json, cover, publish_at, deleted_at, featured, author, fields_json,"
-            " unpublish_at FROM articles WHERE id = ?",
+            " unpublish_at, seo_json FROM articles WHERE id = ?",
             (article_id,),
         ).fetchone()
         if row is None:
             return None
         translations: dict[Language, Translation[ArticleContent]] = {}
         for t_row in self._connection.execute(
-            "SELECT language, title, summary, body_markdown, slug, source_checksum"
+            "SELECT language, title, summary, body_markdown, slug, source_checksum, seo_json"
             " FROM translations WHERE article_id = ? ORDER BY language",
             (article_id,),
         ):
             translations[Language(t_row[0])] = Translation[ArticleContent](
                 content=ArticleContent(
-                    title=t_row[1], summary=t_row[2], body_markdown=t_row[3], slug=t_row[4]
+                    title=t_row[1],
+                    summary=t_row[2],
+                    body_markdown=t_row[3],
+                    slug=t_row[4],
+                    seo=_seo_from_json(t_row[6]),
                 ),
                 source_checksum=t_row[5],
             )
@@ -154,7 +168,13 @@ class SQLiteBackend(StorageBackend):
             status=ContentStatus(row[1]),
             created_at=datetime.fromisoformat(row[2]),
             updated_at=datetime.fromisoformat(row[3]),
-            source=ArticleContent(title=row[4], summary=row[5], body_markdown=row[6], slug=row[7]),
+            source=ArticleContent(
+                title=row[4],
+                summary=row[5],
+                body_markdown=row[6],
+                slug=row[7],
+                seo=_seo_from_json(row[17]),
+            ),
             translations=translations,
             category=row[8],
             tags=tuple(json.loads(row[9])),
@@ -183,15 +203,15 @@ class SQLiteBackend(StorageBackend):
             connection.execute(
                 "INSERT INTO pages"
                 " (id, status, created_at, updated_at, title, description, slug,"
-                "  publish_at, deleted_at, body_markdown, unpublish_at)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                "  publish_at, deleted_at, body_markdown, unpublish_at, seo_json)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                 " ON CONFLICT(id) DO UPDATE SET"
                 " status = excluded.status, updated_at = excluded.updated_at,"
                 " title = excluded.title, description = excluded.description,"
                 " slug = excluded.slug, publish_at = excluded.publish_at,"
                 " body_markdown = excluded.body_markdown,"
                 " unpublish_at = excluded.unpublish_at,"
-                " deleted_at = excluded.deleted_at",
+                " deleted_at = excluded.deleted_at, seo_json = excluded.seo_json",
                 (
                     page.id,
                     page.status.value,
@@ -204,14 +224,15 @@ class SQLiteBackend(StorageBackend):
                     page.deleted_at.isoformat() if page.deleted_at else None,
                     page.source.body_markdown,
                     page.unpublish_at.isoformat() if page.unpublish_at else None,
+                    json.dumps(page.source.seo.model_dump(), sort_keys=True),
                 ),
             )
             connection.execute("DELETE FROM page_translations WHERE page_id = ?", (page.id,))
             connection.executemany(
                 "INSERT INTO page_translations"
                 " (page_id, language, title, description, slug, source_checksum,"
-                "  body_markdown)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "  body_markdown, seo_json)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 [
                     (
                         page.id,
@@ -221,6 +242,7 @@ class SQLiteBackend(StorageBackend):
                         translation.content.slug,
                         translation.source_checksum,
                         translation.content.body_markdown,
+                        json.dumps(translation.content.seo.model_dump(), sort_keys=True),
                     )
                     for language, translation in sorted(
                         page.translations.items(), key=lambda item: item[0].value
@@ -369,7 +391,7 @@ class SQLiteBackend(StorageBackend):
     def load_page(self, page_id: str) -> Page | None:
         row = self._connection.execute(
             "SELECT id, status, created_at, updated_at, title, description, slug, publish_at,"
-            " deleted_at, body_markdown, unpublish_at"
+            " deleted_at, body_markdown, unpublish_at, seo_json"
             " FROM pages WHERE id = ?",
             (page_id,),
         ).fetchone()
@@ -377,13 +399,17 @@ class SQLiteBackend(StorageBackend):
             return None
         translations: dict[Language, Translation[PageContent]] = {}
         for t_row in self._connection.execute(
-            "SELECT language, title, description, slug, source_checksum, body_markdown"
+            "SELECT language, title, description, slug, source_checksum, body_markdown, seo_json"
             " FROM page_translations WHERE page_id = ? ORDER BY language",
             (page_id,),
         ):
             translations[Language(t_row[0])] = Translation[PageContent](
                 content=PageContent(
-                    title=t_row[1], description=t_row[2], slug=t_row[3], body_markdown=t_row[5]
+                    title=t_row[1],
+                    description=t_row[2],
+                    slug=t_row[3],
+                    body_markdown=t_row[5],
+                    seo=_seo_from_json(t_row[6]),
                 ),
                 source_checksum=t_row[4],
             )
@@ -392,7 +418,13 @@ class SQLiteBackend(StorageBackend):
             status=ContentStatus(row[1]),
             created_at=datetime.fromisoformat(row[2]),
             updated_at=datetime.fromisoformat(row[3]),
-            source=PageContent(title=row[4], description=row[5], slug=row[6], body_markdown=row[9]),
+            source=PageContent(
+                title=row[4],
+                description=row[5],
+                slug=row[6],
+                body_markdown=row[9],
+                seo=_seo_from_json(row[11]),
+            ),
             translations=translations,
             sections=self._load_sections(page_id),
             publish_at=datetime.fromisoformat(row[7]) if row[7] else None,

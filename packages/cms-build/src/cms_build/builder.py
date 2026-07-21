@@ -23,6 +23,7 @@ from cms_core import (
     Page,
     TranslationState,
 )
+from cms_core.translatable import Seo
 from cms_validation import SiteContent
 
 from cms_build import urls
@@ -349,6 +350,8 @@ class _SiteBuilder:
             language=language,
             paths_by_language=paths,
             json_ld=json_ld,
+            seo=body.seo,
+            og_image_url=self._og_image_url(body.seo, language),
         )
 
     def _section_contexts(self, page: Page, language: Language) -> list[dict[str, object]]:
@@ -478,6 +481,8 @@ class _SiteBuilder:
             language=language,
             paths_by_language=paths,
             og_type="article",
+            seo=body.seo,
+            og_image_url=self._og_image_url(body.seo, language),
             json_ld=json_ld,
         )
 
@@ -621,6 +626,16 @@ class _SiteBuilder:
 
     # Feeds and utility pages
 
+    def _og_image_url(self, seo: "Seo", language: Language) -> str:
+        """The social-card image (ADR-0041): the published rendition of
+        the referenced asset, absolute; empty when unset or unknown."""
+        if not seo.og_image:
+            return ""
+        image = self._media_image(seo.og_image, language)
+        if image is None:
+            return ""
+        return urls.absolute(self.config, str(image["url"]))
+
     def _media_image(self, media_id: str | None, language: Language) -> dict[str, object] | None:
         if media_id is None:
             return None
@@ -760,6 +775,7 @@ class _SiteBuilder:
             ],
             "cover": self._media_image(article.cover, language),
             "fields": dict(sorted(article.fields.items())),
+            **({"seo": body.seo.model_dump()} if not body.seo.is_default else {}),
         }
 
     def _content_api_page(self, page: Page, language: Language) -> dict[str, object]:
@@ -787,6 +803,7 @@ class _SiteBuilder:
                 }
                 for section in self._section_contexts(page, language)
             ],
+            **({"seo": body.seo.model_dump()} if not body.seo.is_default else {}),
         }
 
     def _build_redirects(self) -> None:

@@ -10,6 +10,13 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Per-entry SEO overrides: articles and pages carry an optional `seo`
+  payload per language (title, description, `noindex`, canonical
+  override, social-card image from the media library) that flows
+  through the single head derivation — each tag emitted exactly once;
+  empty values keep today's derived output. Content API surfaces the
+  payload additively (migration 25).
+
 - Forms provider contract: `[forms] provider` selects who handles
   accepted submissions; extensions register destinations via
   `Extension.forms_providers` (contract version validated at

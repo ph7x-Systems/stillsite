@@ -15,6 +15,40 @@ from cms_core.languages import SOURCE_LANGUAGE, TARGET_LANGUAGES, Language
 from cms_core.states import TranslationState
 
 
+class Seo(BaseModel):
+    """Per-entry SEO overrides (ADR-0041): empty means derived — the
+    default behaviour is exactly the site-wide derivation."""
+
+    seo_title: str = ""
+    seo_description: str = ""
+    noindex: bool = False
+    canonical: str = ""
+    """Absolute URL override for this language; empty derives."""
+    og_image: str = ""
+    """A media-library asset id for the social card; empty derives."""
+
+    @property
+    def is_default(self) -> bool:
+        return not (
+            self.seo_title
+            or self.seo_description
+            or self.noindex
+            or self.canonical
+            or self.og_image
+        )
+
+    def checksum_fragment(self) -> str:
+        return "|".join(
+            (
+                self.seo_title,
+                self.seo_description,
+                "1" if self.noindex else "",
+                self.canonical,
+                self.og_image,
+            )
+        )
+
+
 class ChecksummedContent(BaseModel):
     def checksum_payload(self) -> tuple[str, ...]:
         raise NotImplementedError

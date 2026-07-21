@@ -61,6 +61,10 @@ source language first) and `categories` (slug → per-language labels).
   `sections` — each with `key`, `kind`, `fields` (the language's
   resolved field map) and `images` (the same media metadata as covers).
 
+Articles and pages additionally carry `seo` when an editor set
+per-entry overrides: `seo_title`, `seo_description`, `noindex`,
+`canonical`, `og_image` — absent otherwise.
+
 ## Guarantees
 
 - **Only published content**: the API lists exactly what the built site
