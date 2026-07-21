@@ -227,7 +227,7 @@ class _SiteBuilder:
         entries: list[dict[str, str]] = []
         home = next((p for p in self.pages if p.id == "home"), None)
         if home is not None and _available(home, language, self.config.source_language):
-            home_path = urls.page_path(home, language)
+            home_path = urls.page_path(home, language, source=self.config.source_language)
             for section in home.sections:
                 if language == self.config.source_language:
                     fields = section.source.fields
@@ -244,26 +244,27 @@ class _SiteBuilder:
             }
         )
         for page in self.pages:
-            if page.id == "home" or not _available(page, language):
+            if page.id == "home" or not _available(page, language, self.config.source_language):
                 continue
             body = (
                 page.source
                 if language == self.config.source_language
                 else page.translations[language].content
             )
-            entries.append({"label": body.title, "url": urls.page_path(page, language)})
+            url = urls.page_path(page, language, source=self.config.source_language)
+            entries.append({"label": body.title, "url": url})
         return entries
 
     # Pages
 
     def _build_pages(self, language: Language) -> None:
         for page in self.pages:
-            if not _available(page, language):
+            if not _available(page, language, self.config.source_language):
                 continue
             self._render_page(page, language)
 
     def _render_page(self, page: Page, language: Language) -> None:
-        path = urls.page_path(page, language)
+        path = urls.page_path(page, language, source=self.config.source_language)
         head = self._page_head(page, language)
         context = self._base_context(language, head)
         context["page"] = _page_context(page, language, self.config.source_language)
@@ -276,7 +277,7 @@ class _SiteBuilder:
 
     def _page_head(self, page: Page, language: Language) -> Head:
         paths = {
-            lang: urls.page_path(page, lang)
+            lang: urls.page_path(page, lang, source=self.config.source_language)
             for lang in self.config.all_languages
             if _available(page, lang, self.config.source_language)
         }
@@ -644,7 +645,7 @@ class _SiteBuilder:
             "pages": [
                 self._content_api_page(page, language)
                 for page in self.pages
-                if _available(page, language)
+                if _available(page, language, self.config.source_language)
             ],
         }
         self.artifact.add(
@@ -682,7 +683,7 @@ class _SiteBuilder:
         return {
             "id": page.id,
             "slug": body.slug,
-            "url": urls.page_path(page, language),
+            "url": urls.page_path(page, language, source=self.config.source_language),
             "title": body.title,
             "description": body.description,
             "sections": [

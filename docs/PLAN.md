@@ -327,7 +327,12 @@ Ordered by dependency; every 🧭 item begins with its ADR:
       panel chrome mirrors RTL packs, and every editor surface reads
       the project's source/target sets — the media model now requires
       alt text in *some* language rather than hardcoding one
-- [ ] ADR-0034 remaining phase: ecosystem pack guide + data-only packs
+- [x] ADR-0034 ecosystem phase (the ADR is fully executed): the
+      language-pack authoring guide (docs + wiki), `sardine-lang-<tag>`
+      naming in ECOSYSTEM.md, a data-only pack extension proven in the
+      suite, and an RTL build through the CI accessibility gate — which
+      caught the builder skipping source-language pages, now fixed and
+      regression-tested
 - [ ] Bulk actions on the content lists (multi-select workflow + trash)
 - [ ] Admin-wide search (articles, pages, media from one box)
 - [ ] Scheduled unpublish: `unpublish_at` mirroring ADR-0024's contract

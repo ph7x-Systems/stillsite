@@ -5,6 +5,16 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **ADR-0034 closes: language packs are an ecosystem** (M8): the
+  authoring guide (docs/LANGUAGE_PACK_GUIDE.md + wiki) documents the
+  whole contract, ECOSYSTEM.md gains the `sardine-lang-<tag>` naming
+  grant and a registry row, a data-only pack extension is proven in
+  the test suite, and CI now drives a fictional RTL build through the
+  axe accessibility gate on every push. The new probe immediately paid
+  for itself: it caught the builder skipping pages (not articles) of a
+  non-default source language — fixed, and the end-to-end test now
+  covers pages too.
+
 - **The panel's languages come from packs too** (M8, ADR-0034 admin
   phase): the four shipped gettext catalogs moved out of the admin's
   file tree into their language packs (`LanguagePack.admin_catalog`,

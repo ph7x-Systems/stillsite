@@ -119,10 +119,11 @@ implicit at the boundaries, and that is where the change lives:
    catalog by its `native_name`, the chrome renders the resolved
    language's `dir`, and the editors' source/target sets come from the
    project's configuration.
-4. **Ecosystem**: pack authoring guide (wiki + THEME_GUIDE-style doc),
-   `sardine-lang-<tag>` naming in ECOSYSTEM.md, a fictional example
-   pack in the test suite proving the contract end to end (including
-   one RTL locale through the accessibility gate).
+4. **Ecosystem** — *executed*: LANGUAGE_PACK_GUIDE.md (THEME_GUIDE-style)
+   + wiki page, `sardine-lang-<tag>` naming and a registry row in
+   ECOSYSTEM.md, a data-only pack extension proven end to end in the
+   test suite, and `scripts/rtl_probe.py` driving a fictional RTL
+   locale through the CI accessibility gate on every push.
 
 ## Consequences
 
