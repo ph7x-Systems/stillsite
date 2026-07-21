@@ -9,6 +9,8 @@ from dataclasses import dataclass, field
 from datetime import timedelta
 from pathlib import Path
 
+from cms_core.accounts import Role
+
 DEFAULT_STORAGE_URL = "sqlite:///content.db"
 DEFAULT_SESSION_HOURS = 12
 DEFAULT_UPLOAD_MAX_MB = 10
@@ -38,6 +40,9 @@ class AdminSettings:
     mail_transport: str = "smtp"
     smtp_url: str | None = None
     mail_from: str | None = None
+    # ADR-0035 amendment: minimum role at/above which two-factor is
+    # mandatory (forced enrolment). None = optional for everyone.
+    require_2fa_role: "Role | None" = None
 
     def __post_init__(self) -> None:
         if self.session_ttl <= timedelta(0):
@@ -71,4 +76,19 @@ class AdminSettings:
             mail_transport=os.environ.get("SARDINE_MAIL_TRANSPORT", "smtp"),
             smtp_url=os.environ.get("SARDINE_SMTP_URL"),
             mail_from=os.environ.get("SARDINE_MAIL_FROM"),
+            require_2fa_role=_parse_2fa_role(os.environ.get("SARDINE_ADMIN_REQUIRE_2FA")),
         )
+
+
+def _parse_2fa_role(value: str | None) -> Role | None:
+    """Unknown values fail startup loudly — a security policy must never
+    silently become a no-op (ADR-0035 amendment)."""
+    if not value:
+        return None
+    try:
+        return Role(value)
+    except ValueError as error:
+        raise ValueError(
+            "SARDINE_ADMIN_REQUIRE_2FA must be one of "
+            f"editor|reviewer|publisher|admin, got {value!r}"
+        ) from error

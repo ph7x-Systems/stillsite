@@ -107,7 +107,24 @@ async def current_session(request: Request) -> tuple[User, AdminSession]:
     # ADR-0022: the stored preference wins the language resolution; the
     # i18n context processor reads it from request.state at render time.
     request.state.language = user.language
+    # ADR-0035 amendment: a policy-covered account without two-factor is
+    # corralled to the enrolment page — signed in, but nowhere else.
+    if _two_factor_pending(user, request) and not request.url.path.startswith("/profile/2fa"):
+        raise HTTPException(
+            status_code=status.HTTP_303_SEE_OTHER, headers={"Location": "/profile/2fa"}
+        )
     return user, session
+
+
+def _two_factor_pending(user: User, request: Request) -> bool:
+    minimum: Role | None = request.app.state.settings.require_2fa_role
+    if minimum is None or user.totp_secret is not None:
+        return False
+    return allowed_role(user.role, minimum)
+
+
+def allowed_role(role: Role, minimum: Role) -> bool:
+    return ROLE_ORDER.index(role) >= ROLE_ORDER.index(minimum)
 
 
 def require_at_least(minimum: Role) -> Callable[..., Awaitable[User]]:
@@ -521,6 +538,8 @@ async def two_factor_page(
         "user": user,
         "csrf_token": session.csrf_token,
         "enabled": user.totp_secret is not None,
+        "forced": _two_factor_pending(user, request),
+        "covered": _policy_covers(user, request),
         "error": None,
     }
     if user.totp_secret is None:
@@ -571,6 +590,11 @@ async def two_factor_disable(
     from cms_admin.totp import verify as verify_totp
 
     user, session = user_session
+    if _policy_covers(user, request):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="two-factor authentication is required for this role",
+        )
     now = datetime.now(UTC)
     accepted = (
         verify_totp(user.totp_secret, code.strip(), now, user.totp_step)
@@ -585,6 +609,7 @@ async def two_factor_disable(
                 "user": user,
                 "csrf_token": session.csrf_token,
                 "enabled": True,
+                "covered": False,
                 "error": "Wrong authentication code.",
             },
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
@@ -592,3 +617,8 @@ async def two_factor_disable(
     updated = user.model_copy(update={"totp_secret": None, "totp_step": None})
     await get_db(request).run(lambda storage: storage.save_user(updated))
     return RedirectResponse("/profile/2fa", status_code=status.HTTP_303_SEE_OTHER)
+
+
+def _policy_covers(user: User, request: Request) -> bool:
+    minimum: Role | None = request.app.state.settings.require_2fa_role
+    return minimum is not None and allowed_role(user.role, minimum)

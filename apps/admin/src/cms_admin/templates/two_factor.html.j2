@@ -3,10 +3,14 @@
 {% block header %}<h1 class="h3 mb-0">{{ _("Two-factor authentication") }}</h1>{% endblock %}
 {% block content %}
 {% if error %}<p role="alert" class="alert alert-danger admin-alert">{{ _(error) }}</p>{% endif %}
+{% if forced %}<p role="alert" class="alert alert-warning admin-alert">{{ _("Two-factor authentication is required for your role. Enrol to continue.") }}</p>{% endif %}
 <div class="card">
   <div class="card-body">
     {% if enabled %}
     <p role="status" class="alert alert-success admin-alert">{{ _("Two-factor authentication is enabled.") }}</p>
+    {% if covered %}
+    <p class="admin-hint">{{ _("Two-factor authentication is required for your role and cannot be disabled.") }}</p>
+    {% else %}
     <form method="post" action="/profile/2fa/disable">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
       <div class="mb-3 admin-field">
@@ -16,6 +20,7 @@
       </div>
       <button type="submit" class="btn btn-outline-danger">{{ _("Disable two-factor authentication") }}</button>
     </form>
+    {% endif %}
     {% else %}
     <p>{{ _("Enter this key in your authenticator app, then confirm with a code:") }}</p>
     <dl class="row">

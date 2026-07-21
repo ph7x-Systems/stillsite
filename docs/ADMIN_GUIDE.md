@@ -38,6 +38,7 @@ revokes all of its existing sessions before storing the new credentials.
 | `SARDINE_MAIL_TRANSPORT` | `smtp` | Outbound email transport (ADR-0032): `smtp` is the bundled baseline; any other name resolves to an activated extension's mail transport (passwordless provider APIs) |
 | `SARDINE_SMTP_URL` | unset | For the `smtp` transport: `smtp://user:pass@host:587` (STARTTLS) or `smtps://host:465`; unset keeps email off |
 | `SARDINE_MAIL_FROM` | unset | The From address for panel email; required together with the SMTP URL |
+| `SARDINE_ADMIN_REQUIRE_2FA` | unset | Minimum role at/above which two-factor is mandatory (`editor`\|`reviewer`\|`publisher`\|`admin`); unset keeps it optional |
 
 ### Password reset (ADR-0032)
 
@@ -65,7 +66,10 @@ implements — standard library only). Each user enables it from the user
 menu: enter the shown key in an authenticator app and confirm with a
 valid code; from then on sign-in requires the current code, every code
 is single-use, and wrong codes spend the same rate-limit budget as
-wrong passwords. Disabling requires a valid code. There are no backup
+wrong passwords. Disabling requires a valid code. With `SARDINE_ADMIN_REQUIRE_2FA` set, covered accounts without
+two-factor sign in but are corralled to the enrolment page until they
+confirm a code, and disabling is refused while the policy applies.
+There are no backup
 codes in this phase: the recovery path is
 `cms admin create-user --force`, which replaces the account, clears
 two-factor state and revokes every session. Password reset by email

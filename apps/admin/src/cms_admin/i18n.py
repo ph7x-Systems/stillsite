@@ -41,6 +41,8 @@ RUNTIME_MSGIDS: tuple[str, ...] = (
     # login route
     "Wrong username or password.",
     # two-factor authentication (ADR-0035)
+    "Two-factor authentication is required for your role. Enrol to continue.",
+    "Two-factor authentication is required for your role and cannot be disabled.",
     "Two-factor authentication",
     "Two-factor authentication is enabled.",
     "Enter this key in your authenticator app, then confirm with a code:",

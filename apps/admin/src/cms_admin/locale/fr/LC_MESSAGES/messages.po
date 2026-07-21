@@ -962,3 +962,9 @@ msgstr "Vérifier et activer"
 
 msgid "Disable two-factor authentication"
 msgstr "Désactiver l'authentification à deux facteurs"
+
+msgid "Two-factor authentication is required for your role. Enrol to continue."
+msgstr "L'authentification à deux facteurs est obligatoire pour votre rôle. Activez-la pour continuer."
+
+msgid "Two-factor authentication is required for your role and cannot be disabled."
+msgstr "L'authentification à deux facteurs est obligatoire pour votre rôle et ne peut pas être désactivée."

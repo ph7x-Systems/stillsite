@@ -5,6 +5,13 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Two-factor enforcement by role** (ADR-0035 amendment):
+  `SARDINE_ADMIN_REQUIRE_2FA` names the minimum role at/above which
+  two-factor is mandatory. Covered accounts without it still sign in
+  but every route corrals them to the enrolment page until a code
+  confirms; disabling is refused while the policy applies; unknown
+  values fail startup loudly.
+
 - **Two-factor authentication** (M7, ADR-0035): self-service TOTP —
   RFC 6238 with the standard library only, enrolment confirmed by a
   valid code, single-use codes (replay refused), wrong codes spending
