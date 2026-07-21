@@ -5,6 +5,18 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Bulk actions with per-entry honesty** (#130): the content lists
+  select with checkboxes (plain forms, no JavaScript — the checkboxes
+  attach to an external form so row actions stay valid HTML) and apply
+  one action to everything selected: workflow transitions, trash,
+  category assignment for articles, unreferenced-media deletion.
+  Nothing is looser in bulk — every entry passes the exact
+  single-action checks (its own transition validity, the actor's role,
+  the publish gate with the project's language set, media reference
+  protection) and the result page reports every outcome, refusals with
+  their reason; one failure never aborts the rest. Twenty new panel
+  strings in the four bundled catalogs.
+
 - **One search box finds everything** (#129, ADR-0038): the navbar
   carries a search on every admin screen; results come grouped —
   articles, pages, sections and media — matched by title, text, slug,

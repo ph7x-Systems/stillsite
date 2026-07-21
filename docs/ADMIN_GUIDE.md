@@ -332,6 +332,18 @@ what the build includes. The choice is remembered in `sardine.toml`
 successful build answers *what now*: where the files are and the one
 action that puts them live for the chosen target.
 
+## Bulk actions (#130)
+
+The content lists select with checkboxes (plain forms — no JavaScript
+required) and apply one action to everything selected: workflow
+transitions, move to trash, and — for articles — category assignment;
+the media list bulk-deletes unreferenced assets. Nothing is looser in
+bulk: every entry passes the exact single-action checks (transition
+validity from its own status, the actor's role, the publish gate with
+the project's language set, reference protection for media), and the
+result page reports every outcome per entry — refusals with their
+reason, and one failure never aborts the rest.
+
 ## Search (#129)
 
 The navbar carries a search box on every screen; `/search` finds

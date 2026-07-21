@@ -62,7 +62,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Quick actions from the list | ✅ per-row dropdown: workflow transitions + trash | — |
 | Featured / pinned content | ✅ featured flag: leads the home highlight; listings stay recency | — |
 | Editorial notes on entries | ✅ note trail per article/page (author-or-admin removal); never published | — |
-| Bulk actions on content lists | ❌ one entry at a time | 🔜 multi-select workflow/trash operations (M8) |
+| Bulk actions on content lists | ✅ checkbox selection on articles/pages/media; transitions, trash, category assignment, unreferenced-media delete — per-entry rules enforced, per-entry outcome report, no JavaScript required | — |
 | Admin-wide search | ✅ navbar box on every screen; grouped results over articles, pages, sections and media, every language, straight to each editor; storage-level queries ([ADR-0038](adr/0038-admin-search-in-storage.md)) | — |
 | Scheduled unpublish | ❌ `publish_at` only | 🔜 `unpublish_at` mirror of the scheduling contract (M8) |
 | Editorial calendar | ❌ | 🔜 month view of scheduled/published entries (M8) |
