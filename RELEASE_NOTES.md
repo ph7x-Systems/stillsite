@@ -8,6 +8,15 @@ changes live in [CHANGELOG.md](CHANGELOG.md); the product map in
 
 ## Unreleased (towards 0.3.0)
 
+- **Editors pick images, they don't type IDs** (#136): the article
+  metadata card and the section editor gain a library picker —
+  thumbnail tiles with each image's dimensions, radio choice for the
+  cover (pick, keep current, or none) and checkboxes that append to a
+  section's ordered media list. Plain HTML, no script required; the ID
+  inputs remain the precise path. Images narrower than the widest
+  configured responsive width carry a flag, so an editor sees at
+  selection time that a source is too small for the site's layouts.
+
 - **Swap the file, keep the asset** (#136): the asset page gains a
   replace flow. The uploaded bytes change; the ID does not — so every
   cover and section reference keeps working without re-linking. Alt

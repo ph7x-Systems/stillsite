@@ -652,3 +652,46 @@ def test_drag_order_endpoint_applies_a_full_permutation(tmp_path: Path) -> None:
         assert partial.status_code == 400
     stored = _stored_page(tmp_path, "home")
     assert [section.key for section in stored.sections] == ["tail", "hero-main", "middle"]
+
+
+def test_the_section_picker_appends_without_duplicates(tmp_path: Path) -> None:
+    """#136: the media adder appends library picks to the section's
+    ordered list; the textarea stays the precise no-JS path."""
+    from cms_core import MediaAsset
+
+    page = new_page("home", PageContent(title="Home", slug="home"), now=NOW)
+    page.sections.append(
+        Section(key="hero", kind="hero", source=SectionContent(fields={}, media=["existing-art"]))
+    )
+    app = _app(tmp_path, page)
+    with create_storage(f"sqlite:///{tmp_path / 'content.db'}") as storage:
+        for asset_id in ("existing-art", "fresh-art"):
+            storage.save_media_asset(
+                MediaAsset(
+                    id=asset_id,
+                    path=f"{asset_id}.png",
+                    mime_type="image/png",
+                    width=640,
+                    height=480,
+                    alt={Language.EN: f"The {asset_id}"},
+                )
+            )
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        editor = client.get("/pages/home/sections/hero").text
+        assert 'name="media_add"' in editor
+        assert "fresh-art" in editor
+        client.post(
+            "/pages/home/sections/hero",
+            data={
+                "csrf_token": csrf,
+                "media": "existing-art",
+                "media_add": ["fresh-art", "existing-art"],
+            },
+            follow_redirects=False,
+        )
+        with create_storage(f"sqlite:///{tmp_path / 'content.db'}") as storage:
+            saved = storage.load_page("home")
+    assert saved is not None
+    hero = next(s for s in saved.sections if s.key == "hero")
+    assert hero.source.media == ["existing-art", "fresh-art"]  # appended once, order kept

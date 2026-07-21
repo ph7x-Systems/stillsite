@@ -1424,3 +1424,21 @@ msgstr "Remplacer"
 
 msgid "the asset keeps its ID — every reference stays valid; the new file goes live on the next publish"
 msgstr "la ressource garde son ID — toutes les références restent valides ; le nouveau fichier est publié à la prochaine publication"
+
+msgid "Choose from the library"
+msgstr "Choisir dans la bibliothèque"
+
+msgid "Keep current"
+msgstr "Conserver l'actuel"
+
+msgid "No cover"
+msgstr "Sans couverture"
+
+msgid "Add from the library"
+msgstr "Ajouter depuis la bibliothèque"
+
+msgid "Every library image is already in this section."
+msgstr "Toutes les images de la bibliothèque sont déjà dans cette section."
+
+msgid "below the widest configured size"
+msgstr "en dessous de la plus grande taille configurée"
