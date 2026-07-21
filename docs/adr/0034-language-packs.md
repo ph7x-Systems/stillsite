@@ -64,6 +64,15 @@ language is ever schema, enumeration or hardcoded string.**
    translation-state machinery (missing/outdated block publishing per
    the parity gates).
 
+## Amendment — no privileged languages (owner directive)
+
+The bundled five are packs like any other: their labels, month names,
+date patterns and admin catalogs move INTO their packs, and the tables
+in `cms_build.ui` plus the repository catalog files dissolve. "EN is
+the source" becomes the factory default of `[site] source_language`,
+never a rule. Admin lists obey the same principle spatially: aggregate
+summaries, never horizontal growth per language.
+
 ## Execution (phased, each phase its own PR)
 
 1. **Core** — *executed (phases 1a + 1b)*: `Language` is an interned,

@@ -82,7 +82,7 @@ content header with `breadcrumb`, `app-footer` with copyright. Surfaces:
 | --- | --- |
 | Shell chrome (all authenticated pages) | app-header navbar, dark app-sidebar with the tin-rocket brand, skip link |
 | Dashboard | small-box stat tiles per status, cards, striped coverage table + progress |
-| Content lists | cards with striped/hover tables in Bootstrap `table-responsive` wrappers; one compact **Translations** cell of per-language badges (state in color + title + hidden text, linked to the translation editors) |
+| Content lists | cards with striped/hover tables in Bootstrap `table-responsive` wrappers; one constant-width **Translations** coverage cell (`3/4 · 1 missing`, state in text + title, linked to the editor) — never a badge or column per language (ADR-0034) |
 | Side-by-side editors | Bootstrap grid (`row`/`col`, `admin-sbs`), cards, Markdown preview panel |
 | Forms | `form-control`/`form-label` (+ mono textarea), form-text hints, alert block |
 | Markdown editor (article bodies) | EasyMDE (MIT, vendored at `static/vendor/easymde/` — ADR-0023), Bootstrap Icons toolbar, localized titles, no built-in preview (the builder's preview is the truth) |
