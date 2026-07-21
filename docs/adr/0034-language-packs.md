@@ -73,6 +73,29 @@ the source" becomes the factory default of `[site] source_language`,
 never a rule. Admin lists obey the same principle spatially: aggregate
 summaries, never horizontal growth per language.
 
+## Design note — configurable source language (before its slice)
+
+The model layer already treats the source correctly: `source` is just
+"the source content", and `translations` map target tags to content —
+nothing in storage records which language the source *is*. The tag is
+implicit at the boundaries, and that is where the change lives:
+
+- `[site] source_language` (default `en`, must be a registered pack
+  tag, must not appear in `languages`) joins `SiteConfig`.
+- Core APIs that embed the source tag today gain an explicit
+  `source: Language = SOURCE_LANGUAGE` parameter — portable
+  export/import, menu label fallback — so the constant becomes a
+  default, not a truth.
+- The builder replaces every `is SOURCE_LANGUAGE` comparison with the
+  config's source: URL tree (the source lives at the root), hreflang,
+  feeds, labels' source-pack fallback, content API.
+- The admin reads the project's source for the side-by-side editors
+  (the left column is "the source", whatever its tag) and for
+  notification/reset localization fallbacks.
+- The five-language demo keeps `en` — zero behavior change for every
+  existing project is the acceptance bar, proven by the suite plus new
+  tests building a project whose source is a non-`en` pack tag.
+
 ## Execution (phased, each phase its own PR)
 
 1. **Core** — *executed (phases 1a + 1b)*: `Language` is an interned,
