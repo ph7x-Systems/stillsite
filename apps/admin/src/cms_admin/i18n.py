@@ -102,6 +102,13 @@ RUNTIME_MSGIDS: tuple[str, ...] = (
     "delete: the last admin cannot be deleted",
     # menu manager route error
     "menu: id is lowercase-with-dashes, url and position are required",
+    # bulk actions (#130) route outcomes
+    "not found",
+    "category: lowercase-with-dashes",
+    "invalid transition from %(status)s",
+    "requires the %(role)s role",
+    "publish gate: %(count)s validation error(s)",
+    "referenced by %(count)s entr(ies)",
     # media upload static errors
     "file: choose a file to upload",
     "file: could not read the image dimensions",

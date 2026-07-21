@@ -1,0 +1,29 @@
+{% extends "shell.html.j2" %}
+{% block title %}{{ _("Bulk result") }} — Sardine CMS admin{% endblock %}
+{% block header %}<h1 class="h3 mb-0">{{ _("Bulk result") }}</h1>{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header"><h2 class="card-title h6 mb-0">
+    {{ _("%(applied)s of %(total)s applied") | format(applied=applied, total=outcomes | length) }}
+  </h2></div>
+  {% if outcomes %}
+  <div class="card-body p-0 table-responsive admin-table-wrap">
+    <table class="table table-striped mb-0 admin-table">
+      <thead><tr><th scope="col">{{ _("ID") }}</th><th scope="col">{{ _("Outcome") }}</th></tr></thead>
+      <tbody>
+        {% for entity_id, outcome in outcomes %}
+        <tr>
+          <th scope="row">{{ entity_id }}</th>
+          <td>{% if outcome == "ok" %}<span class="badge text-bg-success admin-state admin-state-complete">{{ _("ok") }}</span>
+            {% else %}<span class="badge text-bg-danger admin-state admin-state-missing">{{ outcome }}</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="card-body"><p class="admin-empty mb-0">{{ _("Nothing was selected.") }}</p></div>
+  {% endif %}
+</div>
+<p class="mt-3"><a href="{{ back_url }}">&larr; {{ _("Back to the list") }}</a></p>
+{% endblock %}

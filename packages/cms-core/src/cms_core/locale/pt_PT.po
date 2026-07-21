@@ -1163,3 +1163,63 @@ msgstr "Nada correspondeu. A pesquisa cobre títulos, texto, slugs, campos de se
 
 msgid "Search everything you can edit"
 msgstr "Pesquisar tudo o que pode editar"
+
+msgid "%(applied)s of %(total)s applied"
+msgstr "%(applied)s de %(total)s aplicados"
+
+msgid "Apply to selected"
+msgstr "Aplicar aos selecionados"
+
+msgid "Back to the list"
+msgstr "Voltar à lista"
+
+msgid "Bulk action"
+msgstr "Ação em massa"
+
+msgid "Bulk result"
+msgstr "Resultado em massa"
+
+msgid "Delete unreferenced"
+msgstr "Apagar não referenciados"
+
+msgid "Each entry keeps its own rules — the report shows every outcome."
+msgstr "Cada entrada mantém as suas regras — o relatório mostra todos os resultados."
+
+msgid "Nothing was selected."
+msgstr "Nada foi selecionado."
+
+msgid "Outcome"
+msgstr "Resultado"
+
+msgid "Referenced assets refuse deletion — the report says which."
+msgstr "Ficheiros referenciados recusam a eliminação — o relatório diz quais."
+
+msgid "Select"
+msgstr "Selecionar"
+
+msgid "Select %(id)s"
+msgstr "Selecionar %(id)s"
+
+msgid "Set category"
+msgstr "Definir categoria"
+
+msgid "category (for Set category)"
+msgstr "categoria (para Definir categoria)"
+
+msgid "not found"
+msgstr "não encontrado"
+
+msgid "category: lowercase-with-dashes"
+msgstr "categoria: minúsculas-com-traços"
+
+msgid "invalid transition from %(status)s"
+msgstr "transição inválida a partir de %(status)s"
+
+msgid "requires the %(role)s role"
+msgstr "exige o papel %(role)s"
+
+msgid "publish gate: %(count)s validation error(s)"
+msgstr "porta de publicação: %(count)s erro(s) de validação"
+
+msgid "referenced by %(count)s entr(ies)"
+msgstr "referenciado por %(count)s entrada(s)"

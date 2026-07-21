@@ -1163,3 +1163,63 @@ msgstr "Nichts gefunden. Die Suche umfasst Titel, Text, Slugs, Abschnittsfelder 
 
 msgid "Search everything you can edit"
 msgstr "Alles durchsuchen, was Sie bearbeiten können"
+
+msgid "%(applied)s of %(total)s applied"
+msgstr "%(applied)s von %(total)s angewendet"
+
+msgid "Apply to selected"
+msgstr "Auf Auswahl anwenden"
+
+msgid "Back to the list"
+msgstr "Zurück zur Liste"
+
+msgid "Bulk action"
+msgstr "Massenaktion"
+
+msgid "Bulk result"
+msgstr "Massenergebnis"
+
+msgid "Delete unreferenced"
+msgstr "Nicht referenzierte löschen"
+
+msgid "Each entry keeps its own rules — the report shows every outcome."
+msgstr "Jeder Eintrag behält seine Regeln — der Bericht zeigt jedes Ergebnis."
+
+msgid "Nothing was selected."
+msgstr "Es wurde nichts ausgewählt."
+
+msgid "Outcome"
+msgstr "Ergebnis"
+
+msgid "Referenced assets refuse deletion — the report says which."
+msgstr "Referenzierte Dateien verweigern die Löschung — der Bericht sagt welche."
+
+msgid "Select"
+msgstr "Auswählen"
+
+msgid "Select %(id)s"
+msgstr "%(id)s auswählen"
+
+msgid "Set category"
+msgstr "Kategorie festlegen"
+
+msgid "category (for Set category)"
+msgstr "Kategorie (für Kategorie festlegen)"
+
+msgid "not found"
+msgstr "nicht gefunden"
+
+msgid "category: lowercase-with-dashes"
+msgstr "Kategorie: kleinbuchstaben-mit-bindestrichen"
+
+msgid "invalid transition from %(status)s"
+msgstr "ungültiger Übergang aus %(status)s"
+
+msgid "requires the %(role)s role"
+msgstr "erfordert die Rolle %(role)s"
+
+msgid "publish gate: %(count)s validation error(s)"
+msgstr "Veröffentlichungsschranke: %(count)s Validierungsfehler"
+
+msgid "referenced by %(count)s entr(ies)"
+msgstr "referenziert von %(count)s Eintrag/Einträgen"

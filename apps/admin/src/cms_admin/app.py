@@ -155,6 +155,10 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
     app.include_router(search_router)
     app.include_router(auth_router)
     app.include_router(dashboard_router)
+    # Before the content routers: /{kind}/bulk must beat /{entity_id}.
+    from cms_admin.bulk import router as bulk_router
+
+    app.include_router(bulk_router)
     app.include_router(articles_router)
     app.include_router(pages_router)
     app.include_router(media_router)
