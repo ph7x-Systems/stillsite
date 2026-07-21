@@ -152,6 +152,8 @@ def media_from_portable(data: dict[str, Any]) -> MediaAsset:
         alt={Language(code): text for code, text in data.get("alt", {}).items()},
         collection=str(data.get("collection", "")),
         content_hash=str(data.get("content_hash", "")),
+        crop=str(data.get("crop", "")),
+        focal=str(data.get("focal", "")),
     )
 
 

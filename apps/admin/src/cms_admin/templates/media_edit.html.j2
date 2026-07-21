@@ -56,6 +56,25 @@
           {% endfor %}
         </div>
       </div>
+      {% if asset.is_image %}
+      <div class="card mb-3">
+        <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Crop and focal point") }}</h2></div>
+        <div class="card-body">
+          <div class="mb-1 admin-field">
+            <label class="form-label" for="crop">{{ _("Crop") }}</label>
+            <input class="form-control admin-input" id="crop" name="crop" value="{{ form.crop }}"
+                   placeholder="x,y,width,height">
+            <div class="form-text admin-hint">{{ _("pixels of the original, applied at build — empty shows the full image") }}</div>
+          </div>
+          <div class="mb-1 admin-field">
+            <label class="form-label" for="focal">{{ _("Focal point") }}</label>
+            <input class="form-control admin-input" id="focal" name="focal" value="{{ form.focal }}"
+                   placeholder="0.5,0.5">
+            <div class="form-text admin-hint">{{ _("fractions from the top-left, 0 to 1 — kept in view when the image is trimmed to fit") }}</div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
       <div class="card mb-3">
         <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Collection") }}</h2></div>
         <div class="card-body">

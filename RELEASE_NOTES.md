@@ -8,6 +8,17 @@ changes live in [CHANGELOG.md](CHANGELOG.md); the product map in
 
 ## Unreleased (towards 0.3.0)
 
+- **Images crop where the editor says, not where the file ends**
+  (#136): an image's asset page takes an optional crop (pixels of the
+  original) and focal point (fractions). The crop is data — applied
+  deterministically at build, so the published rendition, its declared
+  dimensions, the `srcset` chain and the Content API all speak the
+  cropped size while the uploaded original stays untouched; clearing
+  it restores the full image on the next publish. The focal point
+  rides the image metadata into themes and the API (additive within
+  `v1`). Storage migration 23 on all four engines; portable format
+  round-trips both; five new panel strings in the four catalogs.
+
 - **The media library gets folders, honesty and a memory** (#136):
   assets take an optional collection — set at upload, editable later,
   filterable in the library — and the list says how many entries use

@@ -294,3 +294,64 @@ def test_redirect_fallback_pages_ship_in_every_artifact() -> None:
     assert 'http-equiv="refresh" content="0; url=/blog/new-post/"' in page
     assert 'rel="canonical" href="/blog/new-post/"' in page
     assert 'content="noindex"' in page
+
+
+def test_crop_reshapes_the_published_pipeline() -> None:
+    """#136: a stored crop is applied at build — base rendition,
+    dimensions and every derivative descend from the cropped bytes; the
+    output stays deterministic and clearing the crop restores the full
+    image."""
+    from io import BytesIO
+
+    from PIL import Image
+
+    buffer = BytesIO()
+    Image.new("RGB", (1200, 600), color=(10, 20, 30)).save(buffer, format="PNG")
+    png = buffer.getvalue()
+    asset = MediaAsset(
+        id="wide",
+        path="images/wide.png",
+        mime_type="image/png",
+        width=1200,
+        height=600,
+        alt={Language.EN: "Wide"},
+        crop="100,50,800,400",
+        focal="0.25,0.75",
+    )
+    home = new_page("home", PageContent(title="Home", slug="home"), now=NOW)
+    home.status = ContentStatus.PUBLISHED
+    home.sections.append(
+        Section(
+            key="hero",
+            kind="hero",
+            source=SectionContent(fields={"heading": "Hi"}, media=["wide"]),
+        )
+    )
+    content = SiteContent(pages=[home], media=[asset])
+    config = CONFIG.model_copy(update={"image_widths": (480,), "content_api": True})
+    artifact = build_site(config, content, media_files={"images/wide.png": png}, now=NOW)
+
+    with Image.open(BytesIO(artifact.files["media/images/wide.png"])) as published:
+        assert (published.width, published.height) == (800, 400)
+    with Image.open(BytesIO(artifact.files["media/images/wide@480.png"])) as derivative:
+        assert derivative.width == 480  # resized from the crop, not the original
+    html = artifact.files["index.html"].decode("utf-8")
+    assert 'width="800"' in html and 'height="400"' in html
+    assert "/media/images/wide.png 800w" in html  # srcset speaks the crop's width
+
+    api = artifact.files["api/v1/en/content.json"].decode("utf-8")
+    assert '"focal": {"x": 0.25, "y": 0.75}' in api
+    assert '"width": 800' in api
+
+    again = build_site(config, content, media_files={"images/wide.png": png}, now=NOW)
+    assert again.digest() == artifact.digest()  # deterministic
+
+    uncropped = asset.model_copy(update={"crop": ""})
+    full = build_site(
+        config,
+        SiteContent(pages=[home], media=[uncropped]),
+        media_files={"images/wide.png": png},
+        now=NOW,
+    )
+    with Image.open(BytesIO(full.files["media/images/wide.png"])) as restored:
+        assert (restored.width, restored.height) == (1200, 600)

@@ -10,6 +10,12 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Media crop and focal point: an optional crop stored as data and
+  applied at build — the published image, its dimensions and every
+  derivative descend from the cropped area while the original stays
+  untouched — and a focal point carried in image metadata (themes and
+  the Content API) (#136; migration 23).
+
 - Media collections, usage counts and duplicate prevention: assets
   carry an optional collection (filterable in the library) and the
   SHA-256 of their bytes — identical uploads are refused naming the

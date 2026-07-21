@@ -1400,3 +1400,18 @@ msgstr "sem uso"
 
 msgid "optional folder, lowercase-with-dashes — group related assets"
 msgstr "pasta opcional, minúsculas-com-hífens — agrupa recursos relacionados"
+
+msgid "Crop and focal point"
+msgstr "Recorte e ponto focal"
+
+msgid "Crop"
+msgstr "Recorte"
+
+msgid "Focal point"
+msgstr "Ponto focal"
+
+msgid "pixels of the original, applied at build — empty shows the full image"
+msgstr "píxeis do original, aplicado na publicação — vazio mostra a imagem completa"
+
+msgid "fractions from the top-left, 0 to 1 — kept in view when the image is trimmed to fit"
+msgstr "frações a partir do canto superior esquerdo, 0 a 1 — mantido visível quando a imagem é ajustada"

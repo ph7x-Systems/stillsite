@@ -414,12 +414,13 @@ class SQLiteBackend(StorageBackend):
         with self._connection as connection:
             connection.execute(
                 "INSERT INTO media_assets (id, path, mime_type, width, height,"
-                " collection, content_hash)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?)"
+                " collection, content_hash, crop, focal)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
                 " ON CONFLICT(id) DO UPDATE SET"
                 " path = excluded.path, mime_type = excluded.mime_type,"
                 " width = excluded.width, height = excluded.height,"
-                " collection = excluded.collection, content_hash = excluded.content_hash",
+                " collection = excluded.collection, content_hash = excluded.content_hash,"
+                " crop = excluded.crop, focal = excluded.focal",
                 (
                     asset.id,
                     asset.path,
@@ -428,6 +429,8 @@ class SQLiteBackend(StorageBackend):
                     asset.height,
                     asset.collection,
                     asset.content_hash,
+                    asset.crop,
+                    asset.focal,
                 ),
             )
             connection.execute("DELETE FROM media_alt_texts WHERE media_id = ?", (asset.id,))
@@ -441,7 +444,7 @@ class SQLiteBackend(StorageBackend):
 
     def load_media_asset(self, asset_id: str) -> MediaAsset | None:
         row = self._connection.execute(
-            "SELECT id, path, mime_type, width, height, collection, content_hash"
+            "SELECT id, path, mime_type, width, height, collection, content_hash, crop, focal"
             " FROM media_assets WHERE id = ?",
             (asset_id,),
         ).fetchone()
@@ -463,6 +466,8 @@ class SQLiteBackend(StorageBackend):
             alt=alt,
             collection=str(row[5] or ""),
             content_hash=str(row[6] or ""),
+            crop=str(row[7] or ""),
+            focal=str(row[8] or ""),
         )
 
     def delete_media_asset(self, asset_id: str) -> bool:

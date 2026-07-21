@@ -378,3 +378,30 @@ def test_the_list_shows_usage_counts(tmp_path: Path) -> None:
         listing = client.get("/media").text
     assert "unused" not in listing.split("tin-photo")[0]  # header intact
     assert '<span class="badge text-bg-secondary">1</span>' in listing
+
+
+def test_crop_and_focal_edit_and_validate(tmp_path: Path) -> None:
+    app = _app(tmp_path, _asset())
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        response = client.post(
+            "/media/tin-photo",
+            data={
+                "csrf_token": csrf,
+                "alt_en": "A tin, heroic",
+                "crop": "0,0,2,1",
+                "focal": "0.5,0.5",
+            },
+            follow_redirects=False,
+        )
+        assert response.status_code == 303
+        bad = client.post(
+            "/media/tin-photo",
+            data={"csrf_token": csrf, "alt_en": "A tin, heroic", "crop": "9,9,9,9"},
+        )
+    assert bad.status_code == 422  # outside the 3-by-2 image
+    with create_storage(f"sqlite:///{tmp_path / 'content.db'}") as storage:
+        stored = storage.load_media_asset("tin-photo")
+    assert stored is not None
+    assert stored.crop == "0,0,2,1"
+    assert stored.focal == "0.5,0.5"

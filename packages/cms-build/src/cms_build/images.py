@@ -17,6 +17,34 @@ def derivative_path(path: str, width: int) -> str:
     return str(pure.with_name(f"{pure.stem}@{width}{pure.suffix}"))
 
 
+def apply_crops(media_files: dict[str, bytes], crops: dict[str, tuple[int, int, int, int]]) -> None:
+    """Apply editorial crops in place (#136): the published pipeline —
+    base rendition and every derivative — descends from the cropped
+    bytes. The stored original is untouched; a cleared crop restores
+    the full image on the next build. Fixed encoder parameters keep the
+    output deterministic."""
+    if not crops:
+        return
+    try:
+        from PIL import Image
+    except ImportError as error:  # pragma: no cover - exercised via message test
+        raise RuntimeError(
+            "a media crop is set but Pillow is not installed — install sardine-cms-build[images]"
+        ) from error
+    for path in sorted(crops):
+        if path not in media_files:
+            continue
+        if PurePosixPath(path).suffix.lower() not in RESIZABLE_SUFFIXES:
+            continue
+        x, y, width, height = crops[path]
+        with Image.open(BytesIO(media_files[path])) as image:
+            box = (x, y, min(x + width, image.width), min(y + height, image.height))
+            cropped = image.crop(box)
+            buffer = BytesIO()
+            cropped.save(buffer, format=image.format)
+        media_files[path] = buffer.getvalue()
+
+
 def generate_derivatives(
     media_files: dict[str, bytes], widths: tuple[int, ...]
 ) -> dict[str, dict[int, str]]:

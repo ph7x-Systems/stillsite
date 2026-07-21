@@ -1400,3 +1400,18 @@ msgstr "inutilisé"
 
 msgid "optional folder, lowercase-with-dashes — group related assets"
 msgstr "dossier facultatif, minuscules-avec-tirets — regroupe les ressources liées"
+
+msgid "Crop and focal point"
+msgstr "Recadrage et point focal"
+
+msgid "Crop"
+msgstr "Recadrage"
+
+msgid "Focal point"
+msgstr "Point focal"
+
+msgid "pixels of the original, applied at build — empty shows the full image"
+msgstr "pixels de l'original, appliqué à la publication — vide affiche l'image complète"
+
+msgid "fractions from the top-left, 0 to 1 — kept in view when the image is trimmed to fit"
+msgstr "fractions depuis le coin supérieur gauche, 0 à 1 — reste visible quand l'image est ajustée"

@@ -28,7 +28,7 @@ from cms_validation import SiteContent
 from cms_build import urls
 from cms_build.config import SiteConfig
 from cms_build.head import Head, build_head, hreflang_code
-from cms_build.images import generate_derivatives
+from cms_build.images import apply_crops, generate_derivatives
 from cms_build.markdown import render_markdown
 from cms_build.themes import SectionKindSpec, Theme, create_theme, resolve_kind_spec
 from cms_build.ui import format_date, ui_label
@@ -186,7 +186,16 @@ class _SiteBuilder:
             self.theme_assets[COMMENTS_ISLAND_PATH] = self.comments_provider.island_js
         self.asset_urls = _asset_urls(self.theme_assets)
         self.media_files = dict(media_files)
-        # ADR-0029: opt-in responsive derivatives extend the media set.
+        # Editorial crops reshape the pipeline's source bytes (#136),
+        # then opt-in responsive derivatives extend the media set.
+        apply_crops(
+            self.media_files,
+            {
+                asset.path: box
+                for asset in self.media_by_id.values()
+                if (box := asset.crop_box) is not None
+            },
+        )
         self.image_variants = generate_derivatives(self.media_files, config.image_widths)
         self.articles_by_language: dict[Language, list[Article]] = {
             language: [a for a in self.articles if _available(a, language, config.source_language)]
@@ -603,20 +612,23 @@ class _SiteBuilder:
         asset = self.media_by_id.get(media_id)
         if asset is None or not asset.is_image:
             return None
+        display_width, display_height = asset.display_size
         image = {
             "url": f"/{MEDIA_PREFIX}/{asset.path}",
             "alt": asset.alt.get(language)
             or asset.alt.get(self.config.source_language)
             or next((text for text in asset.alt.values() if text.strip()), ""),
-            "width": asset.width,
-            "height": asset.height,
+            "width": display_width,
+            "height": display_height,
         }
+        if (focal := asset.focal_point) is not None:
+            image["focal"] = {"x": focal[0], "y": focal[1]}
         variants = self.image_variants.get(asset.path)
-        if variants and asset.width:
+        if variants and display_width:
             candidates = [
                 f"/{MEDIA_PREFIX}/{path} {width}w" for width, path in sorted(variants.items())
             ]
-            candidates.append(f"/{MEDIA_PREFIX}/{asset.path} {asset.width}w")
+            candidates.append(f"/{MEDIA_PREFIX}/{asset.path} {display_width}w")
             image["srcset"] = ", ".join(candidates)
         return image
 

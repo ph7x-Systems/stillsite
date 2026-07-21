@@ -123,6 +123,8 @@ def media_to_portable(asset: MediaAsset) -> dict[str, object]:
         },
         "collection": asset.collection,
         "content_hash": asset.content_hash,
+        "crop": asset.crop,
+        "focal": asset.focal,
     }
 
 

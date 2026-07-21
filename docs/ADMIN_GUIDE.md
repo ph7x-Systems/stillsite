@@ -178,6 +178,15 @@ with that entity's errors listed (the publish gate; disable only with
 - **Duplicate prevention**: each upload records the file's SHA-256;
   uploading bytes identical to an existing asset is refused with a
   message naming the asset that already holds them.
+- **Crop and focal point**: on an image's asset page, an optional crop
+  (`x,y,width,height` in pixels of the original) and focal point
+  (`x,y` fractions, 0–1). The crop is stored as data and applied when
+  the site is built — the published image, its dimensions and every
+  responsive derivative descend from the cropped area, while the
+  uploaded original stays untouched; clearing the crop restores the
+  full image on the next publish. The focal point travels with the
+  image's metadata (themes and the Content API receive it) so the
+  important part stays in view wherever the image is trimmed to fit.
 
 ## Publishing panel
 

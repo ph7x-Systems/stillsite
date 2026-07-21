@@ -66,6 +66,8 @@ def test_export_includes_pages_and_media() -> None:
         alt={Language.EN: "A sunrise"},
         collection="landing",
         content_hash="cd" * 32,
+        crop="0,0,1200,900",
+        focal="0.4,0.6",
     )
 
     first = export_content_json([], pages=[page], media=[asset])
