@@ -30,7 +30,7 @@ from cms_core.search import SearchHit, like_pattern
 from cms_core.states import ContentStatus
 from cms_core.storage.base import StorageBackend
 from cms_core.storage.migrations import MIGRATIONS
-from cms_core.translatable import Translation
+from cms_core.translatable import Seo, Translation
 
 # ANSI TEXT columns that participate in keys/references must become bounded
 # VARCHARs on engines that cannot index unbounded text. Shared by both
@@ -59,6 +59,13 @@ def rewrite_key_columns(statement: str, key_type: str) -> str:
     """Turn `<key column> TEXT` into a bounded type the engine can index."""
     pattern = r"\b(" + "|".join(KEY_COLUMNS) + r")\s+TEXT\b"
     return re.sub(pattern, lambda m: f"{m.group(1)} {key_type}", statement)
+
+
+def _seo_from_json(raw: object) -> Seo:
+    """Parse a stored seo_json payload; anything falsy is the default."""
+    if not raw:
+        return Seo()
+    return Seo(**json.loads(str(raw)))
 
 
 class DbApiBackend(StorageBackend):
@@ -155,6 +162,7 @@ class DbApiBackend(StorageBackend):
                     "unpublish_at": (
                         article.unpublish_at.isoformat() if article.unpublish_at else None
                     ),
+                    "seo_json": json.dumps(article.source.seo.model_dump(), sort_keys=True),
                 },
             )
             self._execute("DELETE FROM translations WHERE article_id = %s", (article.id,))
@@ -164,8 +172,8 @@ class DbApiBackend(StorageBackend):
                 self._execute(
                     "INSERT INTO translations"
                     " (article_id, language, title, summary, body_markdown, slug,"
-                    "  source_checksum)"
-                    " VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                    "  source_checksum, seo_json)"
+                    " VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
                     (
                         article.id,
                         language.value,
@@ -174,6 +182,7 @@ class DbApiBackend(StorageBackend):
                         translation.content.body_markdown,
                         translation.content.slug,
                         translation.source_checksum,
+                        json.dumps(translation.content.seo.model_dump(), sort_keys=True),
                     ),
                 )
 
@@ -181,20 +190,24 @@ class DbApiBackend(StorageBackend):
         row = self._fetchone(
             "SELECT id, status, created_at, updated_at, title, summary, body_markdown, slug,"
             " category, tags_json, cover, publish_at, deleted_at, featured, author, fields_json,"
-            " unpublish_at FROM articles WHERE id = %s",
+            " unpublish_at, seo_json FROM articles WHERE id = %s",
             (article_id,),
         )
         if row is None:
             return None
         translations: dict[Language, Translation[ArticleContent]] = {}
         for t_row in self._fetchall(
-            "SELECT language, title, summary, body_markdown, slug, source_checksum"
+            "SELECT language, title, summary, body_markdown, slug, source_checksum, seo_json"
             " FROM translations WHERE article_id = %s ORDER BY language",
             (article_id,),
         ):
             translations[Language(t_row[0])] = Translation[ArticleContent](
                 content=ArticleContent(
-                    title=t_row[1], summary=t_row[2], body_markdown=t_row[3], slug=t_row[4]
+                    title=t_row[1],
+                    summary=t_row[2],
+                    body_markdown=t_row[3],
+                    slug=t_row[4],
+                    seo=_seo_from_json(t_row[6]),
                 ),
                 source_checksum=t_row[5],
             )
@@ -203,7 +216,13 @@ class DbApiBackend(StorageBackend):
             status=ContentStatus(row[1]),
             created_at=datetime.fromisoformat(row[2]),
             updated_at=datetime.fromisoformat(row[3]),
-            source=ArticleContent(title=row[4], summary=row[5], body_markdown=row[6], slug=row[7]),
+            source=ArticleContent(
+                title=row[4],
+                summary=row[5],
+                body_markdown=row[6],
+                slug=row[7],
+                seo=_seo_from_json(row[17]),
+            ),
             translations=translations,
             category=row[8],
             tags=tuple(json.loads(row[9])),
@@ -243,6 +262,7 @@ class DbApiBackend(StorageBackend):
                     "unpublish_at": (page.unpublish_at.isoformat() if page.unpublish_at else None),
                     "publish_at": page.publish_at.isoformat() if page.publish_at else None,
                     "deleted_at": page.deleted_at.isoformat() if page.deleted_at else None,
+                    "seo_json": json.dumps(page.source.seo.model_dump(), sort_keys=True),
                 },
             )
             self._execute("DELETE FROM page_translations WHERE page_id = %s", (page.id,))
@@ -252,8 +272,8 @@ class DbApiBackend(StorageBackend):
                 self._execute(
                     "INSERT INTO page_translations"
                     " (page_id, language, title, description, slug, source_checksum,"
-                    "  body_markdown)"
-                    " VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                    "  body_markdown, seo_json)"
+                    " VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
                     (
                         page.id,
                         language.value,
@@ -262,6 +282,7 @@ class DbApiBackend(StorageBackend):
                         translation.content.slug,
                         translation.source_checksum,
                         translation.content.body_markdown,
+                        json.dumps(translation.content.seo.model_dump(), sort_keys=True),
                     ),
                 )
             self._execute("DELETE FROM section_translations WHERE page_id = %s", (page.id,))
@@ -411,20 +432,25 @@ class DbApiBackend(StorageBackend):
     def load_page(self, page_id: str) -> Page | None:
         row = self._fetchone(
             "SELECT id, status, created_at, updated_at, title, description, slug, publish_at,"
-            " deleted_at, body_markdown, unpublish_at FROM pages WHERE id = %s",
+            " deleted_at, body_markdown, unpublish_at, seo_json FROM pages WHERE id = %s",
             (page_id,),
         )
         if row is None:
             return None
         translations: dict[Language, Translation[PageContent]] = {}
         for t_row in self._fetchall(
-            "SELECT language, title, description, slug, source_checksum, body_markdown"
+            "SELECT language, title, description, slug, source_checksum, body_markdown,"
+            " seo_json"
             " FROM page_translations WHERE page_id = %s ORDER BY language",
             (page_id,),
         ):
             translations[Language(t_row[0])] = Translation[PageContent](
                 content=PageContent(
-                    title=t_row[1], description=t_row[2], slug=t_row[3], body_markdown=t_row[5]
+                    title=t_row[1],
+                    description=t_row[2],
+                    slug=t_row[3],
+                    body_markdown=t_row[5],
+                    seo=_seo_from_json(t_row[6]),
                 ),
                 source_checksum=t_row[4],
             )
@@ -433,7 +459,13 @@ class DbApiBackend(StorageBackend):
             status=ContentStatus(row[1]),
             created_at=datetime.fromisoformat(row[2]),
             updated_at=datetime.fromisoformat(row[3]),
-            source=PageContent(title=row[4], description=row[5], slug=row[6], body_markdown=row[9]),
+            source=PageContent(
+                title=row[4],
+                description=row[5],
+                slug=row[6],
+                body_markdown=row[9],
+                seo=_seo_from_json(row[11]),
+            ),
             translations=translations,
             sections=self._load_sections(row[0]),
             publish_at=datetime.fromisoformat(row[7]) if row[7] else None,

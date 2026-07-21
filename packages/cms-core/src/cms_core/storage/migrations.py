@@ -208,4 +208,10 @@ MIGRATIONS: tuple[str, ...] = (
         values_json TEXT NOT NULL
     );
     """,
+    """
+    ALTER TABLE articles ADD COLUMN seo_json TEXT NOT NULL DEFAULT '{}';
+    ALTER TABLE translations ADD COLUMN seo_json TEXT NOT NULL DEFAULT '{}';
+    ALTER TABLE pages ADD COLUMN seo_json TEXT NOT NULL DEFAULT '{}';
+    ALTER TABLE page_translations ADD COLUMN seo_json TEXT NOT NULL DEFAULT '{}';
+    """,
 )

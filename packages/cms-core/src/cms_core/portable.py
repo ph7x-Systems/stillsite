@@ -14,7 +14,7 @@ from cms_core.media import MediaAsset
 from cms_core.menus import MenuItem
 from cms_core.models import Article, ArticleContent
 from cms_core.pages import Page, PageContent, Section, SectionContent
-from cms_core.translatable import Translation
+from cms_core.translatable import Seo, Translation
 
 
 def _moment(value: Any) -> datetime | None:
@@ -31,6 +31,11 @@ def _body_from_markdown(rendered: str, title: str, summary: str) -> str:
     return rendered.removeprefix(prefix).rstrip("\n")
 
 
+def _seo_from_portable(raw: dict[str, Any]) -> Seo:
+    data = raw.get("seo")
+    return Seo(**data) if data else Seo()
+
+
 def article_from_portable(data: dict[str, Any], bodies: dict[str, str]) -> Article:
     """``bodies`` maps language code -> Markdown body (the .md files)."""
     languages: dict[str, Any] = data["languages"]
@@ -44,6 +49,7 @@ def article_from_portable(data: dict[str, Any], bodies: dict[str, str]) -> Artic
             source_raw.get("summary", ""),
         ),
         slug=source_raw.get("slug"),
+        seo=_seo_from_portable(source_raw),
     )
     translations: dict[Language, Translation[ArticleContent]] = {}
     for code, raw in languages.items():
@@ -57,6 +63,7 @@ def article_from_portable(data: dict[str, Any], bodies: dict[str, str]) -> Artic
                     bodies.get(code, ""), raw["title"], raw.get("summary", "")
                 ),
                 slug=raw.get("slug"),
+                seo=_seo_from_portable(raw),
             ),
             source_checksum=raw["source_checksum"],
         )
@@ -120,6 +127,7 @@ def page_from_portable(data: dict[str, Any]) -> Page:
                 description=raw.get("description", ""),
                 slug=raw["slug"],
                 body_markdown=raw.get("body_markdown", ""),
+                seo=_seo_from_portable(raw),
             ),
             source_checksum=raw["source_checksum"],
         )
@@ -136,6 +144,7 @@ def page_from_portable(data: dict[str, Any]) -> Page:
             description=source_raw.get("description", ""),
             slug=source_raw["slug"],
             body_markdown=source_raw.get("body_markdown", ""),
+            seo=_seo_from_portable(source_raw),
         ),
         translations=translations,
         sections=[section_from_portable(raw) for raw in data.get("sections", [])],

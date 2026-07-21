@@ -14,13 +14,21 @@ from cms_core.models import SCHEMA_VERSION, Article, ArticleContent
 from cms_core.pages import Page, Section
 
 
+def _seo_to_portable(seo: object) -> dict[str, object] | None:
+    """None when default — untouched content keeps its old export."""
+    if getattr(seo, "is_default", True):
+        return None
+    return seo.model_dump()  # type: ignore[attr-defined, no-any-return]
+
+
 def article_to_portable(article: Article) -> dict[str, object]:
-    languages: dict[str, dict[str, str | None]] = {
+    languages: dict[str, dict[str, object]] = {
         SOURCE_LANGUAGE.value: {
             "state": "complete",
             "title": article.source.title,
             "summary": article.source.summary,
             "slug": article.source.slug,
+            **({"seo": seo} if (seo := _seo_to_portable(article.source.seo)) else {}),
         }
     }
     for language, translation in sorted(
@@ -32,6 +40,7 @@ def article_to_portable(article: Article) -> dict[str, object]:
             "summary": translation.content.summary,
             "slug": translation.content.slug,
             "source_checksum": translation.source_checksum,
+            **({"seo": seo} if (seo := _seo_to_portable(translation.content.seo)) else {}),
         }
     return {
         "id": article.id,
@@ -86,6 +95,7 @@ def page_to_portable(page: Page) -> dict[str, object]:
             "description": page.source.description,
             "slug": page.source.slug,
             "body_markdown": page.source.body_markdown,
+            **({"seo": seo} if (seo := _seo_to_portable(page.source.seo)) else {}),
         }
     }
     for language, translation in sorted(page.translations.items(), key=lambda item: item[0].value):
@@ -96,6 +106,7 @@ def page_to_portable(page: Page) -> dict[str, object]:
             "slug": translation.content.slug,
             "body_markdown": translation.content.body_markdown,
             "source_checksum": translation.source_checksum,
+            **({"seo": seo} if (seo := _seo_to_portable(translation.content.seo)) else {}),
         }
     return {
         "id": page.id,

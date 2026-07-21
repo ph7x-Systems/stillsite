@@ -7,11 +7,12 @@
 <meta property="og:title" content="{{ head.title }}">
 <meta property="og:description" content="{{ head.description }}">
 <meta property="og:url" content="{{ head.canonical }}">
+{% if head.og_image %}<meta property="og:image" content="{{ head.og_image }}">{% endif %}
 <meta property="og:locale" content="{{ head.og_locale }}">
 {% for locale in head.og_locale_alternates %}
 <meta property="og:locale:alternate" content="{{ locale }}">
 {% endfor %}
-<meta name="robots" content="index, follow">
+<meta name="robots" content="{{ head.robots }}">
 {% for alternate in head.alternates %}
 <link rel="alternate" hreflang="{{ alternate.hreflang }}" href="{{ alternate.href }}">
 {% endfor %}

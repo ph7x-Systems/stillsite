@@ -592,3 +592,36 @@ def test_form_submissions_round_trip_filter_delete_and_prune(backend: StorageBac
     assert not backend.delete_form_submission("sub-2")  # definitive
     assert backend.prune_form_submissions(datetime(2026, 7, 15, tzinfo=UTC)) == 1  # sub-1
     assert [s.id for s in backend.list_form_submissions()] == ["sub-3"]
+
+
+def test_seo_round_trips_on_articles_and_pages(backend: StorageBackend) -> None:
+    """ADR-0041: the per-language SEO payload survives storage on the
+    source and on every translation."""
+    from cms_core.translatable import Seo
+
+    seo = Seo(
+        seo_title="The launch, optimized",
+        seo_description="A description for robots and cards",
+        noindex=True,
+        canonical="https://example.com/launch-canonical/",
+        og_image="harbor-photo",
+    )
+    article = new_article("launch", ArticleContent(title="Launch", seo=seo))
+    article.set_translation(
+        Language.PT_PT, ArticleContent(title="Lancamento", seo=Seo(seo_title="Titulo PT"))
+    )
+    backend.save_article(article)
+    loaded_article = backend.load_article("launch")
+    assert loaded_article is not None
+    assert loaded_article.source.seo == seo
+    assert loaded_article.translations[Language.PT_PT].content.seo.seo_title == "Titulo PT"
+
+    page = new_page("about", PageContent(title="About", slug="about", seo=seo))
+    page.set_translation(
+        Language.DE, PageContent(title="Uber", slug="ueber", seo=Seo(noindex=True))
+    )
+    backend.save_page(page)
+    loaded_page = backend.load_page("about")
+    assert loaded_page is not None
+    assert loaded_page.source.seo == seo
+    assert loaded_page.translations[Language.DE].content.seo.noindex is True

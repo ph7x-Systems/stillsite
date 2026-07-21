@@ -14,7 +14,7 @@ from pydantic import Field, model_validator
 from cms_core.languages import Language
 from cms_core.models import SLUG_PATTERN
 from cms_core.states import ContentStatus, TranslationState
-from cms_core.translatable import ChecksummedContent, TranslatableModel, worst_state
+from cms_core.translatable import ChecksummedContent, Seo, TranslatableModel, worst_state
 
 
 class PageContent(ChecksummedContent):
@@ -24,12 +24,15 @@ class PageContent(ChecksummedContent):
     body_markdown: str = ""
     """Long-form prose (ADR-0037): a page can be a document, a zone
     composition, or both — rendered between the header and sections."""
+    seo: Seo = Field(default_factory=Seo)
 
     def checksum_payload(self) -> tuple[str, ...]:
         base = (self.title, self.description, self.slug)
-        # Empty body keeps the pre-ADR-0037 checksum: adding the field
-        # must not flip existing translations to outdated.
-        return (*base, self.body_markdown) if self.body_markdown else base
+        # Empty body keeps the pre-ADR-0037 checksum, and a default Seo
+        # the pre-ADR-0041 one: adding fields must not flip existing
+        # translations to outdated.
+        with_body = (*base, self.body_markdown) if self.body_markdown else base
+        return with_body if self.seo.is_default else (*with_body, self.seo.checksum_fragment())
 
 
 class SectionContent(ChecksummedContent):

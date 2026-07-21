@@ -8,6 +8,18 @@ changes live in [CHANGELOG.md](CHANGELOG.md); the product map in
 
 ## Unreleased (towards 0.3.0)
 
+- **SEO the editor controls** (#138, first part): articles and pages
+  take per-language SEO overrides — title, description, `noindex`
+  (emitted as `noindex, follow`), a canonical override and a
+  social-card image straight from the media library, served as its
+  published rendition. Everything flows through the one head
+  derivation, so each tag appears exactly once and empty overrides
+  keep today's output byte for byte; existing translations never flip
+  to outdated just because the field arrived. The portable format and
+  the Content API carry the payload additively; storage migration 25
+  lands on all four engines. The editor surface, advisory length
+  hints and automatic redirects on slug changes are the next part.
+
 - **Any destination for a submission** (#137, final part): the
   provider contract, frozen only after the reference implementation
   proved the shape in production. The endpoint owns everything before

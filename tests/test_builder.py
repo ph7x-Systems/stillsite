@@ -460,3 +460,64 @@ def test_form_sections_render_accessibly_and_only_with_an_endpoint() -> None:
     plain = build_site(CONFIG, content, now=NOW).files["index.html"].decode("utf-8")
     assert "Write to the fleet" in plain  # the content still shows
     assert "<form" not in plain  # nowhere to submit — no form pretends otherwise
+
+
+def test_per_entry_seo_overrides_emit_exactly_once() -> None:
+    """ADR-0041: overrides flow through the one head derivation — the
+    overridden title, description, canonical, robots directive and
+    social image each appear exactly once; a default entry keeps
+    today's output byte for byte."""
+    from io import BytesIO
+
+    from cms_core.translatable import Seo
+    from PIL import Image
+
+    buffer = BytesIO()
+    Image.new("RGB", (1200, 630), color=(10, 20, 30)).save(buffer, format="PNG")
+    card = MediaAsset(
+        id="card-shot",
+        path="images/card.png",
+        mime_type="image/png",
+        width=1200,
+        height=630,
+        alt={Language.EN: "The card"},
+    )
+    seo = Seo(
+        seo_title="The optimized title",
+        seo_description="A crafted snippet",
+        noindex=True,
+        canonical="https://elsewhere.example/the-original/",
+        og_image="card-shot",
+    )
+    tuned = new_article(
+        "tuned", ArticleContent(title="Plain title", summary="Plain summary", seo=seo), now=NOW
+    )
+    tuned.status = ContentStatus.PUBLISHED
+    plain = new_article("plain", ArticleContent(title="Untouched", summary="S"), now=NOW)
+    plain.status = ContentStatus.PUBLISHED
+    content = SiteContent(articles=[tuned, plain], media=[card])
+    config = CONFIG.model_copy(update={"content_api": True})
+    artifact = build_site(
+        config, content, media_files={"images/card.png": buffer.getvalue()}, now=NOW
+    )
+
+    tuned_html = artifact.files["blog/tuned/index.html"].decode("utf-8")
+    assert tuned_html.count("The optimized title") >= 1
+    assert tuned_html.count("<title>The optimized title | Aurora Cartography</title>") == 1
+    assert tuned_html.count('name="description" content="A crafted snippet"') == 1
+    assert tuned_html.count('name="robots"') == 1
+    assert 'content="noindex, follow"' in tuned_html
+    assert tuned_html.count('rel="canonical" href="https://elsewhere.example/the-original/"') == 1
+    assert (
+        tuned_html.count('property="og:image" content="https://example.com/media/images/card.png"')
+        == 1
+    )
+
+    plain_html = artifact.files["blog/plain/index.html"].decode("utf-8")
+    assert 'content="index, follow"' in plain_html
+    assert "og:image" not in plain_html
+    assert 'rel="canonical" href="https://example.com/blog/plain/"' in plain_html
+
+    api = artifact.files["api/v1/en/content.json"].decode("utf-8")
+    assert '"seo_title": "The optimized title"' in api
+    assert '"plain"' in api and api.count('"seo"') == 1  # additive: only where set
