@@ -262,3 +262,35 @@ def test_import_wxr_into_a_fresh_project(tmp_path: Path) -> None:
         article = storage.load_article("imported-launch")
     assert article is not None
     assert article.source.body_markdown == "From another blog."
+
+
+def test_doctor_passes_on_a_healthy_project(tmp_path: Path) -> None:
+    project = make_project(tmp_path)
+    runner.invoke(app, ["seed", "-p", str(project)])
+    result = runner.invoke(app, ["doctor", "-p", str(project)])
+    assert result.exit_code == 0, result.output
+    assert "all checks passed" in result.output
+    assert "schema 17/17" in result.output
+    assert "13 article(s), 2 page(s)" in result.output
+
+
+def test_doctor_fails_on_missing_media_files(tmp_path: Path) -> None:
+    project = make_project(tmp_path)
+    runner.invoke(app, ["seed", "-p", str(project)])
+    (project / "media" / "images" / "rocket.svg").unlink()
+    result = runner.invoke(app, ["doctor", "-p", str(project)])
+    assert result.exit_code == 1
+    assert "media: FAIL" in result.output
+    assert "1 check(s) failed" in result.output
+
+
+def test_doctor_fails_on_a_broken_extension(tmp_path: Path) -> None:
+    (tmp_path / "sardine.toml").write_text(
+        'extensions = ["definitely.missing:nope"]\n'
+        '[site]\nname = "T"\nbase_url = "https://t.example"\nlanguages = []\n'
+        '[storage]\nurl = "sqlite:///content.sqlite3"\n',
+        encoding="utf-8",
+    )
+    result = runner.invoke(app, ["doctor", "-p", str(tmp_path)])
+    assert result.exit_code == 1
+    assert "extensions: FAIL" in result.output

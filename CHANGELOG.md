@@ -5,6 +5,13 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **`cms doctor` closes M7**: one read-only command diagnoses the
+  machinery around the content — configuration (theme, extensions,
+  comments provider, Pillow when image widths are configured), storage
+  connectivity and schema level, content counts, referenced media files
+  on disk, Python and lockstep package versions. Exit 1 on any failure;
+  content-level problems remain `cms validate`'s job.
+
 - **On-publish webhooks** (M7, ADR-0036): with `SARDINE_WEBHOOK_URL` +
   `SARDINE_WEBHOOK_SECRET` set, transitions that change the public site
   (into and out of `published`) POST a minimal signed JSON doorbell —

@@ -134,7 +134,7 @@ Legend: ✅ shipped · 🟡 partial · 🔜 scheduled (milestone in brackets) ·
 | Export / portability | ✅ JSON/Markdown is the source of truth | — |
 | Content API | ✅ opt-in `api/v1/` JSON in every build ([CONTENT_API.md](CONTENT_API.md)): versioned, deterministic, same publication/language gates as the HTML | — |
 | Webhooks (publish → host build) | ✅ [ADR-0036](adr/0036-on-publish-webhooks.md): signed doorbell on publish/unpublish, bounded retries, HTTPS-only, optional | — |
-| Health check | 🟡 `cms validate` covers content | 🔜 `cms doctor` (storage, media, config) (M7) |
+| Health check | ✅ `cms doctor`: configuration, theme, extensions, comments, storage schema, media files, environment — read-only, exit 1 on failure; `cms validate` keeps the content side | — |
 | Backups | ✅ `cms dump` writes the portable pair, `cms import` restores it — the DB stays disposable | — |
 | Scheduled builds | ✅ recipe in ADMIN_GUIDE (CI `schedule:` + `cms export`); `publish_at`-aware by construction | — |
 | Incremental builds | ❌ full rebuild every time (fast today) | 🔜 content-hash build cache when site size demands it (M9) |
@@ -152,8 +152,9 @@ target`
 
 Current queue:
 
-1. **M7 operations** — implement ADR-0032 (email + notifications) →
-   TOTP 2FA → on-publish webhooks → `cms doctor`.
+1. **v0.2.0 release** — M5–M7 ship to PyPI.
+2. **ADR-0034 execution, phase 1** — tag-based locales in the core
+   (language packs open M8).
 
 ## Definition of done for the current queue
 
@@ -175,9 +176,10 @@ Current queue:
   reusable-block gallery, comments contract (ADR-0031) and the JSON
   content target — all shipped. (Admin localization shipped early —
   ADR-0022.)
-- **M7 — Operations** (current): email/notification subsystem per
-  ADR-0032 (password reset, review notifications), TOTP 2FA, on-publish
-  webhooks and `cms doctor`.
+- **M7 — Operations: CLOSED.** Pluggable email transports with
+  enumeration-safe password reset and editorial notifications
+  (ADR-0032), TOTP two-factor with per-role enforcement (ADR-0035),
+  signed on-publish webhooks (ADR-0036) and `cms doctor` — all shipped.
 - **M8 — Editorial power and content depth**: bulk actions, admin-wide
   search, scheduled unpublish, editorial calendar, audit log, custom
   taxonomies (ADR), content relations (ADR), crop/focal point (ADR),

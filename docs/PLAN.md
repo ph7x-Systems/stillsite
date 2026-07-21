@@ -267,7 +267,7 @@ tests, docs and wiki updates, per the standing gates.
       catalogs (EN msgids; PT-PT/ES/FR/DE), per-user preference +
       `Accept-Language` fallback, anti-drift completeness test
 
-## Milestone 7 — Operations
+## Milestone 7 — Operations (CLOSED)
 
 - [x] Email/notification ADR written
       ([ADR-0032](adr/0032-email-and-notifications.md), proposed):
@@ -287,7 +287,10 @@ tests, docs and wiki updates, per the standing gates.
 - [x] On-publish webhook ([ADR-0036](adr/0036-on-publish-webhooks.md)):
       published/unpublished events, HMAC-SHA256 signature, three
       bounded retries, HTTPS-only, environment-configured, optional
-- [ ] `cms doctor`: storage, media, config, environment diagnostics
+- [x] `cms doctor`: configuration (theme, extensions, comments,
+      Pillow-when-configured), storage connectivity + schema level,
+      content counts, media files on disk, Python + lockstep package
+      versions — read-only, exit 1 on failure
 - [x] Documented backup/restore and scheduled-build recipes
 
 ## Milestone 8 — Editorial power and content depth (scoped)
@@ -326,9 +329,10 @@ Ordered by dependency; every 🧭 item begins with its ADR:
 
 ## Current execution queue
 
-1. **Milestone 7 operations** — implement ADR-0032, then TOTP, on-publish
-   webhooks and `cms doctor`, in that order.
-2. **Milestone 8, by ADR** — the editorial-power scope above, ADRs first.
+1. **Release v0.2.0** — M5–M7 to PyPI (lockstep bump, tag, trusted
+   publishing).
+2. **Milestone 8, by ADR** — ADR-0034 phase 1 (tag-based locales) first,
+   then the editorial-power scope, ADRs first.
 3. **Milestone 9** — platform and ecosystem scope, after M8 or as
    adoption pulls items forward.
 

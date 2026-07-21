@@ -441,3 +441,121 @@ def import_command(
         f"imported {len(articles)} article(s), {len(pages)} page(s), "
         f"{len(media)} media asset(s), {len(menu)} menu item(s)"
     )
+
+
+@app.command()
+def doctor(project_dir: ProjectDir = Path()) -> None:
+    """Diagnose the project: configuration, storage, media, environment.
+
+    Read-only. Exits 1 when any check fails; warnings alone exit 0.
+    Content-level problems belong to `cms validate` — doctor covers the
+    machinery around the content.
+    """
+    project = _project(project_dir)
+    failures = 0
+
+    def report(name: str, ok: bool, detail: str, *, warn: bool = False) -> None:
+        nonlocal failures
+        verdict = "ok" if ok else ("warn" if warn else "FAIL")
+        if not ok and not warn:
+            failures += 1
+        typer.echo(f"{name}: {verdict} — {detail}")
+
+    # Configuration
+    report("config", True, f"sardine.toml loaded ({project.site.name})")
+    try:
+        create_theme(project.site.theme, overrides=project.theme_overrides)
+        report("theme", True, f"{project.site.theme!r} resolves")
+    except Exception as error:
+        report("theme", False, str(error))
+    try:
+        extensions = project.load_extensions()
+        report(
+            "extensions",
+            True,
+            f"{len(extensions)} activated" if extensions else "none configured",
+        )
+    except ExtensionError as error:
+        report("extensions", False, str(error))
+    try:
+        provider = project.resolve_comments_provider()
+        detail = "provider resolves" if provider else "not configured"
+        report("comments", True, detail)
+    except ExtensionError as error:
+        report("comments", False, str(error))
+    if project.site.image_widths:
+        try:
+            import PIL  # noqa: F401
+
+            report("images", True, f"Pillow present for widths {list(project.site.image_widths)}")
+        except ImportError:
+            report(
+                "images",
+                False,
+                "image_widths configured but Pillow is missing (install sardine-cms-build[images])",
+            )
+
+    # Storage
+    from cms_core.storage import MIGRATIONS
+
+    try:
+        with project.open_storage() as storage:
+            version = storage.schema_version()
+            expected = len(MIGRATIONS)
+            report(
+                "storage",
+                version == expected,
+                f"connected, schema {version}/{expected}",
+            )
+            articles = len(storage.load_all_articles())
+            pages = len(storage.load_all_pages())
+            media = storage.load_all_media_assets()
+            users = len(storage.list_usernames())
+            report(
+                "content",
+                True,
+                f"{articles} article(s), {pages} page(s), "
+                f"{len(media)} media asset(s), {users} account(s)",
+            )
+            # Media files on disk
+            missing = [
+                asset.path
+                for asset in media
+                if not (project.directory / "media" / asset.path).is_file()
+            ]
+            if missing:
+                report("media", False, f"{len(missing)} referenced file(s) missing: {missing[:3]}")
+            else:
+                report("media", True, f"{len(media)} file(s) present")
+    except Exception as error:
+        report("storage", False, str(error))
+
+    # Environment
+    import sys
+
+    report("python", True, sys.version.split()[0])
+    from importlib import metadata as _metadata
+
+    versions: dict[str, str] = {}
+    for dist in (
+        "sardine-cms-core",
+        "sardine-cms-validation",
+        "sardine-cms-build",
+        "sardine-cms-cli",
+    ):
+        try:
+            versions[dist] = _metadata.version(dist)
+        except _metadata.PackageNotFoundError:
+            versions[dist] = "not installed"
+    lockstep = len({v for v in versions.values() if v != "not installed"}) <= 1
+    report(
+        "packages",
+        lockstep,
+        ", ".join(f"{name} {version}" for name, version in versions.items()),
+        warn=not lockstep,
+    )
+
+    if failures:
+        typer.echo(f"{failures} check(s) failed", err=True)
+        raise typer.Exit(code=1)
+    typer.echo("all checks passed")
