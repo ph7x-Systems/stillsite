@@ -133,3 +133,49 @@ def test_an_existing_project_file_is_never_rewritten(tmp_path: Path) -> None:
         response = client.post("/setup", data=_setup_payload(client), follow_redirects=False)
         assert response.status_code == 303
     assert (tmp_path / "sardine.toml").read_text(encoding="utf-8") == original
+
+
+def test_build_persists_the_chosen_target_and_reports_next_steps(tmp_path: Path) -> None:
+    """#128 slice 2: the deployment choice is remembered in the project
+    and the success feedback says where the files are and what to do."""
+    with TestClient(_app(tmp_path), base_url="https://testserver") as client:
+        client.post(
+            "/setup",
+            data=_setup_payload(client, source_language="en"),
+            follow_redirects=False,
+        )
+        csrf = client.get("/").text.split('name="csrf_token" value="')[1].split('"')[0]
+        panel = client.get("/publishing").text
+        assert "Where will the site live?" in panel
+        response = client.post(
+            "/publishing/build",
+            data={"csrf_token": csrf, "target": "swa"},
+            follow_redirects=False,
+        )
+        assert response.status_code == 303
+        after = client.get("/publishing").text
+    assert "ready to go live" in after
+    assert "SWA CLI" in after
+    config = tomllib.loads((tmp_path / "sardine.toml").read_text(encoding="utf-8"))
+    assert config["build"]["target"] == "swa"
+    assert (tmp_path / "_site" / "staticwebapp.config.json").is_file()
+
+
+def test_build_defaults_to_the_projects_configured_target(tmp_path: Path) -> None:
+    with TestClient(_app(tmp_path), base_url="https://testserver") as client:
+        client.post(
+            "/setup",
+            data=_setup_payload(client, source_language="en"),
+            follow_redirects=False,
+        )
+        existing = (tmp_path / "sardine.toml").read_text(encoding="utf-8")
+        (tmp_path / "sardine.toml").write_text(
+            existing + '\n[build]\ntarget = "nginx"\n', encoding="utf-8"
+        )
+        csrf = client.get("/").text.split('name="csrf_token" value="')[1].split('"')[0]
+        response = client.post(
+            "/publishing/build", data={"csrf_token": csrf}, follow_redirects=False
+        )
+        assert response.status_code == 303
+        after = client.get("/publishing").text
+    assert "nginx.conf" in after

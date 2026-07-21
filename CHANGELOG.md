@@ -5,6 +5,16 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Publishing answers "where will the site live?"** (#128, second
+  slice): the build form becomes a guided choice — a card per
+  deployment target explaining in plain words what the build includes
+  and what to do with it; the choice is remembered in `sardine.toml`
+  (`[build] target`, shared with `cms export`, which now defaults to
+  it), and a successful build ends with where the files are and the
+  one action that puts them live. Thirteen new panel strings in all
+  four bundled catalogs; end-to-end tested from the wizard through a
+  real build to the persisted target and the target's extra files.
+
 - **The browser sets up the site** (#128, first slice): an instance
   with zero accounts lands every visitor on `/setup` — first admin
   account (always `admin`; an instance can never be left without one),
