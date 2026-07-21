@@ -1415,3 +1415,12 @@ msgstr "Pixel des Originals, beim Veröffentlichen angewendet — leer zeigt das
 
 msgid "fractions from the top-left, 0 to 1 — kept in view when the image is trimmed to fit"
 msgstr "Anteile ab der linken oberen Ecke, 0 bis 1 — bleibt sichtbar, wenn das Bild beschnitten wird"
+
+msgid "Replace file"
+msgstr "Datei ersetzen"
+
+msgid "Replace"
+msgstr "Ersetzen"
+
+msgid "the asset keeps its ID — every reference stays valid; the new file goes live on the next publish"
+msgstr "das Medium behält seine ID — alle Verweise bleiben gültig; die neue Datei erscheint mit der nächsten Veröffentlichung"

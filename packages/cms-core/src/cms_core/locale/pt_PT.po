@@ -1415,3 +1415,12 @@ msgstr "píxeis do original, aplicado na publicação — vazio mostra a imagem 
 
 msgid "fractions from the top-left, 0 to 1 — kept in view when the image is trimmed to fit"
 msgstr "frações a partir do canto superior esquerdo, 0 a 1 — mantido visível quando a imagem é ajustada"
+
+msgid "Replace file"
+msgstr "Substituir ficheiro"
+
+msgid "Replace"
+msgstr "Substituir"
+
+msgid "the asset keeps its ID — every reference stays valid; the new file goes live on the next publish"
+msgstr "o recurso mantém o ID — todas as referências continuam válidas; o novo ficheiro entra em produção na próxima publicação"

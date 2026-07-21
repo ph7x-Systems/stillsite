@@ -10,6 +10,11 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Media replace-file flow: swap the file behind an asset while the ID
+  and every reference stay valid; alt texts, collection and focal
+  carry over, an out-of-bounds crop is cleared, and duplicate bytes
+  are refused naming their owner (#136).
+
 - Modern image formats by default: every raster image ships WebP/AVIF
   variants (of the base size and of each configured responsive width)
   whenever the environment can encode them; both bundled themes render

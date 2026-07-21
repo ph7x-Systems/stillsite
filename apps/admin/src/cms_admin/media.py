@@ -372,6 +372,95 @@ async def media_alt_save(
     return RedirectResponse(admin_path("media", updated.id), status_code=status.HTTP_303_SEE_OTHER)
 
 
+@router.post("/{asset_id}/replace")
+async def media_replace(
+    request: Request,
+    asset_id: str,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+    upload: UploadFile | None = None,
+) -> object:
+    """Replace the file behind an asset (#136): the ID never changes,
+    so every reference — covers, sections — stays valid. Alt texts,
+    collection and focal point carry over; a crop that no longer fits
+    the new image is cleared rather than shipping a broken window."""
+    user, session = user_session
+    settings = request.app.state.settings
+    db = get_db(request)
+    asset = await db.run(lambda storage: _load_asset(storage, asset_id))
+    if asset is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="unknown media asset")
+    errors: list[str] = []
+    data = b""
+    if upload is not None:
+        try:
+            data = await upload.read(settings.upload_max_bytes + 1)
+        finally:
+            await upload.close()
+    mime = sniff_mime(data) if data and len(data) <= settings.upload_max_bytes else None
+    if not data:
+        errors.append("file: choose a file to upload")
+    elif len(data) > settings.upload_max_bytes:
+        limit_mb = settings.upload_max_bytes // (1024 * 1024)
+        errors.append(f"file: larger than the {limit_mb} MB limit")
+    elif mime is None:
+        errors.append("file: unsupported type — png, jpeg, gif or webp")
+    size: tuple[int, int] | None = None
+    if not errors and mime is not None:
+        size = image_size(data, mime)
+        if size is None:
+            errors.append("file: could not read the image dimensions")
+        elif size[0] * size[1] > settings.upload_max_pixels:
+            errors.append("file: image dimensions exceed the pixel limit")
+    replacement: MediaAsset | None = None
+    if not errors and mime is not None and size is not None:
+        content_hash = hashlib.sha256(data).hexdigest()
+        everything = await db.run(lambda storage: storage.load_all_media_assets())
+        duplicate = next(
+            (a for a in everything if a.content_hash == content_hash and a.id != asset_id),
+            None,
+        )
+        if duplicate is not None:
+            errors.append(f"file: identical content already exists as {duplicate.id!r}")
+        else:
+            update = {
+                "path": f"{asset_id}{EXTENSIONS[mime]}",
+                "mime_type": mime,
+                "width": size[0],
+                "height": size[1],
+                "content_hash": content_hash,
+            }
+            replacement = asset.model_copy(update=update)
+            try:
+                MediaAsset.model_validate(replacement.model_dump())
+            except ValidationError:
+                # The old crop does not fit the new image: drop it.
+                replacement = replacement.model_copy(update={"crop": ""})
+                MediaAsset.model_validate(replacement.model_dump())
+    if replacement is None or errors:
+        context = await _asset_context(request, asset_id)
+        return _page(
+            request,
+            "media_edit.html.j2",
+            {"user": user, "csrf_token": session.csrf_token, "errors": errors, **context},
+            status_code=HTTP_422,
+        )
+    settings.media_dir.mkdir(parents=True, exist_ok=True)
+    new_path = settings.media_dir / replacement.path
+    old_path = settings.media_dir / asset.path
+    temp_path = new_path.with_name(new_path.name + ".replacing")
+    _write_new_file(temp_path, data)
+    try:
+        await db.run(lambda storage: storage.save_media_asset(replacement))
+    except BaseException:
+        temp_path.unlink(missing_ok=True)
+        raise
+    os.replace(temp_path, new_path)
+    if old_path != new_path:
+        old_path.unlink(missing_ok=True)
+    await audit_record(request, user.username, "replaced", "media", asset_id)
+    return RedirectResponse(admin_path("media", asset_id), status_code=status.HTTP_303_SEE_OTHER)
+
+
 @router.post("/{asset_id}/delete")
 async def media_delete(
     request: Request,

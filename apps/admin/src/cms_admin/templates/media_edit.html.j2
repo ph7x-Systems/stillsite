@@ -23,6 +23,16 @@
           {% if asset.width %}<dt>{{ _("Dimensions") }}</dt><dd>{{ asset.width }}×{{ asset.height }}</dd>{% endif %}
           {% if asset.collection %}<dt>{{ _("Collection") }}</dt><dd><a href="/media?collection={{ asset.collection }}">{{ asset.collection }}</a></dd>{% endif %}
         </dl>
+        <form method="post" action="/media/{{ asset.id }}/replace" enctype="multipart/form-data" class="mb-3">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <div class="mb-1 admin-field">
+            <label class="form-label" for="replace-upload">{{ _("Replace file") }}</label>
+            <input class="form-control admin-input" id="replace-upload" name="upload" type="file"
+                   accept=".png,.jpg,.jpeg,.gif,.webp" required>
+            <div class="form-text admin-hint">{{ _("the asset keeps its ID — every reference stays valid; the new file goes live on the next publish") }}</div>
+          </div>
+          <button type="submit" class="btn btn-outline-secondary btn-sm">{{ _("Replace") }}</button>
+        </form>
         <h3 class="h6">{{ _("Used by") }}</h3>
         {% if references %}
         <ul>{% for reference in references %}<li><code>{{ reference }}</code></li>{% endfor %}</ul>

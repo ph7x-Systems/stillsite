@@ -8,6 +8,14 @@ changes live in [CHANGELOG.md](CHANGELOG.md); the product map in
 
 ## Unreleased (towards 0.3.0)
 
+- **Swap the file, keep the asset** (#136): the asset page gains a
+  replace flow. The uploaded bytes change; the ID does not — so every
+  cover and section reference keeps working without re-linking. Alt
+  texts, collection and focal point carry over, a crop that no longer
+  fits the new image is cleared rather than shipping a broken window,
+  the old file leaves the disk when the format changes, and bytes
+  identical to another asset are refused with that asset's name.
+
 - **Modern image formats without asking** (#136): builds now emit
   WebP and AVIF variants of every raster image — the base rendition
   and each configured responsive width — whenever the build

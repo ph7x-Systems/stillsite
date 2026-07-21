@@ -405,3 +405,84 @@ def test_crop_and_focal_edit_and_validate(tmp_path: Path) -> None:
     assert stored is not None
     assert stored.crop == "0,0,2,1"
     assert stored.focal == "0.5,0.5"
+
+
+def _gif(width: int = 5, height: int = 4) -> bytes:
+    return (
+        b"GIF89a"
+        + struct.pack("<HH", width, height)
+        + b"\xf0\x00\x00"
+        + b"\x00\x00\x00\xff\xff\xff"
+        + b"\x2c\x00\x00\x00\x00"
+        + struct.pack("<HH", width, height)
+        + b"\x00\x02\x02\x44\x01\x00\x3b"
+    )
+
+
+def test_replace_keeps_the_id_and_every_reference(tmp_path: Path) -> None:
+    """#136: the file changes, the asset does not — references, alt
+    texts, collection and focal survive; a crop that no longer fits is
+    cleared; the old file leaves the disk when the format changes."""
+    asset = _asset().model_copy(
+        update={"collection": "press", "focal": "0.5,0.5", "crop": "0,0,3,2"}
+    )
+    app = _app(tmp_path, asset, with_cover=True)
+    (tmp_path / "media").mkdir(exist_ok=True)
+    (tmp_path / "media" / "tin-photo.png").write_bytes(_png(3, 2))
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        response = client.post(
+            "/media/tin-photo/replace",
+            data={"csrf_token": csrf},
+            files={"upload": ("new.gif", _gif(2, 1), "image/gif")},
+            follow_redirects=False,
+        )
+        assert response.status_code == 303, response.text
+        editor = client.get("/media/tin-photo").text
+    assert "image/gif" in editor
+    with create_storage(f"sqlite:///{tmp_path / 'content.db'}") as storage:
+        stored = storage.load_media_asset("tin-photo")
+        articles = storage.load_all_articles()
+    assert stored is not None
+    assert stored.path == "tin-photo.gif"
+    assert (stored.width, stored.height) == (2, 1)
+    assert stored.collection == "press"  # carried over
+    assert stored.focal == "0.5,0.5"  # carried over
+    assert stored.crop == ""  # a 3x2 crop cannot describe a 2x1 image
+    assert stored.alt  # alt texts carried over
+    assert any(a.cover == "tin-photo" for a in articles)  # reference intact
+    assert (tmp_path / "media" / "tin-photo.gif").is_file()
+    assert not (tmp_path / "media" / "tin-photo.png").exists()
+
+
+def test_replace_refuses_bytes_owned_by_another_asset(tmp_path: Path) -> None:
+    app = _app(tmp_path, _asset("first"), _asset("second"))
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        # give "second" real content first
+        client.post(
+            "/media/second/replace",
+            data={"csrf_token": csrf},
+            files={"upload": ("s.png", _png(6, 6), "image/png")},
+            follow_redirects=False,
+        )
+        clash = client.post(
+            "/media/first/replace",
+            data={"csrf_token": csrf},
+            files={"upload": ("f.png", _png(6, 6), "image/png")},
+        )
+    assert clash.status_code == 422
+    assert "identical content already exists" in clash.text
+
+
+def test_replace_rejects_unsupported_bytes(tmp_path: Path) -> None:
+    app = _app(tmp_path, _asset())
+    with _client(app) as client:
+        csrf = _sign_in(client)
+        bad = client.post(
+            "/media/tin-photo/replace",
+            data={"csrf_token": csrf},
+            files={"upload": ("evil.png", b"MZ\x90\x00not-an-image", "image/png")},
+        )
+    assert bad.status_code == 422
+    assert "unsupported type" in bad.text

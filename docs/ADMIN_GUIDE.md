@@ -178,6 +178,12 @@ with that entity's errors listed (the publish gate; disable only with
 - **Duplicate prevention**: each upload records the file's SHA-256;
   uploading bytes identical to an existing asset is refused with a
   message naming the asset that already holds them.
+- **Replace file**: the asset page swaps the file behind an asset
+  while the ID — and therefore every reference from covers and
+  sections — stays valid. Alt texts, collection and focal point carry
+  over; a crop that no longer fits the new image is cleared; the old
+  file leaves the disk when the format changes. Bytes identical to
+  another asset are refused, naming it.
 - **Crop and focal point**: on an image's asset page, an optional crop
   (`x,y,width,height` in pixels of the original) and focal point
   (`x,y` fractions, 0–1). The crop is stored as data and applied when
