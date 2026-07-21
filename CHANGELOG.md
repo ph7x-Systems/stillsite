@@ -5,6 +5,18 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **The section model's growth path is decided** (ADR-0037, accepted):
+  structured sections stay the contract — opaque block-markup bodies
+  are rejected because multilingual parity, validation and the
+  portable JSON source of truth need data, not markup blobs — and the
+  three real restrictions get fixes: unbounded translatable `items`
+  replace numbered fields with caps hidden in templates (`q6`,
+  `row8`), section kinds will declare Markdown-capable fields, and
+  pages gain a long-form `body_markdown`. The editor stays
+  server-rendered; a drag-and-drop visual builder is explicitly
+  deferred to its own ADR. Docs and roadmap now state the current
+  limits honestly.
+
 - **ADR-0034 closes: language packs are an ecosystem** (M8): the
   authoring guide (docs/LANGUAGE_PACK_GUIDE.md + wiki) documents the
   whole contract, ECOSYSTEM.md gains the `sardine-lang-<tag>` naming
