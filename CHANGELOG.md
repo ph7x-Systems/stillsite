@@ -10,6 +10,9 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Package metadata declares the project URLs (homepage, repository,
+  wiki, changelog) — published releases show them as verified links.
+
 - SEO editor card: a collapsed Search-and-social card on article and
   page editors (title, description, noindex, canonical, social image)
   with a static preview; per language, localized (#138).
