@@ -29,6 +29,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
+DEPLOY_CONTRACT_VERSION = 1
+"""The provider contract's version. A provider declares the version it
+implements; a mismatch refuses loudly at selection time, never at
+deploy time."""
+
 LOCK_STALE_SECONDS = 600
 HEALTH_TIMEOUT_SECONDS = 5
 
@@ -64,8 +69,14 @@ class DeployState:
 
 @runtime_checkable
 class DeployProvider(Protocol):
-    """The generic contract (#156). Slice 1: filesystem; later slices
-    implement remote destinations against the same surface."""
+    """The generic contract (#156). Implementing it is the whole job of
+    adding a destination — the editor, the editorial flow and the
+    publication pipeline never change."""
+
+    contract_version: int
+    capabilities: frozenset[str]
+    """What the provider genuinely supports: ``rollback``, ``health``,
+    ``remote``. The panel adapts; nothing else may assume more."""
 
     def deploy(self, files: dict[str, bytes], digest: str, actor: str) -> DeployState: ...
 
@@ -76,6 +87,45 @@ class DeployProvider(Protocol):
     def state(self) -> DeployState: ...
 
     def releases(self) -> list[ReleaseInfo]: ...
+
+
+_PROVIDERS: dict[str, object] = {}
+
+
+def register_deploy_provider(name: str, factory: object) -> None:
+    """Register a provider factory ``(settings: dict[str, str],
+    project_dir: Path) -> DeployProvider``. Idempotent by identity;
+    loud on a conflicting re-registration — a configured name must
+    never resolve to something unexpected."""
+    existing = _PROVIDERS.get(name)
+    if existing is not None and existing is not factory:
+        raise ValueError(f"deploy provider {name!r} is already registered differently")
+    _PROVIDERS[name] = factory
+
+
+def available_deploy_providers() -> tuple[str, ...]:
+    return tuple(sorted(_PROVIDERS))
+
+
+def create_deploy_provider(
+    name: str, settings: dict[str, str], project_dir: Path
+) -> DeployProvider:
+    """Resolve and build the configured provider, validating the
+    contract version before anything runs."""
+    factory = _PROVIDERS.get(name)
+    if factory is None:
+        known = ", ".join(available_deploy_providers()) or "none"
+        raise DeployError(f"unknown deploy provider {name!r} (registered: {known})")
+    provider = factory(settings, project_dir)  # type: ignore[operator]
+    version = getattr(provider, "contract_version", None)
+    if version != DEPLOY_CONTRACT_VERSION:
+        raise DeployError(
+            f"provider {name!r} implements contract version {version!r}; "
+            f"this CMS speaks version {DEPLOY_CONTRACT_VERSION}"
+        )
+    if not isinstance(provider, DeployProvider):
+        raise DeployError(f"provider {name!r} does not implement the deploy contract")
+    return provider
 
 
 def write_release(
@@ -118,6 +168,9 @@ def write_release(
 
 class FilesystemDeployer:
     """The local reference provider: versioned releases + symlink."""
+
+    contract_version = DEPLOY_CONTRACT_VERSION
+    capabilities = frozenset({"rollback", "health"})
 
     def __init__(self, root: Path, health_url: str = "", keep: int = 5) -> None:
         self.root = root
@@ -351,6 +404,9 @@ class SwaDeployer:
     last successful deployment until a new one succeeds.
     """
 
+    contract_version = DEPLOY_CONTRACT_VERSION
+    capabilities = frozenset({"rollback", "health", "remote"})
+
     def __init__(
         self,
         root: Path,
@@ -525,3 +581,40 @@ class SwaDeployer:
                 return bool(200 <= response.status < 300)
         except OSError:
             return False
+
+
+def _filesystem_factory(settings: dict[str, str], project_dir: Path) -> FilesystemDeployer:
+    raw_root = settings.get("root", "")
+    if not raw_root:
+        raise DeployError("the filesystem provider needs [deploy] root")
+    root = Path(raw_root)
+    if not root.is_absolute():
+        root = project_dir / root
+    return FilesystemDeployer(
+        root,
+        health_url=settings.get("health_url", ""),
+        keep=int(settings.get("keep", "5")),
+    )
+
+
+def _swa_factory(settings: dict[str, str], project_dir: Path) -> SwaDeployer:
+    raw_root = settings.get("root", "")
+    deploy_url = settings.get("deploy_url", "")
+    if not raw_root:
+        raise DeployError("the swa provider needs [deploy] root (the local release store)")
+    if not deploy_url:
+        raise DeployError("the swa provider needs [deploy] deploy_url")
+    root = Path(raw_root)
+    if not root.is_absolute():
+        root = project_dir / root
+    return SwaDeployer(
+        root,
+        deploy_url=deploy_url,
+        health_url=settings.get("health_url", ""),
+        keep=int(settings.get("keep", "5")),
+        timeout=int(settings.get("timeout", "300")),
+    )
+
+
+register_deploy_provider("filesystem", _filesystem_factory)
+register_deploy_provider("swa", _swa_factory)

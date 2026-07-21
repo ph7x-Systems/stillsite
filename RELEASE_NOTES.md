@@ -8,6 +8,18 @@ changes live in [CHANGELOG.md](CHANGELOG.md); the product map in
 
 ## Unreleased (towards 0.3.0)
 
+- **Any destination, one contract** (#156 slice 3): the deployment
+  provider framework. Providers register by name
+  (`register_deploy_provider`), read their own keys from the raw
+  `[deploy]` table, declare a contract version (validated at selection,
+  never at deploy time) and a capability set the panel adapts to —
+  rollback controls appear only when the provider declares them.
+  Extensions ship destinations via `Extension.deploy_providers`; a
+  reusable conformance suite runs the contract's rules against every
+  provider, bundled or third-party. The maturity criterion of #156 is
+  now executable: an admin E2E publishes through a fictional provider
+  the core has never heard of, with zero core changes.
+
 Pull requests in this cycle: source language #118 · logical CSS/RTL
 #119 · panel catalogs from packs #120 · pack ecosystem #121 · ADR-0037
 #122 · items model #123 (migration 18) · items rendering #124 · items

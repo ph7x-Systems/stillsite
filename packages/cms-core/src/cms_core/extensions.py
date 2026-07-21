@@ -57,6 +57,10 @@ class Extension:
     cli: object | None = None
     """A ``typer.Typer`` mounted as ``cms x <name>``."""
     section_kinds: Mapping[str, tuple[str, ...] | SectionKindSpec] = field(default_factory=dict)
+    deploy_providers: Mapping[str, Callable[..., object]] = field(default_factory=dict)
+    """Deployment providers by name (#156): a factory ``(settings,
+    project_dir) -> DeployProvider``. Registered on activation; adding
+    a destination never touches the core, the editor or the flow."""
     """kind -> suggested field names, advertised in the admin editor."""
     comments_providers: Mapping[str, CommentsProvider] = field(default_factory=dict)
     """name -> provider (ADR-0031); selected by ``[comments]`` in

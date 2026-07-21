@@ -1,10 +1,11 @@
 """Project configuration: `sardine.toml` loading and content access."""
 
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from cms_build import CommentsSettings, SiteConfig, register_target, register_theme
+from cms_build.deploy import register_deploy_provider
 from cms_core import Language
 from cms_core.extensions import CommentsProvider, Extension, ExtensionError, load_extensions
 from cms_core.language_packs import register_language_pack
@@ -38,6 +39,8 @@ class Project:
     deploy_url: str = ""
     """``[deploy] deploy_url``: the remote endpoint (swa provider)."""
     deploy_timeout: int = 300
+    deploy_settings: dict[str, str] = field(default_factory=dict)
+    """The raw ``[deploy]`` table — providers read their own keys."""
 
     def load_extensions(self) -> list[Extension]:
         """The extensions this project explicitly trusts (ADR-0028); their
@@ -52,6 +55,8 @@ class Project:
                 register_theme(name, factory)  # type: ignore[arg-type]
             for pack in extension.language_packs:
                 register_language_pack(pack)  # type: ignore[arg-type]
+            for name, factory in extension.deploy_providers.items():
+                register_deploy_provider(name, factory)
         return extensions
 
     def resolve_comments_provider(self) -> CommentsProvider | None:
@@ -172,4 +177,5 @@ def load_project(directory: Path) -> Project:
         deploy_provider=str(deploy_data.get("provider", "filesystem")),
         deploy_url=str(deploy_data.get("deploy_url", "")),
         deploy_timeout=int(deploy_data.get("timeout", 300)),
+        deploy_settings={str(k): str(v) for k, v in deploy_data.items()},
     )

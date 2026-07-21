@@ -10,6 +10,14 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Deployment provider framework: a versioned `DeployProvider` contract
+  with a registry (`register_deploy_provider`), per-provider settings
+  from the raw `[deploy]` table, capability declaration the panel
+  adapts to, selection-time validation, a conformance suite any
+  provider can run, and extension registration
+  (`Extension.deploy_providers`) — a third destination needs zero core
+  changes (#156 slice 3).
+
 - Azure Static Web Apps deployment provider behind the same contract:
   authenticated upload of immutable releases, deployment tracking with
   transient panel phases, health verification, rollback by re-sending
