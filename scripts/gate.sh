@@ -17,6 +17,8 @@ echo "==> ruff format --check"
 "$PY" -m ruff format --check .
 echo "==> mypy"
 "$PY" -m mypy .
+echo "==> bandit"
+"$PY" -m bandit -q -r apps packages scripts -x '*/static/*,*/assets/*' -ll -ii
 if [ "${FAST:-0}" = "1" ]; then
   echo "==> tests skipped (FAST=1)"
 else

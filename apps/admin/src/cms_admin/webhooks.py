@@ -66,6 +66,11 @@ def emit_transition(
             "Content-Type": "application/json",
             "X-Sardine-Signature": signature(settings.webhook_secret, body),
         }
+        # Startup validated the URL; revalidate at send time so no code
+        # path can ever hand urlopen a file:// or custom scheme (B310).
+        if urlsplit(settings.webhook_url).scheme not in {"https", "http"}:
+            app.state.last_webhook_error = datetime.now(UTC).isoformat()
+            return
         for backoff in (0.0, *BACKOFF_SECONDS):
             if backoff:
                 time.sleep(backoff)
@@ -73,7 +78,9 @@ def emit_transition(
                 message = urllib.request.Request(
                     settings.webhook_url, data=body, headers=headers, method="POST"
                 )
-                with urllib.request.urlopen(message, timeout=TIMEOUT_SECONDS) as answer:
+                with urllib.request.urlopen(  # nosec B310 - scheme enforced above
+                    message, timeout=TIMEOUT_SECONDS
+                ) as answer:
                     if 200 <= answer.status < 300:
                         return
             except Exception:
