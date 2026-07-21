@@ -333,9 +333,11 @@ Ordered by dependency; every 🧭 item begins with its ADR:
       suite, and an RTL build through the CI accessibility gate — which
       caught the builder skipping source-language pages, now fixed and
       regression-tested
-- [ ] ADR-0037 phase 1 (model + storage): `SectionContent.items`,
-      `PageContent.body_markdown`, checksums, migration on all four
-      engines, export/import round-trip
+- [x] ADR-0037 phase 1 (model + storage): `SectionContent.items` and
+      `PageContent.body_markdown` in the models and checksums (empty
+      values keep the legacy checksum — no translation flips), storage
+      migration 18 on all four engines, portable export/import
+      round-trip, conformance tests
 - [ ] ADR-0037 phase 2 (builder + themes + validation): gallery field
       specs, Markdown fields, unbounded items in both themes (caps
       removed), parity over items, conformance for unbounded items

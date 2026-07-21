@@ -56,6 +56,7 @@ def section_to_portable(section: Section) -> dict[str, object]:
             "state": "complete",
             "fields": dict(sorted(section.source.fields.items())),
             "media": list(section.source.media),
+            "items": [dict(sorted(item.items())) for item in section.source.items],
         }
     }
     for language, translation in sorted(
@@ -65,18 +66,20 @@ def section_to_portable(section: Section) -> dict[str, object]:
             "state": section.translation_state(language).value,
             "fields": dict(sorted(translation.content.fields.items())),
             "media": list(translation.content.media),
+            "items": [dict(sorted(item.items())) for item in translation.content.items],
             "source_checksum": translation.source_checksum,
         }
     return {"key": section.key, "kind": section.kind, "languages": languages}
 
 
 def page_to_portable(page: Page) -> dict[str, object]:
-    languages: dict[str, dict[str, str]] = {
+    languages: dict[str, dict[str, object]] = {
         SOURCE_LANGUAGE.value: {
             "state": "complete",
             "title": page.source.title,
             "description": page.source.description,
             "slug": page.source.slug,
+            "body_markdown": page.source.body_markdown,
         }
     }
     for language, translation in sorted(page.translations.items(), key=lambda item: item[0].value):
@@ -85,6 +88,7 @@ def page_to_portable(page: Page) -> dict[str, object]:
             "title": translation.content.title,
             "description": translation.content.description,
             "slug": translation.content.slug,
+            "body_markdown": translation.content.body_markdown,
             "source_checksum": translation.source_checksum,
         }
     return {

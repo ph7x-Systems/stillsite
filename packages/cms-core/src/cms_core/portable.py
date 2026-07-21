@@ -86,14 +86,20 @@ def section_from_portable(data: dict[str, Any]) -> Section:
         if code == SOURCE_LANGUAGE.value:
             continue
         translations[Language(code)] = Translation[SectionContent](
-            content=SectionContent(fields=dict(raw["fields"]), media=list(raw.get("media", []))),
+            content=SectionContent(
+                fields=dict(raw["fields"]),
+                media=list(raw.get("media", [])),
+                items=[dict(item) for item in raw.get("items", [])],
+            ),
             source_checksum=raw["source_checksum"],
         )
     return Section(
         key=data["key"],
         kind=data["kind"],
         source=SectionContent(
-            fields=dict(source_raw["fields"]), media=list(source_raw.get("media", []))
+            fields=dict(source_raw["fields"]),
+            media=list(source_raw.get("media", [])),
+            items=[dict(item) for item in source_raw.get("items", [])],
         ),
         translations=translations,
     )
@@ -108,7 +114,10 @@ def page_from_portable(data: dict[str, Any]) -> Page:
             continue
         translations[Language(code)] = Translation[PageContent](
             content=PageContent(
-                title=raw["title"], description=raw.get("description", ""), slug=raw["slug"]
+                title=raw["title"],
+                description=raw.get("description", ""),
+                slug=raw["slug"],
+                body_markdown=raw.get("body_markdown", ""),
             ),
             source_checksum=raw["source_checksum"],
         )
@@ -123,6 +132,7 @@ def page_from_portable(data: dict[str, Any]) -> Page:
             title=source_raw["title"],
             description=source_raw.get("description", ""),
             slug=source_raw["slug"],
+            body_markdown=source_raw.get("body_markdown", ""),
         ),
         translations=translations,
         sections=[section_from_portable(raw) for raw in data.get("sections", [])],

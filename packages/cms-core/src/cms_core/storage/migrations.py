@@ -167,4 +167,10 @@ MIGRATIONS: tuple[str, ...] = (
     ALTER TABLE users ADD COLUMN totp_secret TEXT;
     ALTER TABLE users ADD COLUMN totp_step INTEGER;
     """,
+    """
+    ALTER TABLE sections ADD COLUMN items_json TEXT NOT NULL DEFAULT '[]';
+    ALTER TABLE section_translations ADD COLUMN items_json TEXT NOT NULL DEFAULT '[]';
+    ALTER TABLE pages ADD COLUMN body_markdown TEXT NOT NULL DEFAULT '';
+    ALTER TABLE page_translations ADD COLUMN body_markdown TEXT NOT NULL DEFAULT '';
+    """,
 )

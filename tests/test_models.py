@@ -52,3 +52,40 @@ def test_cannot_set_translation_for_source_language() -> None:
 def test_article_id_must_be_a_slug() -> None:
     with pytest.raises(ValueError):
         new_article("Not A Slug!", ArticleContent(title="Hello"))
+
+
+def test_empty_items_and_body_keep_the_legacy_checksum() -> None:
+    """ADR-0037: adding the new fields must not flip existing
+    translations to outdated — the checksum only changes when the new
+    fields hold content."""
+    from cms_core.pages import PageContent, SectionContent
+
+    legacy_section = SectionContent(fields={"heading": "Hi"}, media=["logo"])
+    assert (
+        legacy_section.checksum()
+        == SectionContent(fields={"heading": "Hi"}, media=["logo"], items=[]).checksum()
+    )
+    with_items = SectionContent(fields={"heading": "Hi"}, media=["logo"], items=[{"q": "?"}])
+    assert with_items.checksum() != legacy_section.checksum()
+
+    legacy_page = PageContent(title="Home", slug="home")
+    explicit_empty = PageContent(title="Home", slug="home", body_markdown="")
+    assert legacy_page.checksum() == explicit_empty.checksum()
+    with_body = PageContent(title="Home", slug="home", body_markdown="x")
+    assert with_body.checksum() != legacy_page.checksum()
+
+
+def test_item_edits_flip_translations_to_outdated() -> None:
+    from cms_core.pages import Section, SectionContent
+
+    section = Section(
+        key="faq",
+        kind="faq",
+        source=SectionContent(items=[{"question": "A?", "answer": "B."}]),
+    )
+    section.set_translation(
+        Language.PT_PT, SectionContent(items=[{"question": "A?", "answer": "B?"}])
+    )
+    assert section.translation_state(Language.PT_PT) is TranslationState.COMPLETE
+    section.source.items.append({"question": "C?", "answer": "D."})
+    assert section.translation_state(Language.PT_PT) is TranslationState.OUTDATED
