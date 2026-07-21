@@ -39,7 +39,7 @@ language is ever schema, enumeration or hardcoded string.**
 
    - `tag` — the locale identifier;
    - `direction` — `ltr` or `rtl`;
-   - site UI labels (the `DEFAULT_LABELS` key set) and date formatting
+   - site UI labels (the `LABEL_KEYS` set) and date formatting
      (month names + pattern — deterministic, no OS locale calls);
    - an admin catalog (`.po` content) for the panel chrome, plural
      rules included via gettext.
@@ -84,9 +84,10 @@ summaries, never horizontal growth per language.
    pack makes its tag a full content language: configurable in
    `sardine.toml`, built, labeled, date-formatted and rendered with
    `dir="rtl"` when the pack says so (1b, tested end to end with a
-   fictional RTL pack). Still ahead: configurable source language (its
-   own slice — it touches model semantics) and migrating the bundled
-   five's labels/dates/catalogs into their packs.
+   fictional RTL pack). The bundled five's labels, months and date
+   patterns now live in their packs — the `cms_build.ui` tables are
+   gone (no language data outside packs). Still ahead: configurable
+   source language (its own slice) and admin catalogs in packs.
 2. **Builder + themes**: labels/dates resolved from packs; `dir`
    attribute; logical-properties migration with conformance coverage.
 3. **Admin**: catalogs loaded from bundled + extension packs; panel

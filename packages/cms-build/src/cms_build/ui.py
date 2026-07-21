@@ -9,209 +9,53 @@ from cms_core import SOURCE_LANGUAGE, Language, language_pack
 
 from cms_build.config import SiteConfig
 
-DEFAULT_LABELS: dict[str, dict[Language, str]] = {
-    "blog": {
-        Language.EN: "Blog",
-        Language.PT_PT: "Blog",
-        Language.ES: "Blog",
-        Language.FR: "Blog",
-        Language.DE: "Blog",
-    },
-    "search": {
-        Language.EN: "Search",
-        Language.PT_PT: "Pesquisar",
-        Language.ES: "Buscar",
-        Language.FR: "Rechercher",
-        Language.DE: "Suchen",
-    },
-    "admin": {
-        Language.EN: "Admin",
-        Language.PT_PT: "Admin",
-        Language.ES: "Admin",
-        Language.FR: "Admin",
-        Language.DE: "Admin",
-    },
-    "comments": {
-        Language.EN: "Join the discussion",
-        Language.PT_PT: "Participar na discussão",
-        Language.ES: "Únete a la conversación",
-        Language.FR: "Rejoindre la discussion",
-        Language.DE: "An der Diskussion teilnehmen",
-    },
-    "view-cards": {
-        Language.EN: "Cards",
-        Language.PT_PT: "Cartões",
-        Language.ES: "Tarjetas",
-        Language.FR: "Cartes",
-        Language.DE: "Karten",
-    },
-    "view-list": {
-        Language.EN: "List",
-        Language.PT_PT: "Lista",
-        Language.ES: "Lista",
-        Language.FR: "Liste",
-        Language.DE: "Liste",
-    },
-    "back": {
-        Language.EN: "Back to the blog",
-        Language.PT_PT: "Voltar ao blog",
-        Language.ES: "Volver al blog",
-        Language.FR: "Retour au blog",
-        Language.DE: "Zurueck zum Blog",
-    },
-    "blog-title": {
-        Language.EN: "Blog",
-        Language.PT_PT: "Blog",
-        Language.ES: "Blog",
-        Language.FR: "Blog",
-        Language.DE: "Blog",
-    },
-    "blog-eyebrow": {
-        Language.EN: "Writing",
-        Language.PT_PT: "Escrita",
-        Language.ES: "Escritura",
-        Language.FR: "Écrits",
-        Language.DE: "Notizen",
-    },
-    "blog-sub": {},
-    "min-read": {
-        Language.EN: "min read",
-        Language.PT_PT: "min de leitura",
-        Language.ES: "min de lectura",
-        Language.FR: "min de lecture",
-        Language.DE: "Min. Lesezeit",
-    },
-    "not-found": {
-        Language.EN: "Page not found",
-        Language.PT_PT: "Página não encontrada",
-        Language.ES: "Página no encontrada",
-        Language.FR: "Page introuvable",
-        Language.DE: "Seite nicht gefunden",
-    },
-    "error-unauthorized": {
-        Language.EN: "Sign-in required",
-        Language.PT_PT: "Autenticação necessária",
-        Language.ES: "Se requiere iniciar sesión",
-        Language.FR: "Connexion requise",
-        Language.DE: "Anmeldung erforderlich",
-    },
-    "error-forbidden": {
-        Language.EN: "Access denied",
-        Language.PT_PT: "Acesso negado",
-        Language.ES: "Acceso denegado",
-        Language.FR: "Accès refusé",
-        Language.DE: "Zugriff verweigert",
-    },
-    "error-server": {
-        Language.EN: "Something went wrong",
-        Language.PT_PT: "Algo correu mal",
-        Language.ES: "Algo salió mal",
-        Language.FR: "Une erreur est survenue",
-        Language.DE: "Etwas ist schiefgelaufen",
-    },
-}
-
-
-MONTHS: dict[Language, tuple[str, ...]] = {
-    Language.EN: (
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    ),
-    Language.PT_PT: (
-        "janeiro",
-        "fevereiro",
-        "março",
-        "abril",
-        "maio",
-        "junho",
-        "julho",
-        "agosto",
-        "setembro",
-        "outubro",
-        "novembro",
-        "dezembro",
-    ),
-    Language.ES: (
-        "enero",
-        "febrero",
-        "marzo",
-        "abril",
-        "mayo",
-        "junio",
-        "julio",
-        "agosto",
-        "septiembre",
-        "octubre",
-        "noviembre",
-        "diciembre",
-    ),
-    Language.FR: (
-        "janvier",
-        "février",
-        "mars",
-        "avril",
-        "mai",
-        "juin",
-        "juillet",
-        "août",
-        "septembre",
-        "octobre",
-        "novembre",
-        "décembre",
-    ),
-    Language.DE: (
-        "Januar",
-        "Februar",
-        "März",
-        "April",
-        "Mai",
-        "Juni",
-        "Juli",
-        "August",
-        "September",
-        "Oktober",
-        "November",
-        "Dezember",
-    ),
-}
+LABEL_KEYS: tuple[str, ...] = (
+    "blog",
+    "search",
+    "admin",
+    "comments",
+    "view-cards",
+    "view-list",
+    "back",
+    "blog-title",
+    "blog-eyebrow",
+    "blog-sub",
+    "min-read",
+    "not-found",
+    "error-unauthorized",
+    "error-forbidden",
+    "error-server",
+)
+"""The chrome label keys themes may ask for. The texts live in each
+language's pack (ADR-0034: no language data outside packs); projects
+override any of them via ``[site.labels]``."""
 
 
 def format_date(day: int, month: int, year: int, language: Language) -> str:
-    if language not in MONTHS:
-        # ADR-0034: tags beyond the bundled five format through their
-        # language pack; without months the EN table is the fallback.
-        pack = language_pack(language)
-        if pack is not None and pack.month_names:
-            name = pack.month_names[month - 1]
-            return pack.date_pattern.format(day=day, month=name, year=year)
-    name = MONTHS.get(language, MONTHS[SOURCE_LANGUAGE])[month - 1]
-    if language is Language.EN:
-        return f"{day} {name} {year}"
-    if language is Language.DE:
-        return f"{day}. {name} {year}"
-    return f"{day} de {name} de {year}" if language is Language.PT_PT else f"{day} {name} {year}"
+    """One uniform path (ADR-0034): months and pattern come from the
+    language's pack; a pack without months borrows the source pack's."""
+    pack = language_pack(language)
+    months = pack.month_names if pack is not None and pack.month_names else None
+    if months is None:
+        source = language_pack(SOURCE_LANGUAGE)
+        assert source is not None and source.month_names  # bundled EN pack
+        months = source.month_names
+        pattern = source.date_pattern
+    else:
+        pattern = pack.date_pattern if pack is not None else "{day} {month} {year}"
+    return pattern.format(day=day, month=months[month - 1], year=year)
 
 
 def ui_label(config: SiteConfig, key: str, language: Language) -> str:
+    """Project override wins; then the language's pack; then the source
+    pack; the key itself is the loud last resort."""
     overrides = config.labels.get(key, {})
-    defaults = DEFAULT_LABELS.get(key, {})
-    pack = language_pack(language) if language not in defaults else None
-    pack_label = pack.site_labels.get(key) if pack is not None else None
+    pack = language_pack(language)
+    source = language_pack(SOURCE_LANGUAGE)
     return (
         overrides.get(language)
         or overrides.get(SOURCE_LANGUAGE)
-        or defaults.get(language)
-        or pack_label
-        or defaults.get(SOURCE_LANGUAGE)
+        or (pack.site_labels.get(key) if pack is not None else None)
+        or (source.site_labels.get(key) if source is not None else None)
         or key
     )
