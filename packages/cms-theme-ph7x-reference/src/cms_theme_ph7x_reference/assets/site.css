@@ -43,19 +43,19 @@ main{position:relative;z-index:2}
    decoration: a background that intercepts clicks is not a background. */
 .aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
 .aurora span{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:drift 20s ease-in-out infinite}
-.aurora .a1{width:560px;height:560px;background:radial-gradient(circle,#12213c,transparent 65%);top:-160px;right:-60px}
-.aurora .a2{width:460px;height:460px;background:radial-gradient(circle,rgba(216,207,192,.06),transparent 60%);bottom:-180px;left:-80px;animation-delay:-8s}
+.aurora .a1{width:560px;height:560px;background:radial-gradient(circle,#12213c,transparent 65%);top:-160px;inset-inline-end:-60px}
+.aurora .a2{width:460px;height:460px;background:radial-gradient(circle,rgba(216,207,192,.06),transparent 60%);bottom:-180px;inset-inline-start:-80px;animation-delay:-8s}
 @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-36px)}}
 
 /* nav */
 header{position:fixed;inset:0 0 auto 0;z-index:50;background:var(--navy);border-bottom:1px solid transparent;transition:border-color .4s,box-shadow .4s}
-.nav .lk a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--accent);transition:width .35s cubic-bezier(.16,1,.3,1)}
+.nav .lk a::after{content:"";position:absolute;inset-inline-start:0;bottom:0;width:0;height:1px;background:var(--accent);transition:width .35s cubic-bezier(.16,1,.3,1)}
 .nav .lk a:hover::after{width:100%}
 .nav{display:flex;justify-content:space-between;align-items:center;height:92px}
 .brand{display:flex;align-items:center;gap:13px}
 .brand img.mk{width:36px;height:36px;border-radius:8px;object-fit:cover;border:1px solid var(--line-2)}
 .brand .wm{font-family:var(--sans);font-weight:600;font-size:1.24rem;color:var(--head);letter-spacing:-.01em;line-height:1;display:inline-flex;align-items:baseline}
-.brand .reg{font-family:var(--sans);font-size:.5em;font-weight:500;line-height:1;transform:translateY(-.75em);margin-left:2px;color:var(--muted)}
+.brand .reg{font-family:var(--sans);font-size:.5em;font-weight:500;line-height:1;transform:translateY(-.75em);margin-inline-start:2px;color:var(--muted)}
 .nav .lk{display:flex;gap:40px;align-items:center;font-size:.9rem}
 .nav .lk a{color:var(--muted);transition:color .3s;position:relative;padding:4px 0}
 .nav .lk a:hover{color:var(--head)}
@@ -66,19 +66,19 @@ header{position:fixed;inset:0 0 auto 0;z-index:50;background:var(--navy);border-
 .btn-p:hover{background:var(--accent);border-color:var(--accent);color:#0e1626}
 
 /* back to top (progressively enhanced; inert without a script) */
-.top{position:fixed;right:24px;bottom:24px;z-index:60;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:rgba(16,17,21,.82);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--line-2);color:var(--muted);cursor:pointer;opacity:0;visibility:hidden;transform:translateY(12px);transition:opacity .45s,transform .45s cubic-bezier(.16,1,.3,1),color .3s,border-color .3s,background .3s}
+.top{position:fixed;inset-inline-end:24px;bottom:24px;z-index:60;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:rgba(16,17,21,.82);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--line-2);color:var(--muted);cursor:pointer;opacity:0;visibility:hidden;transform:translateY(12px);transition:opacity .45s,transform .45s cubic-bezier(.16,1,.3,1),color .3s,border-color .3s,background .3s}
 .top.show{opacity:1;visibility:visible;transform:none}
 .top:hover{color:var(--head);border-color:var(--accent);background:var(--panel)}
 .top svg{width:16px;height:16px;display:block}
 
-.nav .lk{margin-left:auto}
-.lang{display:flex;align-items:center;gap:9px;margin-left:34px;font-family:var(--sans);font-size:.72rem;font-weight:500;letter-spacing:.08em}
+.nav .lk{margin-inline-start:auto}
+.lang{display:flex;align-items:center;gap:9px;margin-inline-start:34px;font-family:var(--sans);font-size:.72rem;font-weight:500;letter-spacing:.08em}
 .lang a{color:var(--faint);transition:color .3s;padding:2px 0}
 .lang a:hover,.lang a.on{color:var(--head)}
 
 /* HERO */
 .hero{padding:210px 0 110px;position:relative}
-.hero .lead-line{font-size:1.05rem;color:var(--muted);max-width:16ch;margin-left:auto;text-align:right}
+.hero .lead-line{font-size:1.05rem;color:var(--muted);max-width:16ch;margin-inline-start:auto;text-align:end}
 .hero-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:60px}
 .hero h1{font-size:clamp(3.2rem,8.5vw,8.2rem);font-weight:300}
 .hero h1 .it{font-style:italic;font-weight:400;color:var(--accent)}
@@ -100,7 +100,7 @@ header{position:fixed;inset:0 0 auto 0;z-index:50;background:var(--navy);border-
 /* expertise list */
 .exp{border-top:1px solid var(--line)}
 .exp .row{display:grid;grid-template-columns:56px 1fr 1.1fr;gap:36px;align-items:baseline;padding:42px 0;border-bottom:1px solid var(--line);transition:padding .5s cubic-bezier(.2,.65,.3,1)}
-.exp .row:hover{padding-left:20px}
+.exp .row:hover{padding-inline-start:20px}
 .exp .row .no{font-family:var(--sans);font-size:.8rem;color:var(--faint);letter-spacing:.1em}
 .exp .row h3{font-size:clamp(1.5rem,3vw,2.4rem);font-weight:300;color:var(--head);transition:color .4s}
 .exp .row:hover h3{color:var(--accent)}
@@ -126,9 +126,9 @@ header{position:fixed;inset:0 0 auto 0;z-index:50;background:var(--navy);border-
 .pull-quote .pq-role{color:var(--muted);text-transform:none;letter-spacing:0}
 .faq-list{border-top:1px solid var(--line);margin-top:44px}
 .faq-item{border-bottom:1px solid var(--line)}
-.faq-item summary{cursor:pointer;padding:26px 0;font-family:var(--serif);font-size:clamp(1.15rem,2vw,1.5rem);color:var(--head);list-style:none;position:relative;padding-right:40px;transition:color .3s}
+.faq-item summary{cursor:pointer;padding:26px 0;font-family:var(--serif);font-size:clamp(1.15rem,2vw,1.5rem);color:var(--head);list-style:none;position:relative;padding-inline-end:40px;transition:color .3s}
 .faq-item summary::-webkit-details-marker{display:none}
-.faq-item summary::after{content:"+";position:absolute;right:4px;top:50%;transform:translateY(-50%);font-family:var(--sans);font-weight:300;font-size:1.4rem;color:var(--faint);transition:transform .35s cubic-bezier(.16,1,.3,1),color .3s}
+.faq-item summary::after{content:"+";position:absolute;inset-inline-end:4px;top:50%;transform:translateY(-50%);font-family:var(--sans);font-weight:300;font-size:1.4rem;color:var(--faint);transition:transform .35s cubic-bezier(.16,1,.3,1),color .3s}
 .faq-item[open] summary::after{transform:translateY(-50%) rotate(45deg);color:var(--accent)}
 .faq-item summary:hover{color:var(--accent)}
 .faq-item p{color:var(--muted);max-width:62ch;padding:0 0 26px}
@@ -148,7 +148,7 @@ footer{border-top:1px solid var(--line);padding:52px 0}
    reachable through in-page navigation and the footer). */
 @media(max-width:980px){
   .nav .lk{display:none}
-  .nav .lang{margin-left:auto;margin-right:16px}
+  .nav .lang{margin-inline-start:auto;margin-inline-end:16px}
 }
 /* PHONE */
 @media(max-width:760px){
@@ -158,14 +158,14 @@ footer{border-top:1px solid var(--line);padding:52px 0}
   .hero h1{font-size:clamp(1.9rem,8.4vw,3.6rem)}
   .kick{font-size:.62rem;letter-spacing:.13em;gap:10px}
   .kick::before{width:18px}
-  .top{right:16px;bottom:16px;width:42px;height:42px}
+  .top{inset-inline-end:16px;bottom:16px;width:42px;height:42px}
   /* On a small screen an animated blur behind the text is noise, and
      animating it costs battery: the aurora goes diffuse and still. */
   .aurora span{opacity:.22;filter:blur(70px);animation:none}
 }
 /* PHONE: the languages stay VISIBLE in the header, just more compact. */
 @media(max-width:600px){
-  .nav .lang{font-size:.64rem;gap:8px;margin-right:10px}
+  .nav .lang{font-size:.64rem;gap:8px;margin-inline-end:10px}
 }
 @media(max-width:380px){
   .nav .lang{display:none}

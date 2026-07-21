@@ -317,9 +317,13 @@ Ordered by dependency; every 🧭 item begins with its ADR:
       stored translation now always beats the source shortcut, so a
       non-`en` source can still target `en`; e2e test with a pack tag
       as source (root URLs, RTL, no `en` output unless targeted)
-- [ ] ADR-0034 remaining phases: logical CSS in themes → admin catalogs
-      from packs (+ panel target set from the project) → ecosystem pack
-      guide + data-only packs
+- [x] ADR-0034: logical CSS — both themes and the admin stylesheet use
+      flow-relative properties only, enforced by conformance tests that
+      also catch asymmetric four-value shorthands (third-party themes
+      inherit the gate); DESIGN_RULES gains the non-negotiable
+- [ ] ADR-0034 remaining phases: admin catalogs from packs (+ panel
+      target set from the project) → ecosystem pack guide + data-only
+      packs
 - [ ] Bulk actions on the content lists (multi-select workflow + trash)
 - [ ] Admin-wide search (articles, pages, media from one box)
 - [ ] Scheduled unpublish: `unpublish_at` mirroring ADR-0024's contract

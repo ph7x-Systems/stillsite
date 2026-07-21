@@ -5,6 +5,16 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **RTL is real, permanently** (M8, ADR-0034): every physical CSS
+  property in the bundled themes and the panel stylesheet became its
+  flow-relative twin (`margin-inline-start`, `padding-inline`,
+  `text-align: start/end`, `inset-inline-*`), so a pack-declared
+  `dir="rtl"` now mirrors the layout instead of just the text. The
+  theme conformance suite enforces it forever — physical properties and
+  asymmetric four-value shorthands fail any theme, third-party ones
+  included — and the sweep already caught one hand-audit miss. Axe
+  stayed green over the example site in both color schemes.
+
 - **The source language is configurable** (M8, ADR-0034):
   `[site] source_language` (default `en`) accepts any registered pack
   tag — the URL root, hreflang x-default, feeds, label and alt-text

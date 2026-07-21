@@ -12,14 +12,14 @@
 /* Skip link */
 .admin-skip {
   position: absolute;
-  left: -100vw;
+  inset-inline-start: -100vw;
   top: 0;
   z-index: 2000;
   padding: .5rem 1rem;
   background: var(--bs-body-bg);
   color: var(--bs-body-color);
 }
-.admin-skip:focus { left: 0; }
+.admin-skip:focus { inset-inline-start: 0; }
 
 /* Editors and helpers */
 .admin-preview {

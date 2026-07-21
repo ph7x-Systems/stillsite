@@ -5,6 +5,7 @@ run this file against their own package (ECOSYSTEM.md listing gate).
 """
 
 import re
+from pathlib import Path
 
 import pytest
 from cms_build import build_site, create_theme
@@ -191,3 +192,48 @@ def test_comments_contract_renders_in_both_themes(theme: Theme) -> None:
     assert "<site-comments" in article
     assert f'type="module" src="/{COMMENTS_ISLAND_PATH}?v=' in article
     assert 'script type="module" src="https://' not in article
+
+
+PHYSICAL_CSS = re.compile(
+    r"(?:margin|padding|border)-(?:left|right)(?:-[a-z]+)*\b"
+    r"|text-align:\s*(?:left|right)\b"
+    r"|float:\s*(?:left|right)\b"
+    r"|(?<![-a-z])(?:left|right)\s*:"
+)
+ASYMMETRIC_SHORTHAND = re.compile(
+    r"(?:margin|padding):\s*([^;}\s]+)\s+([^;}\s]+)\s+([^;}\s]+)\s+([^;}\s]+)\s*[;}]"
+)
+
+
+def _physical_offenders(css: str) -> list[str]:
+    stripped = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL)
+    offenders = [match.group(0) for match in PHYSICAL_CSS.finditer(stripped)]
+    offenders += [
+        match.group(0).rstrip(";}").strip()
+        for match in ASYMMETRIC_SHORTHAND.finditer(stripped)
+        if match.group(2) != match.group(4)
+    ]
+    return offenders
+
+
+def test_css_is_flow_relative(theme: Theme) -> None:
+    """ADR-0034: any pack may declare ``rtl``, so themes may not encode
+    writing direction — logical properties only (``margin-inline-start``,
+    ``text-align: start``, ``inset-inline-end`` …), and no four-value
+    margin/padding shorthand with different start/end values."""
+    for path, css in _css_assets(theme).items():
+        offenders = _physical_offenders(css)
+        assert not offenders, (theme.name, path, offenders)
+
+
+def test_admin_css_is_flow_relative() -> None:
+    """The panel holds the same bar (vendored bundles excluded — they are
+    upstream's). Overriding a vendored *physical* property is the one
+    licit use of one: the override must name what upstream names."""
+    import cms_admin
+
+    css_path = Path(cms_admin.__file__).parent / "static" / "admin.css"
+    allowed = {"border-left-color", "border-right-color"}  # EasyMDE/CodeMirror overrides
+    found = _physical_offenders(css_path.read_text(encoding="utf-8"))
+    offenders = [offender for offender in found if offender not in allowed]
+    assert not offenders, offenders

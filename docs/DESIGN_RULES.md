@@ -25,6 +25,7 @@ suite (TEST_PLAN.md §1.5), not by review alone.
 | **No horizontal scroll at any width** | Checked at 360/820/1280px. |
 | `prefers-reduced-motion` honored — effects opt out cleanly | Accessibility; effects are decoration, never information. |
 | **Single-source assets** — a behavior/effect lives in exactly one file, referenced everywhere | Copy-pasting a script into two shells once produced three divergent sites. |
+| **Flow-relative CSS only** — logical properties (`margin-inline-start`, `padding-inline`, `text-align: start/end`, `inset-inline-*`), never `-left`/`-right` or asymmetric four-value shorthands | Any language pack may declare `rtl` (ADR-0034); a physical property silently breaks every RTL site. The one exception: overriding a vendored bundle's physical property, which must name what upstream names. |
 
 ## 3. Layout and type
 

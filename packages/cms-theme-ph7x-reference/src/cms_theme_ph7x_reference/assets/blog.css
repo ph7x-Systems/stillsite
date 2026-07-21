@@ -57,8 +57,8 @@
 .b-head{overflow:hidden;border-radius:6px}
 .b-head .aurora{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .b-head .aurora span{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:drift 20s ease-in-out infinite}
-.b-head .a1{width:560px;height:560px;background:radial-gradient(circle,#12213c,transparent 65%);top:-200px;right:-80px}
-.b-head .a2{width:460px;height:460px;background:radial-gradient(circle,rgba(216,207,192,.06),transparent 60%);bottom:-200px;left:-100px;animation-delay:-8s}
+.b-head .a1{width:560px;height:560px;background:radial-gradient(circle,#12213c,transparent 65%);top:-200px;inset-inline-end:-80px}
+.b-head .a2{width:460px;height:460px;background:radial-gradient(circle,rgba(216,207,192,.06),transparent 60%);bottom:-200px;inset-inline-start:-100px;animation-delay:-8s}
 @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(26px,-22px)}}
 @media(prefers-reduced-motion:reduce){.b-head .aurora span{animation:none}}
 @media(max-width:760px){
@@ -70,7 +70,7 @@
 .b-head>*{position:relative;z-index:1}
 .b-back{font-size:.8rem;color:var(--muted);text-decoration:none}
 .b-back:hover{color:var(--accent)}
-.b-cat{display:inline-block;margin-left:14px;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);text-decoration:none}
+.b-cat{display:inline-block;margin-inline-start:14px;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);text-decoration:none}
 .b-cat:hover{color:var(--accent)}
 .b-post h1{max-width:22ch;font-family:var(--serif);font-size:clamp(2.4rem,5vw,4.2rem);font-weight:300;line-height:1.1;letter-spacing:-.02em;color:var(--head);margin:22px 0 18px}
 .b-lede{max-width:70ch;color:var(--ink);font-size:1.2rem;line-height:1.75;margin-bottom:26px}
@@ -99,9 +99,9 @@
 .b-body strong{color:var(--head);font-weight:500}
 .b-body a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(216,207,192,.32)}
 .b-body a:hover{border-color:var(--accent)}
-.b-body ul,.b-body ol{padding-left:22px}
+.b-body ul,.b-body ol{padding-inline-start:22px}
 .b-body li+li{margin-top:10px}
-.b-body blockquote{border-left:2px solid var(--accent);padding:4px 0 4px 22px;color:var(--head);font-family:var(--serif);font-size:1.25rem;font-style:italic}
+.b-body blockquote{border-inline-start:2px solid var(--accent);padding-block:4px;padding-inline:22px 0;color:var(--head);font-family:var(--serif);font-size:1.25rem;font-style:italic}
 .b-body code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:.12em .4em}
 .b-body pre{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;overflow-x:auto}
 .b-body pre code{background:none;border:0;padding:0}
@@ -145,7 +145,7 @@ main{padding-bottom:110px}
    reader to color text that never changes. The article page stays at
    ZERO JavaScript. */
 .hl-box{position:relative;margin:32px 0}
-.hl-lang{position:absolute;top:0;right:0;padding:6px 12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);border-left:1px solid var(--line);border-bottom:1px solid var(--line)}
+.hl-lang{position:absolute;top:0;inset-inline-end:0;padding:6px 12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);border-inline-start:1px solid var(--line);border-bottom:1px solid var(--line)}
 .b-body .hl{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:22px;overflow-x:auto;font-size:.88rem;line-height:1.7}
 .b-body .hl pre{background:none;border:0;padding:0;margin:0}
 .b-body .hl code{background:none;border:0;padding:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
@@ -231,12 +231,12 @@ main{padding-bottom:110px}
 /* ── list tools: search + views ───────────────────────────────────────────── */
 .b-tools{--bw:1220px;max-width:var(--bw);margin:6px auto 20px;padding:0 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .b-search-wrap{position:relative;flex:1;min-width:220px;max-width:420px}
-.b-search-i{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--faint);pointer-events:none}
-.b-search{width:100%;box-sizing:border-box;background:var(--panel);border:1px solid var(--line-2);border-radius:100px;color:var(--head);font-family:var(--sans);font-size:.9rem;padding:.72em 1.1em .72em 2.7em;transition:border-color .3s}
+.b-search-i{position:absolute;inset-inline-start:15px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--faint);pointer-events:none}
+.b-search{width:100%;box-sizing:border-box;background:var(--panel);border:1px solid var(--line-2);border-radius:100px;color:var(--head);font-family:var(--sans);font-size:.9rem;padding-block:.72em;padding-inline:2.7em 1.1em;transition:border-color .3s}
 .b-search::placeholder{color:var(--faint)}
 .b-search:focus{outline:none;border-color:var(--faint)}
 .b-search::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
-.b-views{display:inline-flex;gap:6px;margin-left:auto}
+.b-views{display:inline-flex;gap:6px;margin-inline-start:auto}
 .b-views button{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;background:transparent;border:1px solid var(--line-2);border-radius:8px;color:var(--muted);cursor:pointer;transition:color .3s,border-color .3s,background .3s}
 .b-views button svg{width:17px;height:17px}
 .b-views button:hover{color:var(--head);border-color:var(--faint)}
@@ -250,7 +250,7 @@ main{padding-bottom:110px}
 .b-grid.as-list .b-card h2{margin-top:6px;font-size:1.26rem}
 @media(max-width:640px){
   .b-tools{padding:0 22px}
-  .b-views{margin-left:0}
+  .b-views{margin-inline-start:0}
   .b-grid.as-list .b-card{flex-direction:column}
   .b-grid.as-list .b-thumb{flex:none;max-width:none;aspect-ratio:1200/440}
 }
