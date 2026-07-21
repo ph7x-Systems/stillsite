@@ -132,7 +132,44 @@ every merge and is honest about privilege separation:
 The same pattern works with real content: point the workflow at your
 storage URL instead of seeding.
 
-## Azure Static Web Apps example
+## Azure Static Web Apps — automated (#156 slice 2)
+
+The same contract and the same panel experience as the filesystem
+provider — the editor never knows which provider runs:
+
+```toml
+[deploy]
+provider = "swa"
+root = "/srv/site/store"      # local release store: state + rollback candidates
+deploy_url = "https://…"      # the deployment endpoint for your app
+health_url = "https://your-site.example/"
+timeout = 300                 # seconds for upload + deployment tracking
+```
+
+**Credentials**: the deployment token is read from the
+`SARDINE_SWA_DEPLOY_TOKEN` environment variable at deploy time. It is
+never stored in configuration, never written to logs or the audit
+trail, never returned by any page, and never part of an error
+message — it travels in one request header. Rotate it by replacing
+the environment variable.
+
+**Flow**: publish/unpublish → build → validate → immutable local
+release → upload (Bearer token) → deployment tracking → health check →
+active. The panel shows the transient phases (queued, uploading,
+waiting, verifying) and the terminal state; **a failure at any phase
+leaves the previously published version serving** — the host keeps its
+last successful deployment until a new one succeeds. Rollback re-sends
+a kept release from the local store, no rebuild.
+
+**Troubleshooting**: "deployment token rejected" — the token is wrong
+or expired; replace the environment variable and Retry. "timed out
+waiting for the deployment" — raise `timeout` or check the host's
+status page. "health check failed — the previous publication remains
+live" — the deployment reported success but the site did not answer;
+check `health_url` and the host. Every operation is in the Activity
+trail (never with credentials).
+
+## Azure Static Web Apps — manual example
 
 The `swa` target emits `staticwebapp.config.json` with security
 headers, cache rules and the 404 rewrite — Free and Standard tiers

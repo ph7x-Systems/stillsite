@@ -21,6 +21,8 @@
       <span class="badge text-bg-success admin-state admin-state-complete">{{ _("active") }}</span>
       {% elif deploy_state.status == "never-deployed" %}
       <span class="badge text-bg-secondary">{{ _("never deployed") }}</span>
+      {% elif deploy_state.status in ("queued", "uploading", "waiting", "verifying") %}
+      <span class="badge text-bg-info">{{ _(deploy_state.status) }}</span>
       {% elif deploy_state.status == "rolled-back" %}
       <span class="badge text-bg-warning admin-state admin-state-outdated">{{ _("rolled back") }}</span>
       {% else %}

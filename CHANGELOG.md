@@ -10,6 +10,12 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Azure Static Web Apps deployment provider behind the same contract:
+  authenticated upload of immutable releases, deployment tracking with
+  transient panel phases, health verification, rollback by re-sending
+  a kept release — with the token read from the environment at deploy
+  time and never stored, logged, audited or echoed (#156 slice 2).
+
 - Automated deployment, filesystem/Nginx reference provider: publish
   and unpublish end on the public site through immutable releases,
   atomic symlink activation, health checks with automatic rollback,

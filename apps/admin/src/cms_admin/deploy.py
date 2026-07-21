@@ -14,7 +14,7 @@ from datetime import UTC, datetime
 from typing import Annotated
 
 from cms_build import build_site
-from cms_build.deploy import DeployLocked, DeployState, FilesystemDeployer
+from cms_build.deploy import DeployLocked, DeployState, FilesystemDeployer, SwaDeployer
 from cms_cli.project import Project
 from cms_core import AdminSession, Article, Page, StorageBackend, User
 from fastapi import APIRouter, Depends, FastAPI, Form, HTTPException, Request, status
@@ -35,18 +35,36 @@ from cms_admin.validation_report import run_report
 router = APIRouter()
 
 
-def deployer_for(request: Request) -> tuple[FilesystemDeployer | None, "Project | None"]:
-    project = _project(request)
+def build_deployer(project: "Project | None") -> "FilesystemDeployer | SwaDeployer | None":
+    """The configured provider — the editor never knows which (#156).
+    ``filesystem`` needs ``root``; ``swa`` needs ``root`` (the local
+    release store that makes rollback possible) plus ``deploy_url``;
+    its token comes from the environment at deploy time, never from
+    configuration."""
     if project is None or project.deploy_root is None:
-        return None, project
-    return (
-        FilesystemDeployer(
+        return None
+    if project.deploy_provider == "swa":
+        if not project.deploy_url:
+            return None
+        return SwaDeployer(
             project.deploy_root,
+            deploy_url=project.deploy_url,
             health_url=project.deploy_health_url,
             keep=project.deploy_keep,
-        ),
-        project,
+            timeout=project.deploy_timeout,
+        )
+    return FilesystemDeployer(
+        project.deploy_root,
+        health_url=project.deploy_health_url,
+        keep=project.deploy_keep,
     )
+
+
+def deployer_for(
+    request: Request,
+) -> tuple["FilesystemDeployer | SwaDeployer | None", "Project | None"]:
+    project = _project(request)
+    return build_deployer(project), project
 
 
 async def run_deploy(request: Request, actor: str) -> DeployState | None:
@@ -195,11 +213,9 @@ async def run_deploy_for_app(app: FastAPI, actor: str) -> DeployState | None:
         return None
     if project.deploy_root is None:
         return None
-    deployer = FilesystemDeployer(
-        project.deploy_root,
-        health_url=project.deploy_health_url,
-        keep=project.deploy_keep,
-    )
+    deployer = build_deployer(project)
+    if deployer is None:
+        return None
 
     def _load(storage: StorageBackend) -> SiteContent:
         return SiteContent(

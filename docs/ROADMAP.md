@@ -63,7 +63,7 @@ References point at the ADR, issue or document that owns the detail.
 | Bulk actions on content lists | ✅ | #130 |
 | Admin-wide search | ✅ | #129, ADR-0038 |
 | Editorial calendar | ✅ | #132 |
-| Automated deployment: publish, unpublish, rollback from the admin (P0) | 🟡 filesystem/Nginx reference provider shipped: immutable releases, atomic activation, health check, auto+manual rollback, scheduled-window watcher, full audit; remote providers (SWA next) pending | #156, DEPLOYMENT.md |
+| Automated deployment: publish, unpublish, rollback from the admin (P0) | ✅ filesystem/Nginx (local reference) and Azure Static Web Apps (remote reference) providers behind one contract: immutable releases, atomic/tracked activation, health checks, auto+manual rollback, scheduled-window watcher, token-safe credentials, full audit | #156, DEPLOYMENT.md |
 | Audit log | ✅ | #134, ADMIN_GUIDE.md |
 | Needs-attention dashboard | ✅ | #135, ADMIN_GUIDE.md |
 

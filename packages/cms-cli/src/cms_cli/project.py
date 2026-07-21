@@ -33,6 +33,11 @@ class Project:
     automatically — no CLI, no manual copying."""
     deploy_health_url: str = ""
     deploy_keep: int = 5
+    deploy_provider: str = "filesystem"
+    """``[deploy] provider``: ``filesystem`` (default) or ``swa``."""
+    deploy_url: str = ""
+    """``[deploy] deploy_url``: the remote endpoint (swa provider)."""
+    deploy_timeout: int = 300
 
     def load_extensions(self) -> list[Extension]:
         """The extensions this project explicitly trusts (ADR-0028); their
@@ -164,4 +169,7 @@ def load_project(directory: Path) -> Project:
         ),
         deploy_health_url=str(deploy_data.get("health_url", "")),
         deploy_keep=int(deploy_data.get("keep", 5)),
+        deploy_provider=str(deploy_data.get("provider", "filesystem")),
+        deploy_url=str(deploy_data.get("deploy_url", "")),
+        deploy_timeout=int(deploy_data.get("timeout", 300)),
     )

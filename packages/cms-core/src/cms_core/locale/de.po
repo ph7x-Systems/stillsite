@@ -1373,3 +1373,15 @@ msgstr "Phase"
 
 msgid "rolled back"
 msgstr "zurückgesetzt"
+
+msgid "queued"
+msgstr "in Warteschlange"
+
+msgid "uploading"
+msgstr "wird hochgeladen"
+
+msgid "waiting"
+msgstr "wartet"
+
+msgid "verifying"
+msgstr "wird geprüft"

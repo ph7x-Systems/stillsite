@@ -1373,3 +1373,15 @@ msgstr "fase"
 
 msgid "rolled back"
 msgstr "revertida"
+
+msgid "queued"
+msgstr "em fila"
+
+msgid "uploading"
+msgstr "a enviar"
+
+msgid "waiting"
+msgstr "a aguardar"
+
+msgid "verifying"
+msgstr "a verificar"
