@@ -21,18 +21,36 @@ class PageContent(ChecksummedContent):
     title: str = Field(min_length=1)
     description: str = ""
     slug: str = Field(pattern=SLUG_PATTERN)
+    body_markdown: str = ""
+    """Long-form prose (ADR-0037): a page can be a document, a zone
+    composition, or both — rendered between the header and sections."""
 
     def checksum_payload(self) -> tuple[str, ...]:
-        return (self.title, self.description, self.slug)
+        base = (self.title, self.description, self.slug)
+        # Empty body keeps the pre-ADR-0037 checksum: adding the field
+        # must not flip existing translations to outdated.
+        return (*base, self.body_markdown) if self.body_markdown else base
 
 
 class SectionContent(ChecksummedContent):
     fields: dict[str, str] = Field(default_factory=dict)
     media: list[str] = Field(default_factory=list)
+    items: list[dict[str, str]] = Field(default_factory=list)
+    """The section's ordered repeating group (ADR-0037): unbounded,
+    translated with the section, counted into the checksum. An FAQ's
+    question/answer pairs, an expertise list's rows."""
 
     def checksum_payload(self) -> tuple[str, ...]:
         field_parts = tuple(f"{name}\x1e{self.fields[name]}" for name in sorted(self.fields))
-        return (*field_parts, "\x1d", *self.media)
+        base = (*field_parts, "\x1d", *self.media)
+        if not self.items:
+            # Pre-ADR-0037 checksum preserved: adding the field must not
+            # flip existing translations to outdated.
+            return base
+        item_parts = tuple(
+            "\x1e".join(f"{name}\x1c{item[name]}" for name in sorted(item)) for item in self.items
+        )
+        return (*base, "\x1d", *item_parts)
 
 
 class Section(TranslatableModel[SectionContent]):

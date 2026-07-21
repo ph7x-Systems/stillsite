@@ -87,6 +87,51 @@ def test_page_round_trip_preserves_section_order(backend: StorageBackend) -> Non
     assert [section.key for section in loaded.sections] == ["hero", "features", "contact"]
 
 
+def test_page_round_trip_preserves_items_and_body(backend: StorageBackend) -> None:
+    """ADR-0037 phase 1: the repeating group and the long-form body
+    survive every engine, translations included, order intact."""
+    page = new_page(
+        "faq-page",
+        PageContent(title="FAQ", slug="faq", body_markdown="A **document** page."),
+    )
+    faq = Section(
+        key="faq",
+        kind="faq",
+        source=SectionContent(
+            fields={"heading": "Questions"},
+            items=[
+                {"question": "What is it?", "answer": "A CMS."},
+                {"question": "Is it fast?", "answer": "It is static."},
+            ],
+        ),
+    )
+    faq.set_translation(
+        Language.PT_PT,
+        SectionContent(
+            fields={"heading": "Perguntas"},
+            items=[
+                {"question": "O que é?", "answer": "Um CMS."},
+                {"question": "É rápido?", "answer": "É estático."},
+            ],
+        ),
+    )
+    page.sections.append(faq)
+    page.set_translation(
+        Language.PT_PT,
+        PageContent(title="FAQ", slug="faq-pt", body_markdown="Uma página **documento**."),
+    )
+    backend.save_page(page)
+
+    loaded = backend.load_page("faq-page")
+    assert loaded is not None
+    assert loaded == page
+    assert loaded.sections[0].source.items[1]["answer"] == "It is static."
+    translated = loaded.sections[0].translations[Language.PT_PT]
+    assert translated.content.items[0]["question"] == "O que é?"
+    assert loaded.source.body_markdown == "A **document** page."
+    assert loaded.translations[Language.PT_PT].content.body_markdown == "Uma página **documento**."
+
+
 def test_page_delete_removes_page(backend: StorageBackend) -> None:
     page = new_page("home", PageContent(title="Home", slug="home"))
     hero = Section(key="hero", kind="hero", source=SectionContent(fields={"heading": "Welcome"}))

@@ -77,3 +77,33 @@ def test_export_includes_pages_and_media() -> None:
     assert exported_page["sections"][0]["languages"]["pt-pt"]["state"] == "complete"
     assert payload["media"][0]["alt"] == {"en": "A sunrise"}
     assert payload["media"][0]["width"] == 1600
+
+
+def test_portable_round_trip_carries_items_and_body() -> None:
+    """ADR-0037 phase 1: the repeating group and the long-form body
+    survive the portable format — the source of truth, not the DB."""
+    from cms_core.export import page_to_portable
+    from cms_core.pages import PageContent, Section, SectionContent, new_page
+    from cms_core.portable import page_from_portable
+
+    page = new_page(
+        "faq",
+        PageContent(title="FAQ", slug="faq", body_markdown="Long-form **prose**."),
+        now=datetime(2026, 1, 15, tzinfo=UTC),
+    )
+    section = Section(
+        key="faq",
+        kind="faq",
+        source=SectionContent(items=[{"question": "Q1?", "answer": "A1."}]),
+    )
+    section.set_translation(
+        Language.PT_PT, SectionContent(items=[{"question": "P1?", "answer": "R1."}])
+    )
+    page.sections.append(section)
+
+    restored = page_from_portable(page_to_portable(page))
+    assert restored == page
+    assert restored.source.body_markdown == "Long-form **prose**."
+    assert restored.sections[0].translations[Language.PT_PT].content.items == [
+        {"question": "P1?", "answer": "R1."}
+    ]

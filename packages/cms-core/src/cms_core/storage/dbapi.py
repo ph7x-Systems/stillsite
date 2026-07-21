@@ -232,6 +232,7 @@ class DbApiBackend(StorageBackend):
                     "title": page.source.title,
                     "description": page.source.description,
                     "slug": page.source.slug,
+                    "body_markdown": page.source.body_markdown,
                     "publish_at": page.publish_at.isoformat() if page.publish_at else None,
                     "deleted_at": page.deleted_at.isoformat() if page.deleted_at else None,
                 },
@@ -242,8 +243,9 @@ class DbApiBackend(StorageBackend):
             ):
                 self._execute(
                     "INSERT INTO page_translations"
-                    " (page_id, language, title, description, slug, source_checksum)"
-                    " VALUES (%s, %s, %s, %s, %s, %s)",
+                    " (page_id, language, title, description, slug, source_checksum,"
+                    "  body_markdown)"
+                    " VALUES (%s, %s, %s, %s, %s, %s, %s)",
                     (
                         page.id,
                         language.value,
@@ -251,6 +253,7 @@ class DbApiBackend(StorageBackend):
                         translation.content.description,
                         translation.content.slug,
                         translation.source_checksum,
+                        translation.content.body_markdown,
                     ),
                 )
             self._execute("DELETE FROM section_translations WHERE page_id = %s", (page.id,))
@@ -259,8 +262,8 @@ class DbApiBackend(StorageBackend):
                 self._execute(
                     "INSERT INTO sections"
                     " (page_id, " + self._quoted_key_column() + ", position, kind,"
-                    "  fields_json, media_json)"
-                    " VALUES (%s, %s, %s, %s, %s, %s)",
+                    "  fields_json, media_json, items_json)"
+                    " VALUES (%s, %s, %s, %s, %s, %s, %s)",
                     (
                         page.id,
                         section.key,
@@ -268,6 +271,7 @@ class DbApiBackend(StorageBackend):
                         section.kind,
                         json.dumps(section.source.fields, sort_keys=True),
                         json.dumps(section.source.media),
+                        json.dumps(section.source.items, sort_keys=True),
                     ),
                 )
                 for section_language, section_translation in sorted(
@@ -276,8 +280,8 @@ class DbApiBackend(StorageBackend):
                     self._execute(
                         "INSERT INTO section_translations"
                         " (page_id, section_key, language, fields_json, media_json,"
-                        "  source_checksum)"
-                        " VALUES (%s, %s, %s, %s, %s, %s)",
+                        "  source_checksum, items_json)"
+                        " VALUES (%s, %s, %s, %s, %s, %s, %s)",
                         (
                             page.id,
                             section.key,
@@ -285,6 +289,7 @@ class DbApiBackend(StorageBackend):
                             json.dumps(section_translation.content.fields, sort_keys=True),
                             json.dumps(section_translation.content.media),
                             section_translation.source_checksum,
+                            json.dumps(section_translation.content.items, sort_keys=True),
                         ),
                     )
 
@@ -295,26 +300,34 @@ class DbApiBackend(StorageBackend):
     def _load_sections(self, page_id: str) -> list[Section]:
         sections: list[Section] = []
         for row in self._fetchall(
-            "SELECT " + self._quoted_key_column() + ", kind, fields_json, media_json"
-            " FROM sections WHERE page_id = %s ORDER BY position",
+            "SELECT " + self._quoted_key_column() + ", kind, fields_json, media_json,"
+            " items_json FROM sections WHERE page_id = %s ORDER BY position",
             (page_id,),
         ):
             translations: dict[Language, Translation[SectionContent]] = {}
             for t_row in self._fetchall(
-                "SELECT language, fields_json, media_json, source_checksum"
+                "SELECT language, fields_json, media_json, source_checksum, items_json"
                 " FROM section_translations WHERE page_id = %s AND section_key = %s"
                 " ORDER BY language",
                 (page_id, row[0]),
             ):
                 translations[Language(t_row[0])] = Translation[SectionContent](
-                    content=SectionContent(fields=json.loads(t_row[1]), media=json.loads(t_row[2])),
+                    content=SectionContent(
+                        fields=json.loads(t_row[1]),
+                        media=json.loads(t_row[2]),
+                        items=json.loads(t_row[4]),
+                    ),
                     source_checksum=t_row[3],
                 )
             sections.append(
                 Section(
                     key=row[0],
                     kind=row[1],
-                    source=SectionContent(fields=json.loads(row[2]), media=json.loads(row[3])),
+                    source=SectionContent(
+                        fields=json.loads(row[2]),
+                        media=json.loads(row[3]),
+                        items=json.loads(row[4]),
+                    ),
                     translations=translations,
                 )
             )
@@ -323,19 +336,21 @@ class DbApiBackend(StorageBackend):
     def load_page(self, page_id: str) -> Page | None:
         row = self._fetchone(
             "SELECT id, status, created_at, updated_at, title, description, slug, publish_at,"
-            " deleted_at FROM pages WHERE id = %s",
+            " deleted_at, body_markdown FROM pages WHERE id = %s",
             (page_id,),
         )
         if row is None:
             return None
         translations: dict[Language, Translation[PageContent]] = {}
         for t_row in self._fetchall(
-            "SELECT language, title, description, slug, source_checksum"
+            "SELECT language, title, description, slug, source_checksum, body_markdown"
             " FROM page_translations WHERE page_id = %s ORDER BY language",
             (page_id,),
         ):
             translations[Language(t_row[0])] = Translation[PageContent](
-                content=PageContent(title=t_row[1], description=t_row[2], slug=t_row[3]),
+                content=PageContent(
+                    title=t_row[1], description=t_row[2], slug=t_row[3], body_markdown=t_row[5]
+                ),
                 source_checksum=t_row[4],
             )
         return Page(
@@ -343,7 +358,7 @@ class DbApiBackend(StorageBackend):
             status=ContentStatus(row[1]),
             created_at=datetime.fromisoformat(row[2]),
             updated_at=datetime.fromisoformat(row[3]),
-            source=PageContent(title=row[4], description=row[5], slug=row[6]),
+            source=PageContent(title=row[4], description=row[5], slug=row[6], body_markdown=row[9]),
             translations=translations,
             sections=self._load_sections(row[0]),
             publish_at=datetime.fromisoformat(row[7]) if row[7] else None,

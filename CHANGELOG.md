@@ -5,6 +5,15 @@ from `0.1.0`; the six packages release in lockstep under one `vX.Y.Z` tag.
 
 ## Unreleased
 
+- **Sections can repeat and pages can be documents** (M8, ADR-0037
+  phase 1): `SectionContent.items` — an ordered, unbounded repeating
+  group — and `PageContent.body_markdown` join the model, the
+  checksums (edits flip translations to outdated exactly like any
+  content change; empty values keep the legacy checksum so nothing
+  existing flips), storage migration 18 on all four engines, and the
+  portable export/import format. Rendering and editing arrive with the
+  ADR's next phases; existing content changes by nothing.
+
 - **The section model's growth path is decided** (ADR-0037, accepted):
   structured sections stay the contract — opaque block-markup bodies
   are rejected because multilingual parity, validation and the
