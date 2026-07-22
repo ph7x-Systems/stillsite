@@ -179,3 +179,24 @@ to `thread_url` (the no-JS surface) wrapped in a `<site-comments>`
 element, plus a module script for the same-origin `island_url` — the
 island must contact nothing before an explicit reader action. Ignoring
 the key keeps working, like `srcset`.
+
+## The theme card: your packaging is your manifest
+
+The admin's Themes screen renders each theme's card entirely from the
+distribution's own metadata — no theme code runs for it (ADR-0049):
+
+| Card field | Where it comes from |
+| --- | --- |
+| Name, version | the distribution |
+| Description | `description` in `pyproject.toml` (`Summary`) |
+| Author | `authors` |
+| License | `license` |
+| Website | `[project.urls] Homepage` |
+| Compatibility | your declared `sardine-cms-build` version range, evaluated against the installed version |
+| Screenshot | a `theme-screenshot.png` (or `.jpg`/`.webp`) file inside your package |
+
+Improve your card by improving your packaging — the same fields PyPI
+shows — plus the optional screenshot file. A missing screenshot simply
+renders a card without an image; an incompatible range disables the
+Activate button honestly, because it is the same range the installer
+would refuse.

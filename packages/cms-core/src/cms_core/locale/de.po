@@ -1666,3 +1666,22 @@ msgstr "Themes werden mit dem Paketmanager der Umgebung installiert und erschein
 
 msgid "Version"
 msgstr "Version"
+
+# Theme cards (ADR-0049)
+msgid "Screenshot of the %(name)s theme"
+msgstr "Bildschirmfoto des Themes %(name)s"
+
+msgid "By %(author)s"
+msgstr "Von %(author)s"
+
+msgid "License: %(license)s"
+msgstr "Lizenz: %(license)s"
+
+msgid "Website"
+msgstr "Website"
+
+msgid "Compatible with this installation"
+msgstr "Mit dieser Installation kompatibel"
+
+msgid "Not compatible with this installation"
+msgstr "Mit dieser Installation nicht kompatibel"

@@ -27,35 +27,44 @@
   <div class="card-body">
     <p class="mb-0">{{ _("Themes install with the environment's package manager and appear here on their own. Activation tries a full build first — a failing theme never reaches the configuration.") }}</p>
   </div>
-  <div class="card-body p-0 table-responsive admin-table-wrap border-top">
-    <table class="table table-striped mb-0 admin-table">
-      <thead><tr>
-        <th scope="col">{{ _("Theme") }}</th>
-        <th scope="col">{{ _("Package") }}</th>
-        <th scope="col">{{ _("Version") }}</th>
-        <th scope="col">{{ _("Status") }}</th>
-      </tr></thead>
-      <tbody>
-        {% for theme in themes %}
-        <tr>
-          <th scope="row">{{ theme.name }}</th>
-          <td>{{ theme.distribution or _("Built-in") }}</td>
-          <td>{{ theme.version or "—" }}</td>
-          <td>
-            {% if theme.name == active %}
-            <span class="badge text-bg-success admin-state admin-state-complete">{{ _("Active") }}</span>
-            {% else %}
-            <form method="post" action="/themes/activate" class="d-inline">
+  <div class="card-body border-top">
+    <div class="row g-3">
+      {% for theme in themes %}
+      <div class="col-md-6 col-xl-4 d-flex">
+        <div class="card w-100">
+          {% if theme.screenshot %}
+          <img src="/themes/screenshot/{{ theme.name }}" class="card-img-top admin-theme-shot" width="1280" height="800"
+               alt="{{ _("Screenshot of the %(name)s theme") | format(name=theme.name) }}">
+          {% endif %}
+          <div class="card-body">
+            <h3 class="h6 mb-1">{{ theme.name }}
+              {% if theme.version %}<small class="text-body-secondary">{{ theme.version }}</small>{% endif %}
+              {% if theme.name == active %}
+              <span class="badge text-bg-success admin-state admin-state-complete">{{ _("Active") }}</span>
+              {% endif %}
+            </h3>
+            {% if theme.description %}<p class="mb-2">{{ theme.description }}</p>{% endif %}
+            <ul class="list-unstyled mb-2 small text-body-secondary">
+              <li>{{ theme.distribution or _("Built-in") }}</li>
+              {% if theme.author %}<li>{{ _("By %(author)s") | format(author=theme.author) }}</li>{% endif %}
+              {% if theme.license %}<li>{{ _("License: %(license)s") | format(license=theme.license) }}</li>{% endif %}
+              {% if theme.homepage %}<li><a href="{{ theme.homepage }}">{{ _("Website") }}</a></li>{% endif %}
+              {% if theme.compatible is true %}<li>{{ _("Compatible with this installation") }}</li>
+              {% elif theme.compatible is false %}<li class="text-danger">{{ _("Not compatible with this installation") }}</li>{% endif %}
+            </ul>
+            {% if theme.name != active %}
+            <form method="post" action="/themes/activate">
               <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
               <input type="hidden" name="name" value="{{ theme.name }}">
-              <button type="submit" class="btn btn-sm btn-outline-primary">{{ _("Activate") }}</button>
+              <button type="submit" class="btn btn-sm btn-outline-primary"
+                      {% if theme.compatible is false %}disabled{% endif %}>{{ _("Activate") }}</button>
             </form>
             {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
   </div>
   {% endif %}
 </div>

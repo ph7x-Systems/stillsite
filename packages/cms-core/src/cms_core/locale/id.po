@@ -1664,3 +1664,22 @@ msgstr "Tema dipasang dengan pengelola paket lingkungan dan muncul di sini denga
 
 msgid "Version"
 msgstr "Versi"
+
+# Theme cards (ADR-0049)
+msgid "Screenshot of the %(name)s theme"
+msgstr "Tangkapan layar tema %(name)s"
+
+msgid "By %(author)s"
+msgstr "Oleh %(author)s"
+
+msgid "License: %(license)s"
+msgstr "Lisensi: %(license)s"
+
+msgid "Website"
+msgstr "Situs web"
+
+msgid "Compatible with this installation"
+msgstr "Kompatibel dengan pemasangan ini"
+
+msgid "Not compatible with this installation"
+msgstr "Tidak kompatibel dengan pemasangan ini"

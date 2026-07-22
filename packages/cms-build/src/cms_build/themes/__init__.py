@@ -76,28 +76,115 @@ def resolve_kind_spec(kind: str, extension_kinds: Mapping[str, object] = {}) -> 
 
 @dataclass(frozen=True)
 class ThemeInfo:
-    """One discoverable theme: bundled or installed as a package."""
+    """One discoverable theme, described entirely by its packaging
+    (ADR-0049) — no theme code runs to produce this."""
 
     name: str
     distribution: str = ""
     version: str = ""
+    description: str = ""
+    author: str = ""
+    license: str = ""
+    homepage: str = ""
+    compatible: bool | None = None
+    """Whether the package's own sardine-cms-build range accepts the
+    installed version; None when the theme declares no range (bundled)."""
+    screenshot: Path | None = None
+
+
+_BUILTIN_INFO = {
+    "default": ThemeInfo(
+        name="default",
+        description="Minimal single-stylesheet theme; the fallback every install has.",
+        license="Apache-2.0",
+        compatible=True,
+    ),
+}
+
+_SCREENSHOT_NAMES = ("theme-screenshot.png", "theme-screenshot.jpg", "theme-screenshot.webp")
+
+
+def _compatible(requires: list[str] | None) -> bool | None:
+    """Evaluate the package's declared sardine-cms-build range against
+    the installed version — the same range the installer enforces."""
+    if not requires:
+        return None
+    from importlib.metadata import version as installed_version
+
+    from packaging.requirements import Requirement
+
+    for raw in requires:
+        try:
+            requirement = Requirement(raw)
+        except Exception:
+            continue
+        if requirement.name == "sardine-cms-build":
+            return requirement.specifier.contains(
+                installed_version("sardine-cms-build"), prereleases=True
+            )
+    return None
+
+
+def _screenshot_beside_module(module: str) -> Path | None:
+    from importlib.util import find_spec
+
+    try:
+        spec = find_spec(module.partition(":")[0].partition(".")[0])
+    except (ImportError, ValueError):
+        return None
+    if spec is None or not spec.origin:
+        return None
+    package_dir = Path(spec.origin).parent
+    for name in _SCREENSHOT_NAMES:
+        candidate = package_dir / name
+        if candidate.is_file():
+            return candidate
+    return None
 
 
 def discovered_themes() -> tuple[ThemeInfo, ...]:
     """Every theme this environment can activate (ADR-0048).
 
     Bundled registrations plus everything the ``sardine.themes``
-    entry-point group declares — no code is loaded or executed here.
+    entry-point group declares — no code is loaded or executed here;
+    every card field comes from the distribution's metadata (ADR-0049).
     """
     from importlib.metadata import entry_points
 
-    infos = {name: ThemeInfo(name=name) for name in _REGISTRY}
+    infos = {name: _BUILTIN_INFO.get(name, ThemeInfo(name=name)) for name in _REGISTRY}
     for entry_point in entry_points(group="sardine.themes"):
         dist = entry_point.dist
+        if dist is None:
+            infos[entry_point.name] = ThemeInfo(name=entry_point.name)
+            continue
+        meta = dist.metadata
+        homepage = ""
+        for raw in meta.get_all("Project-URL") or []:
+            label, _, url = raw.partition(",")
+            if label.strip().lower() == "homepage":
+                homepage = url.strip()
+                break
+        screenshot = None
+        for candidate in dist.files or []:
+            if candidate.name in _SCREENSHOT_NAMES:
+                located = Path(str(dist.locate_file(candidate)))
+                if located.is_file():
+                    screenshot = located
+                    break
+        if screenshot is None:
+            # Editable installs list no package data; locate the module
+            # without executing it and look next to its source.
+            screenshot = _screenshot_beside_module(entry_point.module)
         infos[entry_point.name] = ThemeInfo(
             name=entry_point.name,
-            distribution=dist.name if dist is not None else "",
-            version=dist.version if dist is not None else "",
+            distribution=dist.name,
+            version=dist.version,
+            description=meta.get("Summary") or "",
+            author=meta.get("Author") or meta.get("Author-email") or "",
+            license=meta.get("License-Expression") or meta.get("License") or "",
+            homepage=homepage,
+            compatible=_compatible(dist.requires),
+            screenshot=screenshot,
         )
     return tuple(sorted(infos.values(), key=lambda info: info.name))
 
