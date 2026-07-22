@@ -1,6 +1,7 @@
 # Third-party notices
 
-Sardine CMS is licensed under [Apache-2.0](LICENSE). It redistributes
+Sardine CMS is licensed under Apache-2.0 (the `LICENSE` file at the
+repository root). It redistributes
 the third-party components below, unmodified or lightly customized,
 with their license texts retained in the tree next to the files and
 inside the published packages. None of these projects endorses or is
