@@ -315,6 +315,7 @@ register_language_pack(
         tag="it",
         direction="ltr",
         native_name="Italiano",
+        admin_catalog=_bundled_catalog("it"),
         site_labels={
             "blog": "Blog",
             "search": "Cerca",
