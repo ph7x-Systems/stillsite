@@ -22,9 +22,9 @@ features with their PRs, breaking changes and migrations — live in
 
 - **Docker quickstart** ([#192](https://github.com/ph7x-Systems/sardine-cms/issues/192)): `docker compose up` brings up the admin panel with a seeded example site — no Python environment needed. A random admin password is generated on first run and printed in the container log. Site content and the SQLite database persist in named volumes.
 - Italian language pack (`it`): site labels, month names and date
-  pattern, following the LANGUAGE_PACK_GUIDE format. Ships without an
-  admin catalog — the panel stays English for Italian until one is
-  added (#203, contributed by @MasRama).
+  pattern, following the LANGUAGE_PACK_GUIDE format. Includes the admin
+  catalog so the panel itself speaks Italian (#203, contributed by
+  @MasRama; admin catalog follow-up).
 
 ## 0.4.0 — 2026-07-22
 
