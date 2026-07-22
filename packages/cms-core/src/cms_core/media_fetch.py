@@ -85,7 +85,9 @@ def default_fetcher(url: str) -> tuple[bytes, str]:
         if attempt:
             time.sleep(0.5 * (2 ** (attempt - 1)))
         try:
-            with urllib.request.urlopen(url, timeout=FETCH_TIMEOUT_SECONDS) as response:  # noqa: S310 — scheme and host validated above
+            with urllib.request.urlopen(  # nosec B310 — scheme and host validated above
+                url, timeout=FETCH_TIMEOUT_SECONDS
+            ) as response:
                 body = response.read(MAX_MEDIA_BYTES + 1)
                 if len(body) > MAX_MEDIA_BYTES:
                     raise ValueError(f"larger than {MAX_MEDIA_BYTES} bytes")
@@ -166,9 +168,7 @@ def fetch_media_for_articles(
             try:
                 width, height = _image_size(data)
             except ValueError as error:
-                outcomes.append(
-                    FetchedUrl(url=url, asset_id=None, reused=False, error=str(error))
-                )
+                outcomes.append(FetchedUrl(url=url, asset_id=None, reused=False, error=str(error)))
                 continue
         base = _slug(stem or filename) or "asset"
         asset_id = base
@@ -177,8 +177,10 @@ def fetch_media_for_articles(
             asset_id = f"{base}-{suffix}"
             suffix += 1
         used_ids.add(asset_id)
-        path = f"{collection}/{asset_id}.{extension.lower()}" if extension else (
-            f"{collection}/{asset_id}"
+        path = (
+            f"{collection}/{asset_id}.{extension.lower()}"
+            if extension
+            else (f"{collection}/{asset_id}")
         )
         alt = references[url] or asset_id.replace("-", " ")
         asset = MediaAsset(
