@@ -32,9 +32,9 @@ jobs:
           HEAD: ${{ github.event.pull_request.head.sha }}
         run: |
           bad=$(git log --format='commit %h%n%B' "$BASE".."$HEAD" \
-            | grep -iE 'co-authored-by:|generated (with|by)' || true)
+            | grep -iE 'co-authored-by:.*<noreply@|generated (with|by)' || true)
           if [ -n "$bad" ]; then
-            echo "Authorship lives in git metadata; commit messages must not carry attribution trailers (Co-authored-by, Generated with/by)."
+            echo "Commit messages must not carry tool-generated attribution (Generated with/by, or co-authors at automation addresses). Human co-authorship trailers are welcome when work is genuinely joint."
             echo "$bad"
             exit 1
           fi

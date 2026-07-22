@@ -40,6 +40,11 @@ migrations; internal dependency ranges move to `>=0.6.0,<0.7`.
   under the anti-drift conformance guard and the correct single-form
   plural rule.
 
+### Contributors
+
+Thanks to @MasRama for contributing the complete Indonesian language
+pack and admin translation in #216.
+
 ## 0.5.0 — 2026-07-22
 
 The first release with external contributions. No breaking changes and

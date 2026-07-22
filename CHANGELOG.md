@@ -40,7 +40,7 @@ from the CLI to the panel, on one shared pipeline.
 
 - Indonesian language pack (`id`): site labels, month names, date
   pattern and a full admin catalog so the panel itself speaks Bahasa
-  Indonesia. Seventh bundled language.
+  Indonesia. Seventh bundled language; contributed by @MasRama (#216).
 
 ## 0.5.0 — 2026-07-22
 

@@ -25,8 +25,10 @@ seed content and translation fixtures.
    maintenance branches appear only when a released version first
    needs an isolated patch.
 2. Small increments, clear imperative commits (`Add page schema validation`).
-   Authorship lives in git metadata: commit messages carry no attribution
-   trailers (`Co-authored-by`, `Generated with/by`) — CI enforces this.
+   Authorship lives in git metadata: commit messages carry no
+   tool-generated attribution (`Generated with/by`, or co-authors at
+   automation addresses) — CI enforces this. Human co-authorship
+   trailers are welcome when work is genuinely joint.
 3. Before opening a PR: lint, type checking and tests must pass locally.
 4. `main` is fully protected, **admins included**: no direct pushes, no
    force-pushes, no deletion. Every change lands via pull request with all
@@ -68,6 +70,17 @@ seed content and translation fixtures.
   [docs/LANGUAGE_PACK_GUIDE.md](docs/LANGUAGE_PACK_GUIDE.md) is the
   whole path, and the project's first external pull request was
   exactly this.
+
+## Contributor credit
+
+External contributions are credited through their pull requests: the
+squash commit keeps the contributor as its author, and the merge
+message describes the work without appropriating it. Substantial
+contributions are also acknowledged in the relevant release notes'
+Contributors section and in their changelog entry. Shared authorship
+may be recorded with Co-authored-by trailers when contributors jointly
+author the same change — maintainer review, integration adjustments or
+final fixes do not add the maintainer as co-author.
 
 ## Sharing themes, targets, backends and plugins
 
