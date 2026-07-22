@@ -126,3 +126,20 @@ def test_admin_guide_tracks_the_settings_and_workflow() -> None:
     for pair, label in LABELS.items():
         assert label in guide, f"transition label {label!r} missing from ADMIN_GUIDE.md"
         assert TRANSITIONS[pair].value in guide
+
+
+def test_third_party_notices_ship_with_the_admin_package() -> None:
+    """The root notices file and the packaged copy must stay identical,
+    and every retained license text it references must exist."""
+    root = REPO_ROOT / "THIRD_PARTY_NOTICES.md"
+    packaged = REPO_ROOT / "apps/admin/src/cms_admin/THIRD_PARTY_NOTICES.md"
+    assert packaged.read_text(encoding="utf-8") == root.read_text(encoding="utf-8")
+    vendor = REPO_ROOT / "apps/admin/src/cms_admin/static/vendor"
+    text = root.read_text(encoding="utf-8")
+    import re
+
+    for path in re.findall(r"`vendor/([^`]+)`", text):
+        assert (vendor / path).is_file(), path
+    theme = REPO_ROOT / "packages/cms-theme-ph7x-reference"
+    fonts = theme / "src/cms_theme_ph7x_reference/assets/fonts"
+    assert (fonts / "OFL.txt").is_file()
