@@ -58,6 +58,22 @@ def test_seed_validate_build_export_flow(tmp_path: Path) -> None:
     assert (project / "_site" / "staticwebapp.config.json").is_file()
 
 
+def test_init_writes_the_chosen_theme(tmp_path: Path) -> None:
+    """--theme lands in sardine.toml, and omitting it keeps the bare default.
+
+    Without this the README had to tell the reader to open sardine.toml and
+    edit it by hand between two blocks of commands, because installing a theme
+    package did nothing on its own.
+    """
+    chosen = tmp_path / "themed"
+    assert runner.invoke(app, ["init", str(chosen), "--theme", "ph7x-reference"]).exit_code == 0
+    assert 'theme = "ph7x-reference"' in (chosen / "sardine.toml").read_text(encoding="utf-8")
+
+    plain = tmp_path / "plain"
+    assert runner.invoke(app, ["init", str(plain)]).exit_code == 0
+    assert 'theme = "default"' in (plain / "sardine.toml").read_text(encoding="utf-8")
+
+
 def test_init_scaffolds_a_building_project(tmp_path: Path) -> None:
     target = tmp_path / "new-site"
     created = runner.invoke(
