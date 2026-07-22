@@ -52,15 +52,14 @@ def _write_site_theme(project_file: Path, name: str) -> None:
     project_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-@router.get("/themes")
-async def themes_view(
+def _render(
     request: Request,
-    user_session: tuple[User, AdminSession] = Depends(current_session),
+    user: User,
+    session: AdminSession,
+    *,
     activated: str = "",
     error: str = "",
 ) -> object:
-    user, session = user_session
-    _require_admin(user)
     project = _project(request)
     active = project.site.theme if project is not None else None
     active_error = ""
@@ -86,30 +85,47 @@ async def themes_view(
     )
 
 
+@router.get("/themes")
+async def themes_view(
+    request: Request,
+    user_session: tuple[User, AdminSession] = Depends(current_session),
+    activated: str = "",
+) -> object:
+    user, session = user_session
+    _require_admin(user)
+    # `activated` reflects only an allowlisted theme name, never raw input.
+    known = {info.name for info in discovered_themes()}
+    return _render(request, user, session, activated=activated if activated in known else "")
+
+
 @router.post("/themes/activate")
 async def theme_activate(
     request: Request,
     user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
     name: str = Form(...),
-) -> RedirectResponse:
-    user, _session = user_session
+) -> object:
+    user, session = user_session
     _require_admin(user)
     project = _project(request)
     if project is None:
         raise HTTPException(status_code=400, detail="no sardine.toml in the project directory")
 
-    def _failed(message: str) -> RedirectResponse:
-        return RedirectResponse(
-            f"/themes?error={quote(message[:300])}", status_code=status.HTTP_303_SEE_OTHER
-        )
+    def _failed(message: str) -> object:
+        # Failures render in place: no user-influenced value enters a redirect.
+        return _render(request, user, session, error=message[:300])
+
+    # The redirect target uses the allowlisted name from discovery, never raw input.
+    safe_name = next((info.name for info in discovered_themes() if info.name == name), None)
+    if safe_name is None:
+        return _failed(f"unknown theme {name[:60]!r}")
 
     try:
-        theme = create_theme(name, overrides=project.theme_overrides)
+        theme = create_theme(safe_name, overrides=project.theme_overrides)
     except Exception as failure:
         return _failed(str(failure))
 
     content = await _site_content(request)
-    trial_config = project.site.model_copy(update={"theme": name})
+    trial_config = project.site.model_copy(update={"theme": safe_name})
     try:
         await asyncio.to_thread(
             build_site,
@@ -122,10 +138,10 @@ async def theme_activate(
     except Exception as failure:
         return _failed(str(failure))
 
-    _write_site_theme(project.directory / "sardine.toml", name)
-    await audit_record(request, user.username, "activated", "theme", name)
+    _write_site_theme(project.directory / "sardine.toml", safe_name)
+    await audit_record(request, user.username, "activated", "theme", safe_name)
     return RedirectResponse(
-        f"/themes?activated={quote(name)}", status_code=status.HTTP_303_SEE_OTHER
+        f"/themes?activated={quote(safe_name)}", status_code=status.HTTP_303_SEE_OTHER
     )
 
 
