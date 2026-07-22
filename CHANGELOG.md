@@ -8,6 +8,8 @@ features with their PRs, breaking changes and migrations — live in
 
 ## Unreleased
 
+## 0.4.0 — 2026-07-22
+
 ### Added
 
 - Italian language pack (`it`): site labels, month names and date
@@ -17,6 +19,21 @@ features with their PRs, breaking changes and migrations — live in
 - `cms demo`: from nothing to a browsable five-language site in one
   command — scaffold, seed, build and serve, with printed next steps;
   the directory persists for exploring afterwards.
+
+- `cms init --theme`: choose the theme when the project is created.
+  Installing a theme package no longer requires hand-editing
+  `sardine.toml` before the first build.
+
+### Fixed
+
+- The README taught `cms demo`, which no release contained: a clean
+  `pip install` failed on the very first instruction. Its quickstart is
+  now one uninterrupted sequence, guarded by tests that check every
+  documented command exists and that the flow selects a theme.
+
+- `ADMIN_GUIDE` showed a dump/restore pair whose restore failed on any
+  project that already had content, which is every project being
+  restored. It now passes `--replace`.
 
 ## 0.3.0 — 2026-07-22
 

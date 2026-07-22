@@ -1,15 +1,15 @@
 [project]
 name = "sardine-cms-admin"
-version = "0.3.0"
+version = "0.4.0"
 description = "Sardine CMS admin panel: FastAPI API + server-rendered UI"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"
 dependencies = [
-    "sardine-cms-core>=0.3.0,<0.4",
-    "sardine-cms-validation>=0.3.0,<0.4",
-    "sardine-cms-build>=0.3.0,<0.4",
-    "sardine-cms-cli>=0.3.0,<0.4",
+    "sardine-cms-core>=0.4.0,<0.5",
+    "sardine-cms-validation>=0.4.0,<0.5",
+    "sardine-cms-build>=0.4.0,<0.5",
+    "sardine-cms-cli>=0.4.0,<0.5",
     "fastapi>=0.115",
     "jinja2>=3.1",
     "uvicorn>=0.30",

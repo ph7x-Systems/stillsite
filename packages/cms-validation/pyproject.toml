@@ -1,11 +1,11 @@
 [project]
 name = "sardine-cms-validation"
-version = "0.3.0"
+version = "0.4.0"
 description = "Configurable content validation rules for Sardine CMS"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"
-dependencies = ["sardine-cms-core>=0.3.0,<0.4"]
+dependencies = ["sardine-cms-core>=0.4.0,<0.5"]
 
 [project.urls]
 Homepage = "https://sardine.ph7x.com"

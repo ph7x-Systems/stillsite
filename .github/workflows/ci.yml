@@ -105,7 +105,10 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
           ACCEPT_EULA: "Y"
-          MSSQL_SA_PASSWORD: ${{ secrets.MSSQL_CI_PASSWORD }}
+          # Fork PRs receive no secrets; the fallback is a throwaway for
+          # the ephemeral CI container only (same class as the ci-only
+          # literals above).
+          MSSQL_SA_PASSWORD: ${{ secrets.MSSQL_CI_PASSWORD || 'Fork-CI-0nly!Pass' }}
         ports:
           - 1433:1433
         options: >-
@@ -117,7 +120,7 @@ jobs:
     env:
       SARDINE_POSTGRES_URL: postgresql://sardine:ci-only@127.0.0.1:5432/sardine
       SARDINE_MYSQL_URL: mysql://sardine:ci-only@127.0.0.1:3306/sardine
-      SARDINE_MSSQL_URL: mssql://sa:${{ secrets.MSSQL_CI_PASSWORD }}@127.0.0.1:1433/sardine
+      SARDINE_MSSQL_URL: mssql://sa:${{ secrets.MSSQL_CI_PASSWORD || 'Fork-CI-0nly!Pass' }}@127.0.0.1:1433/sardine
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:

@@ -6,6 +6,29 @@ changes live in [CHANGELOG.md](CHANGELOG.md); the product map in
 [docs/ROADMAP.md](docs/ROADMAP.md); decision evolution in
 [docs/PRODUCT_HISTORY.md](docs/PRODUCT_HISTORY.md).
 
+## 0.4.0 — 2026-07-22
+
+- **From nothing to a browsable site in one command** (#190): `cms demo`
+  scaffolds a demo project, seeds the fictional five-language content,
+  builds and serves it, then prints what to try next. The directory
+  stays afterwards so exploring can continue.
+
+- **The quickstart is one sequence you can run** (#199, #200): the
+  README's first command was `cms demo`, which no published release
+  contained, so a clean `pip install` failed on the opening instruction.
+  It also told the reader to install the reference theme and then never
+  used it: `cms init` hardcoded `theme = "default"`, so following the
+  README produced an unstyled page. `cms init` now takes `--theme`
+  (defaulting to `default`, so nothing changes for existing projects),
+  and the quickstart is six lines in order with nothing to edit between
+  them. Two tests keep it honest: every `cms` command inside a fenced
+  README block must exist, and the documented flow must select a theme.
+
+- **The documented restore restores** (#201): `ADMIN_GUIDE` showed
+  `cms import portable -p .`, which fails whenever the target project
+  already holds content, which is the normal case for a restore. The
+  command now carries `--replace`.
+
 ## 0.3.0 — 2026-07-22
 
 - **Send a preview link** (#139): editorial approval no longer needs
