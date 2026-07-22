@@ -1522,3 +1522,108 @@ msgstr "Cabut"
 msgid "No active preview links."
 msgstr "Tidak ada tautan pratinjau aktif."
 
+# Migration screen (ADR-0047)
+msgid "%(count)s (not migrated)"
+msgstr "%(count)s (tidak dimigrasikan)"
+
+msgid "%(count)s URL(s)"
+msgstr "%(count)s URL"
+
+msgid "%(count)s already migrated, left untouched"
+msgstr "%(count)s sudah dimigrasikan, dibiarkan utuh"
+
+msgid "%(count)s new article(s) imported"
+msgstr "%(count)s artikel baru diimpor"
+
+msgid "%(count)s redirect(s) recorded for source URLs"
+msgstr "%(count)s pengalihan dicatat untuk URL sumber"
+
+msgid "%(count)s unsupported item(s) skipped — the inspection lists each one"
+msgstr "%(count)s item yang tidak didukung dilewati — inspeksi mencantumkan setiap item"
+
+msgid "%(count)s updated from the source"
+msgstr "%(count)s diperbarui dari sumber"
+
+msgid "%(posts)s importable post(s) of %(total)s item(s) — fidelity %(fidelity)s%%"
+msgstr "%(posts)s pos yang dapat diimpor dari %(total)s item — fidelitas %(fidelity)s%%"
+
+msgid "(none)"
+msgstr "(tidak ada)"
+
+msgid "Author renames"
+msgstr "Penggantian nama penulis"
+
+msgid "Authors"
+msgstr "Penulis"
+
+msgid "Categories"
+msgstr "Kategori"
+
+msgid "Category renames"
+msgstr "Penggantian nama kategori"
+
+msgid "Comments"
+msgstr "Komentar"
+
+msgid "Download referenced images into the media library"
+msgstr "Unduh gambar yang dirujuk ke pustaka media"
+
+msgid "Export file"
+msgstr "Berkas ekspor"
+
+msgid "Import a blog export"
+msgstr "Impor ekspor blog"
+
+msgid "Import another export"
+msgstr "Impor ekspor lain"
+
+msgid "Inspect the export"
+msgstr "Periksa ekspor"
+
+msgid "Left behind — every item, with its reason"
+msgstr "Tertinggal — setiap item, dengan alasannya"
+
+msgid "Mappings and run"
+msgstr "Pemetaan dan eksekusi"
+
+msgid "Media — every URL accounted for"
+msgstr "Media — setiap URL diperhitungkan"
+
+msgid "Migration"
+msgstr "Migrasi"
+
+msgid "Migration finished"
+msgstr "Migrasi selesai"
+
+msgid "One rename per line, as source = target. An empty target drops the value. Unknown sources are ignored."
+msgstr "Satu penggantian nama per baris, sebagai sumber = tujuan. Tujuan kosong membuang nilainya. Sumber yang tidak dikenal diabaikan."
+
+msgid "Overwrite already-migrated posts from the source (the entity id is kept)"
+msgstr "Timpa pos yang sudah dimigrasikan dari sumber (id entitas dipertahankan)"
+
+msgid "Referenced media"
+msgstr "Media yang dirujuk"
+
+msgid "Review the imported articles"
+msgstr "Tinjau artikel yang diimpor"
+
+msgid "Run the migration"
+msgstr "Jalankan migrasi"
+
+msgid "Start over"
+msgstr "Mulai ulang"
+
+msgid "Tag renames"
+msgstr "Penggantian nama tag"
+
+msgid "URL"
+msgstr "URL"
+
+msgid "Upload a WXR 1.2 export. Nothing is written yet: the next step shows what the file contains — and what stays behind, with reasons — before you decide."
+msgstr "Unggah ekspor WXR 1.2. Belum ada yang ditulis: langkah berikutnya menunjukkan isi berkas — dan apa yang tertinggal, dengan alasannya — sebelum Anda memutuskan."
+
+msgid "fetched as %(asset)s"
+msgstr "diunduh sebagai %(asset)s"
+
+msgid "reused %(asset)s"
+msgstr "digunakan kembali %(asset)s"

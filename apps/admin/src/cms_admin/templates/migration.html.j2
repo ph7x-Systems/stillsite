@@ -1,0 +1,129 @@
+{% extends "shell.html.j2" %}
+{% block title %}{{ _("Migration") }} — Sardine CMS admin{% endblock %}
+{% block header %}<h1 class="h3 mb-0">{{ _("Migration") }}</h1>{% endblock %}
+{% block content %}
+
+{% if stage == "upload" %}
+<div class="card">
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Import a blog export") }}</h2></div>
+  <div class="card-body">
+    <p>{{ _("Upload a WXR 1.2 export. Nothing is written yet: the next step shows what the file contains — and what stays behind, with reasons — before you decide.") }}</p>
+    <form method="post" action="/migration/inspect" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="mb-3">
+        <label class="form-label" for="export">{{ _("Export file") }}</label>
+        <input class="form-control" type="file" id="export" name="export" accept=".xml,text/xml,application/xml" required>
+      </div>
+      <button type="submit" class="btn btn-primary">{{ _("Inspect the export") }}</button>
+    </form>
+  </div>
+</div>
+
+{% elif stage == "report" %}
+<div class="card mb-3">
+  <div class="card-header"><h2 class="card-title h6 mb-0">
+    {{ _("%(posts)s importable post(s) of %(total)s item(s) — fidelity %(fidelity)s%%") | format(posts=report.posts, total=report.total_items, fidelity=report.fidelity | round | int) }}
+  </h2></div>
+  <div class="card-body">
+    <dl class="row mb-0">
+      <dt class="col-sm-3">{{ _("Authors") }}</dt>
+      <dd class="col-sm-9">{{ report.authors | join(", ") or _("(none)") }}</dd>
+      <dt class="col-sm-3">{{ _("Categories") }}</dt>
+      <dd class="col-sm-9">{{ report.categories | join(", ") or _("(none)") }}</dd>
+      <dt class="col-sm-3">{{ _("Tags") }}</dt>
+      <dd class="col-sm-9">{{ report.tags | join(", ") or _("(none)") }}</dd>
+      <dt class="col-sm-3">{{ _("Referenced media") }}</dt>
+      <dd class="col-sm-9">{{ _("%(count)s URL(s)") | format(count=report.media_urls | length) }}</dd>
+      <dt class="col-sm-3">{{ _("Comments") }}</dt>
+      <dd class="col-sm-9">{{ _("%(count)s (not migrated)") | format(count=report.comments) }}</dd>
+    </dl>
+  </div>
+  {% if report.left_behind %}
+  <div class="card-body border-top">
+    <h3 class="h6">{{ _("Left behind — every item, with its reason") }}</h3>
+    <ul class="mb-0">
+      {% for note in report.left_behind %}
+      <li><strong>{{ note.kind }}</strong> “{{ note.title }}” — {{ note.reason }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Mappings and run") }}</h2></div>
+  <div class="card-body">
+    <form method="post" action="/migration/run">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="token" value="{{ token }}">
+      <p>{{ _("One rename per line, as source = target. An empty target drops the value. Unknown sources are ignored.") }}</p>
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label class="form-label" for="map_authors">{{ _("Author renames") }}</label>
+          <textarea class="form-control font-monospace" id="map_authors" name="map_authors" rows="3"></textarea>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label" for="map_categories">{{ _("Category renames") }}</label>
+          <textarea class="form-control font-monospace" id="map_categories" name="map_categories" rows="3"></textarea>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label" for="map_tags">{{ _("Tag renames") }}</label>
+          <textarea class="form-control font-monospace" id="map_tags" name="map_tags" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" id="update" name="update" value="1">
+        <label class="form-check-label" for="update">{{ _("Overwrite already-migrated posts from the source (the entity id is kept)") }}</label>
+      </div>
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="fetch_media" name="fetch_media" value="1">
+        <label class="form-check-label" for="fetch_media">{{ _("Download referenced images into the media library") }}</label>
+      </div>
+      <button type="submit" class="btn btn-primary">{{ _("Run the migration") }}</button>
+      <a class="btn btn-outline-secondary" href="/migration">{{ _("Start over") }}</a>
+    </form>
+  </div>
+</div>
+
+{% elif stage == "result" %}
+<div class="card mb-3">
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Migration finished") }}</h2></div>
+  <div class="card-body">
+    <ul class="mb-0">
+      <li>{{ _("%(count)s new article(s) imported") | format(count=applied.new) }}</li>
+      <li>{{ _("%(count)s updated from the source") | format(count=applied.updated) }}</li>
+      <li>{{ _("%(count)s already migrated, left untouched") | format(count=applied.matched) }}</li>
+      <li>{{ _("%(count)s unsupported item(s) skipped — the inspection lists each one") | format(count=skipped) }}</li>
+      <li>{{ _("%(count)s redirect(s) recorded for source URLs") | format(count=redirect_count) }}</li>
+    </ul>
+  </div>
+</div>
+{% if media_outcomes %}
+<div class="card mb-3">
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Media — every URL accounted for") }}</h2></div>
+  <div class="card-body p-0 table-responsive admin-table-wrap">
+    <table class="table table-striped mb-0 admin-table">
+      <thead><tr><th scope="col">{{ _("URL") }}</th><th scope="col">{{ _("Outcome") }}</th></tr></thead>
+      <tbody>
+        {% for outcome in media_outcomes %}
+        <tr>
+          <td class="text-break">{{ outcome.url }}</td>
+          <td>
+            {% if outcome.error %}<span class="badge text-bg-danger admin-state admin-state-missing">{{ outcome.error }}</span>
+            {% elif outcome.reused %}<span class="badge text-bg-secondary">{{ _("reused %(asset)s") | format(asset=outcome.asset_id) }}</span>
+            {% else %}<span class="badge text-bg-success admin-state admin-state-complete">{{ _("fetched as %(asset)s") | format(asset=outcome.asset_id) }}</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+<p class="mt-3">
+  <a class="btn btn-primary" href="/articles">{{ _("Review the imported articles") }}</a>
+  <a class="btn btn-outline-secondary" href="/migration">{{ _("Import another export") }}</a>
+</p>
+{% endif %}
+
+{% endblock %}

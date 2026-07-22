@@ -268,6 +268,19 @@ a previous run stays valid across incremental re-runs — and `--dry-run`
 with mappings previews the post-mapping inventories before anything is
 written.
 
+### Migrating from the panel
+
+The **Migration** screen (admin role) is the same pipeline with a
+browser face: upload a WXR 1.2 export and nothing is written — the
+screen renders the inspection report (fidelity, inventories, one line
+per left-behind item with its reason). Renames are typed one per line
+as `source = target` (an empty target drops the value), and the run
+applies exactly what the CLI would: idempotent matching by source id,
+optional source-wins updates, optional media download with a per-URL
+outcome table, and automatic redirects. The uploaded file is held in
+memory for fifteen minutes and honors the panel's upload size limit;
+runs land in the audit trail with their counts.
+
 Source URLs stay alive automatically: each imported post keeps its
 original permalink path, and when it differs from the post's address on
 this site the import records it in the project's `[redirects]` table —
