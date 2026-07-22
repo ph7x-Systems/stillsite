@@ -86,6 +86,9 @@ def init(
     languages: Annotated[
         str, typer.Option(help="Required target languages, comma-separated")
     ] = "pt-pt, es, fr, de",
+    theme: Annotated[
+        str, typer.Option(help="Theme entry point name, e.g. ph7x-reference")
+    ] = "default",
 ) -> None:
     """Scaffold a new project from the built-in Copier template."""
     from copier import run_copy
@@ -97,7 +100,12 @@ def init(
     run_copy(
         str(template),
         str(directory),
-        data={"project_name": name, "base_url": base_url, "languages": languages},
+        data={
+            "project_name": name,
+            "base_url": base_url,
+            "languages": languages,
+            "theme": theme,
+        },
         defaults=True,
         quiet=True,
     )
