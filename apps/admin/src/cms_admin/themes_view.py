@@ -10,6 +10,7 @@ shows its error and the config stays untouched.
 import asyncio
 from datetime import UTC, datetime
 from pathlib import Path
+from urllib.parse import quote
 
 from cms_build import build_site, create_theme
 from cms_build.themes import discovered_themes
@@ -99,7 +100,7 @@ async def theme_activate(
 
     def _failed(message: str) -> RedirectResponse:
         return RedirectResponse(
-            f"/themes?error={message[:300]}", status_code=status.HTTP_303_SEE_OTHER
+            f"/themes?error={quote(message[:300])}", status_code=status.HTTP_303_SEE_OTHER
         )
 
     try:
@@ -123,7 +124,9 @@ async def theme_activate(
 
     _write_site_theme(project.directory / "sardine.toml", name)
     await audit_record(request, user.username, "activated", "theme", name)
-    return RedirectResponse(f"/themes?activated={name}", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(
+        f"/themes?activated={quote(name)}", status_code=status.HTTP_303_SEE_OTHER
+    )
 
 
 __all__ = ["router"]
