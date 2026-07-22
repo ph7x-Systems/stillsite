@@ -53,9 +53,11 @@ def test_every_msgid_is_translated_in_every_catalog() -> None:
     catalogs = {
         pack.tag: pack.admin_catalog
         for pack in registered_language_packs()
-        if pack.admin_catalog is not None and pack.tag in ("pt-pt", "es", "fr", "de", "it")
+        if pack.admin_catalog is not None and pack.tag in ("pt-pt", "es", "fr", "de", "it", "id")
     }
-    assert sorted(catalogs) == ["de", "es", "fr", "it", "pt-pt"], "a bundled catalog went missing"
+    assert sorted(catalogs) == ["de", "es", "fr", "id", "it", "pt-pt"], (
+        "a bundled catalog went missing"
+    )
     for locale, raw in catalogs.items():
         catalog = read_po(BytesIO(raw))
         by_id = {message.id: message for message in catalog if message.id}

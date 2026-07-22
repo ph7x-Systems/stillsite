@@ -17,6 +17,10 @@ features with their PRs, breaking changes and migrations — live in
   existing asset, and every URL is reported as fetched, reused or
   failed with its reason (ADR-0045).
 
+- Indonesian language pack (`id`): site labels, month names, date
+  pattern and a full admin catalog so the panel itself speaks Bahasa
+  Indonesia. Seventh bundled language.
+
 ## 0.5.0 — 2026-07-22
 
 The WXR migration flow (#140) ships partially in this release: the

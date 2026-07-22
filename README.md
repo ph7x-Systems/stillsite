@@ -36,7 +36,7 @@ and **[walk through its read-only admin](https://sardine.ph7x.com/admin/)**.
 
 ## Why Sardine?
 
-- **Translations that cannot silently rot.** Six languages ship
+- **Translations that cannot silently rot.** Seven languages ship
   bundled; editing a source marks its translations outdated, and the
   publish gate reports every parity gap before anything goes live.
 - **SEO generated, not hand-maintained.** Canonical, hreflang, Open

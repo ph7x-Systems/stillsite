@@ -1,0 +1,1524 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: sardine-cms-admin\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "%(articles)s articles, %(pages)s pages, %(media)s media assets."
+msgstr "%(articles)s artikel, %(pages)s halaman, %(media)s aset media."
+
+msgid "%(language)s coverage"
+msgstr "Cakupan %(language)s"
+
+msgid "%(name)s translation"
+msgstr "Terjemahan %(name)s"
+
+msgid "%(rules)s rules ran over %(articles)s article(s), %(pages)s page(s) and %(media)s media asset(s) in %(languages)s languages"
+msgstr "%(rules)s aturan dijalankan atas %(articles)s artikel, %(pages)s halaman dan %(media)s aset media dalam %(languages)s bahasa"
+
+msgid "(any role). Build & export validates first, then writes the project's output directory with the target's extras — publisher role and up."
+msgstr "(peran apa pun). Build & export memvalidasi dulu, lalu menulis direktori output proyek dengan ekstra target — peran publisher ke atas."
+
+msgid "Actions"
+msgstr "Tindakan"
+
+msgid "Add a section"
+msgstr "Tambah sebuah bagian"
+
+msgid "Add section"
+msgstr "Tambah bagian"
+
+msgid "Admin"
+msgstr "Administrasi"
+
+msgid "Admin sections"
+msgstr "Bagian administrasi"
+
+msgid "Alt (EN)"
+msgstr "Alt (EN)"
+
+msgid "Alt text"
+msgstr "Teks alternatif"
+
+msgid "Alt text (EN)"
+msgstr "Teks alternatif (EN)"
+
+msgid "Archive"
+msgstr "Arsip"
+
+msgid "Article ID"
+msgstr "ID artikel"
+
+msgid "Articles"
+msgstr "Artikel"
+
+msgid "Articles only use categories the project declares (skipped when none are declared)"
+msgstr "Artikel hanya menggunakan kategori yang dideklarasikan proyek (diabaikan jika tidak ada)"
+
+msgid "Asset ID"
+msgstr "ID aset"
+
+msgid "Auto"
+msgstr "Otomatis"
+
+msgid "Body (Markdown)"
+msgstr "Isi (Markdown)"
+
+msgid "Browser default"
+msgstr "Bawaan peramban"
+
+msgid "Build & export"
+msgstr "Build & export"
+
+msgid "Build and export"
+msgstr "Build dan ekspor"
+
+msgid "Cancel"
+msgstr "Batal"
+
+msgid "Category"
+msgstr "Kategori"
+
+msgid "Checks that"
+msgstr "Memeriksa bahwa"
+
+msgid "Content (EN)"
+msgstr "Konten (EN)"
+
+msgid "Content by status"
+msgstr "Konten per status"
+
+msgid "Content in review or published carries every required language; incomplete translations warn in review and block once published"
+msgstr "Konten yang ditinjau atau dipublikasikan harus mencakup semua bahasa wajib; terjemahan tidak lengkap memberi peringatan saat tinjauan dan diblokir setelah dipublikasikan"
+
+msgid "Cover"
+msgstr "Sampul"
+
+msgid "Coverage"
+msgstr "Cakupan"
+
+msgid "Create article"
+msgstr "Buat artikel"
+
+msgid "Create page"
+msgstr "Buat halaman"
+
+msgid "Dark"
+msgstr "Gelap"
+
+msgid "Dashboard"
+msgstr "Dasbor"
+
+msgid "Delete asset"
+msgstr "Hapus aset"
+
+msgid "Description"
+msgstr "Deskripsi"
+
+msgid "Detail"
+msgstr "Detail"
+
+msgid "Digest"
+msgstr "Ringkasan"
+
+msgid "Dimensions"
+msgstr "Dimensi"
+
+msgid "EN (mandatory)"
+msgstr "EN (wajib)"
+
+msgid "Edit translation"
+msgstr "Edit terjemahan"
+
+msgid "Every media asset has alt text in each required language"
+msgstr "Setiap aset media memiliki teks alternatif dalam setiap bahasa wajib"
+
+msgid "Field"
+msgstr "Bidang"
+
+msgid "Field name"
+msgstr "Nama bidang"
+
+msgid "Field value"
+msgstr "Nilai bidang"
+
+msgid "Fields (EN)"
+msgstr "Bidang (EN)"
+
+msgid "Fields — source next to translation"
+msgstr "Bidang — sumber berdampingan dengan terjemahan"
+
+msgid "File"
+msgstr "Berkas"
+
+msgid "Files"
+msgstr "Berkas"
+
+msgid "Free-form name/value pairs the theme's"
+msgstr "Pasangan nama/nilai bebas dari tema"
+
+msgid "Generated URLs never collide within a language, across articles and pages"
+msgstr "URL yang dihasilkan tidak pernah bentrok dalam satu bahasa, antara artikel dan halaman"
+
+msgid "Home"
+msgstr "Beranda"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Issues"
+msgstr "Masalah"
+
+msgid "Key"
+msgstr "Kunci"
+
+msgid "Kind"
+msgstr "Jenis"
+
+msgid "Language"
+msgstr "Bahasa"
+
+msgid "Language states aggregate the page and all its sections — the least-complete state wins."
+msgstr "Status bahasa menggabungkan halaman dan semua bagiannya — status yang paling tidak lengkap yang menang."
+
+msgid "Last run"
+msgstr "Jalankan terakhir"
+
+msgid "Light"
+msgstr "Terang"
+
+msgid "Media"
+msgstr "Media"
+
+msgid "Media asset IDs (one per line)"
+msgstr "ID aset media (satu per baris)"
+
+msgid "Message"
+msgstr "Pesan"
+
+msgid "Metadata"
+msgstr "Metadata"
+
+msgid "Move %(key)s down"
+msgstr "Pindahkan %(key)s ke bawah"
+
+msgid "Move %(key)s up"
+msgstr "Pindahkan %(key)s ke atas"
+
+msgid "New article"
+msgstr "Artikel baru"
+
+msgid "New page"
+msgstr "Halaman baru"
+
+msgid "No"
+msgstr "Tidak"
+
+msgid "No articles yet — create the first one."
+msgstr "Belum ada artikel — buat yang pertama."
+
+msgid "No build or export has run from this panel yet."
+msgstr "Belum ada build atau ekspor yang dijalankan dari panel ini."
+
+msgid "No content yet — the coverage matrix appears once articles or pages exist."
+msgstr "Belum ada konten — matriks cakupan muncul setelah ada artikel atau halaman."
+
+msgid "No media yet — upload the first asset."
+msgstr "Belum ada media — unggah aset pertama."
+
+msgid "No pages yet — create the first one."
+msgstr "Belum ada halaman — buat yang pertama."
+
+msgid "No sections yet."
+msgstr "Belum ada bagian."
+
+msgid "Nothing has run from this panel yet."
+msgstr "Belum ada yang dijalankan dari panel ini."
+
+msgid "Nothing references this asset."
+msgstr "Tidak ada yang merujuk aset ini."
+
+msgid "PIPELINE"
+msgstr "PIPELINE"
+
+msgid "Page ID"
+msgstr "ID halaman"
+
+msgid "Page sections only reference media assets that actually exist"
+msgstr "Bagian halaman hanya merujuk aset media yang benar-benar ada"
+
+msgid "Page translations"
+msgstr "Terjemahan halaman"
+
+msgid "Pages"
+msgstr "Halaman"
+
+msgid "Password"
+msgstr "Kata sandi"
+
+msgid "Path"
+msgstr "Jalur"
+
+msgid "Preview"
+msgstr "Pratinjau"
+
+msgid "Preview build"
+msgstr "Build pratinjau"
+
+msgid "Preview writes to a temporary directory served at"
+msgstr "Pratinjau menulis ke direktori sementara yang dilayani di"
+
+msgid "Publish"
+msgstr "Publikasikan"
+
+msgid "Publish gate blocked"
+msgstr "Gate publikasi diblokir"
+
+msgid "Publish gate open"
+msgstr "Gate publikasi terbuka"
+
+msgid "Publishing"
+msgstr "Publikasi"
+
+msgid "Referenced assets cannot be deleted."
+msgstr "Aset yang dirujuk tidak dapat dihapus."
+
+msgid "Remove"
+msgstr "Hapus"
+
+msgid "Remove section %(key)s"
+msgstr "Hapus bagian %(key)s"
+
+msgid "Rendered with the builder's Markdown renderer (raw HTML disabled); shows the last saved body."
+msgstr "Dirender dengan renderer Markdown milik builder (HTML mentah dinonaktifkan); menampilkan isi tersimpan terakhir."
+
+msgid "Restore to draft"
+msgstr "Kembalikan ke draf"
+
+msgid "Result"
+msgstr "Hasil"
+
+msgid "Rule"
+msgstr "Aturan"
+
+msgid "Rules"
+msgstr "Aturan"
+
+msgid "Run"
+msgstr "Jalankan"
+
+msgid "Sardine CMS admin"
+msgstr "Sardine CMS admin"
+
+msgid "Save"
+msgstr "Simpan"
+
+msgid "Save alt text"
+msgstr "Simpan teks alternatif"
+
+msgid "Save section"
+msgstr "Simpan bagian"
+
+msgid "Save translation"
+msgstr "Simpan terjemahan"
+
+msgid "Sections"
+msgstr "Bagian"
+
+msgid "Send back to draft"
+msgstr "Kirim kembali ke draf"
+
+msgid "Severity"
+msgstr "Tingkat keparahan"
+
+msgid "Sign in"
+msgstr "Masuk"
+
+msgid "Sign out"
+msgstr "Keluar"
+
+msgid "Size"
+msgstr "Ukuran"
+
+msgid "Skip to content"
+msgstr "Lewati ke konten"
+
+msgid "Slug"
+msgstr "Slug"
+
+msgid "Source (EN)"
+msgstr "Sumber (EN)"
+
+msgid "State"
+msgstr "Status"
+
+msgid "Static-first, multilingual"
+msgstr "Statis, multibahasa"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Subject"
+msgstr "Subjek"
+
+msgid "Submit for review"
+msgstr "Kirim untuk tinjauan"
+
+msgid "Summary"
+msgstr "Ringkasan"
+
+msgid "Tags"
+msgstr "Tag"
+
+msgid "Target"
+msgstr "Target"
+
+msgid "The form was not saved:"
+msgstr "Formulir tidak tersimpan:"
+
+msgid "The page's own title/description/slug — section content is translated on each section."
+msgstr "Judul/deskripsi/slug halaman itu sendiri — konten bagian diterjemahkan pada setiap bagian."
+
+msgid "The source section has no fields yet — add them on the"
+msgstr "Bagian sumber belum memiliki bidang — tambahkan di"
+
+msgid "Title"
+msgstr "Judul"
+
+msgid "Title (EN)"
+msgstr "Judul (EN)"
+
+msgid "Toggle color scheme"
+msgstr "Ubah skema warna"
+
+msgid "Toggle fullscreen"
+msgstr "Layar penuh"
+
+msgid "Toggle sidebar"
+msgstr "Bilah sisi"
+
+msgid "Translated alt"
+msgstr "Alt terjemahan"
+
+msgid "Translation"
+msgstr "Terjemahan"
+
+msgid "Translation coverage"
+msgstr "Cakupan terjemahan"
+
+msgid "Translation preview"
+msgstr "Pratinjau terjemahan"
+
+msgid "Translations"
+msgstr "Terjemahan"
+
+msgid "Type"
+msgstr "Tipe"
+
+msgid "Updated"
+msgstr "Diperbarui"
+
+msgid "Upload"
+msgstr "Unggah"
+
+msgid "Upload media"
+msgstr "Unggah media"
+
+msgid "Use the"
+msgstr "Gunakan"
+
+msgid "Used by"
+msgstr "Digunakan oleh"
+
+msgid "Username"
+msgstr "Nama pengguna"
+
+msgid "Value"
+msgstr "Nilai"
+
+msgid "When"
+msgstr "Kapan"
+
+msgid "Workflow"
+msgstr "Alur kerja"
+
+msgid "Wrong username or password."
+msgstr "Nama pengguna atau kata sandi salah."
+
+msgid "a category slug, or empty"
+msgstr "slug kategori, atau kosong"
+
+msgid "a media asset id, or empty"
+msgstr "id aset media, atau kosong"
+
+msgid "across %(rules)s rules — publishing stays blocked until the errors are fixed."
+msgstr "atas %(rules)s aturan — publikasi tetap diblokir sampai error diperbaiki."
+
+msgid "and"
+msgstr "dan"
+
+msgid "archived"
+msgstr "diarsipkan"
+
+msgid "at the project directory to build from the panel."
+msgstr "ke direktori proyek untuk build dari panel."
+
+msgid "comma-separated slugs"
+msgstr "slug dipisahkan koma"
+
+msgid "commands."
+msgstr "perintah."
+
+msgid "complete"
+msgstr "lengkap"
+
+msgid "draft"
+msgstr "draf"
+
+msgid "error"
+msgstr "error"
+
+msgid "failed"
+msgstr "gagal"
+
+msgid "file: choose a file to upload"
+msgstr "berkas: pilih berkas untuk diunggah"
+
+msgid "file: could not read the image dimensions"
+msgstr "berkas: tidak dapat membaca dimensi gambar"
+
+msgid "file: unsupported type — png, jpeg, gif or webp"
+msgstr "berkas: tipe tidak didukung — png, jpeg, gif atau webp"
+
+msgid "file: image dimensions exceed the pixel limit"
+msgstr "berkas: dimensi gambar melebihi batas piksel"
+
+msgid "file: a file already exists at the generated path"
+msgstr "berkas: berkas sudah ada di jalur yang dihasilkan"
+
+msgid "first."
+msgstr "pertama."
+
+msgid "found in"
+msgstr "ditemukan di"
+
+msgid "lowercase-with-dashes"
+msgstr "huruf-kecil-dengan-tanda-hubung"
+
+msgid "lowercase-with-dashes; empty falls back to the article id"
+msgstr "huruf-kecil-dengan-tanda-hubung; kosong kembali ke id artikel"
+
+msgid "mandatory — translations are added after the upload"
+msgstr "wajib — terjemahan ditambahkan setelah unggah"
+
+msgid "missing"
+msgstr "hilang"
+
+msgid "missing alt text"
+msgstr "teks alternatif hilang"
+
+msgid "no errors"
+msgstr "tidak ada error"
+
+msgid "ok"
+msgstr "ok"
+
+msgid "outdated"
+msgstr "kedaluwarsa"
+
+msgid "output"
+msgstr "output"
+
+msgid "panel, or the"
+msgstr "panel, atau"
+
+msgid "pass"
+msgstr "lolos"
+
+msgid "permanent, lowercase-with-dashes"
+msgstr "permanen, huruf-kecil-dengan-tanda-hubung"
+
+msgid "png, jpeg, gif, webp or svg — the type is verified from the bytes, never from the name."
+msgstr "png, jpeg, gif, webp atau svg — tipe diverifikasi dari byte, bukan dari nama."
+
+msgid "point"
+msgstr "titik"
+
+msgid "published"
+msgstr "dipublikasikan"
+
+msgid "review"
+msgstr "tinjauan"
+
+msgid "section editor"
+msgstr "editor bagian"
+
+msgid "template consumes. Clear a value to drop its field; use the blank rows to add more."
+msgstr "tema konsumsi. Hapus nilai untuk membuang bidangnya; gunakan baris kosong untuk menambah."
+
+msgid "the theme template that renders it — bundled kinds:"
+msgstr "tema template yang merendernya — jenis yang dibundel:"
+
+msgid "theme"
+msgstr "tema"
+
+msgid "translation is missing"
+msgstr "terjemahan hilang"
+
+msgid "translation is outdated"
+msgstr "terjemahan kedaluwarsa"
+
+msgid "unique on this page, lowercase-with-dashes"
+msgstr "unik di halaman ini, huruf-kecil-dengan-tanda-hubung"
+
+msgid "warning"
+msgstr "peringatan"
+
+msgid "%(count)s error"
+msgid_plural "%(count)s errors"
+msgstr[0] "%(count)s error"
+
+msgid "%(count)s warning"
+msgid_plural "%(count)s warnings"
+msgstr[0] "%(count)s peringatan"
+
+msgid "Bold"
+msgstr "Tebal"
+
+msgid "Code"
+msgstr "Kode"
+
+msgid "Create link"
+msgstr "Buat tautan"
+
+msgid "Heading"
+msgstr "Judul"
+
+msgid "Insert image"
+msgstr "Sisipkan gambar"
+
+msgid "Italic"
+msgstr "Miring"
+
+msgid "Markdown guide"
+msgstr "Panduan Markdown"
+
+msgid "Ordered list"
+msgstr "Daftar bernomor"
+
+msgid "Quote"
+msgstr "Kutipan"
+
+msgid "Unordered list"
+msgstr "Daftar bersimbol"
+
+msgid "Unpublish"
+msgstr "Batalkan publikasi"
+
+msgid "Publish at (UTC)"
+msgstr "Publikasikan pada (UTC)"
+
+msgid "empty publishes immediately once published; a future moment keeps the entry out of builds until a build runs after it"
+msgstr "kosong mempublikasikan segera; waktu di masa depan menahan entri dari build sampai build berjalan setelahnya"
+
+msgid "publish_at: use the picker format (YYYY-MM-DDTHH:MM, UTC)"
+msgstr "publish_at: gunakan format picker (YYYY-MM-DDTHH:MM, UTC)"
+
+msgid "Author"
+msgstr "Penulis"
+
+msgid "Changes against the current content"
+msgstr "Perubahan terhadap konten saat ini"
+
+msgid "Every save keeps a snapshot (the newest %(limit)s); restoring saves a new revision, so it is always undoable."
+msgstr "Setiap simpan menyimpan snapshot (%(limit)s terbaru); memulihkan menyimpan revisi baru, jadi selalu dapat dibatalkan."
+
+msgid "No revisions yet — they appear after the first save."
+msgstr "Belum ada revisi — muncul setelah simpan pertama."
+
+msgid "Restore this revision"
+msgstr "Pulihkan revisi ini"
+
+msgid "Revision"
+msgstr "Revisi"
+
+msgid "Revisions"
+msgstr "Revisi"
+
+msgid "The source text is identical to the current content."
+msgstr "Teks sumber identik dengan konten saat ini."
+
+msgid "View and restore"
+msgstr "Lihat dan pulihkan"
+
+msgid "Delete forever"
+msgstr "Hapus selamanya"
+
+msgid "Move to trash"
+msgstr "Pindahkan ke sampah"
+
+msgid "Restore"
+msgstr "Pulihkan"
+
+msgid "The trash is empty."
+msgstr "Sampah kosong."
+
+msgid "Trash"
+msgstr "Sampah"
+
+msgid "Trashed"
+msgstr "Dibuang"
+
+msgid "Trashed content is invisible to builds, validation, export and the lists; restore brings it back exactly as it was. Delete forever is the only permanent removal and needs the admin role."
+msgstr "Konten yang dibuang tidak terlihat oleh build, validasi, ekspor, dan daftar; memulihkan mengembalikannya persis seperti semula. Hapus selamanya adalah satu-satunya penghapusan permanen dan membutuhkan peran admin."
+
+msgid "Duplicate as draft"
+msgstr "Duplikat sebagai draf"
+
+msgid "View in preview"
+msgstr "Lihat di pratinjau"
+
+msgid "Accounts"
+msgstr "Akun"
+
+msgid "Create account"
+msgstr "Buat akun"
+
+msgid "Delete"
+msgstr "Hapus"
+
+msgid "New account"
+msgstr "Akun baru"
+
+msgid "Role"
+msgstr "Peran"
+
+msgid "Since"
+msgstr "Sejak"
+
+msgid "Users"
+msgstr "Pengguna"
+
+msgid "You cannot delete your own account, and the last admin can neither be deleted nor demoted."
+msgstr "Anda tidak dapat menghapus akun sendiri, dan admin terakhir tidak dapat dihapus atau diturunkan."
+
+msgid "between 12 and 1024 characters"
+msgstr "antara 12 dan 1024 karakter"
+
+msgid "delete: the last admin cannot be deleted"
+msgstr "delete: admin terakhir tidak dapat dihapus"
+
+msgid "delete: you cannot delete your own account"
+msgstr "delete: Anda tidak dapat menghapus akun sendiri"
+
+msgid "language: unknown language"
+msgstr "language: bahasa tidak dikenal"
+
+msgid "password: between 12 and 1024 characters"
+msgstr "password: antara 12 dan 1024 karakter"
+
+msgid "role: the last admin cannot be demoted"
+msgstr "role: admin terakhir tidak dapat diturunkan"
+
+msgid "role: unknown role"
+msgstr "role: peran tidak dikenal"
+
+msgid "username: already taken"
+msgstr "username: sudah dipakai"
+
+msgid "username: lowercase letters, digits and dashes only"
+msgstr "username: hanya huruf kecil, angka, dan tanda hubung"
+
+msgid "you"
+msgstr "Anda"
+
+msgid "%(shown)s of %(total)s assets"
+msgstr "%(shown)s dari %(total)s aset"
+
+msgid "Clear"
+msgstr "Bersihkan"
+
+msgid "Everything"
+msgstr "Semua"
+
+msgid "Filter"
+msgstr "Saring"
+
+msgid "Images only"
+msgstr "Hanya gambar"
+
+msgid "Missing translated alt"
+msgstr "Alt terjemahan hilang"
+
+msgid "Nothing matches the filter."
+msgstr "Tidak ada yang cocok dengan saringan."
+
+msgid "Search"
+msgstr "Cari"
+
+msgid "Show"
+msgstr "Tampilkan"
+
+msgid "id, path, type or alt text"
+msgstr "id, jalur, tipe atau teks alternatif"
+
+msgid "Featured"
+msgstr "Unggulan"
+
+msgid "editorial byline; empty shows the site name"
+msgstr "nama penulis editorial; kosong menampilkan nama situs"
+
+msgid "featured articles lead the home highlight"
+msgstr "artikel unggulan memimpin sorotan beranda"
+
+msgid "Design preview"
+msgstr "Pratinjau desain"
+
+msgid "Open full page"
+msgstr "Buka halaman penuh"
+
+msgid "Run a preview build from the"
+msgstr "Jalankan build pratinjau dari"
+
+msgid "panel to see this entry with the real theme; it refreshes on every save."
+msgstr "panel untuk melihat entri ini dengan tema asli; diperbarui setiap simpan."
+
+msgid "A note for the team — never published"
+msgstr "Catatan untuk tim — tidak pernah dipublikasikan"
+
+msgid "Actions for %(id)s"
+msgstr "Tindakan untuk %(id)s"
+
+msgid "Add note"
+msgstr "Tambah catatan"
+
+msgid "Editorial notes"
+msgstr "Catatan editorial"
+
+msgid "New note"
+msgstr "Catatan baru"
+
+msgid "No notes yet — leave the first one for the team."
+msgstr "Belum ada catatan — tinggalkan yang pertama untuk tim."
+
+msgid "Custom fields"
+msgstr "Bidang kustom"
+
+msgid "Free-form name/value pairs carried to themes and extensions (ADR-0028); clear a value to drop its field."
+msgstr "Pasangan nama/nilai bebas diteruskan ke tema dan ekstensi (ADR-0028); hapus nilai untuk membuang bidangnya."
+
+msgid "Add or update an item"
+msgstr "Tambah atau perbarui item"
+
+msgid "Defined items replace the automatic menu on the next build; re-adding an id updates it (that is also how items reorder). Empty list = automatic menu."
+msgstr "Item yang didefinisikan menggantikan menu otomatis pada build berikutnya; menambahkan id lagi memperbaruinya (begitu juga cara mengurutkan item). Daftar kosong = menu otomatis."
+
+msgid "Label"
+msgstr "Label"
+
+msgid "Labels"
+msgstr "Label"
+
+msgid "Menu"
+msgstr "Menu"
+
+msgid "Navigation items"
+msgstr "Item navigasi"
+
+msgid "No explicit items — the menu derives automatically from content (home anchors, blog, published pages)."
+msgstr "Tidak ada item eksplisit — menu diturunkan otomatis dari konten (jangkar beranda, blog, halaman dipublikasikan)."
+
+msgid "Position"
+msgstr "Posisi"
+
+msgid "Save item"
+msgstr "Simpan item"
+
+msgid "menu: id is lowercase-with-dashes, url and position are required"
+msgstr "menu: id adalah huruf-kecil-dengan-tanda-hubung, url dan posisi wajib"
+
+msgid "Saving…"
+msgstr "Menyimpan…"
+
+msgid "Saved"
+msgstr "Tersimpan"
+
+msgid "Autosave paused — fix invalid fields."
+msgstr "Simpan otomatis dijeda — perbaiki bidang yang tidak valid."
+
+msgid "Forgot your password?"
+msgstr "Lupa kata sandi?"
+
+msgid "Reset your password"
+msgstr "Atur ulang kata sandi"
+
+msgid "Send the reset link"
+msgstr "Kirim tautan atur ulang"
+
+msgid "If that account has an address, a message is on its way."
+msgstr "Jika akun tersebut memiliki alamat, pesan sedang dalam perjalanan."
+
+msgid "Back to sign in"
+msgstr "Kembali ke masuk"
+
+msgid "New password"
+msgstr "Kata sandi baru"
+
+msgid "Repeat the new password"
+msgstr "Ulangi kata sandi baru"
+
+msgid "Set the new password"
+msgstr "Atur kata sandi baru"
+
+msgid "The password needs at least 12 characters."
+msgstr "Kata sandi membutuhkan setidaknya 12 karakter."
+
+msgid "The two passwords do not match."
+msgstr "Dua kata sandi tidak cocok."
+
+msgid "This reset link is no longer valid — request a new one."
+msgstr "Tautan atur ulang ini tidak lagi valid — minta yang baru."
+
+msgid "Your password was changed. Sign in with the new one."
+msgstr "Kata sandi Anda diubah. Masuk dengan yang baru."
+
+msgid "Reset your Sardine CMS admin password"
+msgstr "Atur ulang kata sandi admin Sardine CMS"
+
+msgid ""
+"Someone asked to reset the password for %(username)s. If it was you, open this link within 30 minutes:\n"
+"\n"
+"%(link)s\n"
+"\n"
+"If it was not you, ignore this message — nothing changed."
+msgstr ""
+"Seseorang meminta atur ulang kata sandi untuk %(username)s. Jika itu Anda, buka tautan ini dalam 30 menit:\n"
+"\n"
+"%(link)s\n"
+"\n"
+"Jika bukan Anda, abaikan pesan ini — tidak ada yang berubah."
+
+msgid "Email"
+msgstr "Email"
+
+msgid "optional — password reset and notifications"
+msgstr "opsional — atur ulang kata sandi dan notifikasi"
+
+msgid "Review requested: %(title)s"
+msgstr "Tinjauan diminta: %(title)s"
+
+msgid ""
+"%(actor)s sent %(title)s to review. Open it in the panel:\n"
+"\n"
+"%(link)s"
+msgstr ""
+"%(actor)s mengirim %(title)s untuk ditinjau. Buka di panel:\n"
+"\n"
+"%(link)s"
+
+msgid "Published: %(title)s"
+msgstr "Dipublikasikan: %(title)s"
+
+msgid ""
+"%(title)s was published by %(actor)s:\n"
+"\n"
+"%(link)s"
+msgstr ""
+"%(title)s dipublikasikan oleh %(actor)s:\n"
+"\n"
+"%(link)s"
+
+msgid "Two-factor authentication"
+msgstr "Autentikasi dua faktor"
+
+msgid "Two-factor authentication is enabled."
+msgstr "Autentikasi dua faktor aktif."
+
+msgid "Enter this key in your authenticator app, then confirm with a code:"
+msgstr "Masukkan kunci ini di aplikasi autentikator Anda, lalu konfirmasi dengan kode:"
+
+msgid "Manual key"
+msgstr "Kunci manual"
+
+msgid "Setup link"
+msgstr "Tautan penyiapan"
+
+msgid "Authentication code"
+msgstr "Kode autentikasi"
+
+msgid "Authentication code required."
+msgstr "Kode autentikasi wajib."
+
+msgid "Wrong authentication code."
+msgstr "Kode autentikasi salah."
+
+msgid "Verify and enable"
+msgstr "Verifikasi dan aktifkan"
+
+msgid "Disable two-factor authentication"
+msgstr "Nonaktifkan autentikasi dua faktor"
+
+msgid "Two-factor authentication is required for your role. Enrol to continue."
+msgstr "Autentikasi dua faktor wajib untuk peran Anda. Daftar untuk melanjutkan."
+
+msgid "Two-factor authentication is required for your role and cannot be disabled."
+msgstr "Autentikasi dua faktor wajib untuk peran Anda dan tidak dapat dinonaktifkan."
+
+msgid "Fields (source)"
+msgstr "Bidang (sumber)"
+
+msgid "Markdown fields"
+msgstr "Bidang Markdown"
+
+msgid "Items"
+msgstr "Item"
+
+msgid "One row per item — clear a whole row to remove it."
+msgstr "Satu baris per item — hapus seluruh baris untuk menghapusnya."
+
+msgid "Source"
+msgstr "Sumber"
+
+msgid "A call to action with a button."
+msgstr "Ajakan bertindak dengan tombol."
+
+msgid "A pull quote with attribution."
+msgstr "Kutipan tarik dengan atribusi."
+
+msgid "Add a block"
+msgstr "Tambah blok"
+
+msgid "An image grid from the section's media."
+msgstr "Kotak gambar dari media bagian."
+
+msgid "Closing call to action."
+msgstr "Ajakan bertindak penutup."
+
+msgid "Contributed by an extension; renders by its own template or generically."
+msgstr "Dikontribusi oleh ekstensi; dirender dengan templatnya sendiri atau secara generik."
+
+msgid "Custom kind (advanced)"
+msgstr "Jenis kustom (lanjutan)"
+
+msgid "Duplicate"
+msgstr "Duplikat"
+
+msgid "Duplicate section %(key)s"
+msgstr "Duplikat bagian %(key)s"
+
+msgid "Hidden"
+msgstr "Tersembunyi"
+
+msgid "Hide"
+msgstr "Sembunyikan"
+
+msgid "Hide section %(key)s"
+msgstr "Sembunyikan bagian %(key)s"
+
+msgid "Narrative prose with stat pairs and images."
+msgstr "Prosa naratif dengan pasangan statistik dan gambar."
+
+msgid "Numbered capability rows."
+msgstr "Baris kapabilitas bernomor."
+
+msgid "Opening statement with a large heading."
+msgstr "Pernyataan pembuka dengan judul besar."
+
+msgid "Questions and answers as native disclosures."
+msgstr "Pertanyaan dan jawaban sebagai disclosure native."
+
+msgid "Renders generically in the current theme."
+msgstr "Dirender secara generik di tema saat ini."
+
+msgid "Section %(key)s was deleted."
+msgstr "Bagian %(key)s dihapus."
+
+msgid "Show section %(key)s"
+msgstr "Tampilkan bagian %(key)s"
+
+msgid "The most recent blog entries, automatic."
+msgstr "Entri blog terbaru, otomatis."
+
+msgid "Undo"
+msgstr "Urungkan"
+
+msgid "generic"
+msgstr "generik"
+
+msgid "optional — derived from the kind when empty"
+msgstr "opsional — diturunkan dari jenis saat kosong"
+
+msgid "the theme template that renders it — unknown kinds render generically"
+msgstr "tema template yang merendernya — jenis tidak dikenal dirender secara generik"
+
+msgid "Also translate into (optional)"
+msgstr "Terjemahkan juga ke (opsional)"
+
+msgid "Create my site"
+msgstr "Buat situs saya"
+
+msgid "Create your first page"
+msgstr "Buat halaman pertama Anda"
+
+msgid "Example content"
+msgstr "Konten contoh"
+
+msgid "First steps"
+msgstr "Langkah pertama"
+
+msgid "Main language"
+msgstr "Bahasa utama"
+
+msgid "Set up your site"
+msgstr "Siapkan situs Anda"
+
+msgid "Site address"
+msgstr "Alamat situs"
+
+msgid "Site name"
+msgstr "Nama situs"
+
+msgid "Start with the example site (you can delete it later)"
+msgstr "Mulai dengan situs contoh (bisa dihapus nanti)"
+
+msgid "Theme"
+msgstr "Tema"
+
+msgid "This project already has a sardine.toml — its settings stay exactly as they are."
+msgstr "Proyek ini sudah memiliki sardine.toml — pengaturannya tetap apa adanya."
+
+msgid "Three quick sections and you are publishing. Nothing is saved until the end."
+msgstr "Tiga bagian cepat dan Anda siap publikasi. Tidak ada yang tersimpan sampai akhir."
+
+msgid "Use the preview link on the page editor to see it with your theme."
+msgstr "Gunakan tautan pratinjau di editor halaman untuk melihatnya dengan tema Anda."
+
+msgid "Where the site will live, e.g. https://example.com"
+msgstr "Di mana situs akan berada, mis. https://example.com"
+
+msgid "You can add languages later; every target language must be translated before publishing."
+msgstr "Anda dapat menambah bahasa nanti; setiap bahasa target harus diterjemahkan sebelum dipublikasikan."
+
+msgid "Your account"
+msgstr "Akun Anda"
+
+msgid "Your site"
+msgstr "Situs Anda"
+
+msgid "pick blocks from the gallery and fill them in."
+msgstr "pilih blok dari galeri dan isilah."
+
+msgid "the validation report tells you if anything is missing."
+msgstr "laporan validasi memberi tahu jika ada yang hilang."
+
+msgid "A plain folder of files — upload the output directory to any static host or shared hosting."
+msgstr "Folder berkas sederhana — unggah direktori output ke host statis atau shared hosting apa pun."
+
+msgid "Any static host"
+msgstr "Host statis apa pun"
+
+msgid "Azure Static Web Apps"
+msgstr "Azure Static Web Apps"
+
+msgid "Copy that directory to your server and include the generated nginx.conf snippet."
+msgstr "Salin direktori tersebut ke server Anda dan sertakan snippet nginx.conf yang dihasilkan."
+
+msgid "Deploy that directory with the SWA CLI or your GitHub Action — the configuration file is already inside."
+msgstr "Deploy direktori tersebut dengan SWA CLI atau GitHub Action Anda — file konfigurasi sudah ada di dalamnya."
+
+msgid "Includes an nginx.conf snippet with redirects and caching — copy the output to the server and include the snippet."
+msgstr "Termasuk snippet nginx.conf dengan redirect dan caching — salin output ke server dan sertakan snippet."
+
+msgid "Includes staticwebapp.config.json with your redirects and headers — deploy the output with the SWA CLI or a GitHub Action."
+msgstr "Termasuk staticwebapp.config.json dengan redirect dan header Anda — deploy output dengan SWA CLI atau GitHub Action."
+
+msgid "The files are in"
+msgstr "Berkas ada di"
+
+msgid "Upload everything inside that directory to your host — that is the whole site."
+msgstr "Unggah semua di dalam direktori tersebut ke host Anda — itu seluruh situsnya."
+
+msgid "Where will the site live?"
+msgstr "Di mana situs akan berada?"
+
+msgid "Your choice is remembered in the project — the cms command line uses it too."
+msgstr "Pilihan Anda diingat dalam proyek — command line cms juga menggunakannya."
+
+msgid "Your own nginx server"
+msgstr "Server nginx Anda sendiri"
+
+msgid "Your site is built and ready to go live."
+msgstr "Situs Anda sudah di-build dan siap tayang."
+
+msgid "%(total)s result(s) for"
+msgstr "%(total)s hasil untuk"
+
+msgid "Nothing matched. Search covers titles, text, slugs, section fields and media alt text — in every language."
+msgstr "Tidak ada yang cocok. Pencarian mencakup judul, teks, slug, bidang bagian dan teks alt media — dalam setiap bahasa."
+
+msgid "Search everything you can edit"
+msgstr "Cari semua yang bisa Anda edit"
+
+msgid "%(applied)s of %(total)s applied"
+msgstr "%(applied)s dari %(total)s diterapkan"
+
+msgid "Apply to selected"
+msgstr "Terapkan ke yang dipilih"
+
+msgid "Back to the list"
+msgstr "Kembali ke daftar"
+
+msgid "Bulk action"
+msgstr "Tindakan massal"
+
+msgid "Bulk result"
+msgstr "Hasil massal"
+
+msgid "Delete unreferenced"
+msgstr "Hapus yang tidak dirujuk"
+
+msgid "Each entry keeps its own rules — the report shows every outcome."
+msgstr "Setiap entri memiliki aturannya sendiri — laporan menampilkan setiap hasil."
+
+msgid "Nothing was selected."
+msgstr "Tidak ada yang dipilih."
+
+msgid "Outcome"
+msgstr "Hasil"
+
+msgid "Referenced assets refuse deletion — the report says which."
+msgstr "Aset yang dirujuk menolak penghapusan — laporan menyebutkan yang mana."
+
+msgid "Select"
+msgstr "Pilih"
+
+msgid "Select %(id)s"
+msgstr "Pilih %(id)s"
+
+msgid "Set category"
+msgstr "Atur kategori"
+
+msgid "category (for Set category)"
+msgstr "kategori (untuk Atur kategori)"
+
+msgid "not found"
+msgstr "tidak ditemukan"
+
+msgid "category: lowercase-with-dashes"
+msgstr "category: huruf-kecil-dengan-tanda-hubung"
+
+msgid "invalid transition from %(status)s"
+msgstr "transisi tidak valid dari %(status)s"
+
+msgid "requires the %(role)s role"
+msgstr "membutuhkan peran %(role)s"
+
+msgid "publish gate: %(count)s validation error(s)"
+msgstr "publish gate: %(count)s error validasi"
+
+msgid "referenced by %(count)s entr(ies)"
+msgstr "dirujuk oleh %(count)s entri"
+
+msgid "%(total)s pair(s) waiting overall"
+msgstr "%(total)s pasangan menunggu total"
+
+msgid "All caught up — every configured language is complete."
+msgstr "Semua lengkap — setiap bahasa yang dikonfigurasi sudah selesai."
+
+msgid "Article"
+msgstr "Artikel"
+
+msgid "Articles and pages"
+msgstr "Artikel dan halaman"
+
+msgid "Entry"
+msgstr "Entri"
+
+msgid "Every entry"
+msgstr "Setiap entri"
+
+msgid "Every language"
+msgstr "Setiap bahasa"
+
+msgid "Missing and outdated"
+msgstr "Hilang dan kedaluwarsa"
+
+msgid "Needs translation into"
+msgstr "Perlu terjemahan ke"
+
+msgid "Page"
+msgstr "Halaman"
+
+msgid "Translate"
+msgstr "Terjemahkan"
+
+msgid "missing %(tag)s"
+msgstr "hilang %(tag)s"
+
+msgid "Calendar"
+msgstr "Kalender"
+
+msgid "Drag a scheduled chip to another day, or set the exact moment in its editor."
+msgstr "Seret chip terjadwal ke hari lain, atau atur momen tepatnya di editor."
+
+msgid "Mon"
+msgstr "Sen"
+
+msgid "Tue"
+msgstr "Sel"
+
+msgid "Wed"
+msgstr "Rab"
+
+msgid "Thu"
+msgstr "Kam"
+
+msgid "Fri"
+msgstr "Jum"
+
+msgid "Sat"
+msgstr "Sab"
+
+msgid "Sun"
+msgstr "Min"
+
+msgid "Published entries on their publication day, scheduled entries on the day they will fire. Times are UTC, exactly as the panel schedules."
+msgstr "Entri dipublikasikan pada hari publikasinya, entri terjadwal pada hari aktivasinya. Waktu dalam UTC, persis seperti yang dijadwalkan panel."
+
+msgid "scheduled"
+msgstr "terjadwal"
+
+msgid "Unpublish at (UTC)"
+msgstr "Batalkan publikasi pada (UTC)"
+
+msgid "optional end of the window — after this moment the next build drops the entry; must fall after the publish moment"
+msgstr "akhir jendela opsional — setelah momen ini build berikutnya menghapus entri; harus setelah momen publikasi"
+
+msgid "Action"
+msgstr "Tindakan"
+
+msgid "Activity"
+msgstr "Aktivitas"
+
+msgid "Actor"
+msgstr "Aktor"
+
+msgid "From"
+msgstr "Dari"
+
+msgid "Newest first, 100 at a time. Records survive the deletion of what they describe."
+msgstr "Terbaru dulu, 100 per kali. Catatan bertahan dari penghapusan apa yang mereka deskripsikan."
+
+msgid "No activity in this window."
+msgstr "Tidak ada aktivitas di jendela ini."
+
+msgid "Until"
+msgstr "Sampai"
+
+msgid "anyone"
+msgstr "siapa pun"
+
+msgid "Needs attention"
+msgstr "Perlu perhatian"
+
+msgid "Nothing is waiting for you."
+msgstr "Tidak ada yang menunggu Anda."
+
+msgid "draft(s) untouched for 30 days"
+msgstr "draf tidak tersentuh selama 30 hari"
+
+msgid "in review"
+msgstr "dalam tinjauan"
+
+msgid "scheduled change(s) in the next 7 days"
+msgstr "perubahan terjadwal dalam 7 hari ke depan"
+
+msgid "translation pair(s) pending"
+msgstr "pasangan terjemahan tertunda"
+
+msgid "waiting for your decision"
+msgstr "menunggu keputusan Anda"
+
+msgid "Kept releases (rollback needs no rebuild)"
+msgstr "Rilis yang disimpan (rollback tidak perlu rebuild)"
+
+msgid "Public site"
+msgstr "Situs publik"
+
+msgid "Publish site now"
+msgstr "Publikasikan situs sekarang"
+
+msgid "Publishing and unpublishing content redeploys automatically; this button forces a fresh release."
+msgstr "Mempublikasikan dan membatalkan publikasi konten melakukan redeploy otomatis; tombol ini memaksa rilis baru."
+
+msgid "Retry deployment"
+msgstr "Coba lagi deployment"
+
+msgid "Roll back to this release"
+msgstr "Kembali ke rilis ini"
+
+msgid "active"
+msgstr "aktif"
+
+msgid "never deployed"
+msgstr "belum pernah di-deploy"
+
+msgid "phase"
+msgstr "fase"
+
+msgid "rolled back"
+msgstr "dikembalikan"
+
+msgid "queued"
+msgstr "antrian"
+
+msgid "uploading"
+msgstr "mengunggah"
+
+msgid "waiting"
+msgstr "menunggu"
+
+msgid "verifying"
+msgstr "memverifikasi"
+
+msgid "Collection"
+msgstr "Koleksi"
+
+msgid "All collections"
+msgstr "Semua koleksi"
+
+msgid "In use"
+msgstr "Digunakan"
+
+msgid "unused"
+msgstr "tidak digunakan"
+
+msgid "optional folder, lowercase-with-dashes — group related assets"
+msgstr "folder opsional, huruf-kecil-dengan-tanda-hubung — kelompokkan aset terkait"
+
+msgid "Crop and focal point"
+msgstr "Pangkas dan titik fokus"
+
+msgid "Crop"
+msgstr "Pangkas"
+
+msgid "Focal point"
+msgstr "Titik fokus"
+
+msgid "pixels of the original, applied at build — empty shows the full image"
+msgstr "piksel dari asli, diterapkan saat build — kosong menampilkan seluruh gambar"
+
+msgid "fractions from the top-left, 0 to 1 — kept in view when the image is trimmed to fit"
+msgstr "fraksi dari kiri-atas, 0 sampai 1 — tetap terlihat saat gambar dipangkas agar pas"
+
+msgid "Replace file"
+msgstr "Ganti berkas"
+
+msgid "Replace"
+msgstr "Ganti"
+
+msgid "the asset keeps its ID — every reference stays valid; the new file goes live on the next publish"
+msgstr "aset menjaga ID-nya — setiap referensi tetap valid; berkas baru tayang pada publikasi berikutnya"
+
+msgid "Choose from the library"
+msgstr "Pilih dari pustaka"
+
+msgid "Keep current"
+msgstr "Pertahankan saat ini"
+
+msgid "No cover"
+msgstr "Tanpa sampul"
+
+msgid "Add from the library"
+msgstr "Tambah dari pustaka"
+
+msgid "Every library image is already in this section."
+msgstr "Setiap gambar pustaka sudah ada di bagian ini."
+
+msgid "below the widest configured size"
+msgstr "di bawah ukuran terlebar yang dikonfigurasi"
+
+msgid "A visitor form; its items declare the inputs."
+msgstr "Formulir pengunjung; itemnya mendeklarasikan input."
+
+msgid "Submissions"
+msgstr "Pengiriman"
+
+msgid "Form"
+msgstr "Formulir"
+
+msgid "page/section — any form"
+msgstr "halaman/bagian — formulir apa pun"
+
+msgid "Newest first, 100 at a time. Deletion is definitive; retention prunes at startup."
+msgstr "Terbaru dulu, 100 per kali. Penghapusan bersifat definitif; retensi memangkas saat mulai."
+
+msgid "Delete submission"
+msgstr "Hapus pengiriman"
+
+msgid "No submissions in this window."
+msgstr "Tidak ada pengiriman di jendela ini."
+
+msgid "Search and social (optional)"
+msgstr "Pencarian dan sosial (opsional)"
+
+msgid "SEO title"
+msgstr "Judul SEO"
+
+msgid "overrides the page title for search and social; empty derives from the content"
+msgstr "menimpa judul halaman untuk pencarian dan sosial; kosong diturunkan dari konten"
+
+msgid "SEO description"
+msgstr "Deskripsi SEO"
+
+msgid "the snippet under the title; empty derives from the summary"
+msgstr "cuplikan di bawah judul; kosong diturunkan dari ringkasan"
+
+msgid "Ask search engines not to index this entry"
+msgstr "Minta mesin pencari untuk tidak mengindeks entri ini"
+
+msgid "Canonical URL"
+msgstr "URL kanonik"
+
+msgid "only when this content originally lives at another address"
+msgstr "hanya jika konten ini aslinya berada di alamat lain"
+
+msgid "Social image"
+msgstr "Gambar sosial"
+
+msgid "a media asset id; the published rendition becomes the card image"
+msgstr "id aset media; rendition yang dipublikasikan menjadi gambar kartu"
+
+msgid "title runs long for search results"
+msgstr "judul terlalu panjang untuk hasil pencarian"
+
+msgid "description is missing for search results"
+msgstr "deskripsi hilang untuk hasil pencarian"
+
+msgid "description length reads poorly in search results"
+msgstr "panjang deskripsi terbaca buruk di hasil pencarian"
+
+msgid "Search snippets read best with a title under 60 characters and a description between 50 and 160; advisory only"
+msgstr "Cuplikan pencarian terbaca baik dengan judul di bawah 60 karakter dan deskripsi antara 50 dan 160; hanya saran"
+
+msgid "External preview links"
+msgstr "Tautan pratinjau eksternal"
+
+msgid "Valid for (days)"
+msgstr "Berlaku selama (hari)"
+
+msgid "Create preview link"
+msgstr "Buat tautan pratinjau"
+
+msgid "Anyone with the link sees a draft banner; publication never changes."
+msgstr "Siapa pun dengan tautan melihat banner draf; publikasi tidak pernah berubah."
+
+msgid "Revoke"
+msgstr "Cabut"
+
+msgid "No active preview links."
+msgstr "Tidak ada tautan pratinjau aktif."
+
