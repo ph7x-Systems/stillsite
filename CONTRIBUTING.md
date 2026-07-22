@@ -25,6 +25,8 @@ seed content and translation fixtures.
    maintenance branches appear only when a released version first
    needs an isolated patch.
 2. Small increments, clear imperative commits (`Add page schema validation`).
+   Authorship lives in git metadata: commit messages carry no attribution
+   trailers (`Co-authored-by`, `Generated with/by`) — CI enforces this.
 3. Before opening a PR: lint, type checking and tests must pass locally.
 4. `main` is fully protected, **admins included**: no direct pushes, no
    force-pushes, no deletion. Every change lands via pull request with all

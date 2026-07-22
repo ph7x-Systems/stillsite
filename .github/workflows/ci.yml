@@ -18,6 +18,27 @@ env:
     apps/admin
 
 jobs:
+  commit-hygiene:
+    name: Commit hygiene
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - name: Commit messages carry no attribution trailers
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          bad=$(git log --format='commit %h%n%B' "$BASE".."$HEAD" \
+            | grep -iE 'co-authored-by:|generated (with|by)' || true)
+          if [ -n "$bad" ]; then
+            echo "Authorship lives in git metadata; commit messages must not carry attribution trailers (Co-authored-by, Generated with/by)."
+            echo "$bad"
+            exit 1
+          fi
+
   lint:
     name: Lint (ruff)
     runs-on: ubuntu-latest
