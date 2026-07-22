@@ -10,6 +10,13 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Theme cards from the manifest (#141): the Themes screen renders
+  description, author, license, website, screenshot and a
+  compatibility verdict entirely from each package's own metadata —
+  no theme code runs for the listing, and the compatibility shown is
+  the same version range the installer enforces. The reference theme
+  ships its screenshot (ADR-0049).
+
 - Themes screen (#141): the panel lists every theme the environment
   can activate — bundled and installed packages with their versions,
   discovered through the entry-point group without loading code — and

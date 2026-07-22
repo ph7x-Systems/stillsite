@@ -101,3 +101,20 @@ def test_themes_screen_is_admin_only(tmp_path: Path) -> None:
     with TestClient(_app(tmp_path, role=Role.PUBLISHER), base_url="https://testserver") as client:
         _sign_in(client)
         assert client.get("/themes").status_code == 403
+
+
+def test_theme_cards_render_from_the_manifest(tmp_path: Path) -> None:
+    with TestClient(_app(tmp_path), base_url="https://testserver") as client:
+        _sign_in(client)
+        page = client.get("/themes")
+        # Every card field comes from packaging metadata (ADR-0049).
+        assert "dark editorial design system" in page.text
+        assert "By pH7x Systems" in page.text
+        assert "License: Apache-2.0" in page.text
+        assert "Compatible with this installation" in page.text
+
+        shot = client.get("/themes/screenshot/ph7x-reference")
+        assert shot.status_code == 200
+        assert shot.headers["content-type"] == "image/png"
+        assert client.get("/themes/screenshot/default").status_code == 404
+        assert client.get("/themes/screenshot/no-such").status_code == 404

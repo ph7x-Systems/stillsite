@@ -1666,3 +1666,22 @@ msgstr "Les thèmes s’installent avec le gestionnaire de paquets de l’enviro
 
 msgid "Version"
 msgstr "Version"
+
+# Theme cards (ADR-0049)
+msgid "Screenshot of the %(name)s theme"
+msgstr "Capture du thème %(name)s"
+
+msgid "By %(author)s"
+msgstr "Par %(author)s"
+
+msgid "License: %(license)s"
+msgstr "Licence : %(license)s"
+
+msgid "Website"
+msgstr "Site web"
+
+msgid "Compatible with this installation"
+msgstr "Compatible avec cette installation"
+
+msgid "Not compatible with this installation"
+msgstr "Incompatible avec cette installation"

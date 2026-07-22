@@ -1666,3 +1666,22 @@ msgstr "Los temas se instalan con el gestor de paquetes del entorno y aparecen a
 
 msgid "Version"
 msgstr "Versión"
+
+# Theme cards (ADR-0049)
+msgid "Screenshot of the %(name)s theme"
+msgstr "Captura del tema %(name)s"
+
+msgid "By %(author)s"
+msgstr "Por %(author)s"
+
+msgid "License: %(license)s"
+msgstr "Licencia: %(license)s"
+
+msgid "Website"
+msgstr "Sitio web"
+
+msgid "Compatible with this installation"
+msgstr "Compatible con esta instalación"
+
+msgid "Not compatible with this installation"
+msgstr "No compatible con esta instalación"

@@ -16,7 +16,7 @@ from cms_build import build_site, create_theme
 from cms_build.themes import discovered_themes
 from cms_core import AdminSession, Role, User
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
-from fastapi.responses import RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse
 
 from cms_admin.audit import record as audit_record
 from cms_admin.auth import current_session, enforce_csrf
@@ -96,6 +96,23 @@ async def themes_view(
     # `activated` reflects only an allowlisted theme name, never raw input.
     known = {info.name for info in discovered_themes()}
     return _render(request, user, session, activated=activated if activated in known else "")
+
+
+@router.get("/themes/screenshot/{name}")
+async def theme_screenshot(
+    name: str,
+    user_session: tuple[User, AdminSession] = Depends(current_session),
+) -> FileResponse:
+    user, _session = user_session
+    _require_admin(user)
+    info = next((t for t in discovered_themes() if t.name == name), None)
+    if info is None or info.screenshot is None:
+        raise HTTPException(status_code=404, detail="no screenshot")
+    media_types = {".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp"}
+    media_type = media_types.get(info.screenshot.suffix.lower())
+    if media_type is None:
+        raise HTTPException(status_code=404, detail="no screenshot")
+    return FileResponse(info.screenshot, media_type=media_type)
 
 
 @router.post("/themes/activate")
