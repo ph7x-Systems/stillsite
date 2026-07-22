@@ -217,11 +217,13 @@ of truth. Dump and restore it with:
 
 ```bash
 cms dump -p . --out portable
-cms import portable -p .
+cms import portable -p . --replace
 ```
 
-Importing into storage that already contains content is blocked unless
-`--replace` is supplied; replacement is an upsert, not an implicit purge.
+`--replace` is what makes a restore into an existing project work: importing
+into storage that already holds content is blocked without it. Replacement is
+an upsert, not an implicit purge. Drop the flag only when the target project
+is empty.
 
 An existing blog can enter through a supported external export adapter. List
 the available format selectors with:
