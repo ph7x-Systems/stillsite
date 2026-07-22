@@ -3,7 +3,7 @@
 from datetime import UTC, datetime
 
 import pytest
-from cms_core import ContentStatus, import_wxr
+from cms_core import ContentStatus, import_wxr, inspect_wxr
 
 WXR = b"""<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0"
@@ -89,3 +89,78 @@ def test_wxr_collision_and_missing_date_fallback_are_deterministic() -> None:
     assert second.id == "first-flight-2"
     assert second.status is ContentStatus.REVIEW
     assert second.created_at == datetime(1970, 1, 1, tzinfo=UTC)
+
+
+MIXED = b"""<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0"
+ xmlns:content="http://purl.org/rss/1.0/modules/content/"
+ xmlns:dc="http://purl.org/dc/elements/1.1/"
+ xmlns:wp="http://wordpress.org/export/1.2/">
+<channel>
+  <item>
+    <title>Kept post</title>
+    <dc:creator><![CDATA[Editorial desk]]></dc:creator>
+    <content:encoded><![CDATA[<p><img src="https://example.test/b.png"/>
+      <IMG SRC='https://example.test/a.png'></p>]]></content:encoded>
+    <wp:post_id>1</wp:post_id>
+    <wp:post_type>post</wp:post_type>
+    <category domain="category" nicename="mission-log">Mission log</category>
+    <category domain="post_tag" nicename="test-flight">Test flight</category>
+    <wp:comment><wp:comment_id>11</wp:comment_id></wp:comment>
+    <wp:comment><wp:comment_id>12</wp:comment_id></wp:comment>
+  </item>
+  <item>
+    <title>Old page</title>
+    <wp:post_id>2</wp:post_id>
+    <wp:post_type>page</wp:post_type>
+  </item>
+  <item>
+    <title>Rocket photo</title>
+    <wp:post_id>3</wp:post_id>
+    <wp:post_type>attachment</wp:post_type>
+    <wp:attachment_url>https://example.test/rocket.jpg</wp:attachment_url>
+  </item>
+  <item>
+    <title>Menu entry</title>
+    <wp:post_id>4</wp:post_id>
+    <wp:post_type>nav_menu_item</wp:post_type>
+  </item>
+  <item>
+    <title></title>
+    <wp:post_id>5</wp:post_id>
+    <wp:post_type>post</wp:post_type>
+  </item>
+</channel>
+</rss>"""
+
+
+def test_inspect_accounts_for_every_item() -> None:
+    report = inspect_wxr(MIXED)
+
+    assert report.posts == 1
+    assert report.total_items == 5
+    assert report.fidelity == 20.0
+    assert report.authors == ("Editorial desk",)
+    assert report.categories == ("mission-log",)
+    assert report.tags == ("test-flight",)
+    assert report.media_urls == (
+        "https://example.test/a.png",
+        "https://example.test/b.png",
+        "https://example.test/rocket.jpg",
+    )
+    assert report.comments == 2
+    # Nothing is silently dropped: one note per non-imported item.
+    notes = {(note.kind, note.title): note.reason for note in report.left_behind}
+    assert notes[("page", "Old page")].startswith("pages are not migrated")
+    assert notes[("attachment", "Rocket photo")] == "media files are not fetched by the importer"
+    assert notes[("nav_menu_item", "Menu entry")] == "navigation belongs to the target site"
+    assert notes[("post", "(untitled)")] == "post has no title"
+    # The report and the importer agree on what gets in.
+    assert len(import_wxr(MIXED).articles) == report.posts
+
+
+def test_inspect_of_an_empty_channel_reports_full_fidelity() -> None:
+    report = inspect_wxr(b"<rss><channel></channel></rss>")
+    assert report.total_items == 0
+    assert report.fidelity == 100.0
+    assert report.left_behind == ()

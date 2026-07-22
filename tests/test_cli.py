@@ -274,11 +274,96 @@ def test_import_wxr_into_a_fresh_project(tmp_path: Path) -> None:
 
     result = runner.invoke(app, ["import", str(export), "--format", "wxr", "-p", str(project)])
     assert result.exit_code == 0, result.output
-    assert "imported 1 WXR article(s)" in result.output
+    assert "imported 1 new WXR article(s)" in result.output
     with load_project(project).open_storage() as storage:
         article = storage.load_article("imported-launch")
     assert article is not None
     assert article.source.body_markdown == "From another blog."
+
+
+def test_import_wxr_dry_run_reports_without_a_project(tmp_path: Path) -> None:
+    export = tmp_path / "blog.xml"
+    export.write_text(
+        """<?xml version="1.0"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:wp="http://wordpress.org/export/1.2/">
+  <channel>
+  <item>
+    <title>Kept post</title>
+    <dc:creator><![CDATA[desk]]></dc:creator>
+    <content:encoded><![CDATA[<p><img src="https://example.test/a.png"/></p>]]></content:encoded>
+    <wp:post_id>1</wp:post_id><wp:post_type>post</wp:post_type>
+    <wp:comment><wp:comment_id>9</wp:comment_id></wp:comment>
+  </item>
+  <item>
+    <title>Old page</title>
+    <wp:post_id>2</wp:post_id><wp:post_type>page</wp:post_type>
+  </item>
+  </channel>
+</rss>""",
+        encoding="utf-8",
+    )
+
+    # No project directory exists: the dry run must not need one.
+    result = runner.invoke(app, ["import", str(export), "--format", "wxr", "--dry-run"])
+    assert result.exit_code == 0, result.output
+    assert "1 importable post(s) of 2 item(s)" in result.output
+    assert "fidelity 50%" in result.output
+    assert "authors: desk" in result.output
+    assert "referenced media: 1 url(s)" in result.output
+    assert "comments: 1 (not migrated)" in result.output
+    assert 'page "Old page": pages are not migrated' in result.output
+
+
+def test_import_wxr_rerun_never_duplicates(tmp_path: Path) -> None:
+    project = make_project(tmp_path)
+    template = """<?xml version="1.0"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:wp="http://wordpress.org/export/1.2/">
+  <channel><item>
+    <title>{title}</title>
+    <content:encoded><![CDATA[<p>{body}</p>]]></content:encoded>
+    <wp:post_id>7</wp:post_id><wp:post_name>{slug}</wp:post_name>
+    <wp:status>draft</wp:status><wp:post_type>post</wp:post_type>
+  </item></channel>
+</rss>"""
+    export = tmp_path / "blog.xml"
+    export.write_text(
+        template.format(title="Launch", body="First take.", slug="launch"), encoding="utf-8"
+    )
+    first = runner.invoke(app, ["import", str(export), "--format", "wxr", "-p", str(project)])
+    assert first.exit_code == 0, first.output
+
+    # The source post was renamed upstream: same id, new slug and body.
+    export.write_text(
+        template.format(title="Launch day", body="Second take.", slug="launch-day"),
+        encoding="utf-8",
+    )
+    rerun = runner.invoke(
+        app, ["import", str(export), "--format", "wxr", "-p", str(project), "--replace"]
+    )
+    assert rerun.exit_code == 0, rerun.output
+    assert "imported 0 new" in rerun.output
+    assert "left 1 already-migrated untouched" in rerun.output
+    with load_project(project).open_storage() as storage:
+        assert storage.list_article_ids() == ["launch"]
+        untouched = storage.load_article("launch")
+    assert untouched is not None
+    assert untouched.source.title == "Launch"
+
+    updated = runner.invoke(
+        app,
+        ["import", str(export), "--format", "wxr", "-p", str(project), "--replace", "--update"],
+    )
+    assert updated.exit_code == 0, updated.output
+    assert "updated 1" in updated.output
+    with load_project(project).open_storage() as storage:
+        assert storage.list_article_ids() == ["launch"]  # entity id survives the rename
+        replaced = storage.load_article("launch")
+    assert replaced is not None
+    assert replaced.source.title == "Launch day"
+    assert replaced.source.body_markdown == "Second take."
 
 
 def test_doctor_passes_on_a_healthy_project(tmp_path: Path) -> None:

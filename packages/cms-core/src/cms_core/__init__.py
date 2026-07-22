@@ -11,7 +11,7 @@ from cms_core.extensions import (
     ExtensionError,
     load_extensions,
 )
-from cms_core.foreign import WxrImport, import_wxr
+from cms_core.foreign import WxrImport, WxrNote, WxrReport, import_wxr, inspect_wxr
 from cms_core.forms import FormSubmission
 from cms_core.language_packs import (
     LanguagePack,
@@ -77,9 +77,12 @@ __all__ = [
     "TranslationState",
     "User",
     "WxrImport",
+    "WxrNote",
+    "WxrReport",
     "create_storage",
     "import_content_json",
     "import_wxr",
+    "inspect_wxr",
     "language_pack",
     "load_extensions",
     "new_article",

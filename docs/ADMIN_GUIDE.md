@@ -234,10 +234,30 @@ cms import --help
 
 The WXR 1.2 adapter reads the local file only, rejects DTD/entity declarations and
 converts posts and common HTML structure to Sardine articles and Markdown.
-It preserves status, dates, author, first category and tags. Pages,
-attachments, menu items and comments are reported as skipped because their
-mapping needs project-specific page-section and media decisions. Remote
-image references are retained but never downloaded.
+It preserves status, dates, author, first category and tags.
+
+Migrating a living blog is a flow, not a single command:
+
+```bash
+cms import blog.xml --format wxr --dry-run          # inspect before writing
+cms import blog.xml --format wxr -p .               # first import
+cms import blog.xml --format wxr -p . --replace     # re-run with a newer export
+```
+
+`--dry-run` reports what the export contains without writing anything (it
+does not even need a project): importable posts, the author, category and
+tag inventories, referenced media, the comment count, a note per item left
+behind with its reason, and a fidelity percentage — the share of items the
+migration imports. Nothing is silently dropped: pages, attachments, menu
+items and comments are counted and listed because their mapping needs
+project-specific page-section and media decisions. Remote image references
+are retained but never downloaded.
+
+Re-running is safe: every imported article keeps its source id, and a
+re-import matches on it — a matched post is never duplicated, not even when
+its slug changed upstream. Matched posts are left untouched (local edits
+win) unless `--update` is passed, which overwrites them from the source
+while keeping the entity id, so links and references survive.
 
 The validation report (shared with the dashboard) always shows the whole
 story, not only failures: a gate callout (open/blocked) with the scope that

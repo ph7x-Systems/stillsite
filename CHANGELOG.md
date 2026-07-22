@@ -10,6 +10,16 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- WXR migration flow, first part (#140): `cms import --format wxr
+  --dry-run` reports what an export contains before anything is written
+  — importable posts, author/category/tag inventories, referenced
+  media, comment count, a note per left-behind item with its reason and
+  an explicit fidelity percentage; nothing is silently dropped. Imports
+  are idempotent by source id: re-running with a newer export never
+  duplicates a post (even after an upstream slug change), leaves
+  already-migrated posts untouched by default and overwrites them only
+  with `--update`, keeping the entity id (ADR-0043).
+
 - **Docker quickstart** ([#192](https://github.com/ph7x-Systems/sardine-cms/issues/192)): `docker compose up` brings up the admin panel with a seeded example site — no Python environment needed. A random admin password is generated on first run and printed in the container log. Site content and the SQLite database persist in named volumes.
 - Italian language pack (`it`): site labels, month names and date
   pattern, following the LANGUAGE_PACK_GUIDE format. Ships without an

@@ -35,6 +35,45 @@ class WxrImport:
     skipped: int
 
 
+@dataclass(frozen=True)
+class WxrNote:
+    """One item the migration leaves behind, and why."""
+
+    kind: str
+    title: str
+    reason: str
+
+
+@dataclass(frozen=True)
+class WxrReport:
+    """What a WXR 1.2 export contains, computed without writing anything.
+
+    Every channel item is either importable or listed in ``left_behind``
+    with a reason — nothing is silently dropped. Comments are not channel
+    items; they are counted separately and do not enter the fidelity
+    percentage (ADR-0043).
+    """
+
+    posts: int
+    authors: tuple[str, ...]
+    categories: tuple[str, ...]
+    tags: tuple[str, ...]
+    media_urls: tuple[str, ...]
+    comments: int
+    left_behind: tuple[WxrNote, ...]
+
+    @property
+    def total_items(self) -> int:
+        return self.posts + len(self.left_behind)
+
+    @property
+    def fidelity(self) -> float:
+        """Percentage of channel items the migration imports."""
+        if not self.total_items:
+            return 100.0
+        return self.posts * 100.0 / self.total_items
+
+
 class _MarkdownParser(HTMLParser):
     """Conservative dependency-free HTML-to-Markdown conversion."""
 
@@ -139,6 +178,78 @@ def _status(value: str) -> ContentStatus:
     }.get(value, ContentStatus.DRAFT)
 
 
+def _document(payload: bytes | str) -> Any:
+    raw = payload.encode() if isinstance(payload, str) else payload
+    upper = raw.upper()
+    if b"<!DOCTYPE" in upper or b"<!ENTITY" in upper:
+        raise ValueError("WXR must not contain DTD or entity declarations")
+    try:
+        return ET.fromstring(raw)
+    except DefusedXmlException as error:
+        raise ValueError("WXR must not contain DTD or entity declarations") from error
+    except ET.ParseError as error:
+        raise ValueError(f"invalid WXR XML: {error}") from error
+
+
+_LEFT_BEHIND_REASONS = {
+    "page": "pages are not migrated; rebuild them as page sections",
+    "attachment": "media files are not fetched by the importer",
+    "nav_menu_item": "navigation belongs to the target site",
+}
+
+
+def inspect_wxr(payload: bytes | str) -> WxrReport:
+    """Report what a WXR 1.2 document contains without writing anything."""
+
+    root = _document(payload)
+    posts = 0
+    authors: set[str] = set()
+    categories: set[str] = set()
+    tags: set[str] = set()
+    media: set[str] = set()
+    comments = 0
+    left_behind: list[WxrNote] = []
+    for item in root.findall("./channel/item"):
+        comments += len(item.findall(f"{{{WP_NS}}}comment"))
+        kind = (item.findtext(f"{{{WP_NS}}}post_type") or "post").strip()
+        title = (item.findtext("title") or "").strip() or "(untitled)"
+        if kind == "attachment":
+            url = (item.findtext(f"{{{WP_NS}}}attachment_url") or "").strip()
+            if url:
+                media.add(url)
+        if kind != "post":
+            reason = _LEFT_BEHIND_REASONS.get(kind, f"unsupported item type {kind!r}")
+            left_behind.append(WxrNote(kind=kind, title=title, reason=reason))
+            continue
+        if title == "(untitled)":
+            left_behind.append(WxrNote(kind="post", title=title, reason="post has no title"))
+            continue
+        posts += 1
+        author = (item.findtext(f"{{{DC_NS}}}creator") or "").strip()
+        if author:
+            authors.add(author)
+        for term in item.findall("category"):
+            value = _slug(term.get("nicename") or (term.text or ""), "")
+            if not value:
+                continue
+            if term.get("domain") == "category":
+                categories.add(value)
+            elif term.get("domain") == "post_tag":
+                tags.add(value)
+        body = item.findtext(f"{{{CONTENT_NS}}}encoded") or ""
+        for source in re.findall(r"<img[^>]*\ssrc=[\"']([^\"']+)", body, flags=re.IGNORECASE):
+            media.add(source)
+    return WxrReport(
+        posts=posts,
+        authors=tuple(sorted(authors)),
+        categories=tuple(sorted(categories)),
+        tags=tuple(sorted(tags)),
+        media_urls=tuple(sorted(media)),
+        comments=comments,
+        left_behind=tuple(left_behind),
+    )
+
+
 def import_wxr(payload: bytes | str) -> WxrImport:
     """Convert posts from a WXR 1.2 document into articles.
 
@@ -147,16 +258,7 @@ def import_wxr(payload: bytes | str) -> WxrImport:
     media semantics would make the migration look more complete than it is.
     """
 
-    raw = payload.encode() if isinstance(payload, str) else payload
-    upper = raw.upper()
-    if b"<!DOCTYPE" in upper or b"<!ENTITY" in upper:
-        raise ValueError("WXR must not contain DTD or entity declarations")
-    try:
-        root = ET.fromstring(raw)
-    except DefusedXmlException as error:
-        raise ValueError("WXR must not contain DTD or entity declarations") from error
-    except ET.ParseError as error:
-        raise ValueError(f"invalid WXR XML: {error}") from error
+    root = _document(payload)
 
     articles: list[Article] = []
     used_ids: set[str] = set()

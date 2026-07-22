@@ -4,7 +4,7 @@ import http.server
 from datetime import UTC, datetime
 from functools import partial
 from pathlib import Path
-from typing import Annotated, ClassVar
+from typing import Annotated, Any, ClassVar
 
 import typer
 from cms_build import build_site, create_target, create_theme
@@ -427,6 +427,22 @@ def dump(
     typer.echo(f"dumped {len(content.articles)} article(s) into {destination}")
 
 
+def _print_wxr_report(report: Any) -> None:
+    typer.echo(
+        f"WXR 1.2 export: {report.posts} importable post(s) of "
+        f"{report.total_items} item(s) — fidelity {report.fidelity:.0f}%"
+    )
+    typer.echo(f"  authors: {', '.join(report.authors) or '(none)'}")
+    typer.echo(f"  categories: {', '.join(report.categories) or '(none)'}")
+    typer.echo(f"  tags: {', '.join(report.tags) or '(none)'}")
+    typer.echo(f"  referenced media: {len(report.media_urls)} url(s)")
+    typer.echo(f"  comments: {report.comments} (not migrated)")
+    if report.left_behind:
+        typer.echo(f"  left behind: {len(report.left_behind)} item(s)")
+        for note in report.left_behind:
+            typer.echo(f'    - {note.kind} "{note.title}": {note.reason}')
+
+
 @app.command(name="import")
 def import_command(
     source: Annotated[Path, typer.Argument(help="Portable directory or foreign export file")],
@@ -441,26 +457,45 @@ def import_command(
     replace: Annotated[
         bool, typer.Option("--replace", help="Import even if the storage already has content")
     ] = False,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Report what the export contains without writing (wxr)"),
+    ] = False,
+    update: Annotated[
+        bool,
+        typer.Option(
+            "--update",
+            help="Overwrite entries already migrated from this source (wxr; the entity id is kept)",
+        ),
+    ] = False,
 ) -> None:
     """Import a portable dump or a supported foreign blog export."""
-    from cms_core import import_content_json, import_wxr
+    from cms_core import import_content_json, import_wxr, inspect_wxr
 
-    project = _project(project_dir)
     if source_format not in {"portable", "wxr"}:
         typer.echo(
             f"error: unknown import format {source_format!r} (use portable or wxr)",
             err=True,
         )
         raise typer.Exit(code=2)
+    if (dry_run or update) and source_format != "wxr":
+        typer.echo("error: --dry-run and --update apply to --format wxr only", err=True)
+        raise typer.Exit(code=2)
     if source_format == "wxr":
         if not source.is_file():
             typer.echo(f"error: {source} not found", err=True)
             raise typer.Exit(code=2)
+        payload = source.read_bytes()
         try:
-            imported = import_wxr(source.read_bytes())
+            report = inspect_wxr(payload)
+            imported = import_wxr(payload)
         except ValueError as error:
             typer.echo(f"error: {error}", err=True)
             raise typer.Exit(code=2) from error
+        if dry_run:
+            _print_wxr_report(report)
+            return
+        project = _project(project_dir)
         with project.open_storage() as storage:
             if storage.has_content() and not replace:
                 typer.echo(
@@ -468,13 +503,30 @@ def import_command(
                     err=True,
                 )
                 raise typer.Exit(code=3)
+            known = {
+                article.fields["wxr_post_id"]: article.id
+                for article in storage.load_all_articles()
+                if article.fields.get("wxr_post_id")
+            }
+            new = matched = updated = 0
             for article in imported.articles:
-                storage.save_article(article)
+                existing_id = known.get(article.fields.get("wxr_post_id", ""))
+                if existing_id is None:
+                    storage.save_article(article)
+                    new += 1
+                elif update:
+                    article.id = existing_id
+                    storage.save_article(article)
+                    updated += 1
+                else:
+                    matched += 1
         typer.echo(
-            f"imported {len(imported.articles)} WXR article(s); "
+            f"imported {new} new WXR article(s); "
+            f"updated {updated}, left {matched} already-migrated untouched; "
             f"skipped {imported.skipped} unsupported item(s)"
         )
         return
+    project = _project(project_dir)
 
     payload_path = source / "content.json"
     if not payload_path.is_file():
