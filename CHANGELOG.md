@@ -10,6 +10,13 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- WXR migration flow, third part (#140): `--fetch-media` downloads the
+  images imported posts reference into the media library and rewrites
+  bodies to `/media/…` paths — explicit opt-in, public hosts only,
+  size/time caps with three attempts, duplicate bytes reuse the
+  existing asset, and every URL is reported as fetched, reused or
+  failed with its reason (ADR-0045).
+
 - Indonesian language pack (`id`): site labels, month names, date
   pattern and a full admin catalog so the panel itself speaks Bahasa
   Indonesia. Seventh bundled language.

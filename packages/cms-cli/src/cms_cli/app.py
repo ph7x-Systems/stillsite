@@ -468,6 +468,41 @@ def _warn_unmatched(mapping: Any, report: Any) -> None:
             typer.echo(f'warning: {kind} "{missing}" matched nothing in this export')
 
 
+def _fetch_wxr_media(project: Project, storage: Any) -> None:
+    """Fetch referenced images into the library and rewrite bodies (ADR-0045)."""
+    from cms_core.media_fetch import default_fetcher, fetch_media_for_articles
+
+    migrated = [
+        article for article in storage.load_all_articles() if article.fields.get("wxr_post_id")
+    ]
+    result = fetch_media_for_articles(
+        migrated,
+        storage.load_all_media_assets(),
+        source_language=project.site.source_language,
+        fetch=default_fetcher,
+    )
+    media_root = project.directory / "media"
+    for relative, data in sorted(result.files.items()):
+        destination = media_root / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(data)
+    for asset in result.assets:
+        storage.save_media_asset(asset)
+    for article in result.articles:
+        storage.save_article(article)
+    for outcome in result.outcomes:
+        if outcome.error is not None:
+            typer.echo(f"media: failed {outcome.url}: {outcome.error}")
+        elif outcome.reused:
+            typer.echo(f"media: reused {outcome.asset_id} for {outcome.url}")
+        else:
+            typer.echo(f"media: fetched {outcome.url} -> {outcome.asset_id}")
+    fetched = sum(1 for o in result.outcomes if o.ok and not o.reused)
+    reused = sum(1 for o in result.outcomes if o.reused)
+    failed = sum(1 for o in result.outcomes if not o.ok)
+    typer.echo(f"media: {fetched} fetched, {reused} reused, {failed} failed")
+
+
 def _print_wxr_report(report: Any) -> None:
     typer.echo(
         f"WXR 1.2 export: {report.posts} importable post(s) of "
@@ -509,6 +544,13 @@ def import_command(
             help="Overwrite entries already migrated from this source (wxr; the entity id is kept)",
         ),
     ] = False,
+    fetch_media: Annotated[
+        bool,
+        typer.Option(
+            "--fetch-media",
+            help="Download the images imported posts reference into the media library (wxr)",
+        ),
+    ] = False,
     map_author: Annotated[
         list[str] | None,
         typer.Option(
@@ -540,9 +582,15 @@ def import_command(
             err=True,
         )
         raise typer.Exit(code=2)
-    wxr_only = dry_run or update or map_author or map_category or map_tag
+    wxr_only = dry_run or update or fetch_media or map_author or map_category or map_tag
     if wxr_only and source_format != "wxr":
-        typer.echo("error: --dry-run, --update and --map-* apply to --format wxr only", err=True)
+        typer.echo(
+            "error: --dry-run, --update, --fetch-media and --map-* apply to --format wxr only",
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    if dry_run and fetch_media:
+        typer.echo("error: --fetch-media writes; it cannot combine with --dry-run", err=True)
         raise typer.Exit(code=2)
     if source_format == "wxr":
         if not source.is_file():
@@ -586,6 +634,8 @@ def import_command(
                     updated += 1
                 else:
                     matched += 1
+            if fetch_media:
+                _fetch_wxr_media(project, storage)
         typer.echo(
             f"imported {new} new WXR article(s); "
             f"updated {updated}, left {matched} already-migrated untouched; "
