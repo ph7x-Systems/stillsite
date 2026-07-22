@@ -10,6 +10,13 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- WXR migration flow, fourth part (#140): imported posts keep their
+  source URLs alive — each post's original permalink path is recorded
+  in the project's `[redirects]` table when it differs from the new
+  address, deterministically, without chains or collisions, and
+  idempotently across re-runs; an upstream rename with `--update`
+  flattens every old address to the newest one (ADR-0046).
+
 - WXR migration flow, third part (#140): `--fetch-media` downloads the
   images imported posts reference into the media library and rewrites
   bodies to `/media/…` paths — explicit opt-in, public hosts only,

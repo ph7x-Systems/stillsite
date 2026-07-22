@@ -15,6 +15,7 @@ from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from html.parser import HTMLParser
 from typing import Any
+from urllib.parse import urlsplit
 
 from defusedxml import ElementTree as ET
 from defusedxml.common import DefusedXmlException
@@ -342,6 +343,11 @@ def import_wxr(payload: bytes | str, *, mapping: WxrMapping | None = None) -> Wx
         creator = (item.findtext(f"{{{DC_NS}}}creator") or "").strip()
         article.author = mapping.author(creator) or None
         article.fields = {"wxr_post_id": foreign_id}
+        link = (item.findtext("link") or "").strip()
+        if link:
+            source_path = urlsplit(link).path
+            if source_path and source_path != "/":
+                article.fields["wxr_source_path"] = source_path
         if foreign_status == "future":
             article.publish_at = created_at
         articles.append(article)

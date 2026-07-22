@@ -143,7 +143,7 @@ References point at the ADR, issue or document that owns the detail.
 | Webhooks (on publish) | ✅ | ADR-0036 |
 | Health check (`cms doctor`) | ✅ | — |
 | Theme/extension experience without editing files | 🔜 | #141 |
-| WXR migration flow | 🟡 shipped: inspection/dry-run with fidelity report, idempotent re-import by source id, `--update` keeping entity ids, author/taxonomy mappings, media fetch with rewrite · pending: redirects for changed URLs, admin flow | #140, ADR-0043, ADR-0044, ADR-0045 |
+| WXR migration flow | 🟡 shipped: inspection/dry-run with fidelity report, idempotent re-import by source id, `--update` keeping entity ids, author/taxonomy mappings, media fetch with rewrite, automatic redirects for source URLs · pending: admin flow | #140, ADR-0043, ADR-0044, ADR-0045, ADR-0046 |
 | Backups, scheduled builds | 🧭 | — |
 | Incremental builds, ecosystem catalog | 🔜 P3 | — |
 

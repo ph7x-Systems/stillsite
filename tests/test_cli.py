@@ -495,6 +495,49 @@ def test_import_wxr_fetch_media_stores_and_rewrites(
     assert conflict.exit_code == 2
 
 
+def test_import_wxr_records_redirects_for_changed_urls(tmp_path: Path) -> None:
+    project = make_project(tmp_path)
+    template = """<?xml version="1.0"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:wp="http://wordpress.org/export/1.2/">
+  <channel><item>
+    <title>Launch</title>
+    <link>https://old-site.test/2025/06/{slug}/</link>
+    <content:encoded><![CDATA[<p>Body.</p>]]></content:encoded>
+    <wp:post_id>7</wp:post_id><wp:post_name>{slug}</wp:post_name>
+    <wp:status>publish</wp:status><wp:post_type>post</wp:post_type>
+  </item></channel>
+</rss>"""
+    export = tmp_path / "blog.xml"
+    export.write_text(template.format(slug="launch"), encoding="utf-8")
+
+    first = runner.invoke(app, ["import", str(export), "--format", "wxr", "-p", str(project)])
+    assert first.exit_code == 0, first.output
+    assert "redirects: 1 source path(s) recorded" in first.output
+    config = (project / "sardine.toml").read_text(encoding="utf-8")
+    assert '"/2025/06/launch/" = "/blog/launch/"' in config
+
+    # Idempotent: the same import leaves the file byte-identical.
+    rerun = runner.invoke(
+        app, ["import", str(export), "--format", "wxr", "-p", str(project), "--replace"]
+    )
+    assert rerun.exit_code == 0, rerun.output
+    assert "map already covers" in rerun.output
+    assert (project / "sardine.toml").read_text(encoding="utf-8") == config
+
+    # Upstream rename + --update: the chain flattens to the newest address.
+    export.write_text(template.format(slug="launch-day"), encoding="utf-8")
+    renamed = runner.invoke(
+        app,
+        ["import", str(export), "--format", "wxr", "-p", str(project), "--replace", "--update"],
+    )
+    assert renamed.exit_code == 0, renamed.output
+    updated = (project / "sardine.toml").read_text(encoding="utf-8")
+    assert '"/2025/06/launch-day/" = "/blog/launch-day/"' in updated
+    assert '"/2025/06/launch/" = "/blog/launch-day/"' in updated  # flattened, not chained
+    assert '"/blog/launch-day/" =' not in updated  # a live address is never a source
+
+
 def test_doctor_passes_on_a_healthy_project(tmp_path: Path) -> None:
     project = make_project(tmp_path)
     runner.invoke(app, ["seed", "-p", str(project)])

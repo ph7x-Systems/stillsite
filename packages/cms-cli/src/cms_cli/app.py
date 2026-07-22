@@ -468,6 +468,45 @@ def _warn_unmatched(mapping: Any, report: Any) -> None:
             typer.echo(f'warning: {kind} "{missing}" matched nothing in this export')
 
 
+def _record_wxr_redirects(
+    project: Project, articles: list[Any], renamed: list[tuple[Any, Any]]
+) -> None:
+    """Keep source URLs alive: record redirects from every imported
+    post's original path to its address on this site (ADR-0046).
+
+    Deterministic (articles processed in sorted order, table written
+    sorted), collision-free (an address that is a live destination
+    never becomes a redirect source) and idempotent (a re-run merges
+    the same changes into the same map).
+    """
+    from cms_build import urls
+    from cms_build.redirects import merge_redirects, write_redirects
+
+    config = project.site
+    changes: dict[str, str] = {}
+    for prior, current in sorted(renamed, key=lambda pair: pair[1].id):
+        old_path = urls.article_path(config, prior, config.source_language)
+        new_path = urls.article_path(config, current, config.source_language)
+        if old_path != new_path:
+            changes[old_path] = new_path
+    for article in sorted(articles, key=lambda a: a.id):
+        source_path = article.fields.get("wxr_source_path", "")
+        if not source_path:
+            continue
+        target = urls.article_path(config, article, config.source_language)
+        if source_path.rstrip("/") != target.rstrip("/"):
+            changes[source_path] = target
+    if not changes:
+        return
+    existing = dict(config.redirects)
+    merged = merge_redirects(existing, changes)
+    if merged == existing:
+        typer.echo(f"redirects: map already covers {len(changes)} source path(s)")
+        return
+    write_redirects(project.directory / PROJECT_FILE, merged)
+    typer.echo(f"redirects: {len(changes)} source path(s) recorded in [redirects]")
+
+
 def _fetch_wxr_media(project: Project, storage: Any) -> None:
     """Fetch referenced images into the library and rewrite bodies (ADR-0045)."""
     from cms_core.media_fetch import default_fetcher, fetch_media_for_articles
@@ -623,19 +662,30 @@ def import_command(
                 if article.fields.get("wxr_post_id")
             }
             new = matched = updated = 0
+            landed: list[Any] = []
+            renamed: list[tuple[Any, Any]] = []
             for article in imported.articles:
                 existing_id = known.get(article.fields.get("wxr_post_id", ""))
                 if existing_id is None:
                     storage.save_article(article)
+                    landed.append(article)
                     new += 1
                 elif update:
+                    prior = storage.load_article(existing_id)
                     article.id = existing_id
                     storage.save_article(article)
+                    landed.append(article)
+                    if prior is not None:
+                        renamed.append((prior, article))
                     updated += 1
                 else:
+                    kept = storage.load_article(existing_id)
+                    if kept is not None:
+                        landed.append(kept)
                     matched += 1
             if fetch_media:
                 _fetch_wxr_media(project, storage)
+        _record_wxr_redirects(project, landed, renamed)
         typer.echo(
             f"imported {new} new WXR article(s); "
             f"updated {updated}, left {matched} already-migrated untouched; "

@@ -268,6 +268,14 @@ a previous run stays valid across incremental re-runs — and `--dry-run`
 with mappings previews the post-mapping inventories before anything is
 written.
 
+Source URLs stay alive automatically: each imported post keeps its
+original permalink path, and when it differs from the post's address on
+this site the import records it in the project's `[redirects]` table —
+the same map the panel's slug-change flow writes and the builder
+consumes. The map is deterministic, never chains (an upstream rename
+followed by `--update` flattens every old address to the newest one),
+never shadows a live address, and a re-run leaves it untouched.
+
 `--fetch-media` downloads the images the imported posts' bodies reference,
 stores them in the media library (collection `imported`, alt text from the
 source image's own alt attribute) and rewrites the body references to
