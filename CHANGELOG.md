@@ -8,6 +8,11 @@ features with their PRs, breaking changes and migrations — live in
 
 ## Unreleased
 
+## 0.6.0 — 2026-07-23
+
+The migration release: the WXR flow (#140) is complete end to end,
+from the CLI to the panel, on one shared pipeline.
+
 ### Added
 
 - WXR migration flow, final part (#140): the Migration screen brings
