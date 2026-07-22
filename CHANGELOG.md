@@ -8,14 +8,17 @@ features with their PRs, breaking changes and migrations — live in
 
 ## Unreleased
 
-## 0.4.0 — 2026-07-22
-
 ### Added
 
 - Italian language pack (`it`): site labels, month names and date
   pattern, following the LANGUAGE_PACK_GUIDE format. Ships without an
   admin catalog — the panel stays English for Italian until one is
   added.
+
+## 0.4.0 — 2026-07-22
+
+### Added
+
 - `cms demo`: from nothing to a browsable five-language site in one
   command — scaffold, seed, build and serve, with printed next steps;
   the directory persists for exploring afterwards.
