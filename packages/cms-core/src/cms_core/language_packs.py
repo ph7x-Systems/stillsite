@@ -2,7 +2,7 @@
 
 A pack carries the locale's identity (tag), its text direction, the
 site-facing UI labels, deterministic date formatting and optionally an
-admin catalog. Every language is a pack — the bundled five
+admin catalog. Every language is a pack — the bundled six
 included (ADR-0034 amendment): their labels, month names, date
 patterns and admin catalogs live here and nowhere else.
 """
@@ -71,10 +71,11 @@ def registered_language_packs() -> tuple[LanguagePack, ...]:
     return tuple(_PACKS[tag] for tag in sorted(_PACKS))
 
 
-# The bundled five, as full packs (ADR-0034 amendment: no privileged
+# The bundled six, as full packs (ADR-0034 amendment: no privileged
 # languages) — every label, month name, date pattern and admin catalog
 # lives here, nowhere else. English carries no catalog: the panel's
-# msgids are the English source text itself.
+# msgids are the English source text itself. Italian ships without an
+# admin catalog; the panel stays English for it until one is added.
 register_language_pack(
     LanguagePack(
         tag="en",
@@ -307,5 +308,51 @@ register_language_pack(
             "Dezember",
         ),
         date_pattern="{day}. {month} {year}",
+    )
+)
+register_language_pack(
+    LanguagePack(
+        tag="it",
+        direction="ltr",
+        native_name="Italiano",
+        site_labels={
+            "blog": "Blog",
+            "search": "Cerca",
+            "admin": "Admin",
+            "comments": "Partecipa alla discussione",
+            "view-cards": "Schede",
+            "view-list": "Lista",
+            "back": "Torna al blog",
+            "blog-title": "Blog",
+            "blog-eyebrow": "Scritti",
+            "min-read": "min di lettura",
+            "not-found": "Pagina non trovata",
+            "error-unauthorized": "Accesso richiesto",
+            "error-forbidden": "Accesso negato",
+            "error-server": "Si è verificato un errore",
+            "form-received": "Messaggio ricevuto",
+            "form-thanks": "Grazie — il tuo messaggio è stato inviato.",
+            "form-error": "Non è stato possibile inviare il modulo",
+            "form-field-required": "Il campo “{label}” è obbligatorio.",
+            "form-field-email": "“{label}” deve essere un indirizzo e-mail valido.",
+            "form-back": "Torna alla pagina",
+            "form-rate-limited": "Troppi invii — riprova tra un momento.",
+            "preview-banner": "Anteprima bozza — non pubblicato",
+        },
+        month_names=(
+            "gennaio",
+            "febbraio",
+            "marzo",
+            "aprile",
+            "maggio",
+            "giugno",
+            "luglio",
+            "agosto",
+            "settembre",
+            "ottobre",
+            "novembre",
+            "dicembre",
+        ),
+        date_pattern="{day} {month} {year}",
     )
 )

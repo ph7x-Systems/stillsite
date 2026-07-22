@@ -36,7 +36,7 @@ and **[walk through its read-only admin](https://sardine.ph7x.com/admin/)**.
 
 ## Why Sardine?
 
-- **Translations that cannot silently rot.** Five languages ship
+- **Translations that cannot silently rot.** Six languages ship
   bundled; editing a source marks its translations outdated, and the
   publish gate reports every parity gap before anything goes live.
 - **SEO generated, not hand-maintained.** Canonical, hreflang, Open
@@ -61,7 +61,7 @@ and **[walk through its read-only admin](https://sardine.ph7x.com/admin/)**.
 
 ## What it is
 
-A static-first, multilingual content and publishing engine (configurable source language; EN, PT-PT, ES, FR and DE bundled as language packs — any pack can join), built on the contracts proven on the public ph7x.com site:
+A static-first, multilingual content and publishing engine (configurable source language; EN, PT-PT, ES, FR, DE and IT bundled as language packs — any pack can join), built on the contracts proven on the public ph7x.com site:
 
 - structured content in JSON and Markdown articles, separated from presentation;
 - strong validation before publishing (language parity, structure, editorial rules);
