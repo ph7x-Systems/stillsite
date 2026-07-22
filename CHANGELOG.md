@@ -8,6 +8,13 @@ features with their PRs, breaking changes and migrations — live in
 
 ## Unreleased
 
+## 0.5.0 — 2026-07-22
+
+The WXR migration flow (#140) ships partially in this release: the
+inspection report, idempotent re-imports and mappings are in; media
+fetch, redirects for changed URLs and the admin migration flow remain
+pending.
+
 ### Added
 
 - WXR migration flow, first part (#140): `cms import --format wxr
@@ -31,6 +38,23 @@ features with their PRs, breaking changes and migrations — live in
   pattern, following the LANGUAGE_PACK_GUIDE format. Includes the admin
   catalog so the panel itself speaks Italian (#203, contributed by
   @MasRama; admin catalog follow-up).
+
+### Changed
+
+- Contributor flow: the contributing guide covers the first-PR path
+  (repository language, changelog placement, the first-contribution CI
+  approval wait, how to branch), the README links it, and changelog
+  entries credit external contributors.
+
+- CI enforces commit message hygiene: a required check rejects
+  attribution trailers in branch commits.
+
+### Fixed
+
+- Fork pull requests run the full backend conformance job: the MSSQL
+  service container starts with a fallback throwaway password when
+  repository secrets are absent, so external contributions no longer
+  fail a required check they cannot influence.
 
 ## 0.4.0 — 2026-07-22
 

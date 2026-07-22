@@ -6,6 +6,52 @@ changes live in [CHANGELOG.md](CHANGELOG.md); the product map in
 [docs/ROADMAP.md](docs/ROADMAP.md); decision evolution in
 [docs/PRODUCT_HISTORY.md](docs/PRODUCT_HISTORY.md).
 
+## 0.5.0 — 2026-07-22
+
+The first release with external contributions. No breaking changes and
+no storage migrations; internal dependency ranges move to
+`>=0.5.0,<0.6`.
+
+- **Migration inspects before it writes** (#210, #212): `cms import
+  --format wxr --dry-run` reports what an export contains before
+  anything is written — importable posts, author/category/tag
+  inventories, referenced media, comments, one note per left-behind
+  item with its reason, and an explicit fidelity percentage; the dry
+  run needs no project. Imports are idempotent by source id: a re-run
+  with a newer export never duplicates a post, even after an upstream
+  slug rename; matched posts stay untouched unless `--update`
+  overwrites them keeping the entity id. Authors and taxonomies map at
+  import (`--map-author`, `--map-category`, `--map-tag`; empty target
+  drops, unmatched sources warn, `--dry-run` previews the result).
+  Media fetch, redirects for changed URLs and the admin migration flow
+  remain pending in #140.
+
+- **The panel speaks Italian** (#203, #211, contributed by @MasRama):
+  Italian joins the bundled language packs — site labels, month names,
+  date pattern, and the full admin catalog wired through the language
+  pack contract, proving packs carry a complete panel language. The
+  catalog joined the anti-drift conformance test, which now keeps every
+  bundled catalog complete.
+
+- **Docker quickstart** (#206, contributed by @MasRama): `docker
+  compose up` brings up the admin panel with a seeded example site and
+  no Python environment. A random admin password is generated on first
+  run and printed once in the container log; content and database
+  persist in named volumes. Local evaluation only, as the README
+  states.
+
+- **Contributing is a documented path** (#205, #209): the guide covers
+  the first-PR essentials — repository language, changelog placement
+  under Unreleased, the first-contribution CI approval wait, why
+  basing a branch on another open PR backfires — and changelog entries
+  credit external contributors.
+
+- **CI hardening** (#204, #208): fork pull requests run the full
+  backend conformance job (the MSSQL service starts with a fallback
+  throwaway password when repository secrets are absent), and a
+  required Commit hygiene check rejects attribution trailers in branch
+  commits.
+
 ## 0.4.0 — 2026-07-22
 
 - **From nothing to a browsable site in one command** (#190): `cms demo`
