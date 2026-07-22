@@ -1523,3 +1523,109 @@ msgstr "Revocar"
 
 msgid "No active preview links."
 msgstr "Sin enlaces de vista previa activos."
+
+# Migration screen (ADR-0047)
+msgid "%(count)s (not migrated)"
+msgstr "%(count)s (no migrados)"
+
+msgid "%(count)s URL(s)"
+msgstr "%(count)s URL(s)"
+
+msgid "%(count)s already migrated, left untouched"
+msgstr "%(count)s ya migrados, dejados intactos"
+
+msgid "%(count)s new article(s) imported"
+msgstr "%(count)s artículo(s) nuevo(s) importado(s)"
+
+msgid "%(count)s redirect(s) recorded for source URLs"
+msgstr "%(count)s redirección(es) registradas para URLs de origen"
+
+msgid "%(count)s unsupported item(s) skipped — the inspection lists each one"
+msgstr "%(count)s elemento(s) no compatible(s) omitido(s) — la inspección lista cada uno"
+
+msgid "%(count)s updated from the source"
+msgstr "%(count)s actualizados desde el origen"
+
+msgid "%(posts)s importable post(s) of %(total)s item(s) — fidelity %(fidelity)s%%"
+msgstr "%(posts)s entrada(s) importable(s) de %(total)s elemento(s) — fidelidad %(fidelity)s%%"
+
+msgid "(none)"
+msgstr "(ninguno)"
+
+msgid "Author renames"
+msgstr "Renombrados de autores"
+
+msgid "Authors"
+msgstr "Autores"
+
+msgid "Categories"
+msgstr "Categorías"
+
+msgid "Category renames"
+msgstr "Renombrados de categorías"
+
+msgid "Comments"
+msgstr "Comentarios"
+
+msgid "Download referenced images into the media library"
+msgstr "Descargar las imágenes referenciadas a la biblioteca de medios"
+
+msgid "Export file"
+msgstr "Archivo de exportación"
+
+msgid "Import a blog export"
+msgstr "Importar una exportación de blog"
+
+msgid "Import another export"
+msgstr "Importar otra exportación"
+
+msgid "Inspect the export"
+msgstr "Inspeccionar la exportación"
+
+msgid "Left behind — every item, with its reason"
+msgstr "Dejados atrás — cada elemento, con su razón"
+
+msgid "Mappings and run"
+msgstr "Asignaciones y ejecución"
+
+msgid "Media — every URL accounted for"
+msgstr "Medios — todas las URLs contabilizadas"
+
+msgid "Migration"
+msgstr "Migración"
+
+msgid "Migration finished"
+msgstr "Migración finalizada"
+
+msgid "One rename per line, as source = target. An empty target drops the value. Unknown sources are ignored."
+msgstr "Un renombrado por línea, como origen = destino. Un destino vacío descarta el valor. Los orígenes desconocidos se ignoran."
+
+msgid "Overwrite already-migrated posts from the source (the entity id is kept)"
+msgstr "Sobrescribir entradas ya migradas desde el origen (se conserva el id de la entidad)"
+
+msgid "Referenced media"
+msgstr "Medios referenciados"
+
+msgid "Review the imported articles"
+msgstr "Revisar los artículos importados"
+
+msgid "Run the migration"
+msgstr "Ejecutar la migración"
+
+msgid "Start over"
+msgstr "Empezar de nuevo"
+
+msgid "Tag renames"
+msgstr "Renombrados de etiquetas"
+
+msgid "URL"
+msgstr "URL"
+
+msgid "Upload a WXR 1.2 export. Nothing is written yet: the next step shows what the file contains — and what stays behind, with reasons — before you decide."
+msgstr "Sube una exportación WXR 1.2. Todavía no se escribe nada: el siguiente paso muestra lo que contiene el archivo — y lo que queda atrás, con razones — antes de decidir."
+
+msgid "fetched as %(asset)s"
+msgstr "descargado como %(asset)s"
+
+msgid "reused %(asset)s"
+msgstr "reutilizado %(asset)s"

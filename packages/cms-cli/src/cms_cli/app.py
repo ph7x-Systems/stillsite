@@ -479,23 +479,14 @@ def _record_wxr_redirects(
     never becomes a redirect source) and idempotent (a re-run merges
     the same changes into the same map).
     """
-    from cms_build import urls
-    from cms_build.redirects import merge_redirects, write_redirects
+    from cms_build.redirects import (
+        merge_redirects,
+        migration_redirect_changes,
+        write_redirects,
+    )
 
     config = project.site
-    changes: dict[str, str] = {}
-    for prior, current in sorted(renamed, key=lambda pair: pair[1].id):
-        old_path = urls.article_path(config, prior, config.source_language)
-        new_path = urls.article_path(config, current, config.source_language)
-        if old_path != new_path:
-            changes[old_path] = new_path
-    for article in sorted(articles, key=lambda a: a.id):
-        source_path = article.fields.get("wxr_source_path", "")
-        if not source_path:
-            continue
-        target = urls.article_path(config, article, config.source_language)
-        if source_path.rstrip("/") != target.rstrip("/"):
-            changes[source_path] = target
+    changes = migration_redirect_changes(config, articles, renamed)
     if not changes:
         return
     existing = dict(config.redirects)
@@ -656,39 +647,15 @@ def import_command(
                     err=True,
                 )
                 raise typer.Exit(code=3)
-            known = {
-                article.fields["wxr_post_id"]: article.id
-                for article in storage.load_all_articles()
-                if article.fields.get("wxr_post_id")
-            }
-            new = matched = updated = 0
-            landed: list[Any] = []
-            renamed: list[tuple[Any, Any]] = []
-            for article in imported.articles:
-                existing_id = known.get(article.fields.get("wxr_post_id", ""))
-                if existing_id is None:
-                    storage.save_article(article)
-                    landed.append(article)
-                    new += 1
-                elif update:
-                    prior = storage.load_article(existing_id)
-                    article.id = existing_id
-                    storage.save_article(article)
-                    landed.append(article)
-                    if prior is not None:
-                        renamed.append((prior, article))
-                    updated += 1
-                else:
-                    kept = storage.load_article(existing_id)
-                    if kept is not None:
-                        landed.append(kept)
-                    matched += 1
+            from cms_core.migration import apply_wxr_import
+
+            applied = apply_wxr_import(storage, imported.articles, update=update)
             if fetch_media:
                 _fetch_wxr_media(project, storage)
-        _record_wxr_redirects(project, landed, renamed)
+        _record_wxr_redirects(project, applied.landed, applied.renamed)
         typer.echo(
-            f"imported {new} new WXR article(s); "
-            f"updated {updated}, left {matched} already-migrated untouched; "
+            f"imported {applied.new} new WXR article(s); "
+            f"updated {applied.updated}, left {applied.matched} already-migrated untouched; "
             f"skipped {imported.skipped} unsupported item(s)"
         )
         return

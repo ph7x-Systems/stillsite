@@ -10,6 +10,15 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- WXR migration flow, final part (#140): the Migration screen brings
+  the whole flow to the panel — upload with the inspection report
+  rendered before anything is written, mapping forms, optional
+  source-wins updates and media download with per-URL outcomes, and
+  automatic redirects; the panel and the CLI call the same shared
+  pipeline (`cms_core.migration`, `cms_build.redirects`), so behavior
+  parity is structural. Admin-only, audited, localized in all six
+  panel languages (ADR-0047).
+
 - WXR migration flow, fourth part (#140): imported posts keep their
   source URLs alive — each post's original permalink path is recorded
   in the project's `[redirects]` table when it differs from the new

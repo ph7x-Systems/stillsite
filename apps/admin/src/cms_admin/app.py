@@ -28,6 +28,7 @@ from cms_admin.i18n import i18n_context, load_catalogs
 from cms_admin.mail import resolve_mailer
 from cms_admin.media import router as media_router
 from cms_admin.menu import router as menu_router
+from cms_admin.migration import router as migration_router
 from cms_admin.notes import router as notes_router
 from cms_admin.pages import router as pages_router
 from cms_admin.preview_links import router as preview_links_router
@@ -172,6 +173,7 @@ def create_app(settings: AdminSettings | None = None) -> FastAPI:
     app.include_router(forms_router)
     app.include_router(preview_links_router)
     app.include_router(submissions_router)
+    app.include_router(migration_router)
     from cms_admin.search import router as search_router
 
     app.include_router(search_router)

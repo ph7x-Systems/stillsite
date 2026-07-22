@@ -8,6 +8,10 @@ that becomes live again drops its stale redirect — the live page wins.
 """
 
 from pathlib import Path
+from typing import Any
+
+from cms_build import urls
+from cms_build.config import SiteConfig
 
 
 def merge_redirects(existing: dict[str, str], changes: dict[str, str]) -> dict[str, str]:
@@ -50,3 +54,30 @@ def write_redirects(project_file: Path, redirects: dict[str, str]) -> None:
             f'"{source}" = "{destination}"' for source, destination in sorted(redirects.items())
         )
     project_file.write_text("\n".join(kept) + "\n", encoding="utf-8")
+
+
+def migration_redirect_changes(
+    config: SiteConfig,
+    articles: list[Any],
+    renamed: list[tuple[Any, Any]],
+) -> dict[str, str]:
+    """Address changes a migration implies (ADR-0046).
+
+    Renames first (an upstream slug change moves the old site address),
+    then source permalinks that differ from the entity's address here.
+    Sorted processing keeps the result deterministic.
+    """
+    changes: dict[str, str] = {}
+    for prior, current in sorted(renamed, key=lambda pair: pair[1].id):
+        old_path = urls.article_path(config, prior, config.source_language)
+        new_path = urls.article_path(config, current, config.source_language)
+        if old_path != new_path:
+            changes[old_path] = new_path
+    for article in sorted(articles, key=lambda a: a.id):
+        source_path = article.fields.get("wxr_source_path", "")
+        if not source_path:
+            continue
+        target = urls.article_path(config, article, config.source_language)
+        if source_path.rstrip("/") != target.rstrip("/"):
+            changes[source_path] = target
+    return changes
