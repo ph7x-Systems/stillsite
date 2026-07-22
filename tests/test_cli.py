@@ -451,6 +451,50 @@ def test_import_wxr_mapping_previews_applies_and_warns(tmp_path: Path) -> None:
     assert bad_slug.exit_code == 2
 
 
+def test_import_wxr_fetch_media_stores_and_rewrites(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from test_media_fetch import _png
+
+    project = make_project(tmp_path)
+    export = tmp_path / "blog.xml"
+    export.write_text(
+        """<?xml version="1.0"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:wp="http://wordpress.org/export/1.2/">
+  <channel><item>
+    <title>Illustrated launch</title>
+    <content:encoded><![CDATA[<p><img
+      src="https://example.test/img/rocket.png" alt="A rocket"/></p>]]></content:encoded>
+    <wp:post_id>9</wp:post_id><wp:post_name>illustrated-launch</wp:post_name>
+    <wp:status>draft</wp:status><wp:post_type>post</wp:post_type>
+  </item></channel>
+</rss>""",
+        encoding="utf-8",
+    )
+    png = _png()
+    monkeypatch.setattr("cms_core.media_fetch.default_fetcher", lambda url: (png, "image/png"))
+
+    result = runner.invoke(
+        app, ["import", str(export), "--format", "wxr", "-p", str(project), "--fetch-media"]
+    )
+    assert result.exit_code == 0, result.output
+    assert "media: fetched https://example.test/img/rocket.png -> rocket" in result.output
+    assert "media: 1 fetched, 0 reused, 0 failed" in result.output
+    assert (project / "media" / "imported" / "rocket.png").read_bytes() == png
+    with load_project(project).open_storage() as storage:
+        article = storage.load_article("illustrated-launch")
+        asset = storage.load_media_asset("rocket")
+    assert article is not None and asset is not None
+    assert "![A rocket](/media/imported/rocket.png)" in article.source.body_markdown
+    assert asset.collection == "imported"
+
+    conflict = runner.invoke(
+        app, ["import", str(export), "--format", "wxr", "--dry-run", "--fetch-media"]
+    )
+    assert conflict.exit_code == 2
+
+
 def test_doctor_passes_on_a_healthy_project(tmp_path: Path) -> None:
     project = make_project(tmp_path)
     runner.invoke(app, ["seed", "-p", str(project)])

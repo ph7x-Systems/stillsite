@@ -268,6 +268,16 @@ a previous run stays valid across incremental re-runs — and `--dry-run`
 with mappings previews the post-mapping inventories before anything is
 written.
 
+`--fetch-media` downloads the images the imported posts' bodies reference,
+stores them in the media library (collection `imported`, alt text from the
+source image's own alt attribute) and rewrites the body references to
+`/media/…` paths. It is explicit — without the flag nothing touches the
+network — and bounded: public http(s) hosts only, a size cap, a timeout and
+three attempts with backoff. Every URL is reported as fetched, reused
+(identical bytes match an existing asset) or failed with its reason; a
+failed URL keeps its remote reference visibly in the body. A re-run finds
+the already-rewritten bodies and has nothing left to fetch.
+
 The validation report (shared with the dashboard) always shows the whole
 story, not only failures: a gate callout (open/blocked) with the scope that
 was validated (articles, pages, media assets, languages), one row per rule
