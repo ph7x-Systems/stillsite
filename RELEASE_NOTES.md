@@ -6,6 +6,40 @@ changes live in [CHANGELOG.md](CHANGELOG.md); the product map in
 [docs/ROADMAP.md](docs/ROADMAP.md); decision evolution in
 [docs/PRODUCT_HISTORY.md](docs/PRODUCT_HISTORY.md).
 
+## 0.6.0 — 2026-07-23
+
+The migration release: migrate a blog into Sardine from the browser,
+with nothing silently dropped. No breaking changes and no storage
+migrations; internal dependency ranges move to `>=0.6.0,<0.7`.
+
+- **The Migration screen** (#219): the whole WXR flow from the panel —
+  upload an export and see the inspection report before anything is
+  written (fidelity percentage, author/category/tag inventories, one
+  line per left-behind item with its reason), type renames one per
+  line, then run with optional source-wins updates and media download.
+  Runs are idempotent, audited, bounded by the panel's upload limit,
+  and the screen speaks all six panel languages. The panel and the CLI
+  call the same shared pipeline — behavior parity is structural, not
+  aspirational.
+
+- **Media comes along** (#217): `--fetch-media` (and the screen's
+  checkbox) downloads the images imported posts reference into the
+  media library and rewrites bodies to `/media/…` paths. Explicit
+  opt-in, public hosts only, size and time caps with three attempts,
+  duplicate bytes reuse the existing asset, and every URL is reported
+  as fetched, reused or failed with its reason.
+
+- **Old URLs keep working** (#218): each imported post's original
+  permalink path is recorded in the project's `[redirects]` table when
+  it differs from the new address — deterministic, collision-free,
+  idempotent across re-runs, and flattened (never chained) when an
+  upstream rename lands with `--update`.
+
+- **The panel speaks Bahasa Indonesia** (#216, contributed by
+  @MasRama): the seventh bundled language, with a full admin catalog
+  under the anti-drift conformance guard and the correct single-form
+  plural rule.
+
 ## 0.5.0 — 2026-07-22
 
 The first release with external contributions. No breaking changes and
