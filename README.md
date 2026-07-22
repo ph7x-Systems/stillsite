@@ -168,6 +168,9 @@ cms preview  -p examples/multilingual-company-site   # serve locally
 - [Architecture](docs/ARCHITECTURE.md), [design rules](docs/DESIGN_RULES.md),
   [theme guide](docs/THEME_GUIDE.md), [components](docs/COMPONENTS.md) and
   [ecosystem](docs/ECOSYSTEM.md) — contracts for contributors and extensions.
+- [Contributing](CONTRIBUTING.md) — workflow, rules and how to send your
+  first pull request; [language pack guide](docs/LANGUAGE_PACK_GUIDE.md)
+  for adding a language.
 - [Admin guide](docs/ADMIN_GUIDE.md), [testing](docs/TEST_PLAN.md),
   [security](docs/SECURITY_STRATEGY.md), [proof-of-concept](docs/POC_PLAN.md),
   [ADRs](docs/adr/) — operation, verification and

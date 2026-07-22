@@ -1,5 +1,12 @@
 # Contributing
 
+## Language
+
+Everything that enters git is English: code, comments, docstrings,
+tests, commit messages, pull request titles and bodies, issues and
+docs. Other languages appear only as product data — language packs,
+seed content and translation fixtures.
+
 ## Workflow
 
 0. Before every commit run the local gate — after **any** edit, however
@@ -42,6 +49,23 @@
   fact in one authoritative document and link to it instead of repeating it.
   If the wiki cannot be synchronized before the PR opens, record it explicitly
   as a blocking rollout item; do not silently omit it.
+
+## Your first pull request
+
+- Fork, then branch from an up-to-date `main`. Never base your branch
+  on another open pull request — the moment that one squash-merges,
+  yours inherits its whole diff as conflicts.
+- One topic per pull request; small ones review and merge fast.
+- Changelog entries go under `## Unreleased` in CHANGELOG.md. Released
+  sections never change.
+- CI on a first contribution starts only after a maintainer approves
+  the run — that click is manual, so a short wait is normal.
+- Keep "Allow edits by maintainers" enabled: it lets a maintainer
+  resolve a conflict or apply a small fixup without a round trip.
+- Adding a language is a great first contribution:
+  [docs/LANGUAGE_PACK_GUIDE.md](docs/LANGUAGE_PACK_GUIDE.md) is the
+  whole path, and the project's first external pull request was
+  exactly this.
 
 ## Sharing themes, targets, backends and plugins
 
