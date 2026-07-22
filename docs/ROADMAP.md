@@ -37,8 +37,8 @@ it.
 | M5 | Editorial completeness (scheduling, revisions, trash, preview, notes…) | ✅ closed |
 | M6 | Extensibility and adoption (extension contract, portable round-trip, content API…) | ✅ closed |
 | M7 | Operations (email, 2FA, webhooks, doctor) | ✅ closed |
-| M8 | Reorganized into P0/P1 issues [#126](https://github.com/ph7x-Systems/sardine-cms/issues/126)–[#139](https://github.com/ph7x-Systems/sardine-cms/issues/139) | 🟡 in execution |
-| M9 | Reorganized into P2/P3 issues [#140](https://github.com/ph7x-Systems/sardine-cms/issues/140)–[#141](https://github.com/ph7x-Systems/sardine-cms/issues/141) + platform depth | 🔜 |
+| M8 | Reorganized into P0/P1 issues [#126](https://github.com/ph7x-Systems/sardine-cms/issues/126)–[#139](https://github.com/ph7x-Systems/sardine-cms/issues/139) | 🟡 engineering shipped (0.3.0); #127 and #128 stay open for human validation |
+| M9 | Reorganized into P2/P3 issues [#140](https://github.com/ph7x-Systems/sardine-cms/issues/140)–[#141](https://github.com/ph7x-Systems/sardine-cms/issues/141) + platform depth | 🟡 in execution (#140 underway) |
 | 1.0 | M5–M7 shipped, admin stable, two production deployments beyond ph7x.com, deprecation policy, conformance suites documented as public contracts | 🔜 |
 
 ## Capability inventory
@@ -89,7 +89,7 @@ References point at the ADR, issue or document that owns the detail.
 | --- | --- | --- |
 | Translation states from checksums; parity gates | ✅ | Content-Model (wiki) |
 | Per-language slugs, hreflang, localized feeds + search | ✅ | — |
-| Language packs end to end (bundled five included) | ✅ | ADR-0034 |
+| Language packs end to end (bundled six included) | ✅ | ADR-0034 |
 | Configurable source language | ✅ | ADR-0034 |
 | Admin panel languages from packs; RTL end to end | ✅ | ADR-0034 |
 | Side-by-side translation editing | ✅ | ADMIN_GUIDE.md |
@@ -105,7 +105,7 @@ References point at the ADR, issue or document that owns the detail.
 | --- | --- | --- |
 | Library: validated uploads, translatable alt, safe delete, search/filters | ✅ | ADMIN_GUIDE.md |
 | Image derivatives / responsive sizes | ✅ | ADR-0029 |
-| Crop / focal point, WebP/AVIF, organization, picker, replace | 🔜 | #136 |
+| Crop / focal point, WebP/AVIF, organization, picker, replace | ✅ | #136 |
 
 ### Site features (static-first)
 
@@ -115,9 +115,9 @@ References point at the ADR, issue or document that owns the detail.
 | Public search (pre-built indexes) | ✅ | — |
 | Comments | 🟡 contract + consent-first island; official provider pending | ADR-0031 |
 | Redirects, localized error pages | ✅ | — |
-| Forms | 🔜 official reference provider | #137 |
-| Per-entry SEO controls | 🔜 | #138 |
-| External review links | 🔜 | #139 |
+| Forms | ✅ end to end: section kind, official endpoint, storage, provider contract | #137, ADR-0039, ADR-0040 |
+| Per-entry SEO controls | ✅ with advisory hints and slug-change redirects | #138, ADR-0041 |
+| External review links | ✅ signed, expiring, revocable | #139, ADR-0042 |
 | Embeds, analytics | 🧭 | — |
 | Multiple sites per install | 🔜 P3 | — |
 
@@ -143,7 +143,7 @@ References point at the ADR, issue or document that owns the detail.
 | Webhooks (on publish) | ✅ | ADR-0036 |
 | Health check (`cms doctor`) | ✅ | — |
 | Theme/extension experience without editing files | 🔜 | #141 |
-| WXR migration flow | 🔜 | #140 |
+| WXR migration flow | 🟡 shipped: inspection/dry-run with fidelity report, idempotent re-import by source id, `--update` keeping entity ids, author/taxonomy mappings · pending: media fetch, redirects for changed URLs, admin flow | #140, ADR-0043, ADR-0044 |
 | Backups, scheduled builds | 🧭 | — |
 | Incremental builds, ecosystem catalog | 🔜 P3 | — |
 

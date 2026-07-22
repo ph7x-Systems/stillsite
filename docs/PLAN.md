@@ -403,8 +403,12 @@ prioritized P0 → P3 (see ROADMAP.md). Standing execution rules from the
    extensibility changes.
 5. **Metrics** in ROADMAP.md are targets, measured before 1.0.
 
-Shipped context: v0.2.0 is on PyPI; ADR-0034 is fully executed;
-ADR-0037 phases 1–3 are merged (vertical close = #126).
+Shipped context: v0.4.0 is on PyPI; ADR-0034 is fully executed;
+ADR-0037 phases 1–3 are merged (vertical close = #126); P1
+(#136–#139) shipped in 0.3.0 — media maturity, forms end to end,
+per-entry SEO, external preview links; #140 is underway with
+inspection/dry-run, idempotent re-import and mappings merged (media
+fetch, redirects and the admin flow remain).
 
 Acceptance criteria and capability gaps are maintained in
 [ROADMAP.md](ROADMAP.md). External owner action still pending: upload the
