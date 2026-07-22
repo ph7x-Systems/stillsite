@@ -12,11 +12,23 @@
 ```bash
 pip install sardine-cms-cli sardine-cms-theme-ph7x-reference
 cms init my-site && cd my-site
+```
+
+`cms init` writes `theme = "default"`, which is deliberately bare. To use
+the reference theme you just installed, set it in `sardine.toml`:
+
+```toml
+theme = "ph7x-reference"
+```
+
+Then seed the example content, build and serve it:
+
+```bash
 cms seed && cms build && cms preview
 ```
 
-That scaffolds a five-language site, seeds it with example content,
-builds it and serves it locally.
+The site is at <http://127.0.0.1:8000/>, and `cms preview` keeps running
+until you stop it with Ctrl+C.
 
 Editors work in a real browser admin; the public site ships as plain
 static files to any host. Content lives in portable JSON and Markdown —
