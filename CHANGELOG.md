@@ -8,6 +8,12 @@ features with their PRs, breaking changes and migrations — live in
 
 ## Unreleased
 
+## 0.8.0 — 2026-07-23
+
+Being a Sardine theme is now an executable specification: themes
+become verifiable contracts, extensions gain operational tooling, and
+Astro joins as a first-class deployment target.
+
 ### Added
 
 - Theme conformance as a public contract (#141): the suite moves to

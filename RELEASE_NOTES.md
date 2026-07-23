@@ -6,6 +6,52 @@ changes live in [CHANGELOG.md](CHANGELOG.md); the product map in
 [docs/ROADMAP.md](docs/ROADMAP.md); decision evolution in
 [docs/PRODUCT_HISTORY.md](docs/PRODUCT_HISTORY.md).
 
+## 0.8.0 — 2026-07-23
+
+**Being a Sardine theme is now an executable specification.** Sardine
+0.8.0 turns themes into verifiable contracts, adds operational tooling
+for extensions, and introduces Astro as a first-class deployment
+target. No breaking changes and no storage migrations; internal
+dependency ranges move to `>=0.8.0,<0.9`.
+
+- **Theme conformance as a public contract** (#236): the suite moves
+  to `cms_build.theme_conformance` — versioned, self-contained,
+  fifteen named checks any theme package imports and runs against
+  itself with four lines of test code. Both bundled themes are
+  certified by the full contract in CI, and a community starter theme
+  is accepted when it passes the suite in full.
+
+- **Extension settings** (#234): extensions declare a versioned
+  settings schema — plain data, defaults included — and the panel
+  renders it with explicit provenance per value; validation precedes
+  persistence, values persist per project, optional migrations bridge
+  schema versions, and resolved settings reach the extension at load
+  time. Secret fields name an environment variable the panel never
+  edits, stores or displays — presence or absence only. `cms doctor`
+  reports settings validity and each required variable.
+
+- **Extension health** (#231): extensions may declare a health check —
+  their own answer to "is my integration alive". Results surface on
+  demand on the extension's card and in `cms doctor`; a raising check
+  is a contained failed check, and health never gates builds,
+  publishing or activation.
+
+- **Astro deployment target** (#227): `cms export --target astro`
+  emits an Astro project scaffold alongside the static site that
+  consumes Sardine's Content API through typed content collections —
+  schemas kept honest by a test against real builder output, null
+  branches included.
+
+- **Security documentation for 0.7.x+** (#230): supported versions,
+  the private reporting channel with response expectations, the
+  consolidated secrets policy and the architecture security model.
+
+### Contributors
+
+Thanks to @MasRama for contributing the Astro deployment target in
+#227 — the fourth external contribution, with the schema-validation
+test that keeps the scaffold honest against API evolution.
+
 ## 0.7.0 — 2026-07-23
 
 Theme and extension management, phase 1: activating a theme or an

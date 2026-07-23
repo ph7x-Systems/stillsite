@@ -1,12 +1,12 @@
 [project]
 name = "sardine-cms-theme-ph7x-reference"
-version = "0.7.0"
+version = "0.8.0"
 description = "Sardine CMS reference theme: dark editorial design system with local fonts"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"
 authors = [{ name = "pH7x Systems", email = "support@ph7x.com" }]
-dependencies = ["sardine-cms-build>=0.7.0,<0.8"]
+dependencies = ["sardine-cms-build>=0.8.0,<0.9"]
 
 [project.entry-points."sardine.themes"]
 ph7x-reference = "cms_theme_ph7x_reference:ReferenceTheme"

@@ -1,11 +1,11 @@
 [project]
 name = "sardine-cms-cli"
-version = "0.7.0"
+version = "0.8.0"
 description = "Sardine CMS command line: validate, build, export, seed, preview"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"
-dependencies = ["sardine-cms-core>=0.7.0,<0.8", "sardine-cms-validation>=0.7.0,<0.8", "sardine-cms-build>=0.7.0,<0.8", "typer>=0.12", "copier>=9.4"]
+dependencies = ["sardine-cms-core>=0.8.0,<0.9", "sardine-cms-validation>=0.8.0,<0.9", "sardine-cms-build>=0.8.0,<0.9", "typer>=0.12", "copier>=9.4"]
 
 [project.scripts]
 cms = "cms_cli.app:main"
