@@ -96,6 +96,7 @@ References point at the ADR, issue or document that owns the detail.
 | Translation queue + list filters | ✅ | #131 |
 | Scalable coverage in lists (never a column per language) | ✅ | ADR-0034 |
 | Fallback policy per language | 🧭 | — |
+| Translation providers (suggestions under editorial sovereignty, vendor-neutral contract) | 🧭 queued after #141 | #228 |
 | Machine-translation assist | 🧭 | — |
 | Data-only language packs | ✅ | LANGUAGE_PACK_GUIDE.md |
 
