@@ -10,6 +10,13 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Theme conformance as a public contract (#141): the suite moves to
+  `cms_build.theme_conformance` — versioned, self-contained, fifteen
+  named checks any theme package imports and runs against itself. Both
+  bundled themes are certified by the full contract in CI, and "passes
+  the conformance suite" becomes the objective acceptance rule for
+  community themes (ADR-0053).
+
 - Extension health (#141): extensions may declare a health check —
   their own answer to "is my integration alive". Results surface on
   demand on the extension's card and in `cms doctor`, one line per

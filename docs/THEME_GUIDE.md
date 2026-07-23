@@ -200,3 +200,22 @@ shows — plus the optional screenshot file. A missing screenshot simply
 renders a card without an image; an incompatible range disables the
 Activate button honestly, because it is the same range the installer
 would refuse.
+
+## Prove conformance
+
+The conformance suite is a public contract (`cms_build.theme_conformance`,
+versioned): it defines executably what being a Sardine theme means. Add
+this to your theme's tests:
+
+```python
+import pytest
+from cms_build import create_theme
+from cms_build.theme_conformance import conformance_checks
+
+@pytest.mark.parametrize(("name", "check"), conformance_checks())
+def test_conformance(name, check):
+    check(create_theme("my-theme"))
+```
+
+Every bundled theme passes the full suite in CI; ecosystem listings
+state the `CONFORMANCE_VERSION` a theme was certified against.
