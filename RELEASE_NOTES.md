@@ -6,6 +6,36 @@ changes live in [CHANGELOG.md](CHANGELOG.md); the product map in
 [docs/ROADMAP.md](docs/ROADMAP.md); decision evolution in
 [docs/PRODUCT_HISTORY.md](docs/PRODUCT_HISTORY.md).
 
+## 0.7.0 — 2026-07-23
+
+Theme and extension management, phase 1: activating a theme or an
+extension no longer means editing files. No breaking changes and no
+storage migrations; internal dependency ranges move to `>=0.7.0,<0.8`.
+
+- **The Themes screen** (#222, #223): every theme the environment can
+  activate, as cards built entirely from each package's own metadata —
+  description, author, license, website, screenshot and a
+  compatibility verdict taken from the theme's declared version range,
+  the same range the installer enforces. No theme code runs for the
+  listing. Activation is try-first: the theme must resolve and a full
+  trial build of the current content must succeed before the
+  configuration changes — a failing theme shows its error and the site
+  never becomes unbuildable from the panel. The panel never installs
+  packages.
+
+- **The Extensions screen** (#224): the same shape where the models
+  agree — import-free discovery, compatibility from the declared core
+  range, transactional activation with a trial build — and honest
+  differences where they don't: an active extension's card lists the
+  capabilities its loaded object actually declares, a broken active
+  extension shows its error instead of taking the panel down, and
+  deactivation rewrites the configuration without importing the
+  extension, so recovery works precisely when the import fails.
+  Private project extensions activate by module path.
+
+- **The read-only demo shows it all** (#225): theme screenshots ride
+  in the static snapshot under their real URLs.
+
 ## 0.6.0 — 2026-07-23
 
 The migration release: migrate a blog into Sardine from the browser,

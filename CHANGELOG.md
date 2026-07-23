@@ -8,6 +8,13 @@ features with their PRs, breaking changes and migrations — live in
 
 ## Unreleased
 
+## 0.7.0 — 2026-07-23
+
+Theme and extension management, phase 1 (#141): choosing and
+activating themes and extensions no longer means editing files.
+Extension health and settings surfaces, the official theme set and the
+theme conformance suite follow in the next phase.
+
 ### Added
 
 - Extensions screen (#141): activate and deactivate without editing
