@@ -94,6 +94,68 @@ brute-force control.
 | Force-push/history rewrite on `main` | Branch protection blocks force-pushes/deletions and requires all ten CI checks, including `Security audit` (**done**) |
 | Malicious PR changing CI | Required status checks on PRs; workflow changes reviewed like code (**done**) |
 
+## Secrets policy (consolidated)
+
+One rule, enforced at every layer: **secrets exist only in environment
+variables at the moment of use.** They are never written to
+`sardine.toml`, never stored in the database (the single exception is
+the panel's own per-instance signing key for preview links, which is
+generated, random and never user-provided), never logged, never
+recorded in the audit trail, never included in exports, build
+artifacts or the demo snapshot, and never echoed back by any interface.
+`.env` is gitignored; `.env.example` carries placeholders only. CI
+scans full history for secrets on every push, and fork pull requests
+receive no repository secrets at all — their service containers run on
+throwaway values.
+
+## Architecture security model — themes, extensions and providers (0.7.x)
+
+The 0.7 line consolidated a model worth stating as policy
+(ADR-0048–0051):
+
+- **Discovery never executes code.** Themes and extensions are listed
+  from packaging metadata (`importlib.metadata`); screenshots are
+  files found through the distribution's file list. The first
+  third-party code execution is the trial build the operator
+  explicitly requests.
+- **Compatibility is the package's own declared dependency range**,
+  evaluated against the installed version — the same range the
+  installer enforces, so the panel can never contradict reality.
+- **Activation is transactional.** An isolated load and a full trial
+  build must succeed before configuration changes; a failure shows its
+  error and the configuration stays untouched.
+- **Failures are contained and recovery needs no imports.** Any
+  extension load failure is a typed error; a broken active extension
+  renders its error instead of taking the panel down, and
+  deactivation rewrites configuration without importing the extension
+  — the recovery path works precisely when the import fails. Health
+  checks (when declared) run contained, on demand, and never gate.
+- **The panel never installs packages.** Package installation is
+  arbitrary code execution and belongs to the operator's environment.
+- **Provider contracts keep credentials out of the core.** Comments,
+  mail, deployment and forms providers — and future contracts — follow
+  one policy: the core ships the contract and at most a reference
+  implementation; credentials are read from the environment at use
+  time; provider failures are contained and audited, never
+  visitor-facing; capabilities are declared, not inferred; conformance
+  suites are public contracts.
+- **Migration transport is bounded.** The media fetcher accepts
+  http(s) to public addresses only (loopback, private, link-local and
+  reserved ranges refused), enforces size and time caps with limited
+  retries, and accounts for every URL. Panel uploads honor the size
+  limit, are parsed by the same DTD/entity-rejecting parser as the
+  CLI, and live in a short-TTL in-memory stash until confirmed.
+
+## Supply chain (releases)
+
+Publishing uses **PyPI trusted publishing** (OIDC) with one GitHub
+environment per package, so no long-lived PyPI credentials exist;
+artifacts build in CI from the tagged commit. Every release is
+verified post-publication from the published artifacts themselves:
+lockstep versions and bounds, license/notice payloads present, and a
+clean install from the index. Third-party license texts are retained
+in-tree and in the wheels, aggregated in THIRD_PARTY_NOTICES.md.
+
 ## 3. Data protection
 
 - The framework stores editorial content only. Deployments that add user
