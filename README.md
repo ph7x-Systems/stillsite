@@ -48,6 +48,14 @@ and **[walk through its read-only admin](https://sardine.ph7x.com/admin/)**.
 - **Static and yours.** The public site is plain files on any host;
   the panel can live on a laptop. Same input, same bytes — builds are
   deterministic and tested to be.
+- **Bring your blog with you.** WXR imports inspect before they write —
+  a dry-run report with an explicit fidelity percentage and one line
+  per item left behind — then migrate idempotently with media download
+  and automatic redirects, from the CLI or the browser.
+- **Themes and extensions are declarative artifacts.** The panel
+  discovers them from packaging metadata without executing code,
+  activates them try-first, and contains failures; being a theme is an
+  executable specification any package can certify against.
 
 | Sardine CMS | Traditional CMS |
 | --- | --- |
