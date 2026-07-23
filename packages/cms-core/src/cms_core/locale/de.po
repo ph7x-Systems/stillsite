@@ -1748,3 +1748,40 @@ msgstr "Zustand:"
 
 msgid "This extension declares no health check."
 msgstr "Diese Erweiterung deklariert keine Zustandsprüfung."
+
+# Extension settings (ADR-0052)
+msgid "Back to extensions"
+msgstr "Zurück zu den Erweiterungen"
+
+msgid "Declared settings (schema v%(version)s)"
+msgstr "Deklarierte Einstellungen (Schema v%(version)s)"
+
+msgid "Environment variable %(name)s is missing"
+msgstr "Die Umgebungsvariable %(name)s fehlt"
+
+msgid "Environment variable %(name)s is set"
+msgstr "Die Umgebungsvariable %(name)s ist gesetzt"
+
+msgid "Extension settings"
+msgstr "Erweiterungseinstellungen"
+
+msgid "Nothing was saved; fix the values below:"
+msgstr "Nichts wurde gespeichert; korrigieren Sie die Werte unten:"
+
+msgid "Save settings"
+msgstr "Einstellungen speichern"
+
+msgid "Secrets are managed in the environment; the panel never edits or displays them."
+msgstr "Geheimnisse werden in der Umgebung verwaltet; das Panel bearbeitet oder zeigt sie nie."
+
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgid "Settings saved — they apply from the next load."
+msgstr "Einstellungen gespeichert — sie gelten ab dem nächsten Laden."
+
+msgid "Source: configured for this project"
+msgstr "Quelle: für dieses Projekt konfiguriert"
+
+msgid "Source: schema default"
+msgstr "Quelle: Schema-Standardwert"

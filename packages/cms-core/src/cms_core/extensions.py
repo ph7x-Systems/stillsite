@@ -75,6 +75,16 @@ class Extension:
     language_packs: Sequence[object] = ()
     """``LanguagePack`` contributions (ADR-0034); registered on project
     load — the tag becomes a valid content language for the project."""
+    settings_schema: "SettingsSchema | None" = None
+    """Optional declared settings (ADR-0052): versioned, plain data.
+    Values persist in the project's [extension_settings.<name>] table;
+    fields with env set are secrets the panel never touches."""
+    configure: Callable[[Mapping[str, object]], None] | None = None
+    """Optional hook receiving resolved settings at load time (ADR-0052);
+    contained like every extension call."""
+    migrate_settings: Callable[[int, Mapping[str, object]], Mapping[str, object]] | None = None
+    """Optional migration between settings-schema versions (ADR-0052);
+    runs contained at read time."""
     health_check: Callable[[], Sequence["HealthCheck"]] | None = None
     """Optional self-diagnosis (ADR-0051): returns HealthCheck results.
     Run on demand by the panel and by ``cms doctor``; contained — a
@@ -140,6 +150,106 @@ def discovered_extensions() -> tuple[ExtensionInfo, ...]:
             compatible=_compatible_with_core(dist.requires),
         )
     return tuple(sorted(infos.values(), key=lambda info: info.name))
+
+
+SETTINGS_TYPES = ("string", "integer", "boolean", "choice")
+
+
+@dataclass(frozen=True)
+class SettingsField:
+    """One declared setting (ADR-0052) — plain data, never code."""
+
+    key: str
+    type: str = "string"
+    label: str = ""
+    default: object = None
+    required: bool = False
+    choices: tuple[str, ...] = ()
+    env: str = ""
+    """When set, this field is a secret held in the named environment
+    variable: the panel reports presence or absence only and never
+    edits, stores or displays the value."""
+
+
+@dataclass(frozen=True)
+class SettingsSchema:
+    """A versioned, declarative settings description (ADR-0052)."""
+
+    version: int = 1
+    fields: tuple[SettingsField, ...] = ()
+
+
+def validate_settings(
+    schema: SettingsSchema, values: Mapping[str, object]
+) -> tuple[dict[str, object], list[str]]:
+    """Deterministic validation before any persistence (ADR-0052).
+
+    Returns (clean values, errors). Unknown keys are surfaced as
+    errors, never silently dropped; defaults fill absent keys.
+    """
+    clean: dict[str, object] = {}
+    errors: list[str] = []
+    known = {spec.key: spec for spec in schema.fields}
+    for key in values:
+        if key not in known:
+            errors.append(f"unknown setting {key!r}")
+    for spec in schema.fields:
+        if spec.env:
+            continue  # secrets never enter stored values
+        raw = values.get(spec.key, spec.default)
+        if raw is None:
+            if spec.required:
+                errors.append(f"{spec.key} is required")
+            continue
+        if spec.type == "integer":
+            try:
+                clean[spec.key] = int(raw)  # type: ignore[call-overload]
+            except (TypeError, ValueError):
+                errors.append(f"{spec.key} must be an integer")
+        elif spec.type == "boolean":
+            if isinstance(raw, bool):
+                clean[spec.key] = raw
+            elif str(raw).lower() in ("true", "1", "yes", "on"):
+                clean[spec.key] = True
+            elif str(raw).lower() in ("false", "0", "no", "off", ""):
+                clean[spec.key] = False
+            else:
+                errors.append(f"{spec.key} must be a boolean")
+        elif spec.type == "choice":
+            if str(raw) in spec.choices:
+                clean[spec.key] = str(raw)
+            else:
+                errors.append(f"{spec.key} must be one of: {', '.join(spec.choices)}")
+        else:
+            clean[spec.key] = str(raw)
+    return clean, errors
+
+
+def resolve_settings(
+    schema: SettingsSchema, stored: Mapping[str, object]
+) -> tuple[dict[str, object], dict[str, str]]:
+    """Resolved values with explicit provenance (ADR-0052).
+
+    Returns (values, provenance) where provenance maps each key to
+    "default", "configured", "env-present" or "env-missing".
+    """
+    import os
+
+    values: dict[str, object] = {}
+    provenance: dict[str, str] = {}
+    for spec in schema.fields:
+        if spec.env:
+            present = bool(os.environ.get(spec.env))
+            provenance[spec.key] = "env-present" if present else "env-missing"
+            continue
+        if spec.key in stored:
+            values[spec.key] = stored[spec.key]
+            provenance[spec.key] = "configured"
+        else:
+            if spec.default is not None:
+                values[spec.key] = spec.default
+            provenance[spec.key] = "default"
+    return values, provenance
 
 
 @dataclass(frozen=True)

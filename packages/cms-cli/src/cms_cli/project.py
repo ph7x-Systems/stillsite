@@ -26,6 +26,8 @@ class Project:
     storage_url: str
     output: Path
     extension_names: tuple[str, ...] = ()
+    extension_settings: dict[str, dict[str, object]] = field(default_factory=dict)
+    """Stored ``[extension_settings.<name>]`` tables (ADR-0052)."""
     target: str = "generic"
     """The project's deployment target (``[build] target``): the admin's
     publish flow and ``cms export`` default to it (#128)."""
@@ -61,6 +63,8 @@ class Project:
         """The extensions this project explicitly trusts (ADR-0028); their
         targets, backends and themes register on load."""
         extensions = load_extensions(self.extension_names)
+        for entry, extension in zip(self.extension_names, extensions, strict=True):
+            self._apply_settings(entry, extension)
         for extension in extensions:
             for name, factory in extension.storage_backends.items():
                 register_backend(name, factory)  # type: ignore[arg-type]
@@ -75,6 +79,33 @@ class Project:
             for name, factory in extension.forms_providers.items():
                 register_forms_provider(name, factory)
         return extensions
+
+    def _apply_settings(self, entry: str, extension: Extension) -> None:
+        """Hand resolved settings to the extension, contained (ADR-0052).
+
+        ``entry`` is the activation entry the operator wrote — the same
+        key the ``[extension_settings]`` tables use.
+        """
+        if extension.settings_schema is None or extension.configure is None:
+            return
+        from cms_core.extensions import resolve_settings
+
+        stored = dict(self.extension_settings.get(entry, {}))
+        version = stored.pop("schema_version", None)
+        if (
+            extension.migrate_settings is not None
+            and isinstance(version, int)
+            and version != extension.settings_schema.version
+        ):
+            try:
+                stored = dict(extension.migrate_settings(version, stored))
+            except Exception:
+                return
+        values, _provenance = resolve_settings(extension.settings_schema, stored)
+        import contextlib
+
+        with contextlib.suppress(Exception):  # contained; doctor reports it
+            extension.configure(values)
 
     def resolve_comments_provider(self) -> CommentsProvider | None:
         """The provider ``[comments]`` names, from an activated extension
@@ -136,6 +167,11 @@ def load_project(directory: Path) -> Project:
     # A broken extension is tolerated HERE only — the commands' own
     # load_extensions() call reports it loudly (doctor shows the FAIL).
     extension_names = tuple(data.get("extensions", []))
+    extension_settings = {
+        str(name): dict(table)
+        for name, table in data.get("extension_settings", {}).items()
+        if isinstance(table, dict)
+    }
     try:
         for extension in load_extensions(extension_names):
             for pack in extension.language_packs:
@@ -188,6 +224,7 @@ def load_project(directory: Path) -> Project:
         storage_url=storage_url,
         output=output,
         extension_names=extension_names,
+        extension_settings=extension_settings,
         target=str(build_data.get("target", "generic")),
         deploy_root=(
             (directory / raw_root if not Path(raw_root).is_absolute() else Path(raw_root))

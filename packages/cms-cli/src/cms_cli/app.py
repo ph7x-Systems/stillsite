@@ -729,8 +729,28 @@ def doctor(project_dir: ProjectDir = Path()) -> None:
             True,
             f"{len(extensions)} activated" if extensions else "none configured",
         )
-        from cms_core.extensions import run_health_check
+        from cms_core.extensions import resolve_settings, run_health_check, validate_settings
 
+        for entry, extension in zip(project.extension_names, extensions, strict=True):
+            if extension.settings_schema is not None:
+                stored = dict(project.extension_settings.get(entry, {}))
+                stored.pop("schema_version", None)
+                _clean, setting_errors = validate_settings(extension.settings_schema, stored)
+                report(
+                    f"extension {extension.name}: settings",
+                    not setting_errors,
+                    "; ".join(setting_errors) or "valid",
+                )
+                _values, provenance = resolve_settings(extension.settings_schema, stored)
+                for field in extension.settings_schema.fields:
+                    if field.env:
+                        present = provenance.get(field.key) == "env-present"
+                        report(
+                            f"extension {extension.name}: {field.env}",
+                            present,
+                            "set" if present else "missing",
+                            warn=not present,
+                        )
         for extension in sorted(extensions, key=lambda e: e.name):
             for check in run_health_check(extension):
                 report(
