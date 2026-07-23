@@ -71,6 +71,23 @@ seed content and translation fixtures.
   whole path, and the project's first external pull request was
   exactly this.
 
+## Panel screens: identifiers and redirects
+
+Three CodeQL rounds distilled one rule for every admin screen:
+
+- Never build a success redirect from user-received parameters.
+- Resolve any incoming identifier against a source of truth first — an
+  allowlist, a registry, or the loaded object — and from that point on
+  work exclusively with the canonical value it returned: storage keys,
+  audit records, URLs and redirects all take the canonical value, never
+  the raw input.
+- In failure flows, render the same page again with validation
+  messages instead of redirecting with unvalidated input.
+
+Beyond satisfying static analysis, canonical resolution removes alias,
+casing and encoding ambiguity and keeps storage, audit and UI
+consistent by construction.
+
 ## Contributor credit
 
 External contributions are credited through their pull requests: the
