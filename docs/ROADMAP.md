@@ -142,7 +142,7 @@ References point at the ADR, issue or document that owns the detail.
 | Content API (versioned JSON) | ✅ | CONTENT_API.md |
 | Webhooks (on publish) | ✅ | ADR-0036 |
 | Health check (`cms doctor`) | ✅ | — |
-| Theme/extension experience without editing files | 🟡 shipped: Themes screen (discover installed themes, try-first activation, failure containment), manifest-backed cards with screenshots and compatibility · pending: extension activation and health, official theme set | #141, ADR-0048, ADR-0049 |
+| Theme/extension experience without editing files | 🟡 shipped: Themes screen with manifest-backed cards, Extensions screen (transactional activation, capabilities after load, recovery without imports) · pending: extension health/settings surfaces, official theme set | #141, ADR-0048–0050 |
 | WXR migration flow | ✅ end to end: inspection with fidelity report, idempotent re-import by source id, `--update` keeping entity ids, mappings, media fetch with rewrite, automatic redirects, and the panel Migration screen on the same shared pipeline | #140, ADR-0043–0047 |
 | Backups, scheduled builds | 🧭 | — |
 | Incremental builds, ecosystem catalog | 🔜 P3 | — |

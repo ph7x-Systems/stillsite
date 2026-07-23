@@ -1683,3 +1683,46 @@ msgstr "Kompatibel dengan pemasangan ini"
 
 msgid "Not compatible with this installation"
 msgstr "Tidak kompatibel dengan pemasangan ini"
+
+# Extensions screen (ADR-0050)
+msgid "Activate a project extension"
+msgstr "Aktifkan ekstensi proyek"
+
+msgid "Deactivate"
+msgstr "Nonaktifkan"
+
+msgid "Declared capabilities:"
+msgstr "Kemampuan yang dideklarasikan:"
+
+msgid "Extension activated — its contributions apply from the next build."
+msgstr "Ekstensi diaktifkan — kontribusinya berlaku mulai build berikutnya."
+
+msgid "Extension deactivated — the configuration no longer lists it."
+msgstr "Ekstensi dinonaktifkan — konfigurasi tidak lagi mencantumkannya."
+
+msgid "Extensions"
+msgstr "Ekstensi"
+
+msgid "Extensions install with the environment's package manager and appear here on their own. Activation loads the extension in isolation and tries a full build first; deactivation only rewrites the configuration — it works even when the extension is broken."
+msgstr "Ekstensi dipasang dengan pengelola paket lingkungan dan muncul di sini dengan sendirinya. Aktivasi memuat ekstensi secara terisolasi dan mencoba build penuh terlebih dahulu; penonaktifan hanya menulis ulang konfigurasi — tetap berfungsi meski ekstensinya rusak."
+
+msgid "Installed extensions"
+msgstr "Ekstensi terpasang"
+
+msgid "Module path"
+msgstr "Jalur modul"
+
+msgid "No extensions are installed or active."
+msgstr "Tidak ada ekstensi yang terpasang atau aktif."
+
+msgid "No project configuration was found; extensions activate per project."
+msgstr "Konfigurasi proyek tidak ditemukan; ekstensi diaktifkan per proyek."
+
+msgid "Private project extensions activate by module path, e.g. mysite_extension:extension."
+msgstr "Ekstensi proyek privat diaktifkan melalui jalur modul, mis. mysite_extension:extension."
+
+msgid "Project extension"
+msgstr "Ekstensi proyek"
+
+msgid "This extension fails to load: %(error)s"
+msgstr "Ekstensi ini gagal dimuat: %(error)s"

@@ -1,0 +1,101 @@
+{% extends "shell.html.j2" %}
+{% block title %}{{ _("Extensions") }} — Sardine CMS admin{% endblock %}
+{% block header %}<h1 class="h3 mb-0">{{ _("Extensions") }}</h1>{% endblock %}
+{% block content %}
+
+{% if notice == "activated" %}
+<div class="alert alert-success" role="status">{{ _("Extension activated — its contributions apply from the next build.") }}</div>
+{% elif notice == "deactivated" %}
+<div class="alert alert-success" role="status">{{ _("Extension deactivated — the configuration no longer lists it.") }}</div>
+{% endif %}
+{% if error %}
+<div class="alert alert-danger" role="alert">{{ _("Activation failed and the configuration was left untouched: %(error)s") | format(error=error) }}</div>
+{% endif %}
+
+<div class="card mb-3">
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Installed extensions") }}</h2></div>
+  {% if not has_project %}
+  <div class="card-body"><p class="admin-empty mb-0">{{ _("No project configuration was found; extensions activate per project.") }}</p></div>
+  {% else %}
+  <div class="card-body">
+    <p class="mb-0">{{ _("Extensions install with the environment's package manager and appear here on their own. Activation loads the extension in isolation and tries a full build first; deactivation only rewrites the configuration — it works even when the extension is broken.") }}</p>
+  </div>
+  {% if cards %}
+  <div class="card-body border-top">
+    <div class="row g-3">
+      {% for card in cards %}
+      <div class="col-md-6 d-flex">
+        <div class="card w-100">
+          <div class="card-body">
+            <h3 class="h6 mb-1">{{ card.info.name if card.info else card.name }}
+              {% if card.info and card.info.version %}<small class="text-body-secondary">{{ card.info.version }}</small>{% endif %}
+              {% if card.active %}<span class="badge text-bg-success admin-state admin-state-complete">{{ _("Active") }}</span>{% endif %}
+            </h3>
+            {% if card.info and card.info.description %}<p class="mb-2">{{ card.info.description }}</p>{% endif %}
+            <ul class="list-unstyled mb-2 small text-body-secondary">
+              {% if card.info %}
+              <li>{{ card.info.distribution or _("Project extension") }}</li>
+              {% if card.info.author %}<li>{{ _("By %(author)s") | format(author=card.info.author) }}</li>{% endif %}
+              {% if card.info.license %}<li>{{ _("License: %(license)s") | format(license=card.info.license) }}</li>{% endif %}
+              {% if card.info.homepage %}<li><a href="{{ card.info.homepage }}">{{ _("Website") }}</a></li>{% endif %}
+              {% if card.info.compatible is true %}<li>{{ _("Compatible with this installation") }}</li>
+              {% elif card.info.compatible is false %}<li class="text-danger">{{ _("Not compatible with this installation") }}</li>{% endif %}
+              {% else %}
+              <li>{{ _("Project extension") }}</li>
+              {% endif %}
+            </ul>
+            {% if card.active and card.load_error %}
+            <div class="alert alert-danger mb-2" role="alert">
+              {{ _("This extension fails to load: %(error)s") | format(error=card.load_error) }}
+            </div>
+            {% elif card.active and card.capabilities %}
+            <p class="small mb-1">{{ _("Declared capabilities:") }}</p>
+            <ul class="small mb-2">
+              {% for capability in card.capabilities %}<li>{{ capability }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+            {% if card.active %}
+            <form method="post" action="/extensions/deactivate">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <input type="hidden" name="name" value="{{ card.info.name if card.info else card.name }}">
+              <button type="submit" class="btn btn-sm btn-outline-danger">{{ _("Deactivate") }}</button>
+            </form>
+            {% else %}
+            <form method="post" action="/extensions/activate">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <input type="hidden" name="name" value="{{ card.info.name }}">
+              <button type="submit" class="btn btn-sm btn-outline-primary"
+                      {% if card.info.compatible is false %}disabled{% endif %}>{{ _("Activate") }}</button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <div class="card-body border-top"><p class="admin-empty mb-0">{{ _("No extensions are installed or active.") }}</p></div>
+  {% endif %}
+  {% endif %}
+</div>
+
+{% if has_project %}
+<div class="card">
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Activate a project extension") }}</h2></div>
+  <div class="card-body">
+    <p>{{ _("Private project extensions activate by module path, e.g. mysite_extension:extension.") }}</p>
+    <form method="post" action="/extensions/activate" class="row g-2">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="col-auto">
+        <label class="visually-hidden" for="name">{{ _("Module path") }}</label>
+        <input class="form-control" type="text" id="name" name="name" required>
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-outline-primary">{{ _("Activate") }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
