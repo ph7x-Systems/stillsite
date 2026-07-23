@@ -113,8 +113,9 @@ def test_theme_cards_render_from_the_manifest(tmp_path: Path) -> None:
         assert "License: Apache-2.0" in page.text
         assert "Compatible with this installation" in page.text
 
-        shot = client.get("/themes/screenshot/ph7x-reference")
+        shot = client.get("/themes/screenshot/ph7x-reference.png")
         assert shot.status_code == 200
         assert shot.headers["content-type"] == "image/png"
-        assert client.get("/themes/screenshot/default").status_code == 404
-        assert client.get("/themes/screenshot/no-such").status_code == 404
+        assert client.get("/themes/screenshot/default.png").status_code == 404
+        assert client.get("/themes/screenshot/ph7x-reference.webp").status_code == 404
+        assert client.get("/themes/screenshot/no-such.png").status_code == 404

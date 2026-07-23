@@ -142,6 +142,17 @@ def export_demo(
                 pages += 1
     static_src = Path(__file__).parent / "static"
     shutil.copytree(static_src, out_dir / "static", dirs_exist_ok=True)
+
+    # Theme screenshots are served from a binary route the page capture
+    # cannot see; copy them into the snapshot under the same URLs.
+    from cms_build.themes import discovered_themes
+
+    for info in discovered_themes():
+        if info.screenshot is None:
+            continue
+        target = out_dir / "themes" / "screenshot" / f"{info.name}{info.screenshot.suffix}"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(info.screenshot.read_bytes())
     if media_dir is not None and media_dir.is_dir():
         shutil.copytree(media_dir, out_dir / "media-files", dirs_exist_ok=True)
     return pages

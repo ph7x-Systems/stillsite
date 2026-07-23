@@ -33,7 +33,7 @@
       <div class="col-md-6 col-xl-4 d-flex">
         <div class="card w-100">
           {% if theme.screenshot %}
-          <img src="/themes/screenshot/{{ theme.name }}" class="card-img-top admin-theme-shot" width="1280" height="800"
+          <img src="/themes/screenshot/{{ theme.name }}{{ theme.screenshot.suffix }}" class="card-img-top admin-theme-shot" width="1280" height="800"
                alt="{{ _("Screenshot of the %(name)s theme") | format(name=theme.name) }}">
           {% endif %}
           <div class="card-body">

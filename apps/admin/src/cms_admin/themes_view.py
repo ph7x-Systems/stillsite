@@ -98,19 +98,20 @@ async def themes_view(
     return _render(request, user, session, activated=activated if activated in known else "")
 
 
-@router.get("/themes/screenshot/{name}")
+@router.get("/themes/screenshot/{filename}")
 async def theme_screenshot(
-    name: str,
+    filename: str,
     user_session: tuple[User, AdminSession] = Depends(current_session),
 ) -> FileResponse:
     user, _session = user_session
     _require_admin(user)
-    info = next((t for t in discovered_themes() if t.name == name), None)
-    if info is None or info.screenshot is None:
+    stem, dot, suffix = filename.rpartition(".")
+    info = next((t for t in discovered_themes() if t.name == stem), None)
+    if info is None or info.screenshot is None or not dot:
         raise HTTPException(status_code=404, detail="no screenshot")
     media_types = {".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp"}
     media_type = media_types.get(info.screenshot.suffix.lower())
-    if media_type is None:
+    if media_type is None or info.screenshot.suffix.lower() != f".{suffix.lower()}":
         raise HTTPException(status_code=404, detail="no screenshot")
     return FileResponse(info.screenshot, media_type=media_type)
 
