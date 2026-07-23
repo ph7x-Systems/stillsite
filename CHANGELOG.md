@@ -10,6 +10,12 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Extension health (#141): extensions may declare a health check —
+  their own answer to "is my integration alive". Results surface on
+  demand on the extension's card and in `cms doctor`, one line per
+  check; a raising check is a contained failed check, and health never
+  gates builds, publishing or activation (ADR-0051).
+
 - Astro deployment target ([#191](https://github.com/ph7x-Systems/sardine-cms/issues/191)): `cms export --target astro` emits an Astro project scaffold alongside the static site — `astro.config.mjs`, content collection schemas (`src/content/config.ts`), `package.json` and `tsconfig.json` — that consumes Sardine's Content API JSON. Teams already deploying Astro get a type-safe starting point with zero core changes; the target registers like the others and the panel picks it up automatically.
 
 ## 0.7.0 — 2026-07-23

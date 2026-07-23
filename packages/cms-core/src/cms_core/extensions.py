@@ -161,7 +161,7 @@ def run_health_check(extension: "Extension") -> tuple[HealthCheck, ...]:
         return ()
     try:
         return tuple(extension.health_check())
-    except Exception as error:  # noqa: BLE001 — contained by contract
+    except Exception as error:
         return (HealthCheck(name="health check", ok=False, detail=str(error)),)
 
 

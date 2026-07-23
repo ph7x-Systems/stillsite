@@ -297,6 +297,12 @@ recovery path works precisely when the import fails. Private project
 extensions activate by module path. Everything lands in the audit
 trail.
 
+An extension may declare a **health check** — its own answer to "is my
+integration alive" (credentials valid, endpoint reachable). Health runs
+on demand from the card's Check health action and inside `cms doctor`
+(one line per check); a raising check renders as a failed check, never
+a crash, and health never gates builds, publishing or activation.
+
 ### Migrating from the panel
 
 The **Migration** screen (admin role) is the same pipeline with a
