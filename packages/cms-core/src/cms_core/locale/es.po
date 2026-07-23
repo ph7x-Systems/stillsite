@@ -1685,3 +1685,46 @@ msgstr "Compatible con esta instalación"
 
 msgid "Not compatible with this installation"
 msgstr "No compatible con esta instalación"
+
+# Extensions screen (ADR-0050)
+msgid "Activate a project extension"
+msgstr "Activar una extensión del proyecto"
+
+msgid "Deactivate"
+msgstr "Desactivar"
+
+msgid "Declared capabilities:"
+msgstr "Capacidades declaradas:"
+
+msgid "Extension activated — its contributions apply from the next build."
+msgstr "Extensión activada — sus contribuciones se aplican a partir de la próxima build."
+
+msgid "Extension deactivated — the configuration no longer lists it."
+msgstr "Extensión desactivada — la configuración ya no la lista."
+
+msgid "Extensions"
+msgstr "Extensiones"
+
+msgid "Extensions install with the environment's package manager and appear here on their own. Activation loads the extension in isolation and tries a full build first; deactivation only rewrites the configuration — it works even when the extension is broken."
+msgstr "Las extensiones se instalan con el gestor de paquetes del entorno y aparecen aquí por sí solas. La activación carga la extensión de forma aislada e intenta primero una build completa; la desactivación solo reescribe la configuración — funciona incluso con la extensión rota."
+
+msgid "Installed extensions"
+msgstr "Extensiones instaladas"
+
+msgid "Module path"
+msgstr "Ruta del módulo"
+
+msgid "No extensions are installed or active."
+msgstr "No hay extensiones instaladas ni activas."
+
+msgid "No project configuration was found; extensions activate per project."
+msgstr "No se encontró configuración de proyecto; las extensiones se activan por proyecto."
+
+msgid "Private project extensions activate by module path, e.g. mysite_extension:extension."
+msgstr "Las extensiones privadas del proyecto se activan por ruta de módulo, p. ej. mysite_extension:extension."
+
+msgid "Project extension"
+msgstr "Extensión del proyecto"
+
+msgid "This extension fails to load: %(error)s"
+msgstr "Esta extensión no se puede cargar: %(error)s"

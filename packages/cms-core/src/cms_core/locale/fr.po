@@ -1685,3 +1685,46 @@ msgstr "Compatible avec cette installation"
 
 msgid "Not compatible with this installation"
 msgstr "Incompatible avec cette installation"
+
+# Extensions screen (ADR-0050)
+msgid "Activate a project extension"
+msgstr "Activer une extension du projet"
+
+msgid "Deactivate"
+msgstr "Désactiver"
+
+msgid "Declared capabilities:"
+msgstr "Capacités déclarées :"
+
+msgid "Extension activated — its contributions apply from the next build."
+msgstr "Extension activée — ses contributions s’appliquent dès le prochain build."
+
+msgid "Extension deactivated — the configuration no longer lists it."
+msgstr "Extension désactivée — la configuration ne la liste plus."
+
+msgid "Extensions"
+msgstr "Extensions"
+
+msgid "Extensions install with the environment's package manager and appear here on their own. Activation loads the extension in isolation and tries a full build first; deactivation only rewrites the configuration — it works even when the extension is broken."
+msgstr "Les extensions s’installent avec le gestionnaire de paquets de l’environnement et apparaissent ici d’elles-mêmes. L’activation charge l’extension isolément et tente d’abord un build complet ; la désactivation ne fait que réécrire la configuration — elle fonctionne même si l’extension est cassée."
+
+msgid "Installed extensions"
+msgstr "Extensions installées"
+
+msgid "Module path"
+msgstr "Chemin du module"
+
+msgid "No extensions are installed or active."
+msgstr "Aucune extension installée ou active."
+
+msgid "No project configuration was found; extensions activate per project."
+msgstr "Aucune configuration de projet trouvée ; les extensions s’activent par projet."
+
+msgid "Private project extensions activate by module path, e.g. mysite_extension:extension."
+msgstr "Les extensions privées du projet s’activent par chemin de module, p. ex. mysite_extension:extension."
+
+msgid "Project extension"
+msgstr "Extension du projet"
+
+msgid "This extension fails to load: %(error)s"
+msgstr "Cette extension ne se charge pas : %(error)s"
