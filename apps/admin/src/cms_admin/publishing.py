@@ -38,7 +38,7 @@ register_screen(
     )
 )
 
-TARGETS = ("generic", "swa", "nginx")
+TARGETS = ("generic", "swa", "nginx", "astro")
 
 
 def persist_target(project_file: Path, target: str) -> None:

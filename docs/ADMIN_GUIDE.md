@@ -207,7 +207,7 @@ with that entity's errors listed (the publish gate; disable only with
 report, and two actions: **Preview build** (any role) into a temporary
 directory served under `/preview/`, and **Build & export** (publisher and
 up) which validates first, then writes the project's output directory with
-the chosen target's extras (`generic`, `swa`, `nginx`). Every run is
+the chosen target's extras (`generic`, `swa`, `nginx`, `astro`). Every run is
 recorded and shown on the panel and the dashboard.
 
 ## Backup, restore and foreign import

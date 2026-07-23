@@ -84,7 +84,7 @@ below.
 
 ### 3. Manual export and sync
 
-Build with the matching target (`cms export -p . --target swa|nginx|generic`),
+Build with the matching target (`cms export -p . --target swa|nginx|generic|astro`),
 then copy the output directory with the host's own tool (`swa deploy`,
 `aws s3 sync`, `netlify deploy`, `gh-pages`). The artifact is
 self-contained — sync means copying the directory.

@@ -1152,6 +1152,16 @@ msgstr "Su elección queda registrada en el proyecto — la línea de comandos c
 msgid "Your own nginx server"
 msgstr "Su propio servidor nginx"
 
+msgid "Astro site"
+msgstr "Sitio Astro"
+
+msgid "Includes an Astro project scaffold — astro.config.mjs, content collections and package.json — that consumes the Content API JSON. Run npm install && npm run dev to preview."
+msgstr "Incluye un andamio de proyecto Astro — astro.config.mjs, colecciones de contenido y package.json — que consume el JSON del Content API. Ejecute npm install && npm run dev para previsualizar."
+
+msgid "Run npm install && npm run dev in the output directory to preview the Astro site."
+msgstr "Ejecute npm install && npm run dev en el directorio de salida para previsualizar el sitio Astro."
+
+
 msgid "Your site is built and ready to go live."
 msgstr "Su sitio está construido y listo para publicarse."
 

@@ -84,6 +84,7 @@
               "generic": (_("Any static host"), _("A plain folder of files — upload the output directory to any static host or shared hosting.")),
               "swa": (_("Azure Static Web Apps"), _("Includes staticwebapp.config.json with your redirects and headers — deploy the output with the SWA CLI or a GitHub Action.")),
               "nginx": (_("Your own nginx server"), _("Includes an nginx.conf snippet with redirects and caching — copy the output to the server and include the snippet.")),
+              "astro": (_("Astro site"), _("Includes an Astro project scaffold — astro.config.mjs, content collections and package.json — that consumes the Content API JSON. Run npm install && npm run dev to preview.")),
             } %}
             <fieldset class="mb-2">
               <legend class="h6 fs-6">{{ _("Where will the site live?") }}</legend>
@@ -135,6 +136,7 @@
           <p class="mb-0">
             {% if last_build.target == "swa" %}{{ _("Deploy that directory with the SWA CLI or your GitHub Action — the configuration file is already inside.") }}
             {% elif last_build.target == "nginx" %}{{ _("Copy that directory to your server and include the generated nginx.conf snippet.") }}
+            {% elif last_build.target == "astro" %}{{ _("Run npm install && npm run dev in the output directory to preview the Astro site.") }}
             {% else %}{{ _("Upload everything inside that directory to your host — that is the whole site.") }}{% endif %}
           </p>
         </div>

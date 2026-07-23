@@ -135,6 +135,165 @@ class NginxTarget:
         }
 
 
+class AstroTarget:
+    """Astro: a project scaffold that consumes Sardine's Content API JSON
+    through Content Collections, for teams that already deploy Astro."""
+
+    name = "astro"
+
+    def extra_files(self, config: SiteConfig, artifact: Artifact) -> Mapping[str, bytes]:
+        languages = [lang.value for lang in config.all_languages]
+        return {
+            "astro.config.mjs": _astro_config().encode("utf-8"),
+            "src/content/config.ts": _astro_content_config().encode("utf-8"),
+            "package.json": _astro_package_json().encode("utf-8"),
+            "tsconfig.json": _astro_tsconfig().encode("utf-8"),
+            "README.md": _astro_readme(languages).encode("utf-8"),
+        }
+
+
+def _astro_config() -> str:
+    return (
+        "import { defineConfig } from 'astro/config';\n"
+        "\n"
+        "export default defineConfig({\n"
+        "  output: 'static',\n"
+        "});\n"
+    )
+
+
+def _astro_content_config() -> str:
+    return (
+        "import { defineCollection, z } from 'astro:content';\n"
+        "\n"
+        "// Schemas match Sardine's Content API (api/v1/{lang}/content.json).\n"
+        "// Enable [build] content_api = true in sardine.toml to emit the JSON.\n"
+        "\n"
+        "const articles = defineCollection({\n"
+        "  type: 'data',\n"
+        "  schema: z.object({\n"
+        "    id: z.string(),\n"
+        "    slug: z.string(),\n"
+        "    url: z.string(),\n"
+        "    title: z.string(),\n"
+        "    summary: z.string(),\n"
+        "    body_html: z.string(),\n"
+        "    date: z.string(),\n"
+        "    author: z.string().optional(),\n"
+        "    featured: z.boolean().optional(),\n"
+        "    category: z.object({\n"
+        "      slug: z.string(),\n"
+        "      label: z.string(),\n"
+        "    }).optional(),\n"
+        "    tags: z.array(z.object({\n"
+        "      slug: z.string(),\n"
+        "      url: z.string(),\n"
+        "    })).optional(),\n"
+        "    cover: z.object({\n"
+        "      id: z.string(),\n"
+        "      url: z.string(),\n"
+        "      alt: z.string(),\n"
+        "      width: z.number().optional(),\n"
+        "      height: z.number().optional(),\n"
+        "    }).optional(),\n"
+        "    fields: z.record(z.string()).optional(),\n"
+        "  }),\n"
+        "});\n"
+        "\n"
+        "const pages = defineCollection({\n"
+        "  type: 'data',\n"
+        "  schema: z.object({\n"
+        "    id: z.string(),\n"
+        "    slug: z.string(),\n"
+        "    url: z.string(),\n"
+        "    title: z.string(),\n"
+        "    description: z.string(),\n"
+        "    body_markdown: z.string(),\n"
+        "    sections: z.array(z.object({\n"
+        "      key: z.string(),\n"
+        "      kind: z.string(),\n"
+        "      fields: z.record(z.string()),\n"
+        "      items: z.array(z.record(z.unknown())),\n"
+        "      images: z.array(z.object({\n"
+        "        id: z.string(),\n"
+        "        url: z.string(),\n"
+        "        alt: z.string(),\n"
+        "      })),\n"
+        "    })),\n"
+        "  }),\n"
+        "});\n"
+        "\n"
+        "export const collections = { articles, pages };\n"
+    )
+
+
+def _astro_package_json() -> str:
+    return (
+        "{\n"
+        '  "name": "sardine-astro",\n'
+        '  "type": "module",\n'
+        '  "version": "0.0.1",\n'
+        '  "private": true,\n'
+        '  "scripts": {\n'
+        '    "dev": "astro dev",\n'
+        '    "build": "astro build",\n'
+        '    "preview": "astro preview"\n'
+        "  },\n"
+        '  "dependencies": {\n'
+        '    "astro": "^4.16.0"\n'
+        "  }\n"
+        "}\n"
+    )
+
+
+def _astro_tsconfig() -> str:
+    return '{\n  "extends": "astro/tsconfigs/strict"\n}\n'
+
+
+def _astro_readme(languages: list[str]) -> str:
+    lang_list = ", ".join(languages)
+    return (
+        "# Sardine CMS + Astro\n"
+        "\n"
+        "This directory contains a Sardine CMS build with an Astro project\n"
+        "scaffold. The static HTML site is ready to serve as-is; the scaffold\n"
+        "lets you consume the same content through Astro if you prefer its\n"
+        "component model.\n"
+        "\n"
+        "## Prerequisites\n"
+        "\n"
+        "- Node.js 18 or later\n"
+        "- Sardine's Content API enabled (`content_api = true` in `[build]`)\n"
+        "\n"
+        "## Quick start\n"
+        "\n"
+        "```sh\n"
+        "npm install\n"
+        "npm run dev\n"
+        "```\n"
+        "\n"
+        "The dev server starts at http://localhost:4321.\n"
+        "\n"
+        "## How it works\n"
+        "\n"
+        "Sardine's Content API emits versioned JSON at\n"
+        "`api/v1/{lang}/content.json` with the same publication, scheduling\n"
+        f"and language rules as the HTML build. Configured languages: {lang_list}.\n"
+        "The content collections in `src/content/config.ts` define Zod schemas\n"
+        "matching that JSON, so you can query articles and pages type-safely in\n"
+        "your Astro components.\n"
+        "\n"
+        "## File layout\n"
+        "\n"
+        "- `astro.config.mjs` — Astro configuration\n"
+        "- `src/content/config.ts` — content collection schemas\n"
+        "- `package.json` — dependencies and scripts\n"
+        "- `tsconfig.json` — TypeScript configuration (extends Astro's strict preset)\n"
+        "- `api/v1/` — Sardine's Content API JSON (generated by the build)\n"
+    )
+
+
 register_target("generic", GenericTarget)
 register_target("swa", SwaTarget)
 register_target("nginx", NginxTarget)
+register_target("astro", AstroTarget)

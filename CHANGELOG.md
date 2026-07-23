@@ -42,6 +42,8 @@ theme conformance suite follow in the next phase.
   first; a failing theme shows its error and the configuration stays
   untouched. The panel never installs packages (ADR-0048).
 
+- Astro deployment target ([#191](https://github.com/ph7x-Systems/sardine-cms/issues/191)): `cms export --target astro` emits an Astro project scaffold alongside the static site — `astro.config.mjs`, content collection schemas (`src/content/config.ts`), `package.json` and `tsconfig.json` — that consumes Sardine's Content API JSON. Teams already deploying Astro get a type-safe starting point with zero core changes; the target registers like the others and the panel picks it up automatically.
+
 ## 0.6.0 — 2026-07-23
 
 The migration release: the WXR flow (#140) is complete end to end,

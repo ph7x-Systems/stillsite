@@ -10,7 +10,7 @@ cms init my-site --name "My Site" --base-url "https://my-site.example"
 cms seed       # fictional starter content, five languages
 cms validate   # the rules; non-zero exit on errors
 cms build      # validate + deterministic build into the output directory
-cms export     # build + deployment-target config (--target swa|nginx|generic)
+cms export     # build + deployment-target config (--target swa|nginx|generic|astro)
 cms preview    # serve the built site locally
 cms dump       # portable content.json + Markdown backup
 cms import portable                  # restore a portable dump

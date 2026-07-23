@@ -1150,6 +1150,16 @@ msgstr "Pilihan Anda diingat dalam proyek — command line cms juga menggunakann
 msgid "Your own nginx server"
 msgstr "Server nginx Anda sendiri"
 
+msgid "Astro site"
+msgstr "Situs Astro"
+
+msgid "Includes an Astro project scaffold — astro.config.mjs, content collections and package.json — that consumes the Content API JSON. Run npm install && npm run dev to preview."
+msgstr "Termasuk kerangka proyek Astro — astro.config.mjs, content collections dan package.json — yang mengonsumsi JSON Content API. Jalankan npm install && npm run dev untuk pratinjau."
+
+msgid "Run npm install && npm run dev in the output directory to preview the Astro site."
+msgstr "Jalankan npm install && npm run dev di direktori output untuk pratinjau situs Astro."
+
+
 msgid "Your site is built and ready to go live."
 msgstr "Situs Anda sudah di-build dan siap tayang."
 

@@ -35,7 +35,7 @@ configuration, never imported directly by name in application code.
 | Contract | Registry | Ships with |
 | --- | --- | --- |
 | `StorageBackend` | `register_backend(scheme, factory)` | sqlite, postgresql, mysql, mssql |
-| `Target` (deployment) | `register_target(name, target)` | generic, swa, nginx |
+| `Target` (deployment) | `register_target(name, target)` | generic, swa, nginx, astro |
 | `Theme` | `register_theme(name, theme)` | default, reference theme package |
 | Validation `Rule` | `RuleSet` composition | core rules + extension contributions |
 | `Extension` | `sardine.extensions` entry points or dotted paths | explicit activation; rules, build steps, registries, CLI and section hints |

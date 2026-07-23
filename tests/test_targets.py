@@ -46,7 +46,7 @@ def test_redirects_reject_path_and_nginx_directive_injection(source: str, destin
 
 
 def test_builtin_targets_registered() -> None:
-    assert {"generic", "swa", "nginx"} <= set(available_targets())
+    assert {"generic", "swa", "nginx", "astro"} <= set(available_targets())
 
 
 def test_generic_target_adds_nothing() -> None:
@@ -81,6 +81,38 @@ def test_nginx_target_emits_conf_and_dockerfile() -> None:
 def test_unknown_target_fails_loudly() -> None:
     with pytest.raises(ValueError, match="generic"):
         create_target("cloudflare")
+
+
+def test_astro_target_emits_scaffold_files() -> None:
+    files = create_target("astro").extra_files(CONFIG, Artifact())
+    assert "astro.config.mjs" in files
+    assert "src/content/config.ts" in files
+    assert "package.json" in files
+    assert "tsconfig.json" in files
+    assert "README.md" in files
+    config = files["astro.config.mjs"].decode("utf-8")
+    assert "defineConfig" in config
+    content_config = files["src/content/config.ts"].decode("utf-8")
+    assert "defineCollection" in content_config
+    assert "articles" in content_config
+    assert "pages" in content_config
+    pkg = json.loads(files["package.json"])
+    assert "astro" in pkg["dependencies"]
+    readme = files["README.md"].decode("utf-8")
+    assert "Sardine" in readme
+    assert "Content API" in readme
+
+
+def test_astro_readme_lists_configured_languages() -> None:
+    config = SiteConfig(
+        name="Multi",
+        base_url="https://example.com",
+        languages=(Language.PT_PT, Language("it")),
+    )
+    files = create_target("astro").extra_files(config, Artifact())
+    readme = files["README.md"].decode("utf-8")
+    assert "pt-pt" in readme
+    assert "it" in readme
 
 
 def test_custom_target_registration() -> None:
