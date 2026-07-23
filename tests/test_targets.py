@@ -1,10 +1,21 @@
 """Deployment target adapters."""
 
 import json
+from datetime import UTC, datetime
 
 import pytest
-from cms_build import Artifact, SiteConfig, available_targets, create_target, register_target
-from cms_core import Language, MenuItem
+from cms_build import (
+    Artifact,
+    SiteConfig,
+    available_targets,
+    build_site,
+    create_target,
+    register_target,
+)
+from cms_core import ArticleContent, ContentStatus, Language, MediaAsset, MenuItem, new_article
+from cms_core.pages import PageContent, Section, SectionContent, new_page
+from cms_validation import SiteContent
+from pydantic import BaseModel
 
 CONFIG = SiteConfig(name="Aurora", base_url="https://example.com", languages=(Language.PT_PT,))
 
@@ -140,3 +151,142 @@ def test_redirects_reach_both_target_configs() -> None:
     conf = create_target("nginx").extra_files(config, Artifact())["nginx.conf"].decode("utf-8")
     assert "location = /old/ { return 301 /new/; }" in conf
     assert "location = /blog-old/ { return 301 /blog/; }" in conf
+
+
+# Pydantic mirrors of the Astro content collection Zod schemas in
+# packages/cms-build/src/cms_build/targets.py. These validate that the
+# real Content API JSON emitted by the builder matches the schemas
+# shipped to Astro consumers.
+
+
+class _AstroImageSource(BaseModel):
+    type: str
+    srcset: str
+
+
+class _AstroImage(BaseModel):
+    url: str
+    alt: str
+    width: int | float
+    height: int | float
+    sources: list[_AstroImageSource]
+    focal: dict[str, int | float] | None = None
+    srcset: str | None = None
+
+
+class _AstroCategory(BaseModel):
+    slug: str
+    label: str
+    url: str
+
+
+class _AstroArticle(BaseModel):
+    id: str
+    slug: str | None
+    url: str
+    title: str
+    summary: str
+    body_html: str
+    date: str
+    author: str | None
+    featured: bool | None = None
+    category: _AstroCategory | None
+    tags: list[dict[str, str]] | None = None
+    cover: _AstroImage | None
+    fields: dict[str, str] | None = None
+    seo: dict[str, object] | None = None
+
+
+class _AstroSection(BaseModel):
+    key: str
+    kind: str
+    fields: dict[str, str]
+    items: list[dict[str, object]]
+    images: list[_AstroImage]
+
+
+class _AstroPage(BaseModel):
+    id: str
+    slug: str | None
+    url: str
+    title: str
+    description: str
+    body_markdown: str
+    sections: list[_AstroSection]
+    seo: dict[str, object] | None = None
+
+
+NOW = datetime(2026, 1, 15, 9, 0, tzinfo=UTC)
+
+
+def test_astro_content_schema_matches_real_api_output() -> None:
+    """The Astro Zod schemas must accept real Content API documents."""
+    cover_asset = MediaAsset(
+        id="cover-shot",
+        path="images/cover.svg",
+        mime_type="image/svg+xml",
+        width=1200,
+        height=630,
+        alt={Language.EN: "A cover"},
+    )
+
+    with_cover = new_article(
+        "covered",
+        ArticleContent(title="Covered", summary="S", body_markdown="Body"),
+        now=NOW,
+    )
+    with_cover.status = ContentStatus.PUBLISHED
+    with_cover.author = "Crew"
+    with_cover.category = "field-notes"
+    with_cover.cover = "cover-shot"
+
+    without_category = new_article(
+        "minimal",
+        ArticleContent(title="Minimal", summary="S", body_markdown="Body"),
+        now=NOW,
+    )
+    without_category.status = ContentStatus.PUBLISHED
+
+    home = new_page("home", PageContent(title="Home", description="D", slug="home"), now=NOW)
+    home.status = ContentStatus.PUBLISHED
+    hero = Section(key="hero", kind="hero", source=SectionContent(fields={"heading": "Hi"}))
+    hero.source.media = ["cover-shot"]
+    home.sections.append(hero)
+
+    config = SiteConfig(
+        name="AstroSchema",
+        base_url="https://example.com",
+        languages=(Language.EN,),
+        content_api=True,
+        categories={"field-notes": {Language.EN: "Field notes"}},
+    )
+    content = SiteContent(
+        pages=[home],
+        articles=[with_cover, without_category],
+        media=[cover_asset],
+    )
+    artifact = build_site(config, content, now=NOW)
+    payload = json.loads(artifact.files["api/v1/en/content.json"].decode("utf-8"))
+
+    assert payload["version"] == 1
+    assert payload["language"] == "en"
+
+    articles = [_AstroArticle.model_validate(a) for a in payload["articles"]]
+    pages = [_AstroPage.model_validate(p) for p in payload["pages"]]
+    assert len(articles) == 2
+    assert len(pages) == 1
+
+    covered = next(a for a in articles if a.id == "covered")
+    assert covered.author == "Crew"
+    assert covered.category is not None
+    assert covered.category.url.endswith("/field-notes/")
+    assert covered.cover is not None
+    assert covered.cover.width == 1200
+    assert covered.cover.sources == []
+
+    minimal = next(a for a in articles if a.id == "minimal")
+    assert minimal.author is None
+    assert minimal.category is None
+    assert minimal.cover is None
+
+    assert pages[0].sections[0].images[0].url.endswith("cover.svg")
