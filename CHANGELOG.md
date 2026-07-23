@@ -10,6 +10,13 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Theme conformance as a public contract (#141): the suite moves to
+  `cms_build.theme_conformance` — versioned, self-contained, fifteen
+  named checks any theme package imports and runs against itself. Both
+  bundled themes are certified by the full contract in CI, and "passes
+  the conformance suite" becomes the objective acceptance rule for
+  community themes (ADR-0053).
+
 - Extension settings (#141): extensions declare a versioned settings
   schema — plain data, defaults included — and the panel renders it
   with explicit provenance per value; validation precedes persistence,
