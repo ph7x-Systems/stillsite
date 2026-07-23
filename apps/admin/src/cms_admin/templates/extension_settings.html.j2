@@ -1,0 +1,62 @@
+{% extends "shell.html.j2" %}
+{% block title %}{{ _("Extension settings") }} — Sardine CMS admin{% endblock %}
+{% block header %}<h1 class="h3 mb-0">{{ _("Extension settings") }} — {{ name }}</h1>{% endblock %}
+{% block content %}
+
+{% if saved %}
+<div class="alert alert-success" role="status">{{ _("Settings saved — they apply from the next load.") }}</div>
+{% endif %}
+{% if errors %}
+<div class="alert alert-danger" role="alert">
+  <p class="mb-1">{{ _("Nothing was saved; fix the values below:") }}</p>
+  <ul class="mb-0">{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-header"><h2 class="card-title h6 mb-0">{{ _("Declared settings (schema v%(version)s)") | format(version=schema.version) }}</h2></div>
+  <div class="card-body">
+    <form method="post" action="/extensions/settings/{{ name }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      {% for field in schema.fields %}
+      <div class="mb-3">
+        {% if field.env %}
+        <p class="mb-1"><strong>{{ field.label or field.key }}</strong></p>
+        {% if provenance[field.key] == "env-present" %}
+        <span class="badge text-bg-success admin-state admin-state-complete">{{ _("Environment variable %(name)s is set") | format(name=field.env) }}</span>
+        {% else %}
+        <span class="badge text-bg-danger admin-state admin-state-missing">{{ _("Environment variable %(name)s is missing") | format(name=field.env) }}</span>
+        {% endif %}
+        <p class="small text-body-secondary mb-0">{{ _("Secrets are managed in the environment; the panel never edits or displays them.") }}</p>
+        {% elif field.type == "boolean" %}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="f-{{ field.key }}" name="{{ field.key }}"
+                 {% if values.get(field.key) %}checked{% endif %}>
+          <label class="form-check-label" for="f-{{ field.key }}">{{ field.label or field.key }}</label>
+        </div>
+        {% elif field.type == "choice" %}
+        <label class="form-label" for="f-{{ field.key }}">{{ field.label or field.key }}</label>
+        <select class="form-select" id="f-{{ field.key }}" name="{{ field.key }}">
+          {% for choice in field.choices %}
+          <option value="{{ choice }}" {% if values.get(field.key) == choice %}selected{% endif %}>{{ choice }}</option>
+          {% endfor %}
+        </select>
+        {% else %}
+        <label class="form-label" for="f-{{ field.key }}">{{ field.label or field.key }}</label>
+        <input class="form-control" type="text" id="f-{{ field.key }}" name="{{ field.key }}"
+               value="{{ values.get(field.key, '') }}">
+        {% endif %}
+        {% if not field.env %}
+        <p class="small text-body-secondary mb-0">
+          {% if provenance[field.key] == "configured" %}{{ _("Source: configured for this project") }}
+          {% else %}{{ _("Source: schema default") }}{% endif %}
+        </p>
+        {% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary">{{ _("Save settings") }}</button>
+      <a class="btn btn-outline-secondary" href="/extensions">{{ _("Back to extensions") }}</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

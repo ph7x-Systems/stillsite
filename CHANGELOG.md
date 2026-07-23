@@ -10,6 +10,15 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Extension settings (#141): extensions declare a versioned settings
+  schema — plain data, defaults included — and the panel renders it
+  with explicit provenance per value; validation precedes persistence,
+  values persist per project, optional migrations bridge schema
+  versions, and resolved settings reach the extension at load time.
+  Secret fields name an environment variable: the panel shows presence
+  or absence only. `cms doctor` reports settings validity and each
+  required variable (ADR-0052).
+
 - Extension health (#141): extensions may declare a health check —
   their own answer to "is my integration alive". Results surface on
   demand on the extension's card and in `cms doctor`, one line per

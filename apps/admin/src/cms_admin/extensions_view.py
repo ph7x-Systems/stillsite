@@ -16,7 +16,13 @@ from urllib.parse import quote
 
 from cms_build import build_site
 from cms_core import AdminSession, Role, User
-from cms_core.extensions import discovered_extensions, load_extensions, run_health_check
+from cms_core.extensions import (
+    discovered_extensions,
+    load_extensions,
+    resolve_settings,
+    run_health_check,
+    validate_settings,
+)
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 
@@ -109,15 +115,19 @@ def _render(
         name = card["info"].name if card["info"] else card["name"]
         try:
             (extension,) = load_extensions([name])
+            if project is not None:
+                project._apply_settings(name, extension)
             card["capabilities"] = _capabilities(extension)
             card["load_error"] = ""
             card["has_health"] = extension.health_check is not None
+            card["has_settings"] = extension.settings_schema is not None
             if name == health_for:
                 card["health"] = list(run_health_check(extension))
         except Exception as failure:
             card["capabilities"] = []
             card["load_error"] = str(failure)
             card["has_health"] = False
+            card["has_settings"] = False
     return request.app.state.templates.TemplateResponse(
         request,
         "extensions.html.j2",
@@ -212,6 +222,127 @@ async def extension_activate(
     await audit_record(request, user.username, "activated", "extension", name)
     return RedirectResponse(
         f"/extensions?notice={quote('activated')}", status_code=status.HTTP_303_SEE_OTHER
+    )
+
+
+def _write_extension_settings(
+    project_file: Path, name: str, values: dict[str, object], version: int
+) -> None:
+    """Rewrite only the ``[extension_settings.<name>]`` table (ADR-0052)."""
+    header = f'[extension_settings."{name}"]'
+    lines = project_file.read_text(encoding="utf-8").splitlines()
+    kept: list[str] = []
+    in_table = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped == header:
+            in_table = True
+            continue
+        if in_table and stripped.startswith("["):
+            in_table = False
+        if not in_table:
+            kept.append(line)
+    while kept and not kept[-1].strip():
+        kept.pop()
+    rendered: list[str] = ["", header, f"schema_version = {version}"]
+    for key, value in sorted(values.items()):
+        if isinstance(value, bool):
+            rendered.append(f"{key} = {'true' if value else 'false'}")
+        elif isinstance(value, int):
+            rendered.append(f"{key} = {value}")
+        else:
+            escaped = str(value).replace("\\", "\\\\").replace('"', '\\"')
+            rendered.append(f'{key} = "{escaped}"')
+    kept.extend(rendered)
+    project_file.write_text("\n".join(kept) + "\n", encoding="utf-8")
+
+
+def _settings_context(request: Request, name: str) -> dict[str, Any]:
+    project = _project(request)
+    if project is None or name not in project.extension_names:
+        raise HTTPException(status_code=404, detail="not active")
+    try:
+        (extension,) = load_extensions([name])
+    except Exception as failure:
+        raise HTTPException(status_code=409, detail=str(failure)[:200]) from None
+    if extension.settings_schema is None:
+        raise HTTPException(status_code=404, detail="no settings schema")
+    schema = extension.settings_schema
+    stored = dict(project.extension_settings.get(name, {}))
+    stored.pop("schema_version", None)
+    values, provenance = resolve_settings(schema, stored)
+    return {
+        "name": name,
+        "schema": schema,
+        "values": values,
+        "provenance": provenance,
+        "project": project,
+    }
+
+
+@router.get("/extensions/settings/{name}")
+async def extension_settings_view(
+    request: Request,
+    name: str,
+    user_session: tuple[User, AdminSession] = Depends(current_session),
+    saved: str = "",
+) -> object:
+    user, session = user_session
+    _require_admin(user)
+    context = _settings_context(request, name)
+    return request.app.state.templates.TemplateResponse(
+        request,
+        "extension_settings.html.j2",
+        {
+            "user": user,
+            "csrf_token": session.csrf_token,
+            "active_section": "extensions",
+            "saved": saved == "1",
+            "errors": [],
+            **context,
+        },
+    )
+
+
+@router.post("/extensions/settings/{name}")
+async def extension_settings_save(
+    request: Request,
+    name: str,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+) -> object:
+    user, session = user_session
+    _require_admin(user)
+    context = _settings_context(request, name)
+    schema = context["schema"]
+    form = await request.form()
+    submitted: dict[str, object] = {}
+    for field in schema.fields:
+        if field.env:
+            continue
+        if field.type == "boolean":
+            submitted[field.key] = field.key in form
+        elif field.key in form:
+            submitted[field.key] = str(form[field.key])
+    clean, errors = validate_settings(schema, submitted)
+    if errors:
+        # Validation precedes persistence: nothing was written (ADR-0052).
+        return request.app.state.templates.TemplateResponse(
+            request,
+            "extension_settings.html.j2",
+            {
+                "user": user,
+                "csrf_token": session.csrf_token,
+                "active_section": "extensions",
+                "saved": False,
+                "errors": errors,
+                **context,
+            },
+        )
+    project = context["project"]
+    _write_extension_settings(project.directory / "sardine.toml", name, clean, schema.version)
+    await audit_record(request, user.username, "configured", "extension", name)
+    return RedirectResponse(
+        f"/extensions/settings/{quote(name)}?saved=1", status_code=status.HTTP_303_SEE_OTHER
     )
 
 

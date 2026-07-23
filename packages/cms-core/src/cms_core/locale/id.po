@@ -1746,3 +1746,40 @@ msgstr "Kesehatan:"
 
 msgid "This extension declares no health check."
 msgstr "Ekstensi ini tidak mendeklarasikan pemeriksaan kesehatan."
+
+# Extension settings (ADR-0052)
+msgid "Back to extensions"
+msgstr "Kembali ke ekstensi"
+
+msgid "Declared settings (schema v%(version)s)"
+msgstr "Pengaturan yang dideklarasikan (skema v%(version)s)"
+
+msgid "Environment variable %(name)s is missing"
+msgstr "Variabel lingkungan %(name)s tidak ada"
+
+msgid "Environment variable %(name)s is set"
+msgstr "Variabel lingkungan %(name)s sudah diatur"
+
+msgid "Extension settings"
+msgstr "Pengaturan ekstensi"
+
+msgid "Nothing was saved; fix the values below:"
+msgstr "Tidak ada yang disimpan; perbaiki nilai di bawah:"
+
+msgid "Save settings"
+msgstr "Simpan pengaturan"
+
+msgid "Secrets are managed in the environment; the panel never edits or displays them."
+msgstr "Rahasia dikelola di lingkungan; panel tidak pernah mengedit atau menampilkannya."
+
+msgid "Settings"
+msgstr "Pengaturan"
+
+msgid "Settings saved — they apply from the next load."
+msgstr "Pengaturan disimpan — berlaku mulai pemuatan berikutnya."
+
+msgid "Source: configured for this project"
+msgstr "Sumber: dikonfigurasi untuk proyek ini"
+
+msgid "Source: schema default"
+msgstr "Sumber: bawaan skema"

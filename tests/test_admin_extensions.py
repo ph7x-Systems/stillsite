@@ -148,3 +148,64 @@ def test_health_runs_on_demand_and_contains_raising_checks(tmp_path: Path) -> No
         )
         assert contained.status_code == 200
         assert "health probe exploded" in contained.text
+
+
+def test_settings_validate_before_persisting_and_show_provenance(tmp_path: Path) -> None:
+    toml = 'extensions = ["fixture_extension:extension"]\n' + PROJECT_TOML
+    with TestClient(_app(tmp_path, toml=toml), base_url="https://testserver") as client:
+        csrf = _sign_in(client)
+
+        page = client.get("/extensions/settings/fixture_extension:extension")
+        assert page.status_code == 200
+        assert "Source: schema default" in page.text
+        assert "Environment variable FIXTURE_API_KEY is missing" in page.text
+        after_key = page.text.split("FIXTURE_API_KEY")[1][:200]
+        assert "value=" not in after_key  # presence only, never the value
+
+        # Invalid input: nothing persists.
+        bad = client.post(
+            "/extensions/settings/fixture_extension:extension",
+            data={"csrf_token": csrf, "region": "mars", "retries": "many"},
+        )
+        assert bad.status_code == 200
+        assert "Nothing was saved" in bad.text
+        assert "extension_settings" not in (tmp_path / "sardine.toml").read_text(encoding="utf-8")
+
+        # Valid input persists surgically with the schema version.
+        ok = client.post(
+            "/extensions/settings/fixture_extension:extension",
+            data={"csrf_token": csrf, "region": "us", "retries": "5"},
+            follow_redirects=True,
+        )
+        assert ok.status_code == 200
+        assert "Settings saved" in ok.text
+        config = (tmp_path / "sardine.toml").read_text(encoding="utf-8")
+        assert "[extension_settings.fixture_extension:extension]" in config.replace('"', "")
+        assert "schema_version = 2" in config
+        assert 'region = "us"' in config
+        assert "retries = 5" in config
+        assert (
+            "Source: configured for this project"
+            in client.get("/extensions/settings/fixture_extension:extension").text
+        )
+
+
+def test_settings_migrate_and_reach_configure_at_load(tmp_path: Path) -> None:
+    import fixture_extension
+
+    fixture_extension.received.clear()
+    toml = (
+        'extensions = ["fixture_extension:extension"]\n'
+        + PROJECT_TOML
+        + '\n[extension_settings."fixture_extension:extension"]\n'
+        + "schema_version = 1\n"
+        + 'zone = "us"\n'
+    )
+    with TestClient(_app(tmp_path, toml=toml), base_url="https://testserver") as client:
+        _sign_in(client)
+        client.get("/extensions")  # loads the extension, applying settings
+    assert fixture_extension.received, "configure() was never called"
+    resolved = fixture_extension.received[-1]
+    # v1 "zone" migrated to v2 "region"; defaults filled the rest.
+    assert resolved["region"] == "us"
+    assert resolved["retries"] == 3

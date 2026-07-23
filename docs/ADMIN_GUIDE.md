@@ -297,6 +297,17 @@ recovery path works precisely when the import fails. Private project
 extensions activate by module path. Everything lands in the audit
 trail.
 
+An extension may declare a **settings schema** — versioned, plain
+data, with defaults in the schema and never in code. The extension
+card's Settings page renders it: values persist per project (a
+surgical rewrite of the `[extension_settings]` table), every value
+states its provenance (schema default or configured), and validation
+precedes persistence — invalid input never reaches disk. Fields marked
+as secrets name an environment variable: the panel reports presence or
+absence only and never edits, stores or displays the value. `cms
+doctor` reports the whole picture per extension: settings validity and
+each required environment variable.
+
 An extension may declare a **health check** — its own answer to "is my
 integration alive" (credentials valid, endpoint reachable). Health runs
 on demand from the card's Check health action and inside `cms doctor`

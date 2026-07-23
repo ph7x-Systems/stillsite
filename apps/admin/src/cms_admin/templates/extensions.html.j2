@@ -69,6 +69,9 @@
             </ul>
             {% endif %}
             {% if card.active %}
+            {% if card.has_settings %}
+            <a class="btn btn-sm btn-outline-secondary" href="/extensions/settings/{{ card.info.name if card.info else card.name }}">{{ _("Settings") }}</a>
+            {% endif %}
             {% if card.has_health %}
             <form method="post" action="/extensions/health" class="d-inline">
               <input type="hidden" name="csrf_token" value="{{ csrf_token }}">

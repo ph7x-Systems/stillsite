@@ -1748,3 +1748,40 @@ msgstr "Stato:"
 
 msgid "This extension declares no health check."
 msgstr "Questa estensione non dichiara controlli di stato."
+
+# Extension settings (ADR-0052)
+msgid "Back to extensions"
+msgstr "Torna alle estensioni"
+
+msgid "Declared settings (schema v%(version)s)"
+msgstr "Impostazioni dichiarate (schema v%(version)s)"
+
+msgid "Environment variable %(name)s is missing"
+msgstr "La variabile d’ambiente %(name)s è assente"
+
+msgid "Environment variable %(name)s is set"
+msgstr "La variabile d’ambiente %(name)s è impostata"
+
+msgid "Extension settings"
+msgstr "Impostazioni dell’estensione"
+
+msgid "Nothing was saved; fix the values below:"
+msgstr "Nulla è stato salvato; correggi i valori qui sotto:"
+
+msgid "Save settings"
+msgstr "Salva impostazioni"
+
+msgid "Secrets are managed in the environment; the panel never edits or displays them."
+msgstr "I segreti sono gestiti nell’ambiente; il pannello non li modifica né li mostra mai."
+
+msgid "Settings"
+msgstr "Impostazioni"
+
+msgid "Settings saved — they apply from the next load."
+msgstr "Impostazioni salvate — valgono dal prossimo caricamento."
+
+msgid "Source: configured for this project"
+msgstr "Origine: configurato per questo progetto"
+
+msgid "Source: schema default"
+msgstr "Origine: valore predefinito dello schema"
