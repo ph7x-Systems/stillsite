@@ -1685,3 +1685,46 @@ msgstr "Mit dieser Installation kompatibel"
 
 msgid "Not compatible with this installation"
 msgstr "Mit dieser Installation nicht kompatibel"
+
+# Extensions screen (ADR-0050)
+msgid "Activate a project extension"
+msgstr "Eine Projekterweiterung aktivieren"
+
+msgid "Deactivate"
+msgstr "Deaktivieren"
+
+msgid "Declared capabilities:"
+msgstr "Deklarierte Fähigkeiten:"
+
+msgid "Extension activated — its contributions apply from the next build."
+msgstr "Erweiterung aktiviert — ihre Beiträge gelten ab dem nächsten Build."
+
+msgid "Extension deactivated — the configuration no longer lists it."
+msgstr "Erweiterung deaktiviert — die Konfiguration führt sie nicht mehr auf."
+
+msgid "Extensions"
+msgstr "Erweiterungen"
+
+msgid "Extensions install with the environment's package manager and appear here on their own. Activation loads the extension in isolation and tries a full build first; deactivation only rewrites the configuration — it works even when the extension is broken."
+msgstr "Erweiterungen werden mit dem Paketmanager der Umgebung installiert und erscheinen hier von selbst. Die Aktivierung lädt die Erweiterung isoliert und versucht zuerst einen vollständigen Build; die Deaktivierung schreibt nur die Konfiguration um — sie funktioniert auch bei defekter Erweiterung."
+
+msgid "Installed extensions"
+msgstr "Installierte Erweiterungen"
+
+msgid "Module path"
+msgstr "Modulpfad"
+
+msgid "No extensions are installed or active."
+msgstr "Keine Erweiterungen installiert oder aktiv."
+
+msgid "No project configuration was found; extensions activate per project."
+msgstr "Keine Projektkonfiguration gefunden; Erweiterungen werden pro Projekt aktiviert."
+
+msgid "Private project extensions activate by module path, e.g. mysite_extension:extension."
+msgstr "Private Projekterweiterungen werden per Modulpfad aktiviert, z. B. mysite_extension:extension."
+
+msgid "Project extension"
+msgstr "Projekterweiterung"
+
+msgid "This extension fails to load: %(error)s"
+msgstr "Diese Erweiterung lässt sich nicht laden: %(error)s"

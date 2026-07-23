@@ -77,6 +77,67 @@ class Extension:
     load — the tag becomes a valid content language for the project."""
 
 
+@dataclass(frozen=True)
+class ExtensionInfo:
+    """One discoverable extension, described by its packaging alone
+    (ADR-0050) — nothing is imported to produce this."""
+
+    name: str
+    distribution: str = ""
+    version: str = ""
+    description: str = ""
+    author: str = ""
+    license: str = ""
+    homepage: str = ""
+    compatible: bool | None = None
+
+
+def _compatible_with_core(requires: list[str] | None) -> bool | None:
+    if not requires:
+        return None
+    from packaging.requirements import Requirement
+
+    for raw in requires:
+        try:
+            requirement = Requirement(raw)
+        except Exception:
+            continue
+        if requirement.name == "sardine-cms-core":
+            return requirement.specifier.contains(
+                metadata.version("sardine-cms-core"), prereleases=True
+            )
+    return None
+
+
+def discovered_extensions() -> tuple[ExtensionInfo, ...]:
+    """Every extension the environment offers (ADR-0050), described by
+    distribution metadata — no extension code runs here."""
+    infos: dict[str, ExtensionInfo] = {}
+    for entry in metadata.entry_points(group=ENTRY_POINT_GROUP):
+        dist = entry.dist
+        if dist is None:
+            infos[entry.name] = ExtensionInfo(name=entry.name)
+            continue
+        meta = dist.metadata
+        homepage = ""
+        for raw in meta.get_all("Project-URL") or []:
+            label, _, url = raw.partition(",")
+            if label.strip().lower() == "homepage":
+                homepage = url.strip()
+                break
+        infos[entry.name] = ExtensionInfo(
+            name=entry.name,
+            distribution=dist.name,
+            version=dist.version,
+            description=meta.get("Summary") or "",
+            author=meta.get("Author") or meta.get("Author-email") or "",
+            license=meta.get("License-Expression") or meta.get("License") or "",
+            homepage=homepage,
+            compatible=_compatible_with_core(dist.requires),
+        )
+    return tuple(sorted(infos.values(), key=lambda info: info.name))
+
+
 class ExtensionError(RuntimeError):
     """A listed extension could not be loaded — loudly, never silently."""
 
@@ -84,7 +145,10 @@ class ExtensionError(RuntimeError):
 def _from_entry_point(name: str) -> Extension | None:
     for entry in metadata.entry_points(group=ENTRY_POINT_GROUP):
         if entry.name == name:
-            loaded = entry.load()
+            try:
+                loaded = entry.load()
+            except Exception as error:
+                raise ExtensionError(f"extension {name!r} failed to load: {error}") from error
             if not isinstance(loaded, Extension):
                 raise ExtensionError(f"entry point {name!r} is not an Extension")
             return loaded
@@ -97,6 +161,8 @@ def _from_dotted_path(name: str) -> Extension:
         module = import_module(module_name)
     except ImportError as error:
         raise ExtensionError(f"extension {name!r} not found") from error
+    except Exception as error:
+        raise ExtensionError(f"extension {name!r} failed to load: {error}") from error
     loaded = getattr(module, attribute or "extension", None)
     if not isinstance(loaded, Extension):
         raise ExtensionError(f"{name!r} does not expose an Extension object")

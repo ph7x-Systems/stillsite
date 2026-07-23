@@ -281,6 +281,22 @@ never become unbuildable from this screen. The panel never installs
 packages — themes install with the environment's package manager and
 appear on their own. Activations land in the audit trail.
 
+### Extensions
+
+The **Extensions** screen (admin role) follows the same shape as
+themes: cards from each package's own metadata (nothing imported for
+the listing), compatibility from the declared `sardine-cms-core`
+range, and transactional activation — the extension loads in
+isolation, a trial build of the current content must pass, and only
+then is the project's `extensions` list rewritten. An active
+extension's card lists the capabilities its loaded object actually
+declares. Failures are contained: a broken active extension shows its
+error on the card instead of taking the panel down, and deactivation
+rewrites the configuration without importing the extension — the
+recovery path works precisely when the import fails. Private project
+extensions activate by module path. Everything lands in the audit
+trail.
+
 ### Migrating from the panel
 
 The **Migration** screen (admin role) is the same pipeline with a

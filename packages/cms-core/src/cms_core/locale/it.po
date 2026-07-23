@@ -1685,3 +1685,46 @@ msgstr "Compatibile con questa installazione"
 
 msgid "Not compatible with this installation"
 msgstr "Non compatibile con questa installazione"
+
+# Extensions screen (ADR-0050)
+msgid "Activate a project extension"
+msgstr "Attiva un’estensione del progetto"
+
+msgid "Deactivate"
+msgstr "Disattiva"
+
+msgid "Declared capabilities:"
+msgstr "Capacità dichiarate:"
+
+msgid "Extension activated — its contributions apply from the next build."
+msgstr "Estensione attivata — i suoi contributi valgono dalla prossima build."
+
+msgid "Extension deactivated — the configuration no longer lists it."
+msgstr "Estensione disattivata — la configurazione non la elenca più."
+
+msgid "Extensions"
+msgstr "Estensioni"
+
+msgid "Extensions install with the environment's package manager and appear here on their own. Activation loads the extension in isolation and tries a full build first; deactivation only rewrites the configuration — it works even when the extension is broken."
+msgstr "Le estensioni si installano con il gestore di pacchetti dell’ambiente e compaiono qui da sole. L’attivazione carica l’estensione in isolamento e tenta prima una build completa; la disattivazione riscrive solo la configurazione — funziona anche con l’estensione guasta."
+
+msgid "Installed extensions"
+msgstr "Estensioni installate"
+
+msgid "Module path"
+msgstr "Percorso del modulo"
+
+msgid "No extensions are installed or active."
+msgstr "Nessuna estensione installata o attiva."
+
+msgid "No project configuration was found; extensions activate per project."
+msgstr "Nessuna configurazione di progetto trovata; le estensioni si attivano per progetto."
+
+msgid "Private project extensions activate by module path, e.g. mysite_extension:extension."
+msgstr "Le estensioni private del progetto si attivano per percorso del modulo, ad es. mysite_extension:extension."
+
+msgid "Project extension"
+msgstr "Estensione del progetto"
+
+msgid "This extension fails to load: %(error)s"
+msgstr "Questa estensione non si carica: %(error)s"

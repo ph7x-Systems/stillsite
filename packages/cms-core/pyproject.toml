@@ -5,7 +5,7 @@ description = "Content model, versioned schemas and translation states for Sardi
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"
-dependencies = ["pydantic>=2.9", "defusedxml>=0.7.1"]
+dependencies = ["pydantic>=2.9", "defusedxml>=0.7.1", "packaging>=24"]
 
 [project.optional-dependencies]
 postgres = ["psycopg[binary]>=3.2"]

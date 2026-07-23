@@ -10,6 +10,17 @@ features with their PRs, breaking changes and migrations — live in
 
 ### Added
 
+- Extensions screen (#141): activate and deactivate without editing
+  files — discovery from packaging metadata with nothing imported for
+  the listing, compatibility from the declared core range,
+  transactional activation (isolated load, trial build, only then the
+  config write), capabilities shown from the loaded object only, and
+  containment: a broken active extension shows its error instead of
+  taking the panel down, and deactivation rewrites configuration
+  without importing it. Any extension load failure is now a typed
+  ExtensionError, so tolerant call sites contain module-level crashes
+  too (ADR-0050).
+
 - Theme cards from the manifest (#141): the Themes screen renders
   description, author, license, website, screenshot and a
   compatibility verdict entirely from each package's own metadata —
