@@ -16,7 +16,7 @@ from urllib.parse import quote
 
 from cms_build import build_site
 from cms_core import AdminSession, Role, User
-from cms_core.extensions import discovered_extensions, load_extensions
+from cms_core.extensions import discovered_extensions, load_extensions, run_health_check
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 
@@ -91,6 +91,7 @@ def _render(
     *,
     notice: str = "",
     error: str = "",
+    health_for: str = "",
 ) -> object:
     project = _project(request)
     active_names = list(project.extension_names) if project is not None else []
@@ -110,9 +111,13 @@ def _render(
             (extension,) = load_extensions([name])
             card["capabilities"] = _capabilities(extension)
             card["load_error"] = ""
+            card["has_health"] = extension.health_check is not None
+            if name == health_for:
+                card["health"] = list(run_health_check(extension))
         except Exception as failure:
             card["capabilities"] = []
             card["load_error"] = str(failure)
+            card["has_health"] = False
     return request.app.state.templates.TemplateResponse(
         request,
         "extensions.html.j2",
@@ -163,6 +168,24 @@ async def _trial_build(request: Request, project: Any, names: list[str]) -> None
     for extension in sorted(extensions, key=lambda e: e.name):
         for step in extension.build_steps:
             step(project.site, content, artifact)
+
+
+@router.post("/extensions/health")
+async def extension_health(
+    request: Request,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+    name: str = Form(...),
+) -> object:
+    user, session = user_session
+    _require_admin(user)
+    project = _project(request)
+    active = list(project.extension_names) if project is not None else []
+    # Health runs only for active extensions; the results render in
+    # place (ADR-0051) — checks may touch networks, so the operator
+    # decides when they run.
+    if name not in active:
+        raise HTTPException(status_code=404, detail="not active")
+    return _render(request, user, session, health_for=name)
 
 
 @router.post("/extensions/activate")

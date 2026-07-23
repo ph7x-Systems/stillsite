@@ -54,8 +54,29 @@
               {% for capability in card.capabilities %}<li>{{ capability }}</li>{% endfor %}
             </ul>
             {% endif %}
+            {% if card.active and card.health is defined %}
+            <p class="small mb-1">{{ _("Health:") }}</p>
+            <ul class="small mb-2 list-unstyled">
+              {% for check in card.health %}
+              <li>
+                {% if check.ok %}<span class="badge text-bg-success admin-state admin-state-complete">{{ _("ok") }}</span>
+                {% else %}<span class="badge text-bg-danger admin-state admin-state-missing">{{ _("failed") }}</span>{% endif %}
+                {{ check.name }}{% if check.detail %} — {{ check.detail }}{% endif %}
+              </li>
+              {% else %}
+              <li>{{ _("This extension declares no health check.") }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
             {% if card.active %}
-            <form method="post" action="/extensions/deactivate">
+            {% if card.has_health %}
+            <form method="post" action="/extensions/health" class="d-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <input type="hidden" name="name" value="{{ card.info.name if card.info else card.name }}">
+              <button type="submit" class="btn btn-sm btn-outline-secondary">{{ _("Check health") }}</button>
+            </form>
+            {% endif %}
+            <form method="post" action="/extensions/deactivate" class="d-inline">
               <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
               <input type="hidden" name="name" value="{{ card.info.name if card.info else card.name }}">
               <button type="submit" class="btn btn-sm btn-outline-danger">{{ _("Deactivate") }}</button>

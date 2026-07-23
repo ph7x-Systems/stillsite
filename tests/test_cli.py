@@ -538,6 +538,22 @@ def test_import_wxr_records_redirects_for_changed_urls(tmp_path: Path) -> None:
     assert '"/blog/launch-day/" =' not in updated  # a live address is never a source
 
 
+def test_doctor_reports_extension_health(tmp_path: Path) -> None:
+    project = make_project(tmp_path)
+    toml = (tmp_path / "sardine.toml").read_text(encoding="utf-8")
+    (tmp_path / "sardine.toml").write_text(
+        'extensions = ["fixture_extension:extension"]\n' + toml, encoding="utf-8"
+    )
+    runner.invoke(app, ["seed", "-p", str(project)])
+    result = runner.invoke(app, ["doctor", "-p", str(project)])
+    # The fixture declares one passing and one failing check; doctor
+    # surfaces both and fails overall (ADR-0051: visible, never gating
+    # anything except doctor's own verdict).
+    assert "extension fixture: storage reachable: ok" in result.output
+    assert "extension fixture: webhook endpoint: FAIL" in result.output
+    assert result.exit_code == 1
+
+
 def test_doctor_passes_on_a_healthy_project(tmp_path: Path) -> None:
     project = make_project(tmp_path)
     runner.invoke(app, ["seed", "-p", str(project)])

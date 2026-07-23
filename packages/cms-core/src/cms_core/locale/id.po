@@ -1736,3 +1736,13 @@ msgstr "Ekstensi proyek"
 
 msgid "This extension fails to load: %(error)s"
 msgstr "Ekstensi ini gagal dimuat: %(error)s"
+
+# Extension health (ADR-0051)
+msgid "Check health"
+msgstr "Periksa kesehatan"
+
+msgid "Health:"
+msgstr "Kesehatan:"
+
+msgid "This extension declares no health check."
+msgstr "Ekstensi ini tidak mendeklarasikan pemeriksaan kesehatan."

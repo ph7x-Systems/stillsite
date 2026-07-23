@@ -1738,3 +1738,13 @@ msgstr "Extensión del proyecto"
 
 msgid "This extension fails to load: %(error)s"
 msgstr "Esta extensión no se puede cargar: %(error)s"
+
+# Extension health (ADR-0051)
+msgid "Check health"
+msgstr "Comprobar salud"
+
+msgid "Health:"
+msgstr "Salud:"
+
+msgid "This extension declares no health check."
+msgstr "Esta extensión no declara comprobación de salud."

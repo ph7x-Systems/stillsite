@@ -75,6 +75,10 @@ class Extension:
     language_packs: Sequence[object] = ()
     """``LanguagePack`` contributions (ADR-0034); registered on project
     load — the tag becomes a valid content language for the project."""
+    health_check: Callable[[], Sequence["HealthCheck"]] | None = None
+    """Optional self-diagnosis (ADR-0051): returns HealthCheck results.
+    Run on demand by the panel and by ``cms doctor``; contained — a
+    raising check is a failed check, never a crash. Never gates."""
 
 
 @dataclass(frozen=True)
@@ -136,6 +140,29 @@ def discovered_extensions() -> tuple[ExtensionInfo, ...]:
             compatible=_compatible_with_core(dist.requires),
         )
     return tuple(sorted(infos.values(), key=lambda info: info.name))
+
+
+@dataclass(frozen=True)
+class HealthCheck:
+    """One health verdict an extension reports about itself (ADR-0051)."""
+
+    name: str
+    ok: bool
+    detail: str = ""
+
+
+def run_health_check(extension: "Extension") -> tuple[HealthCheck, ...]:
+    """Run an extension's declared health check, contained.
+
+    No declared check reports nothing; a raising check becomes a single
+    failed result carrying the error — never an exception (ADR-0051).
+    """
+    if extension.health_check is None:
+        return ()
+    try:
+        return tuple(extension.health_check())
+    except Exception as error:
+        return (HealthCheck(name="health check", ok=False, detail=str(error)),)
 
 
 class ExtensionError(RuntimeError):

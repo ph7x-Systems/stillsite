@@ -729,6 +729,15 @@ def doctor(project_dir: ProjectDir = Path()) -> None:
             True,
             f"{len(extensions)} activated" if extensions else "none configured",
         )
+        from cms_core.extensions import run_health_check
+
+        for extension in sorted(extensions, key=lambda e: e.name):
+            for check in run_health_check(extension):
+                report(
+                    f"extension {extension.name}: {check.name}",
+                    check.ok,
+                    check.detail or ("ok" if check.ok else "failed"),
+                )
     except ExtensionError as error:
         report("extensions", False, str(error))
     try:

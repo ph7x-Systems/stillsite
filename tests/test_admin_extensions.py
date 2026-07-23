@@ -118,3 +118,33 @@ def test_a_broken_active_extension_is_contained_and_deactivates_without_import(
         assert "fixture_broken_extension" not in (tmp_path / "sardine.toml").read_text(
             encoding="utf-8"
         )
+
+
+def test_health_runs_on_demand_and_contains_raising_checks(tmp_path: Path) -> None:
+    toml = (
+        'extensions = ["fixture_extension:extension", "fixture_extension:noisy"]\n' + PROJECT_TOML
+    )
+    with TestClient(_app(tmp_path, toml=toml), base_url="https://testserver") as client:
+        csrf = _sign_in(client)
+
+        # Health never runs unrequested.
+        page = client.get("/extensions")
+        assert "storage reachable" not in page.text
+        assert "Check health" in page.text
+
+        checked = client.post(
+            "/extensions/health",
+            data={"csrf_token": csrf, "name": "fixture_extension:extension"},
+        )
+        assert checked.status_code == 200
+        assert "storage reachable" in checked.text
+        assert "fixture store answers" in checked.text
+        assert "connection refused" in checked.text  # a failed check, shown
+
+        # A raising health check is a failed check, never a crash (ADR-0051).
+        contained = client.post(
+            "/extensions/health",
+            data={"csrf_token": csrf, "name": "fixture_extension:noisy"},
+        )
+        assert contained.status_code == 200
+        assert "health probe exploded" in contained.text
