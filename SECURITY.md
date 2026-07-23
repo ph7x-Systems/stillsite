@@ -1,23 +1,63 @@
 # Security Policy
 
-## Reporting vulnerabilities
+## Supported versions
 
-Report vulnerabilities privately to the `ph7x-Systems` organization maintainers. Do not open public issues with exploitation details.
+| Version | Supported |
+| --- | --- |
+| 0.7.x | Yes — fixes land here |
+| < 0.7 | No — upgrade; releases are lockstep and migrations are additive |
 
-## Principles applied in this project
+The six packages release together; a security fix produces a new
+lockstep release rather than patches to older lines.
 
-- **No secrets in the repository** — sensitive configuration via environment variables (`.env`, never committed; see `.env.example`).
-- **Explicit authentication and authorization** in the admin panel, with least privilege.
-- **Validated uploads** — type, size and dimensions checked in the media library.
-- **Static public frontend** — no exposed dynamic surface; dynamic features isolated in the API.
-- **CI checks for absence of secrets** before every merge.
+## Reporting a vulnerability
+
+Use **GitHub private vulnerability reporting**: *Security → Report a
+vulnerability* on this repository. Do not open public issues or pull
+requests containing exploitation details.
+
+What to expect:
+
+- **Acknowledgement within 72 hours**, triage within 7 days.
+- Coordinated disclosure: we agree a timeline with you, land the fix,
+  release it, and only then publish an advisory describing impact
+  without an exploitation recipe. Reporter credit is offered, never
+  required.
+- A credential that ever appears in a commit is treated as compromised:
+  rotation first, history cleanup second.
 
 ## Scope
 
-This repository contains no real credentials or infrastructure. Any credential found in the history must be treated as compromised and reported.
+In scope: the six published packages, the admin panel, the build and
+export pipeline, the migration flow, and the workflows in this
+repository.
+
+Out of scope:
+
+- Vulnerabilities in third-party themes, extensions or providers not
+  maintained in this repository (report to their maintainers; we will
+  help coordinate if the contract itself enables the issue).
+- The demo site's content and availability.
+- Deployment misconfiguration in user infrastructure (for example a
+  panel exposed without TLS despite the documented requirement).
+- Denial of service through volume alone against self-hosted panels.
+
+## Standing principles
+
+- **Secrets via environment only** — never in `sardine.toml`, the
+  database, audit records, logs, exports or build artifacts.
+- **No default credentials** anywhere; first accounts come from the
+  CLI.
+- **Static public frontend** — the published site has no runtime
+  backend surface.
+- **Nothing activates by installation** — themes and extensions are
+  listed without executing their code and run only after explicit
+  activation.
+- **CI gates**: secret scanning over full history, dependency audit,
+  static analysis, CodeQL, and a commit-hygiene check on every PR.
 
 ## Engineering strategy
 
-The full security plan — threat model per component, controls in force,
-planned controls per milestone and the go-public checklist — lives in
+The full plan — threat model per component, controls in force and the
+architecture security model — lives in
 [docs/SECURITY_STRATEGY.md](docs/SECURITY_STRATEGY.md).
