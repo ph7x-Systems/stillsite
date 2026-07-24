@@ -11,6 +11,7 @@ from cms_core.extensions import CommentsProvider, Extension, ExtensionError, loa
 from cms_core.forms import register_forms_provider
 from cms_core.language_packs import register_language_pack
 from cms_core.storage import StorageBackend, create_storage, register_backend
+from cms_core.translations import register_translation_provider
 from cms_validation import SiteContent
 
 PROJECT_FILE = "sardine.toml"
@@ -58,6 +59,9 @@ class Project:
     rules like ``seo-hints`` opt out here."""
     """``[forms] retention_days``: stored submissions older than this
     are pruned at panel startup; 0 keeps everything until deleted."""
+    translations_provider: str = ""
+    """``[translations] provider``: who generates suggestions. Empty
+    means no provider configured — the feature is invisible (ADR-0054)."""
 
     def load_extensions(self) -> list[Extension]:
         """The extensions this project explicitly trusts (ADR-0028); their
@@ -78,6 +82,8 @@ class Project:
                 register_deploy_provider(name, factory)
             for name, factory in extension.forms_providers.items():
                 register_forms_provider(name, factory)
+            for name, factory in extension.translation_providers.items():
+                register_translation_provider(name, factory)
         return extensions
 
     def _apply_settings(self, entry: str, extension: Extension) -> None:
@@ -241,6 +247,7 @@ def load_project(directory: Path) -> Project:
         forms_notify=str(data.get("forms", {}).get("notify", "")),
         forms_store=bool(data.get("forms", {}).get("store", False)),
         forms_retention_days=int(data.get("forms", {}).get("retention_days", 0)),
+        translations_provider=str(data.get("translations", {}).get("provider", "")),
         validation_disabled=tuple(
             str(name) for name in data.get("validation", {}).get("disabled", [])
         ),

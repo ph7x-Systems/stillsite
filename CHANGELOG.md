@@ -8,6 +8,19 @@ features with their PRs, breaking changes and migrations — live in
 
 ## Unreleased
 
+### Added
+
+- Translation providers (#228): a `TranslationProvider` contract in
+  `cms_core.translations` following the established provider pattern
+  (ADR-0054). Providers produce suggestions that land as draft content
+  in the existing state machine; nothing is published by the provider.
+  `cms translate --language <tag> --missing` batch-suggests from the
+  CLI; a Suggest-translation action joins the side-by-side article
+  translation editor. Both faces are invisible without `[translations]
+  provider` configured. Declared capabilities, structured
+  `ProviderError`, secrets via environment only, audit records without
+  prompts or tokens.
+
 ## 0.8.0 — 2026-07-23
 
 Being a Sardine theme is now an executable specification: themes
