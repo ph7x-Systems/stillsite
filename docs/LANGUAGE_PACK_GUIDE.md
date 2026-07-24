@@ -18,13 +18,13 @@ extension = Extension(
     name="lang-mir",
     language_packs=(
         LanguagePack(
-            tag="mir",                # BCP-47-shaped, lowercase
-            direction="rtl",          # "ltr" or "rtl"
+            tag="mir",  # BCP-47-shaped, lowercase
+            direction="rtl",  # "ltr" or "rtl"
             native_name="Mirrorish",  # the language's name in itself
-            site_labels={...},        # UI label key -> text
-            month_names=(...),        # exactly 12, for date formatting
+            site_labels={...},  # UI label key -> text
+            month_names=(...),  # exactly 12, for date formatting
             date_pattern="{day} {month} {year}",
-            admin_catalog=CATALOG,    # optional: gettext .po bytes
+            admin_catalog=CATALOG,  # optional: gettext .po bytes
         ),
     ),
 )

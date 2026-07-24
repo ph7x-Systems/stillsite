@@ -804,17 +804,17 @@ def translate(
                 applied += 1
                 continue
             if isinstance(entry, Article):
-                translated = ArticleContent.model_validate(
+                article_content = ArticleContent.model_validate(
                     entry.source.model_dump() | {"body_markdown": suggestion.target_text}
                 )
-                entry.set_translation(target, translated, source=source)
+                entry.set_translation(target, article_content, source=source)
                 entry.updated_at = datetime.now(UTC)
                 storage.save_article(entry)
             else:
-                translated = PageContent.model_validate(
+                page_content = PageContent.model_validate(
                     entry.source.model_dump() | {"body_markdown": suggestion.target_text}
                 )
-                entry.set_translation(target, translated, source=source)
+                entry.set_translation(target, page_content, source=source)
                 entry.updated_at = datetime.now(UTC)
                 storage.save_page(entry)
             typer.echo(

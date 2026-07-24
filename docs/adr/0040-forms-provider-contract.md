@@ -42,7 +42,7 @@ without breaking it. Four questions, answered by the shipped design:
 
   ```python
   class FormsProvider(Protocol):
-      contract_version: int          # must equal FORMS_CONTRACT_VERSION
+      contract_version: int  # must equal FORMS_CONTRACT_VERSION
 
       def handle(self, submission: FormSubmission, form: FormContext) -> None: ...
   ```
