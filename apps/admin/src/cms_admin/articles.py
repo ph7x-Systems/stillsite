@@ -598,6 +598,9 @@ async def translation_suggest(
         source_language=str(_site_source(project)),
         target_language=language_code,
         context=article.source.title,
+        glossary=(
+            project.glossary_for(language_code) if provider.capabilities.supports_glossary else ()
+        ),
     )
     try:
         suggestions = provider.suggest([request_obj])

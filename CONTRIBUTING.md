@@ -99,6 +99,15 @@ may be recorded with Co-authored-by trailers when contributors jointly
 author the same change — maintainer review, integration adjustments or
 final fixes do not add the maintainer as co-author.
 
+The rule, stated once: **every substantial contribution keeps native
+GitHub attribution and is credited in the changelog and release notes
+whenever it changes the product, the architecture, public
+documentation or a contract.** Maintainer fixups on top of a
+contribution are described as maintenance — never as replacing the
+contribution — and no rewrite erases authorship. When an idea or a
+direction comes from an issue or a contributor, the pull request says
+so, and the changelog does too when relevant.
+
 ## Sharing themes, targets, backends and plugins
 
 See [docs/ECOSYSTEM.md](docs/ECOSYSTEM.md): free (OSI) license, the

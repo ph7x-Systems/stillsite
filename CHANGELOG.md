@@ -12,7 +12,8 @@ features with their PRs, breaking changes and migrations — live in
 
 - Translation providers (#228): a `TranslationProvider` contract in
   `cms_core.translations` following the established provider pattern
-  (ADR-0054). Providers produce suggestions that land as draft content
+  (ADR-0054), contributed by @MasRama — contract, registry and both
+  faces. Providers produce suggestions that land as draft content
   in the existing state machine; nothing is published by the provider.
   `cms translate --language <tag> --missing` batch-suggests from the
   CLI; a Suggest-translation action joins the side-by-side article
@@ -20,6 +21,17 @@ features with their PRs, breaking changes and migrations — live in
   provider` configured. Declared capabilities, structured
   `ProviderError`, secrets via environment only, audit records without
   prompts or tokens.
+- Translation-provider conformance as a public contract (#228): being
+  a Sardine translation provider is now an executable specification —
+  `cms_core.translation_conformance` ships versioned named checks
+  (batch order, placeholder and Markdown preservation, empty-source
+  and empty-target semantics, declared-language honesty, structured
+  failure, glossary); third-party providers certify in a four-line
+  parametrized test. `TranslationFailed` becomes the classified
+  failure channel carrying `ProviderError`, and
+  `[translations.glossary.<target>]` supplies required target terms to
+  providers declaring `supports_glossary` — on both faces. New
+  developer guide: WRITING_A_TRANSLATION_PROVIDER.md.
 
 ## 0.8.0 — 2026-07-23
 

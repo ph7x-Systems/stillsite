@@ -7,6 +7,7 @@ in this file registers through an extension and receives translation
 requests — a new provider with zero changes to the editorial flow.
 """
 
+from collections.abc import Sequence
 from pathlib import Path
 
 import pytest
@@ -15,6 +16,7 @@ from cms_core.translations import (
     TRANSLATION_CONTRACT_VERSION,
     ProviderError,
     TranslationCapabilities,
+    TranslationFailed,
     TranslationProvider,
     TranslationRequest,
     TranslationSuggestion,
@@ -37,18 +39,35 @@ class EchoProvider:
         return TranslationCapabilities(
             supported_languages=("pt-pt", "es", "fr", "de"),
             supports_markdown=True,
+            supports_glossary=True,
             preserve_placeholders=True,
         )
 
-    def suggest(self, requests: list[TranslationRequest]) -> tuple[TranslationSuggestion, ...]:
+    def suggest(self, requests: Sequence[TranslationRequest]) -> tuple[TranslationSuggestion, ...]:
         RECEIVED.extend(requests)
-        return tuple(
-            TranslationSuggestion(
-                target_text=f"[{req.target_language}] {req.source_text}",
-                source_text=req.source_text,
+        suggestions: list[TranslationSuggestion] = []
+        for req in requests:
+            if req.target_language not in self.capabilities.supported_languages:
+                raise TranslationFailed(
+                    ProviderError(
+                        code="unsupported-language",
+                        retryable=False,
+                        message=f"{req.target_language!r} is not a supported target",
+                    )
+                )
+            if not req.source_text:
+                suggestions.append(TranslationSuggestion(target_text="", source_text=""))
+                continue
+            text = req.source_text
+            for source_term, target_term in req.glossary:
+                text = text.replace(source_term, target_term)
+            suggestions.append(
+                TranslationSuggestion(
+                    target_text=f"[{req.target_language}] {text}",
+                    source_text=req.source_text,
+                )
             )
-            for req in requests
-        )
+        return tuple(suggestions)
 
 
 class ExplodingProvider:
@@ -58,7 +77,7 @@ class ExplodingProvider:
     def capabilities(self) -> TranslationCapabilities:
         return TranslationCapabilities()
 
-    def suggest(self, requests: list[TranslationRequest]) -> tuple[TranslationSuggestion, ...]:
+    def suggest(self, requests: Sequence[TranslationRequest]) -> tuple[TranslationSuggestion, ...]:
         raise RuntimeError("the service is gone")
 
 
@@ -71,12 +90,30 @@ class EmptyProvider:
     def capabilities(self) -> TranslationCapabilities:
         return TranslationCapabilities()
 
-    def suggest(self, requests: list[TranslationRequest]) -> tuple[TranslationSuggestion, ...]:
+    def suggest(self, requests: Sequence[TranslationRequest]) -> tuple[TranslationSuggestion, ...]:
         return tuple(TranslationSuggestion(target_text="") for _ in requests)
+
+
+class PlainEchoProvider(EchoProvider):
+    """Echo without glossary support — proves callers gate the glossary
+    on the declared capability."""
+
+    @property
+    def capabilities(self) -> TranslationCapabilities:
+        return TranslationCapabilities(
+            supported_languages=("pt-pt", "es", "fr", "de"),
+            supports_markdown=True,
+            supports_glossary=False,
+            preserve_placeholders=True,
+        )
 
 
 def _echo_factory() -> EchoProvider:
     return EchoProvider()
+
+
+def _plain_echo_factory() -> PlainEchoProvider:
+    return PlainEchoProvider()
 
 
 def _exploding_factory() -> ExplodingProvider:
@@ -89,7 +126,7 @@ def _empty_factory() -> EmptyProvider:
 
 extension = Extension(
     name="echo-translations",
-    translation_providers={"echo": _echo_factory},
+    translation_providers={"echo": _echo_factory, "echo-plain": _plain_echo_factory},
 )
 
 
@@ -155,7 +192,9 @@ def test_selection_validates_the_contract() -> None:
         def capabilities(self) -> TranslationCapabilities:
             return TranslationCapabilities()
 
-        def suggest(self, requests: list[TranslationRequest]) -> tuple[TranslationSuggestion, ...]:
+        def suggest(
+            self, requests: Sequence[TranslationRequest]
+        ) -> tuple[TranslationSuggestion, ...]:
             return ()
 
     register_translation_provider("contract-ancient", lambda: Ancient())
@@ -192,8 +231,8 @@ def test_extension_activation_registers_the_provider(tmp_path: Path) -> None:
     from cms_cli.project import load_project
 
     (tmp_path / "sardine.toml").write_text(
-        '[site]\nname = "S"\nbase_url = "https://s.example"\nlanguages = []\n'
-        'extensions = ["test_translation_provider_contract:extension"]\n',
+        'extensions = ["test_translation_provider_contract:extension"]\n'
+        '[site]\nname = "S"\nbase_url = "https://s.example"\nlanguages = []\n',
         encoding="utf-8",
     )
     project = load_project(tmp_path)
