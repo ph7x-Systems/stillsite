@@ -1,6 +1,7 @@
 # Sardine CMS
 
 [![CI](https://github.com/ph7x-Systems/sardine-cms/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ph7x-Systems/sardine-cms/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/ph7x-Systems/sardine-cms/actions/workflows/github-code-scanning/codeql/badge.svg?branch=main)](https://github.com/ph7x-Systems/sardine-cms/actions/workflows/github-code-scanning/codeql)
 [![PyPI](https://img.shields.io/pypi/v/sardine-cms-cli?label=pypi&cacheSeconds=600)](https://pypi.org/project/sardine-cms-cli/)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](pyproject.toml)
@@ -39,6 +40,9 @@ and **[walk through its read-only admin](https://sardine.ph7x.com/admin/)**.
 - **Translations that cannot silently rot.** Seven languages ship
   bundled; editing a source marks its translations outdated, and the
   publish gate reports every parity gap before anything goes live.
+  Assisted translation plugs in as a certified provider — suggestions
+  always land as drafts an editor approves, with your glossary terms
+  enforced.
 - **SEO generated, not hand-maintained.** Canonical, hreflang, Open
   Graph, JSON-LD, sitemap and RSS derive from the content — plus
   per-entry overrides when an editor wants control.
@@ -54,8 +58,9 @@ and **[walk through its read-only admin](https://sardine.ph7x.com/admin/)**.
   and automatic redirects, from the CLI or the browser.
 - **Themes and extensions are declarative artifacts.** The panel
   discovers them from packaging metadata without executing code,
-  activates them try-first, and contains failures; being a theme is an
-  executable specification any package can certify against.
+  activates them try-first, and contains failures; being a theme — or a
+  translation provider — is an executable specification any package can
+  certify against.
 
 | Sardine CMS | Traditional CMS |
 | --- | --- |
@@ -69,7 +74,7 @@ and **[walk through its read-only admin](https://sardine.ph7x.com/admin/)**.
 
 ## What it is
 
-A static-first, multilingual content and publishing engine (configurable source language; EN, PT-PT, ES, FR, DE and IT bundled as language packs — any pack can join), built on the contracts proven on the public ph7x.com site:
+A static-first, multilingual content and publishing engine (configurable source language; EN, PT-PT, ES, FR, DE, IT and ID bundled as language packs — any pack can join), built on the contracts proven on the public ph7x.com site:
 
 - structured content in JSON and Markdown articles, separated from presentation;
 - strong validation before publishing (language parity, structure, editorial rules);
@@ -78,7 +83,8 @@ A static-first, multilingual content and publishing engine (configurable source 
 - authenticated admin panel with workflow, autosave, themed preview, revisions,
   scheduling, trash, media, menus and user management;
 - portable content, controlled external imports and an explicit extension
-  contract for themes, storage, build steps, rules and editorial components.
+  contract for themes, storage, build steps, rules, editorial components
+  and providers (deployment, forms, comments, assisted translation).
 
 **Where things run:** Sardine is where the site is *managed* — the
 panel, storage and build can live on a laptop or a private server and
@@ -108,12 +114,14 @@ tests/                          # unit and integration tests
 ## Status
 
 Developed in the open and released on PyPI (see the version badge above for
-the current release). Milestones 5 and 6 are closed; Milestone 7 —
-operational completeness (email/notifications per ADR-0032, two-factor
-authentication, webhooks, diagnostics) — is underway. The content core, validator, deterministic builder, theme system,
-`cms` CLI and full browser editorial cycle are implemented and tested — the
-live demo is built with them on every merge. No secrets, personal data or
-client content live in this repository.
+the current release). Milestones 5, 6 and 7 (editorial completeness,
+extensibility, operations — email, two-factor authentication, webhooks,
+diagnostics) are closed; current work makes the ecosystem certifiable:
+themes, extensions and providers as versioned contracts with executable
+conformance suites. The content core, validator, deterministic builder,
+theme system, `cms` CLI and full browser editorial cycle are implemented
+and tested — the live demo is built with them on every merge. No secrets,
+personal data or client content live in this repository.
 
 ## Install
 
