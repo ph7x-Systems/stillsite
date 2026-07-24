@@ -698,6 +698,135 @@ def import_command(
 
 
 @app.command()
+def translate(
+    language: Annotated[
+        str, typer.Option("--language", help="Target language tag (e.g. pt-pt, es, fr)")
+    ],
+    project_dir: ProjectDir = Path(),
+    missing: Annotated[
+        bool, typer.Option("--missing", help="Only suggest for entries in the missing state")
+    ] = False,
+    dry_run: Annotated[
+        bool, typer.Option("--dry-run", help="Show what would be suggested without persisting")
+    ] = False,
+) -> None:
+    """Generate translation suggestions for a target language (ADR-0054).
+
+    Requires ``[translations] provider`` in ``sardine.toml``. Without a
+    provider configured, the command exits with a clear message — the
+    feature is invisible by design. Suggestions land as draft content in
+    the existing state machine; nothing is published.
+    """
+    project = _project(project_dir)
+    if not project.translations_provider:
+        typer.echo(
+            "error: no translation provider configured ([translations] provider in sardine.toml)",
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    project.load_extensions()  # registers providers
+    from cms_core.translations import create_translation_provider
+
+    try:
+        provider = create_translation_provider(project.translations_provider)
+    except ValueError as error:
+        typer.echo(f"error: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    from cms_core import Language, TranslationState
+
+    target = Language(language)
+    source = project.site.source_language
+    targets = project.site.languages
+    if target not in targets:
+        typer.echo(f"error: {language!r} is not a configured target language", err=True)
+        raise typer.Exit(code=2)
+
+    from cms_core import Article, ArticleContent, Page, PageContent
+    from cms_core.translations import TranslationRequest
+
+    with project.open_storage() as storage:
+        articles = [a for a in storage.load_all_articles() if a.deleted_at is None]
+        pages = [p for p in storage.load_all_pages() if p.deleted_at is None]
+        entries: list[tuple[str, Article | Page]] = [
+            *(("article", article) for article in articles),
+            *(("page", page) for page in pages),
+        ]
+        requests: list[tuple[str, Article | Page, TranslationRequest]] = []
+        for entry_kind, entry in entries:
+            state = entry.translation_state(target, source=source)
+            if missing and state is not TranslationState.MISSING:
+                continue
+            if state is TranslationState.COMPLETE:
+                continue
+            source_content = entry.source
+            requests.append(
+                (
+                    entry_kind,
+                    entry,
+                    TranslationRequest(
+                        source_text=source_content.body_markdown,
+                        source_language=str(source),
+                        target_language=language,
+                        context=source_content.title,
+                    ),
+                )
+            )
+        if not requests:
+            scope = "missing only" if missing else "missing and outdated"
+            typer.echo(f"nothing to suggest for {language} ({scope})")
+            return
+        batch = [req for _, _, req in requests]
+        try:
+            suggestions = provider.suggest(batch)
+        except Exception as error:
+            typer.echo(f"error: provider failed — {error}", err=True)
+            raise typer.Exit(code=1) from error
+        if len(suggestions) != len(requests):
+            typer.echo(
+                f"error: provider returned {len(suggestions)} suggestion(s) "
+                f"for {len(requests)} request(s)",
+                err=True,
+            )
+            raise typer.Exit(code=1)
+        applied = 0
+        skipped = 0
+        for (entry_kind, entry, _request), suggestion in zip(requests, suggestions, strict=True):
+            if not suggestion.target_text:
+                typer.echo(f"  skip {entry_kind} {entry.id}: provider returned no suggestion")
+                skipped += 1
+                continue
+            if dry_run:
+                typer.echo(
+                    f"  would suggest {entry_kind} {entry.id}: "
+                    f"{len(suggestion.target_text)} char(s)"
+                )
+                applied += 1
+                continue
+            if isinstance(entry, Article):
+                article_content = ArticleContent.model_validate(
+                    entry.source.model_dump() | {"body_markdown": suggestion.target_text}
+                )
+                entry.set_translation(target, article_content, source=source)
+                entry.updated_at = datetime.now(UTC)
+                storage.save_article(entry)
+            else:
+                page_content = PageContent.model_validate(
+                    entry.source.model_dump() | {"body_markdown": suggestion.target_text}
+                )
+                entry.set_translation(target, page_content, source=source)
+                entry.updated_at = datetime.now(UTC)
+                storage.save_page(entry)
+            typer.echo(
+                f"  suggested {entry_kind} {entry.id}: "
+                f"{len(suggestion.target_text)} char(s) → draft"
+            )
+            applied += 1
+        action = "would suggest" if dry_run else "suggested"
+        typer.echo(f"{action} {applied} entr(y/ies), skipped {skipped}")
+
+
+@app.command()
 def doctor(project_dir: ProjectDir = Path()) -> None:
     """Diagnose the project: configuration, storage, media, environment.
 

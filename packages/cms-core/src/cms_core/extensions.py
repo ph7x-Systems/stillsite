@@ -62,6 +62,10 @@ class Extension:
     """Forms providers by name (ADR-0040): a factory ``() ->
     FormsProvider``. Registered on activation; a new destination never
     touches the endpoint or the editorial flow."""
+    translation_providers: Mapping[str, Callable[..., object]] = field(default_factory=dict)
+    """Translation providers by name (ADR-0054): a factory ``() ->
+    TranslationProvider``. Registered on activation; a new provider
+    never touches the editorial flow — suggestions land as draft."""
     """Deployment providers by name (#156): a factory ``(settings,
     project_dir) -> DeployProvider``. Registered on activation; adding
     a destination never touches the core, the editor or the flow."""
