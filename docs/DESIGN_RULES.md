@@ -71,3 +71,14 @@ Themes target the **web platform as it is today** — and stay static-first:
   model or site config.
 - Reference assets by literal URL — always through `asset_urls` (hash-versioned
   by the builder; cache busting is automatic).
+
+## Language scale: disclosure, never unbounded repetition
+
+Language sets are data and unbounded (ADR-0034). Every surface —
+lists, forms, editors, switchers — must therefore scale by
+*disclosure*: aggregate first, then search, filter or expand into the
+language being edited. No screen renders an unbounded run of
+per-language controls; content lists keep constant-width aggregate
+coverage, and editing surfaces open one language at a time past a
+small threshold. A 30-language fixture in the test suite enforces
+this for every future screen (#241).
