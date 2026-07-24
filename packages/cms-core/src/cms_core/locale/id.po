@@ -370,6 +370,9 @@ msgstr "Kirim untuk tinjauan"
 msgid "Summary"
 msgstr "Ringkasan"
 
+msgid "Suggest translation"
+msgstr "Sarankan terjemahan"
+
 msgid "Tags"
 msgstr "Tag"
 

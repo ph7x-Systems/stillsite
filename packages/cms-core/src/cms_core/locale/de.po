@@ -370,6 +370,9 @@ msgstr "Zur Prüfung einreichen"
 msgid "Summary"
 msgstr "Zusammenfassung"
 
+msgid "Suggest translation"
+msgstr "Übersetzung vorschlagen"
+
 msgid "Tags"
 msgstr "Schlagwörter"
 

@@ -11,8 +11,8 @@ troubleshooting), see the [Deployment Guide](DEPLOYMENT.md).
 
 ```python
 class DeployProvider(Protocol):
-    contract_version: int              # must equal DEPLOY_CONTRACT_VERSION
-    capabilities: frozenset[str]       # of {"rollback", "health", "remote"}
+    contract_version: int  # must equal DEPLOY_CONTRACT_VERSION
+    capabilities: frozenset[str]  # of {"rollback", "health", "remote"}
 
     def deploy(self, files: dict[str, bytes], digest: str, actor: str) -> DeployState: ...
     def record_failure(self, error: str, phase: str, actor: str) -> DeployState: ...
@@ -59,21 +59,25 @@ adds one step: syncing the activated release to a remote destination.
 from cms_build.deploy import DEPLOY_CONTRACT_VERSION, DeployError, FilesystemDeployer
 from cms_core.extensions import Extension
 
+
 class RsyncDeployer:
     contract_version = DEPLOY_CONTRACT_VERSION
     capabilities = frozenset({"rollback", "remote"})
 
     def __init__(self, root, destination):
-        self._store = FilesystemDeployer(root)   # immutable releases,
-        self._destination = destination          # locking and rollback for free
+        self._store = FilesystemDeployer(root)  # immutable releases,
+        self._destination = destination  # locking and rollback for free
+
     # deploy() / rollback() delegate to the store, then sync the
     # activated release to the destination; state()/releases()/
     # record_failure() delegate directly.
+
 
 def factory(settings: dict[str, str], project_dir):
     if not settings.get("destination"):
         raise DeployError("the rsync provider needs [deploy] destination")
     return RsyncDeployer(project_dir / settings["root"], settings["destination"])
+
 
 extension = Extension(name="rsync-deploy", deploy_providers={"rsync": factory})
 ```
