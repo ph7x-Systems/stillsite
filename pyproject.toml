@@ -3,7 +3,11 @@
 
 [dependency-groups]
 dev = [
-    "ruff>=0.8",
+    # The formatter's output is part of a required check; an unpinned
+    # formatter means any upstream release can break every PR overnight
+    # (ruff 0.16.0 did, by formatting Markdown code blocks). Bump
+    # deliberately, reformatting in the same change.
+    "ruff==0.16.0",
     "mypy>=1.13",
     "pytest>=8.3",
     "httpx2>=0.5",  # fastapi.testclient transport (httpx is deprecated there)
