@@ -370,6 +370,9 @@ msgstr "Enviar a revisión"
 msgid "Summary"
 msgstr "Resumen"
 
+msgid "Suggest translation"
+msgstr "Sugerir traducción"
+
 msgid "Tags"
 msgstr "Etiquetas"
 

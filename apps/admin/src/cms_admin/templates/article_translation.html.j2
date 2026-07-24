@@ -31,6 +31,13 @@
       </div>
       <button type="submit" class="btn btn-primary mb-3">{{ _("Save translation") }}</button>
     </form>
+    {% if can_suggest %}
+    <form method="post" action="/articles/{{ article.id }}/translations/{{ language.value }}/suggest"
+          class="admin-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button type="submit" class="btn btn-outline-secondary mb-3">{{ _("Suggest translation") }}</button>
+    </form>
+    {% endif %}
   </div>
 </div>
 {% if preview_html %}

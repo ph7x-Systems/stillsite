@@ -557,7 +557,107 @@ def _translation_context(
         "source_preview_html": render_markdown(article.source.body_markdown),
         "preview_html": render_markdown(content.body_markdown) if content else "",
         "form": form or content_form(content),
+        "can_suggest": False,
     }
+
+
+@router.post("/{article_id}/translations/{language_code}/suggest")
+async def translation_suggest(
+    request: Request,
+    article_id: str,
+    language_code: str,
+    user_session: tuple[User, AdminSession] = Depends(enforce_csrf),
+) -> object:
+    """Generate a translation suggestion for one article (ADR-0054).
+
+    The suggestion lands as draft content in the existing state machine;
+    nothing is published. Without a provider configured, the action is
+    not offered. A provider failure is contained and audited.
+    """
+    user, session = user_session
+    language = _target_language(request, language_code)
+    article = await _load_article(request, article_id)
+    project = _project(request)
+    if project is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="project not found"
+        )
+    if not project.translations_provider:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="no translation provider configured"
+        )
+    project.load_extensions()
+    from cms_core.translations import TranslationRequest, create_translation_provider
+
+    try:
+        provider = create_translation_provider(project.translations_provider)
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)) from error
+    request_obj = TranslationRequest(
+        source_text=article.source.body_markdown,
+        source_language=str(_site_source(project)),
+        target_language=language_code,
+        context=article.source.title,
+    )
+    try:
+        suggestions = provider.suggest([request_obj])
+    except Exception as error:
+        await audit_record(
+            request,
+            user.username,
+            "translation-provider-failed",
+            "article",
+            article_id,
+            project.translations_provider,
+        )
+        return _page(
+            request,
+            "article_translation.html.j2",
+            {
+                "user": user,
+                "csrf_token": session.csrf_token,
+                "errors": [f"provider failed: {error}"],
+                **_translation_context(article, language),
+            },
+            status_code=status.HTTP_502_BAD_GATEWAY,
+        )
+    if not suggestions or not suggestions[0].target_text:
+        return _page(
+            request,
+            "article_translation.html.j2",
+            {
+                "user": user,
+                "csrf_token": session.csrf_token,
+                "errors": ["provider returned no suggestion"],
+                **_translation_context(article, language),
+            },
+            status_code=status.HTTP_502_BAD_GATEWAY,
+        )
+    suggested = suggestions[0].target_text
+    form = {
+        "title": article.source.title,
+        "summary": article.source.summary,
+        "body_markdown": suggested,
+        "slug": "",
+    }
+    await audit_record(
+        request,
+        user.username,
+        "translation-suggested",
+        "article",
+        article_id,
+        language_code,
+    )
+    return _page(
+        request,
+        "article_translation.html.j2",
+        {
+            "user": user,
+            "csrf_token": session.csrf_token,
+            "errors": [],
+            **_translation_context(article, language, form),
+        },
+    )
 
 
 @router.get("/{article_id}/translations/{language_code}")
@@ -570,6 +670,10 @@ async def translation_form(
     user, session = user_session
     language = _target_language(request, language_code)
     article = await _load_article(request, article_id)
+    context = _translation_context(article, language)
+    project = _project(request)
+    if project is not None and project.translations_provider:
+        context["can_suggest"] = True
     return _page(
         request,
         "article_translation.html.j2",
@@ -577,7 +681,7 @@ async def translation_form(
             "user": user,
             "csrf_token": session.csrf_token,
             "errors": [],
-            **_translation_context(article, language),
+            **context,
         },
     )
 
