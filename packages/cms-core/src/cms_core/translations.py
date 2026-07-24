@@ -66,6 +66,13 @@ class TranslationRequest:
     context: str = ""
     """A human hint (heading, field label) the provider may use for
     disambiguation; never required and never contains HTML."""
+    glossary: tuple[tuple[str, str], ...] = ()
+    """``(source term, required target term)`` pairs, sorted by source
+    term. Built from ``[translations.glossary.<target>]`` in
+    ``sardine.toml`` and sent only to providers declaring
+    ``supports_glossary``; a provider that receives it must use the
+    required target terms. Additive within contract version 1 —
+    providers that predate it never see the field filled."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -80,6 +87,17 @@ class TranslationSuggestion:
     target_text: str
     source_text: str = ""
     """The text that was translated, echoed for batch correlation."""
+
+
+class TranslationFailed(RuntimeError):
+    """The structured failure channel (ADR-0054): a provider raises this
+    carrying a :class:`ProviderError`, so callers can show the code and
+    honor ``retryable``. Any other exception is contained too — this
+    one just keeps the failure classified."""
+
+    def __init__(self, error: ProviderError) -> None:
+        super().__init__(f"{error.code}: {error.message}")
+        self.error = error
 
 
 @runtime_checkable

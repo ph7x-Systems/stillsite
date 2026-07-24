@@ -96,7 +96,7 @@ References point at the ADR, issue or document that owns the detail.
 | Translation queue + list filters | ✅ | #131 |
 | Scalable coverage in lists (never a column per language) | ✅ | ADR-0034 |
 | Fallback policy per language | 🧭 | — |
-| Translation providers (suggestions under editorial sovereignty, vendor-neutral contract) | 🟡 shipped: the contract (capabilities, structured errors), CLI batch suggestions and the editor's suggest action · pending: conformance suite for third-party providers, glossary support | #228, ADR-0054 |
+| Translation providers (suggestions under editorial sovereignty, vendor-neutral contract, public conformance suite, glossary) | ✅ | #228, ADR-0054, WRITING_A_TRANSLATION_PROVIDER.md |
 | Privacy and consent architecture (nothing optional runs before a valid decision; contract + strict default + inert resources) | 🧭 queued | #232 |
 | Backoffice design system (the interface as an executable contract: audit, component library, consistent UX, UI conformance suite; absorbs #241) | 🧭 the 0.9.x program, after #228 closes | #244 |
 | Machine-translation assist | 🧭 | — |

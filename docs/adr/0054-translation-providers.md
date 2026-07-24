@@ -91,6 +91,26 @@ A conformance suite runs these rules against every provider, including
 an extension-registered one, and third-party authors run it against
 theirs.
 
+## Completion (2026-07-24)
+
+The model closed with three additive pieces inside contract version 1:
+
+- **The failure channel**: `TranslationFailed` is the exception a
+  provider raises carrying its `ProviderError`, so callers surface the
+  code and honor `retryable`. Other exceptions remain contained; this
+  one is just classified.
+- **Glossary**: `TranslationRequest.glossary` carries
+  `(source term, required target term)` pairs from
+  `[translations.glossary.<target>]`, sent only to providers declaring
+  `supports_glossary`. Providers that predate the field never see it
+  filled.
+- **The conformance suite as a public contract**
+  (`cms_core.translation_conformance`, versioned) — the same shape as
+  theme conformance (ADR-0053): named executable checks, third-party
+  certification in four lines, capability-gated checks that hold a
+  provider only to what it declares. See
+  [WRITING_A_TRANSLATION_PROVIDER.md](../WRITING_A_TRANSLATION_PROVIDER.md).
+
 ## Consequences
 
 - The editorial flow stays fixed; growth happens in providers.

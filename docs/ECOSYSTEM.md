@@ -14,6 +14,7 @@ shareable, license it, name it, and get it listed. Policy rationale lives in
 | Storage backend | `StorageBackend` + `register_backend` (ADR-0004) | The storage conformance suite, unchanged |
 | Extensions | `sardine.extensions` (ADR-0028): rules, build steps, registries, CLI and section hints | Explicit activation + relevant conformance suites |
 | Language pack | `LanguagePack` via `Extension.language_packs` (ADR-0034; [LANGUAGE_PACK_GUIDE.md](LANGUAGE_PACK_GUIDE.md)) | End-to-end build with the pack's tag (test-suite pattern); RTL packs ride the CI axe gate |
+| Translation provider | `TranslationProvider` protocol via `Extension.translation_providers` (ADR-0054; [WRITING_A_TRANSLATION_PROVIDER.md](WRITING_A_TRANSLATION_PROVIDER.md)) | The public translation conformance suite (`cms_core.translation_conformance`), four lines in your tests |
 
 ## Licensing
 
@@ -34,7 +35,7 @@ grant — see ADR-0011):
 sardine-theme-<name>        sardine-target-<name>
 sardine-backend-<engine>    sardine-plugin-<name>
 sardine-lang-<tag>          sardine-deploy-<name>
-sardine-forms-<name>
+sardine-forms-<name>        sardine-translate-<name>
 ```
 
 Not permitted: the Sardine CMS logos, "official" claims, or names implying

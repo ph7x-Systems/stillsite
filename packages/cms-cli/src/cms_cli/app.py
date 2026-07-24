@@ -743,8 +743,9 @@ def translate(
         raise typer.Exit(code=2)
 
     from cms_core import Article, ArticleContent, Page, PageContent
-    from cms_core.translations import TranslationRequest
+    from cms_core.translations import TranslationFailed, TranslationRequest
 
+    glossary = project.glossary_for(language) if provider.capabilities.supports_glossary else ()
     with project.open_storage() as storage:
         articles = [a for a in storage.load_all_articles() if a.deleted_at is None]
         pages = [p for p in storage.load_all_pages() if p.deleted_at is None]
@@ -769,6 +770,7 @@ def translate(
                         source_language=str(source),
                         target_language=language,
                         context=source_content.title,
+                        glossary=glossary,
                     ),
                 )
             )
@@ -779,6 +781,10 @@ def translate(
         batch = [req for _, _, req in requests]
         try:
             suggestions = provider.suggest(batch)
+        except TranslationFailed as error:
+            hint = "; retrying later may succeed" if error.error.retryable else ""
+            typer.echo(f"error: provider failed — {error}{hint}", err=True)
+            raise typer.Exit(code=1) from error
         except Exception as error:
             typer.echo(f"error: provider failed — {error}", err=True)
             raise typer.Exit(code=1) from error

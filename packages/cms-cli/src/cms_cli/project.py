@@ -62,6 +62,15 @@ class Project:
     translations_provider: str = ""
     """``[translations] provider``: who generates suggestions. Empty
     means no provider configured — the feature is invisible (ADR-0054)."""
+    translations_glossary: dict[str, dict[str, str]] = field(default_factory=dict)
+    """``[translations.glossary.<target>]`` tables: required target
+    terms per language, sent only to providers declaring
+    ``supports_glossary`` (ADR-0054)."""
+
+    def glossary_for(self, language: str) -> tuple[tuple[str, str], ...]:
+        """The glossary pairs for one target language, deterministically
+        ordered by source term."""
+        return tuple(sorted(self.translations_glossary.get(language, {}).items()))
 
     def load_extensions(self) -> list[Extension]:
         """The extensions this project explicitly trusts (ADR-0028); their
@@ -248,6 +257,11 @@ def load_project(directory: Path) -> Project:
         forms_store=bool(data.get("forms", {}).get("store", False)),
         forms_retention_days=int(data.get("forms", {}).get("retention_days", 0)),
         translations_provider=str(data.get("translations", {}).get("provider", "")),
+        translations_glossary={
+            str(language): {str(term): str(required) for term, required in table.items()}
+            for language, table in data.get("translations", {}).get("glossary", {}).items()
+            if isinstance(table, dict)
+        },
         validation_disabled=tuple(
             str(name) for name in data.get("validation", {}).get("disabled", [])
         ),

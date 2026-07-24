@@ -634,6 +634,30 @@ disagree with the editors. The content lists carry the same power as a
 filter: "missing «tag»" keeps only entries whose state for that
 language is not complete.
 
+**Suggestions (ADR-0054).** With `[translations] provider` configured
+in `sardine.toml` (the provider comes from an activated extension), the
+side-by-side editor gains a Suggest action and `cms translate
+--language <tag> [--missing] [--dry-run]` batch-suggests from the CLI.
+Suggestions land as **draft** translations in the same checksum model —
+the editor reviews, edits or discards; nothing publishes and no state
+changes without an explicit save. Without a provider, both faces are
+invisible. A failing provider is contained and audited (by provider
+name, never content); classified failures show their code, and
+retryable ones say so.
+
+**Glossary.** `[translations.glossary.<target>]` tables pin required
+target terms per language:
+
+```toml
+[translations.glossary.pt-pt]
+lighthouse = "farol"
+```
+
+Providers that declare glossary support receive and must honor these
+pairs; other providers never see them. The conformance suite verifies
+both behaviours (see
+[WRITING_A_TRANSLATION_PROVIDER.md](WRITING_A_TRANSLATION_PROVIDER.md)).
+
 ## Bulk actions (#130)
 
 The content lists select with checkboxes (plain forms — no JavaScript
