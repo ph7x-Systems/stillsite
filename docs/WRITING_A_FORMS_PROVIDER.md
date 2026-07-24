@@ -26,11 +26,13 @@ providers — they only ever receive accepted submissions.
 ```python
 from cms_core.forms import FORMS_CONTRACT_VERSION, FormContext, FormSubmission
 
+
 class QueueProvider:
     contract_version = FORMS_CONTRACT_VERSION
 
-    def handle(self, submission: FormSubmission, form: FormContext) -> None:
-        ...  # deliver, store, forward — raise on failure
+    def handle(
+        self, submission: FormSubmission, form: FormContext
+    ) -> None: ...  # deliver, store, forward — raise on failure
 ```
 
 - `submission` carries the operational fields (id, received moment,
@@ -46,8 +48,10 @@ class QueueProvider:
 ```python
 from cms_core.extensions import Extension
 
+
 def factory() -> QueueProvider:
     return QueueProvider()
+
 
 extension = Extension(name="queue-forms", forms_providers={"queue": factory})
 ```

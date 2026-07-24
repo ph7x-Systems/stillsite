@@ -36,14 +36,17 @@ from cms_build import register_theme
 class MidnightTheme:
     name = "midnight"
 
-    def __init__(self, overrides: Path | None = None) -> None:
-        ...  # set up Jinja environment (autoescape on!), honor overrides
+    def __init__(
+        self, overrides: Path | None = None
+    ) -> None: ...  # set up Jinja environment (autoescape on!), honor overrides
 
-    def render(self, kind: str, context: Mapping[str, object]) -> str:
-        ...  # kind is one of the template kinds below
+    def render(
+        self, kind: str, context: Mapping[str, object]
+    ) -> str: ...  # kind is one of the template kinds below
 
-    def assets(self) -> Mapping[str, bytes]:
-        ...  # e.g. {"assets/site.css": b"...", "assets/search.js": b"..."}
+    def assets(
+        self,
+    ) -> Mapping[str, bytes]: ...  # e.g. {"assets/site.css": b"...", "assets/search.js": b"..."}
 
 
 register_theme("midnight", MidnightTheme)
@@ -211,6 +214,7 @@ this to your theme's tests:
 import pytest
 from cms_build import create_theme
 from cms_build.theme_conformance import conformance_checks
+
 
 @pytest.mark.parametrize(("name", "check"), conformance_checks())
 def test_conformance(name, check):
